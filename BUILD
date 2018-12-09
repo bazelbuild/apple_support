@@ -10,7 +10,7 @@ filegroup(
     testonly = 1,
     srcs = [
         "WORKSPACE",
-        "//lib:for_bazel_tests",
-        "//tools:for_bazel_tests",
+        "@build_bazel_apple_support//lib:for_bazel_tests",
+        "@build_bazel_apple_support//tools:for_bazel_tests",
     ],
 )
