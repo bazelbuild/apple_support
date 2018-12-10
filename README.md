@@ -1,5 +1,7 @@
 # Apple Support for [Bazel](https://bazel.build)
 
+[![Build Status](https://travis-ci.org/bazelbuild/apple_support.svg?branch=master)](https://travis-ci.org/bazelbuild/apple_support)
+
 This repository contains helper methods that support building rules that target
 Apple platforms.
 
