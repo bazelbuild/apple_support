@@ -1,0 +1,42 @@
+os: osx
+# Not really swift, but stops travis from saying it is ruby.
+language: swift
+
+# Travis does not use osx_image when it computes the matrix itself, if we want
+# to test on multiple versions, then it required manually building the matrix
+# to set a different osx_image for each configuration.
+osx_image: xcode10.1
+
+# Build out the matrix ourselves so we can set multiple variables.
+# - `BAZEL`: Used in `before_install` to pick the version of bazel to use,
+#    "RELEASE" extracts from https://github.com/bazelbuild/bazel/releases/latest,
+#    otherwise it is the tag to fetch.
+# - `TARGET`: Are used in the `script` to issue a build `script` phase will be
+#    used for `bazel test`.
+matrix:
+  include:
+    # One build on linux to run buildifer since linux agents are faster on travis.
+    - os: linux
+      dist: trusty
+      sudo: false
+      language: c++
+      env: BUILDIFER=RELEASE
+    # The normal macOS builds.
+    - env: BAZEL=HEAD TARGET=//tools/...
+    - env: BAZEL=HEAD TARGET=//test/...
+
+
+before_install:
+  - ./travis_install.sh
+
+script:
+  - ./travis_build.sh
+
+notifications:
+  email: false
+
+# Don't build the google branch since that is used by the export process and a PR
+# will be made after the fact.
+branches:
+  except:
+    - google
