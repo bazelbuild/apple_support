@@ -22,15 +22,14 @@ matrix:
       language: c++
       env: BUILDIFER=RELEASE
     # The normal macOS builds.
-    - env: BAZEL=HEAD TARGET=//tools/...
-    - env: BAZEL=HEAD TARGET=//test/...
+    - env: BAZEL=HEAD TARGET=//...
 
 
 before_install:
   - ./travis_install.sh
 
 script:
-  - ./travis_build.sh
+  - ./travis_test.sh
 
 notifications:
   email: false
