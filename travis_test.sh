@@ -41,17 +41,29 @@ fi
 if [[ -n "${BUILDIFER:-}" ]]; then
   FOUND_ISSUES="no"
 
+  # buildifier supports BUILD/WORKSPACE/*.bzl files, this provides the args
+  # to reuse in all the finds.
+  FIND_ARGS=(
+      \(
+          -name BUILD
+          -o
+          -name WORKSPACE
+          -o
+          -name "*.bzl"
+      \)
+  )
+
   # Check for format issues?
   if [[ "${FORMAT:-yes}" == "yes" ]] ; then
     # bazelbuild/buildtools/issues/220 - diff doesn't include the file that needs updating
-    if ! find . \( -name BUILD -o -name "*.bzl" \) -print | xargs buildifier -d > /dev/null 2>&1 ; then
+    if ! find . "${FIND_ARGS[@]}" -print | xargs buildifier -d > /dev/null 2>&1 ; then
       if [[ "${FOUND_ISSUES}" != "no" ]] ; then
         echo ""
       fi
       echo "ERROR: BUILD/.bzl file formatting issue(s):"
       echo ""
       # bazelbuild/buildtools/issues/329 - sed out the exit status lines.
-      find . \( -name BUILD -o -name "*.bzl" \) -print -exec buildifier -v -d {} \; \
+      find . "${FIND_ARGS[@]}" -print -exec buildifier -v -d {} \; \
           2>&1 | sed -E -e '/^exit status 1$/d'
       echo ""
       echo "Please download the latest buildifier"
@@ -63,14 +75,13 @@ if [[ -n "${BUILDIFER:-}" ]]; then
 
   # Check for lint issues?
   if [[ "${LINT:-yes}" == "yes" ]] ; then
-    LINT_ISSUES=$(find . \( -name BUILD -o -name "*.bzl" \) -print | xargs buildifier --lint=warn 2>&1)
-    if [[ -n "${LINT_ISSUES}" ]] ; then
+    if ! find . "${FIND_ARGS[@]}" -print | xargs buildifier --lint=warn > /dev/null 2>&1 ; then
       if [[ "${FOUND_ISSUES}" != "no" ]] ; then
         echo ""
       fi
       echo "ERROR: BUILD/.bzl lint issue(s):"
       echo ""
-      echo "${LINT_ISSUES}"
+      find . "${FIND_ARGS[@]}" -print | xargs buildifier --lint=warn
       echo ""
       echo "Please download the latest buildifier"
       echo "   https://github.com/bazelbuild/buildtools/releases"
