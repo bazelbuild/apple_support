@@ -263,6 +263,17 @@ def _run_shell(ctx, **kwargs):
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
     _validate_attribute_present(ctx, "_xcode_config")
+
+    # TODO(b/77637734) remove "workaround" once the bazel issue is resolved.
+    # Bazel doesn't always get the shell right for a single string `commands`;
+    # so work around that case by faking it as a list of strings that forces
+    # the shell correctly.
+    command = kwargs.get("command")
+    if command and type(command) == type(""):
+        processed_args = dict(kwargs)
+        processed_args["command"] = ["/bin/sh", "-c", command]
+        kwargs = processed_args
+
     ctx.actions.run_shell(**_kwargs_for_apple_platform(ctx, **kwargs))
 
 apple_support = struct(
