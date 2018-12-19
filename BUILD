@@ -11,6 +11,7 @@ filegroup(
     srcs = [
         "WORKSPACE",
         "@build_bazel_apple_support//lib:for_bazel_tests",
+        "@build_bazel_apple_support//rules:for_bazel_tests",
         "@build_bazel_apple_support//tools:for_bazel_tests",
     ],
 )
