@@ -15,7 +15,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
     name = "build_bazel_apple_support",
     remote = "https://github.com/bazelbuild/apple_support.git",
-    tag = "0.2.0",
+    tag = "0.3.0",
 )
 
 load(
