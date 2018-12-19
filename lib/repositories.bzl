@@ -14,9 +14,29 @@
 
 """Definitions for handling Bazel repositories used by apple_support."""
 
-def apple_support_dependencies():
-    """Fetches repository dependencies of the `apple_support` workspace."""
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-    # For now we don't have dependencies, but we recommend this API in case we
-    # need to add dependencies in the future.
-    pass
+def _maybe(repo_rule, name, **kwargs):
+    """Executes the given repository rule if it hasn't been executed already.
+
+    Args:
+      repo_rule: The repository rule to be executed (e.g., `git_repository`.)
+      name: The name of the repository to be defined by the rule.
+      **kwargs: Additional arguments passed directly to the repository rule.
+    """
+    if name not in native.existing_rules():
+        repo_rule(name = name, **kwargs)
+
+def apple_support_dependencies():
+    """Fetches repository dependencies of the `apple_support` workspace.
+
+    Users should call this macro in their `WORKSPACE` to ensure that all of the
+    dependencies of the Swift rules are downloaded and that they are isolated from
+    changes to those dependencies.
+    """
+    _maybe(
+        git_repository,
+        name = "bazel_skylib",
+        remote = "https://github.com/bazelbuild/bazel-skylib.git",
+        tag = "0.5.0",
+    )

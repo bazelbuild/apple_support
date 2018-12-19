@@ -84,7 +84,7 @@ def _validate_attribute_present(ctx, attribute_name):
             "ERROR: This rule requires the '{}' attribute to be present. ".format(attribute_name),
             "To add this attribute, modify your rule definition like this:",
             "",
-            "load(\"//third_party/bazel_skylib/lib:dicts.bzl\", \"dicts\")",
+            "load(\"@bazel_skylib//lib:dicts.bzl\", \"dicts\")",
             "load(",
             "    \"@build_bazel_apple_support//lib:apple_support.bzl\",",
             "    \"apple_support\",",
