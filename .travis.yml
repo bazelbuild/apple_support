@@ -15,12 +15,12 @@ osx_image: xcode10.1
 #    used for `bazel test`.
 matrix:
   include:
-    # One build on linux to run buildifer since linux agents are faster on travis.
+    # One build on linux to run buildifier since linux agents are faster on travis.
     - os: linux
       dist: trusty
       sudo: false
       language: c++
-      env: BUILDIFER=RELEASE
+      env: BUILDIFIER=RELEASE
     # The normal macOS builds.
     - env: BAZEL=HEAD TARGET=//...
 
