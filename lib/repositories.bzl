@@ -38,5 +38,5 @@ def apple_support_dependencies():
         git_repository,
         name = "bazel_skylib",
         remote = "https://github.com/bazelbuild/bazel-skylib.git",
-        tag = "0.5.0",
+        tag = "0.6.0",
     )
