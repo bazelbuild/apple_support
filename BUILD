@@ -1,5 +1,3 @@
-package(default_visibility = ["//visibility:public"])
-
 licenses(["notice"])
 
 exports_files(["LICENSE"])
@@ -14,4 +12,8 @@ filegroup(
         "@build_bazel_apple_support//rules:for_bazel_tests",
         "@build_bazel_apple_support//tools:for_bazel_tests",
     ],
+    # Exposed publicly just so other rules can use this if they set up
+    # integration tests that need to copy all the support files into
+    # a temporary workspace for the tests.
+    visibility = ["//visibility:public"],
 )
