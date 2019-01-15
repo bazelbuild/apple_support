@@ -100,7 +100,23 @@ def _validate_attribute_present(ctx, attribute_name):
         ]))
 
 def _action_required_attrs():
-    """Returns a dictionary with required attributes for registering actions on Apple platforms."""
+    """Returns a dictionary with required attributes for registering actions on Apple platforms.
+
+    This method adds private attributes which should not be used outside of the apple_support
+    codebase. It also adds the following attributes which are considered to be public for rule
+    maintainers to use:
+
+     * _xcode_config: Attribute that references a target containing the single
+       apple_common.XcodeVersionConfig provider. This provider can be used to inspect Xcode-related
+       properties about the Xcode being used for the build, as specified with the `--xcode_version`
+       Bazel flag. The most common way to retrieve this provider is:
+       `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+
+    The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
+
+    Returns:
+        A `dict` object containing attributes to be added to rule implementations.
+    """
     return {
         "_xcode_config": attr.label(
             default = configuration_field(
