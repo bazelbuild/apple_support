@@ -1,4 +1,4 @@
-load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
+load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 
