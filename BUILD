@@ -8,9 +8,9 @@ filegroup(
     testonly = 1,
     srcs = [
         "WORKSPACE",
-        "@build_bazel_apple_support//lib:for_bazel_tests",
-        "@build_bazel_apple_support//rules:for_bazel_tests",
-        "@build_bazel_apple_support//tools:for_bazel_tests",
+        "//lib:for_bazel_tests",
+        "//rules:for_bazel_tests",
+        "//tools:for_bazel_tests",
     ],
     # Exposed publicly just so other rules can use this if they set up
     # integration tests that need to copy all the support files into
