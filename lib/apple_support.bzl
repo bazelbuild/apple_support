@@ -20,14 +20,6 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
-# Placeholder values to be replaced with DEVELOPER_DIR and SDKROOT respectively during action
-# execution. In order to get this values replaced, you'll need to use the `apple_support.run`
-# API by setting the `xcode_path_resolve_level` argument to either the
-# `apple_support.xcode_path_resolve_level.args` or
-# `apple_support.xcode_path_resolve_level.args_and_files` value.
-_XCODE_PATH_PLACEHOLDER = "__BAZEL_XCODE_DEVELOPER_DIR__"
-_SDKROOT_PATH_PLACEHOLDER = "__BAZEL_XCODE_SDKROOT__"
-
 def _platform_frameworks_path_placeholder(ctx):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
@@ -35,12 +27,39 @@ def _platform_frameworks_path_placeholder(ctx):
         ctx: The context of the rule that will register an action.
 
     Returns:
-        A dictionary with environment variables required for Xcode path resolution.
+        Returns a string with the platform's frameworks directory, anchored to the Xcode path
+        placeholder.
     """
     return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
         platform_name = ctx.fragments.apple.single_arch_platform.name_in_plist,
-        xcode_path = _XCODE_PATH_PLACEHOLDER,
+        xcode_path = _xcode_path_placeholder(),
     )
+
+def _sdkroot_path_placeholder():
+    """Returns a placeholder value to be replaced with SDKROOT during action execution.
+
+    In order to get this values replaced, you'll need to use the `apple_support.run` API by setting
+    the `xcode_path_resolve_level` argument to either the
+    `apple_support.xcode_path_resolve_level.args` or
+    `apple_support.xcode_path_resolve_level.args_and_files` value.
+
+    Returns:
+        Returns a placeholder value to be replaced with SDKROOT during action execution.
+    """
+    return "__BAZEL_XCODE_SDKROOT__"
+
+def _xcode_path_placeholder():
+    """Returns a placeholder value to be replaced with DEVELOPER_DIR during action execution.
+
+    In order to get this values replaced, you'll need to use the `apple_support.run` API by setting
+    the `xcode_path_resolve_level` argument to either the
+    `apple_support.xcode_path_resolve_level.args` or
+    `apple_support.xcode_path_resolve_level.args_and_files` value.
+
+    Returns:
+        Returns a placeholder value to be replaced with DEVELOPER_DIR during action execution.
+    """
+    return "__BAZEL_XCODE_DEVELOPER_DIR__"
 
 def _add_dicts(*dictionaries):
     """Adds a list of dictionaries into a single dictionary."""
@@ -199,9 +218,9 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
     `apple_support.path_placeholders` API, which in turn uses the placeholder values as described
     above. The available APIs are:
 
-      * `apple_support.path_placeholders.xcode`: Returns a reference to the Xcode.app
+      * `apple_support.path_placeholders.xcode()`: Returns a reference to the Xcode.app
         installation path.
-      * `apple_support.path_placeholders.sdkroot`: Returns a reference to the SDK root path.
+      * `apple_support.path_placeholders.sdkroot()`: Returns a reference to the SDK root path.
       * `apple_support.path_placeholders.platform_frameworks(ctx)`: Returns the Frameworks path
         within the Xcode installation, for the requested platform.
 
@@ -309,8 +328,8 @@ apple_support = struct(
     action_required_execution_requirements = _action_required_execution_requirements,
     path_placeholders = struct(
         platform_frameworks = _platform_frameworks_path_placeholder,
-        sdkroot = _SDKROOT_PATH_PLACEHOLDER,
-        xcode = _XCODE_PATH_PLACEHOLDER,
+        sdkroot = _sdkroot_path_placeholder,
+        xcode = _xcode_path_placeholder,
     ),
     run = _run,
     run_shell = _run_shell,

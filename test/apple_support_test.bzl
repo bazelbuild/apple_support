@@ -135,24 +135,24 @@ def _apple_support_test_impl(ctx):
         executable = test_tool,
         arguments = [
             run_output_xcode_path_in_args.path,
-            "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode),
+            "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
             "FRAMEWORKS_PATH_ARG={}".format(
                 apple_support.path_placeholders.platform_frameworks(ctx),
             ),
-            "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot),
+            "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
     )
 
     action_args = ctx.actions.args()
     action_args.add(
-        "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode),
+        "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
     )
     action_args.add(
         "FRAMEWORKS_PATH_ARG={}".format(apple_support.path_placeholders.platform_frameworks(ctx)),
     )
     action_args.add(
-        "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot),
+        "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
     )
     action_args.set_param_file_format("multiline")
     action_args.use_param_file("@%s", use_always = True)
@@ -188,8 +188,8 @@ def _apple_support_test_impl(ctx):
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.write(test_script, _TEST_SCRIPT_CONTENTS.format(
         file_paths = "\n    ".join([x.short_path for x in test_files]),
-        sdkroot_path_placeholder = apple_support.path_placeholders.sdkroot,
-        xcode_path_placeholder = apple_support.path_placeholders.xcode,
+        sdkroot_path_placeholder = apple_support.path_placeholders.sdkroot(),
+        xcode_path_placeholder = apple_support.path_placeholders.xcode(),
     ), is_executable = True)
 
     return [
