@@ -125,6 +125,7 @@ def apple_genrule(
 
     Example of use:
 
+    ```
     load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
 
     apple_genrule(
@@ -132,31 +133,34 @@ def apple_genrule(
         outs = ["hi"],
         cmd = "touch $(@)",
     )
+    ```
 
     This rule also does location expansion, much like the native genrule.
-    For example, $(location hi) may be used to refer to the output in the
+    For example, `$(location hi)` may be used to refer to the output in the
     above example.
 
     The set of make variables that are supported for this rule:
 
-    OUTS: The outs list. If you have only one output file, you can also use $@.
-    SRCS: The srcs list (or more precisely, the pathnames of the files
-          corresponding to labels in the srcs list). If you have only one source
-          file, you can also use $<.
-    <: srcs, if it's a single file.
-    @: outs, if it's a single file.
-    @D: The output directory. If there is only one filename in outs, this expands
-        to the directory containing that file. If there are multiple filenames,
-        this variable instead expands to the package's root directory in the
-        genfiles tree, even if all the generated files belong to the same
-        subdirectory.
+    * `OUTS`: The outs list. If you have only one output file, you can also use
+              `$@`.
+    * `SRCS`: The srcs list (or more precisely, the pathnames of the files
+              corresponding to labels in the srcs list). If you have only one
+              source file, you can also use `$<`.
+    * `<`: srcs, if it's a single file.
+    * `@`: outs, if it's a single file.
+    * `@D`: The output directory. If there is only one filename in outs, this
+            expands to the directory containing that file. If there are
+            multiple filenames, this variable instead expands to the package's
+            root directory in the genfiles tree, even if all the generated
+            files belong to the same subdirectory.
 
     The following environment variables are added to the rule action:
 
-    DEVELOPER_DIR: The base developer directory as defined on Apple architectures,
-                   most commonly used in invoking Apple tools such as xcrun.
-    SDKROOT: The base SDK directory as defined on Apple architectures, most
-             commonly used in invoking Apple tools such as xcrun.
+    * `DEVELOPER_DIR`: The base developer directory as defined on Apple
+                       architectures, most commonly used in invoking Apple
+                       tools such as xcrun.
+    * `SDKROOT`: The base SDK directory as defined on Apple architectures, most
+                 commonly used in invoking Apple tools such as xcrun.
 
     Args:
       name: The name of the target.

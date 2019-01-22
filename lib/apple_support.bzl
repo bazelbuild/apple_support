@@ -29,7 +29,14 @@ _XCODE_PATH_PLACEHOLDER = "__BAZEL_XCODE_DEVELOPER_DIR__"
 _SDKROOT_PATH_PLACEHOLDER = "__BAZEL_XCODE_SDKROOT__"
 
 def _platform_frameworks_path_placeholder(ctx):
-    """Returns the platform's frameworks directory, anchored to the `xcode` path placeholder."""
+    """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
+
+    Args:
+        ctx: The context of the rule that will register an action.
+
+    Returns:
+        A dictionary with environment variables required for Xcode path resolution.
+    """
     return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
         platform_name = ctx.fragments.apple.single_arch_platform.name_in_plist,
         xcode_path = _XCODE_PATH_PLACEHOLDER,
@@ -106,8 +113,8 @@ def _action_required_attrs():
     codebase. It also adds the following attributes which are considered to be public for rule
     maintainers to use:
 
-     * _xcode_config: Attribute that references a target containing the single
-       apple_common.XcodeVersionConfig provider. This provider can be used to inspect Xcode-related
+     * `_xcode_config`: Attribute that references a target containing the single
+       `apple_common.XcodeVersionConfig` provider. This provider can be used to inspect Xcode-related
        properties about the Xcode being used for the build, as specified with the `--xcode_version`
        Bazel flag. The most common way to retrieve this provider is:
        `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
@@ -175,6 +182,7 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
 
     In order to use `apple_support.run`, you'll need to modify your rule definition to add the
     following:
+
       * `fragments = ["apple"]`
       * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
         can be done using the `dicts.add()` method from Skylib.
@@ -190,13 +198,15 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
     In your rule implementation, you can use references to Xcode through the
     `apple_support.path_placeholders` API, which in turn uses the placeholder values as described
     above. The available APIs are:
-      * apple_support.path_placeholders.xcode: Returns a reference to the Xcode.app
+
+      * `apple_support.path_placeholders.xcode`: Returns a reference to the Xcode.app
         installation path.
-      * apple_support.path_placeholders.sdkroot: Returns a reference to the SDK root path.
-      * apple_support.path_placeholders.platform_frameworks(ctx): Returns the Frameworks path
+      * `apple_support.path_placeholders.sdkroot`: Returns a reference to the SDK root path.
+      * `apple_support.path_placeholders.platform_frameworks(ctx)`: Returns the Frameworks path
         within the Xcode installation, for the requested platform.
 
     If the `xcode_path_resolve_level` value is:
+
       * `apple_support.xcode_path_resolve_level.none`: No processing will be done to the given
         `arguments`.
       * `apple_support.xcode_path_resolve_level.args`: Only instances of the placeholders in the
@@ -264,6 +274,7 @@ def _run_shell(ctx, **kwargs):
 
     In order to use `apple_support.run_shell`, you'll need to modify your rule definition to add the
     following:
+
       * `fragments = ["apple"]`
       * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
         can be done using the `dicts.add()` method from Skylib.
