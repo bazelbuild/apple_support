@@ -21,13 +21,13 @@ def _is_xcode_at_least_version(xcode_config, version):
     `_xcode_config` attribute (e.g. `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`). This
     provider should contain the Xcode version parameters with which this rule is being built with.
     If you need to add this attribute to your rule implementation, please refer to
-    `apple_support.action_required_attrs`.
+    `apple_support.action_required_attrs()`.
 
     Args:
-        xcode_config: The XcodeVersionConfig provider from the _xcode_config attribute's value.
+        xcode_config: The XcodeVersionConfig provider from the `_xcode_config` attribute's value.
         version: The minimum desired Xcode version, as a dotted version string.
     Returns:
-        True if the given xcode_config version at least as high as the requested version.
+        True if the given `xcode_config` version at least as high as the requested version.
     """
     current_version = xcode_config.xcode_version()
     if not current_version:

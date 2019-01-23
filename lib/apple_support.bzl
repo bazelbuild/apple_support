@@ -13,7 +13,8 @@
 # limitations under the License.
 """Definitions for registering actions on Apple platforms."""
 
-# Options to declare the level of Xcode path resolving needed in an `apple_support.run` invocation.
+# Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
+# invocation.
 _XCODE_PATH_RESOLVE_LEVEL = struct(
     none = None,
     args = "args",
@@ -38,8 +39,8 @@ def _platform_frameworks_path_placeholder(ctx):
 def _sdkroot_path_placeholder():
     """Returns a placeholder value to be replaced with SDKROOT during action execution.
 
-    In order to get this values replaced, you'll need to use the `apple_support.run` API by setting
-    the `xcode_path_resolve_level` argument to either the
+    In order to get this values replaced, you'll need to use the `apple_support.run()` API by
+    setting the `xcode_path_resolve_level` argument to either the
     `apple_support.xcode_path_resolve_level.args` or
     `apple_support.xcode_path_resolve_level.args_and_files` value.
 
@@ -51,8 +52,8 @@ def _sdkroot_path_placeholder():
 def _xcode_path_placeholder():
     """Returns a placeholder value to be replaced with DEVELOPER_DIR during action execution.
 
-    In order to get this values replaced, you'll need to use the `apple_support.run` API by setting
-    the `xcode_path_resolve_level` argument to either the
+    In order to get this values replaced, you'll need to use the `apple_support.run()` API by
+    setting the `xcode_path_resolve_level` argument to either the
     `apple_support.xcode_path_resolve_level.args` or
     `apple_support.xcode_path_resolve_level.args_and_files` value.
 
@@ -199,7 +200,7 @@ def _action_required_execution_requirements():
 def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwargs):
     """Registers an action to run on an Apple machine.
 
-    In order to use `apple_support.run`, you'll need to modify your rule definition to add the
+    In order to use `apple_support.run()`, you'll need to modify your rule definition to add the
     following:
 
       * `fragments = ["apple"]`
@@ -291,8 +292,8 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
 def _run_shell(ctx, **kwargs):
     """Registers a shell action to run on an Apple machine.
 
-    In order to use `apple_support.run_shell`, you'll need to modify your rule definition to add the
-    following:
+    In order to use `apple_support.run_shell()`, you'll need to modify your rule definition to add
+    the following:
 
       * `fragments = ["apple"]`
       * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
