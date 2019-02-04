@@ -13,6 +13,8 @@
 # limitations under the License.
 """Definitions for registering actions on Apple platforms."""
 
+load("@bazel_skylib//lib:types.bzl", "types")
+
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
 # invocation.
 _XCODE_PATH_RESOLVE_LEVEL = struct(
@@ -270,13 +272,13 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
     # We also need to include the user executable in the "tools" argument of the action, since it
     # won't be referenced by "executable" anymore.
     original_tools = processed_kwargs.pop("tools", None)
-    if type(original_tools) == type([]):
+    if types.is_list(original_tools):
         all_tools = [original_executable] + original_tools
     elif type(original_tools) == type(depset()):
         all_tools = depset([original_executable], transitive = [original_tools])
     elif original_tools:
         fail("'tools' argument must be a sequence or depset.")
-    elif type(original_executable) != type(""):
+    elif not types.is_string(original_executable):
         # Only add the user_executable to the "tools" list if it's a File, not a string.
         all_tools = [original_executable]
     else:
@@ -316,7 +318,7 @@ def _run_shell(ctx, **kwargs):
     # so work around that case by faking it as a list of strings that forces
     # the shell correctly.
     command = kwargs.get("command")
-    if command and type(command) == type(""):
+    if command and types.is_string(command):
         processed_args = dict(kwargs)
         processed_args["command"] = ["/bin/sh", "-c", command]
         kwargs = processed_args
