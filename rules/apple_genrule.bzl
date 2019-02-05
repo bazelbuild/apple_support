@@ -176,12 +176,19 @@ def apple_genrule(
     if executable:
         if len(outs) != 1:
             fail("apple_genrule, if executable, must have exactly one output")
+
         intermediate_out = outs[0] + ".nonexecutable"
+
+        # Remove any visibility and make this sub rule private since it is an
+        # implementation detail.
+        sub_kwargs = dict(kwargs)
+        sub_kwargs.pop("visibility", None)
         _apple_genrule_inner(
             name = name + "_nonexecutable",
             outs = [intermediate_out],
             cmd = cmd,
-            **kwargs
+            visibility = ["//visibility:private"],
+            **sub_kwargs
         )
 
         # Remove anything from kwargs that might have a meaning that isn't wanted
