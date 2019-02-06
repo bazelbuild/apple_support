@@ -3,9 +3,11 @@
 
 Build Rules provided by Apple Support.
 
+<!-- BEGIN_TOC -->
 On this page:
 
   * [apple_genrule](#apple_genrule)
+<!-- END_TOC -->
 
 <a name="apple_genrule"></a>
 ## apple_genrule

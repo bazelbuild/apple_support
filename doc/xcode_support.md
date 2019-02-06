@@ -10,9 +10,11 @@ To use these in your Starlark code, simply load the module; for example:
 load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
 ```
 
+<!-- BEGIN_TOC -->
 On this page:
 
   * [xcode_support.is_xcode_at_least_version](#xcode_support.is_xcode_at_least_version)
+<!-- END_TOC -->
 
 
 <a name="xcode_support.is_xcode_at_least_version"></a>
