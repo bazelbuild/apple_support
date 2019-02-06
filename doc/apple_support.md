@@ -10,6 +10,7 @@ To use these in your Starlark code, simply load the module; for example:
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 ```
 
+<!-- BEGIN_TOC -->
 On this page:
 
   * [apple_support.action_required_attrs](#apple_support.action_required_attrs)
@@ -20,6 +21,7 @@ On this page:
   * [apple_support.path_placeholders.xcode](#apple_support.path_placeholders.xcode)
   * [apple_support.run](#apple_support.run)
   * [apple_support.run_shell](#apple_support.run_shell)
+<!-- END_TOC -->
 
 
 <a name="apple_support.action_required_attrs"></a>
