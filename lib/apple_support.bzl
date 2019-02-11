@@ -274,7 +274,7 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
     original_tools = processed_kwargs.pop("tools", None)
     if types.is_list(original_tools):
         all_tools = [original_executable] + original_tools
-    elif type(original_tools) == type(depset()):
+    elif types.is_depset(original_tools):
         all_tools = depset([original_executable], transitive = [original_tools])
     elif original_tools:
         fail("'tools' argument must be a sequence or depset.")
