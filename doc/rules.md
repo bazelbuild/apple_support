@@ -12,8 +12,9 @@ On this page:
 <a name="apple_genrule"></a>
 ## apple_genrule
 
-<pre style="white-space: pre-wrap">
-apple_genrule(<a href="#apple_genrule.name">name</a>, <a href="#apple_genrule.cmd">cmd</a>, <a href="#apple_genrule.executable">executable</a>=False, <a href="#apple_genrule.outs">outs</a>=[], <a href="#apple_genrule.srcs">srcs</a>=[], <a href="#apple_genrule.message">message</a>=None, <a href="#apple_genrule.tools">tools</a>=[], <a href="#apple_genrule.no_sandbox">no_sandbox</a>=False, <a href="#apple_genrule.**kwargs">**kwargs</a>)
+<pre style="white-space: normal">
+apple_genrule(<a href="#apple_genrule.name">name</a>, <a href="#apple_genrule.cmd">cmd</a>, <a href="#apple_genrule.executable">executable</a>=False, <a href="#apple_genrule.outs">outs</a>=[], <a href="#apple_genrule.srcs">srcs</a>=[], <a href="#apple_genrule.message">message</a>=None, <a href="#apple_genrule.tools">tools</a>=[],
+<a href="#apple_genrule.no_sandbox">no_sandbox</a>=False, <a href="#apple_genrule.**kwargs">**kwargs</a>)
 </pre>
 
 Genrule which provides Apple specific environment and make variables.
