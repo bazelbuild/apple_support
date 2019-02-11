@@ -20,7 +20,7 @@ On this page:
 <a name="xcode_support.is_xcode_at_least_version"></a>
 ## xcode_support.is_xcode_at_least_version
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 xcode_support.is_xcode_at_least_version(<a href="#xcode_support.is_xcode_at_least_version.xcode_config">xcode_config</a>, <a href="#xcode_support.is_xcode_at_least_version.version">version</a>)
 </pre>
 

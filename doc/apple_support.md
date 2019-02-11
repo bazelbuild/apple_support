@@ -27,7 +27,7 @@ On this page:
 <a name="apple_support.action_required_attrs"></a>
 ## apple_support.action_required_attrs
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.action_required_attrs()
 </pre>
 
@@ -53,7 +53,7 @@ A `dict` object containing attributes to be added to rule implementations.
 <a name="apple_support.action_required_env"></a>
 ## apple_support.action_required_env
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.action_required_env(<a href="#apple_support.action_required_env.ctx">ctx</a>)
 </pre>
 
@@ -90,7 +90,7 @@ A dictionary with environment variables required for Xcode path resolution.
 <a name="apple_support.action_required_execution_requirements"></a>
 ## apple_support.action_required_execution_requirements
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.action_required_execution_requirements()
 </pre>
 
@@ -112,7 +112,7 @@ A dictionary with execution requirements for running actions on Apple platforms.
 <a name="apple_support.path_placeholders.platform_frameworks"></a>
 ## apple_support.path_placeholders.platform_frameworks
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.path_placeholders.platform_frameworks(<a href="#apple_support.path_placeholders.platform_frameworks.ctx">ctx</a>)
 </pre>
 
@@ -143,7 +143,7 @@ placeholder.
 <a name="apple_support.path_placeholders.sdkroot"></a>
 ## apple_support.path_placeholders.sdkroot
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.path_placeholders.sdkroot()
 </pre>
 
@@ -162,7 +162,7 @@ Returns a placeholder value to be replaced with SDKROOT during action execution.
 <a name="apple_support.path_placeholders.xcode"></a>
 ## apple_support.path_placeholders.xcode
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.path_placeholders.xcode()
 </pre>
 
@@ -182,7 +182,7 @@ Returns a placeholder value to be replaced with DEVELOPER_DIR during action exec
 <a name="apple_support.run"></a>
 ## apple_support.run
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.run(<a href="#apple_support.run.ctx">ctx</a>, <a href="#apple_support.run.xcode_path_resolve_level">xcode_path_resolve_level</a>=None, <a href="#apple_support.run.**kwargs">**kwargs</a>)
 </pre>
 
@@ -250,7 +250,7 @@ If the `xcode_path_resolve_level` value is:
 <a name="apple_support.run_shell"></a>
 ## apple_support.run_shell
 
-<pre style="white-space: pre-wrap">
+<pre style="white-space: normal">
 apple_support.run_shell(<a href="#apple_support.run_shell.ctx">ctx</a>, <a href="#apple_support.run_shell.**kwargs">**kwargs</a>)
 </pre>
 
