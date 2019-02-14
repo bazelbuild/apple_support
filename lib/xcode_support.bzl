@@ -26,6 +26,7 @@ def _is_xcode_at_least_version(xcode_config, version):
     Args:
         xcode_config: The XcodeVersionConfig provider from the `_xcode_config` attribute's value.
         version: The minimum desired Xcode version, as a dotted version string.
+
     Returns:
         True if the given `xcode_config` version at least as high as the requested version.
     """
