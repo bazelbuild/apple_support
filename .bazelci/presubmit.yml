@@ -1,7 +1,21 @@
 ---
-platforms:
-  macos:
+tasks:
+  macos_latest:
+    name: "Latest Bazel"
+    platform: macos
+    bazel: latest
     build_targets:
     - "//..."
     test_targets:
     - "//..."
+
+  macos_last_green:
+    name: "Last Green Bazel"
+    platform: macos
+    bazel: last_green
+    build_targets:
+    - "//..."
+    test_targets:
+    - "//..."
+
+buildifier: true

@@ -21,8 +21,6 @@ matrix:
       sudo: false
       language: c++
       env: BUILDIFIER=RELEASE
-    # The normal macOS builds.
-    - env: BAZEL=HEAD TARGET=//...
 
 
 before_install:
