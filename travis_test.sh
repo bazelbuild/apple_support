@@ -17,26 +17,6 @@
 set -eu
 
 # -------------------------------------------------------------------------------------------------
-# Asked to do a bazel build.
-if [[ -n "${BAZEL:-}" ]]; then
-  # - Crank down the progress messages to not flood the travis log, but still
-  #   provide some output so there is an indicator things aren't hung.
-  # - "--test_output=errors" causes failures to report more completely since
-  #   just getting the log file info isn't that useful on CI.
-  set -x
-  TEST_ARGS=(
-    test
-    --show_progress_rate_limit=30.0
-    --test_output=errors
-  )
-  if [[ -n "${TAGS:-}" ]]; then
-    TEST_ARGS+=( "--test_tag_filters=${TAGS}")
-  fi
-  bazel "${TEST_ARGS[@]}" "${TARGET}"
-  set +x
-fi
-
-# -------------------------------------------------------------------------------------------------
 # Asked to do a buildifier run.
 if [[ -n "${BUILDIFIER:-}" ]]; then
   FOUND_ISSUES="no"
