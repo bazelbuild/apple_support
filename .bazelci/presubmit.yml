@@ -18,4 +18,4 @@ tasks:
     test_targets:
     - "//..."
 
-buildifier: true
+buildifier: latest
