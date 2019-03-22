@@ -18,4 +18,6 @@ tasks:
     test_targets:
     - "//..."
 
-buildifier: latest
+buildifier:
+  version: latest
+  warnings: "all"
