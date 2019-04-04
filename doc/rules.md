@@ -1,5 +1,8 @@
 # Build Rules
 
+<!-- Generated file, do not edit directly. -->
+<!-- mdlint off(WHITESPACE_LINE_LENGTH) -->
+
 
 Build Rules provided by Apple Support.
 
