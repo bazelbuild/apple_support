@@ -1,4 +1,13 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
 licenses(["notice"])
+
+# For the bzl_library at the root of the apple_support.
+bzl_library(
+    name = "bzl_library",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//:__pkg__"],
+)
 
 # Consumed by bazel tests.
 filegroup(
