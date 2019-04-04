@@ -1,5 +1,7 @@
 # `apple_support` Starlark Module
 
+<!-- Generated file, do not edit directly. -->
+
 
 A module of helpers for rule authors to aid in writing actions that
 target Apple platforms.

@@ -1,5 +1,7 @@
 # Build Rules
 
+<!-- Generated file, do not edit directly. -->
+
 
 Build Rules provided by Apple Support.
 

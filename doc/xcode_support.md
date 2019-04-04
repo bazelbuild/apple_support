@@ -1,5 +1,7 @@
 # `xcode_support` Starlark Module
 
+<!-- Generated file, do not edit directly. -->
+
 
 A modules of helpers for rule authors to aid in writing rules that
 need to change what they do based on attributes of the active Xcode.
