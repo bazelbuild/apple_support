@@ -1,6 +1,6 @@
 # Apple Support for [Bazel](https://bazel.build)
 
-[![Build Status](https://badge.buildkite.com/6739ca70cb485ecec4ec403f4d6775269728aece4bb984127f.svg)](https://buildkite.com/bazel/apple-support-darwin)
+[![Build Status](https://badge.buildkite.com/6739ca70cb485ecec4ec403f4d6775269728aece4bb984127f.svg?branch=master)](https://buildkite.com/bazel/apple-support-darwin)
 
 This repository contains helper methods that support building rules that target
 Apple platforms.
