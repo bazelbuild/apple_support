@@ -18,4 +18,17 @@ tasks:
     test_targets:
     - "//..."
 
+  macos_latest_head_deps:
+    name: "Latest Bazel"
+    platform: macos
+    bazel: latest
+    shell_commands:
+    # Update the WORKSPACE to use head versions of some deps to ensure nothing
+    # has landed on them breaking this project.
+    - .bazelci/update_workspace_to_deps_heads.sh
+    build_targets:
+    - "//..."
+    test_targets:
+    - "//..."
+
 buildifier: latest
