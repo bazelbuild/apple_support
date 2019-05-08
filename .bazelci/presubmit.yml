@@ -19,7 +19,7 @@ tasks:
     - "//..."
 
   macos_latest_head_deps:
-    name: "Latest Bazel"
+    name: "Latest Bazel with Head Deps"
     platform: macos
     bazel: latest
     shell_commands:
