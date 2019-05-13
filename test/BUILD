@@ -23,3 +23,11 @@ apple_genrule(
     outs = ["simple_genrule.txt"],
     cmd = "printenv | grep \"^\\(DEVELOPER_DIR\\|SDKROOT\\)\" > $(@)",
 )
+
+# Consumed by bazel tests.
+filegroup(
+    name = "for_bazel_tests",
+    testonly = 1,
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)
