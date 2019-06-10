@@ -1,34 +1,32 @@
 ---
+x_defaults:
+  # YAML has a feature for "repeated nodes", BazelCI is fine with extra nodes
+  # it doesn't know about; so that is used to avoid repeating common subparts.
+  common: &common
+    platform: macos
+    build_targets:
+    - "//..."
+    test_targets:
+    - "//..."
+
 tasks:
   macos_latest:
     name: "Latest Bazel"
-    platform: macos
     bazel: latest
-    build_targets:
-    - "//..."
-    test_targets:
-    - "//..."
+    <<: *common
 
   macos_last_green:
     name: "Last Green Bazel"
-    platform: macos
     bazel: last_green
-    build_targets:
-    - "//..."
-    test_targets:
-    - "//..."
+    <<: *common
 
   macos_latest_head_deps:
     name: "Latest Bazel with Head Deps"
-    platform: macos
     bazel: latest
     shell_commands:
     # Update the WORKSPACE to use head versions of some deps to ensure nothing
     # has landed on them breaking this project.
     - .bazelci/update_workspace_to_deps_heads.sh
-    build_targets:
-    - "//..."
-    test_targets:
-    - "//..."
+    <<: *common
 
 buildifier: latest
