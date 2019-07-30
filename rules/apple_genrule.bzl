@@ -39,7 +39,6 @@ def _compute_make_variables(
     return variables
 
 def _apple_genrule_impl(ctx):
-    resolved_srcs = depset()
     if not ctx.outputs.outs:
         fail("apple_genrule must have one or more outputs", attr = "outs")
     files_to_build = depset(ctx.outputs.outs)
@@ -52,10 +51,8 @@ def _apple_genrule_impl(ctx):
             attr = "executable",
         )
 
-    label_dict = {}
-    for dep in ctx.attr.srcs:
-        resolved_srcs = depset(transitive = [resolved_srcs, dep.files])
-        label_dict[dep.label] = dep.files.to_list()
+    resolved_srcs = depset(transitive = [dep.files for dep in ctx.attr.srcs])
+    label_dict = {dep.label: dep.files.to_list() for dep in ctx.attr.srcs}
 
     resolved_inputs, argv, runfiles_manifests = ctx.resolve_command(
         command = ctx.attr.cmd,
