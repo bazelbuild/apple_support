@@ -7,6 +7,7 @@ bzl_library(
     name = "bzl_library",
     srcs = glob(["*.bzl"]),
     visibility = ["//:__pkg__"],
+    deps = ["@bazel_skylib//lib:types"],
 )
 
 # Consumed by bazel tests.
