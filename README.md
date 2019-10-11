@@ -12,10 +12,13 @@ Add the following to your `WORKSPACE` file to add this repository as a dependenc
 ```python
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
+# apple_support no longer supports releases. If you'd like to pin down these
+# dependencies to a specific commit, please add the following to the top of your
+# WORKSPACE, using the commit you'd like to pin the repository.
 git_repository(
     name = "build_bazel_apple_support",
     remote = "https://github.com/bazelbuild/apple_support.git",
-    tag = "0.7.0",
+    commit = "[SOME_HASH_VALUE]",
 )
 
 load(
