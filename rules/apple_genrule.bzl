@@ -66,7 +66,7 @@ def _apple_genrule_impl(ctx):
         ),
         tools = ctx.attr.tools,
         label_dict = label_dict,
-        execution_requirements = apple_support.action_required_execution_requirements(),
+        execution_requirements = apple_support.action_required_execution_requirements(ctx),
     )
 
     message = ctx.attr.message or "Executing apple_genrule"

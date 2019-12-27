@@ -193,7 +193,7 @@ def _apple_support_test_impl(ctx):
     ), is_executable = True)
 
     return [
-        testing.ExecutionInfo(apple_support.action_required_execution_requirements()),
+        testing.ExecutionInfo(apple_support.action_required_execution_requirements(ctx)),
         testing.TestEnvironment(apple_support.action_required_env(ctx)),
         DefaultInfo(
             executable = test_script,

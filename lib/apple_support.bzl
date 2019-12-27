@@ -98,7 +98,7 @@ def _kwargs_for_apple_platform(ctx, additional_env = None, **kwargs):
         execution_requirement_dicts.append(original_execution_requirements)
 
     # Add the execution requirements last to avoid clients overriding this value.
-    execution_requirement_dicts.append(_action_required_execution_requirements())
+    execution_requirement_dicts.append(_action_required_execution_requirements(ctx))
 
     processed_args["env"] = _add_dicts(*env_dicts)
     processed_args["execution_requirements"] = _add_dicts(*execution_requirement_dicts)
@@ -184,7 +184,7 @@ def _action_required_env(ctx):
         apple_common.target_apple_env(xcode_config, platform),
     )
 
-def _action_required_execution_requirements():
+def _action_required_execution_requirements(ctx):
     """Returns a dictionary with the execution requirements for running actions on Apple platforms.
 
     In most cases, you should _not_ use this API. It exists solely for using it on test rules,
@@ -194,10 +194,23 @@ def _action_required_execution_requirements():
     `testing.TestExecution` provider, which takes a dictionary with execution requirements for the
     test action.
 
+    Args:
+        ctx: The context of the rule registering the action.
+
     Returns:
         A dictionary with execution requirements for running actions on Apple platforms.
     """
-    return {"requires-darwin": "1"}
+
+    # TODO(steinman): Replace this with xcode_config.execution_info once it is exposed.
+    execution_requirements = {"requires-darwin": "1"}
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    if xcode_config:
+        if xcode_config.availability() == "remote":
+            execution_requirements["no-local"] = "1"
+        elif xcode_config.availability() == "local":
+            execution_requirements["no-remote"] = "1"
+        execution_requirements["supports-xcode-requirements-set"] = "1"
+    return execution_requirements
 
 def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwargs):
     """Registers an action to run on an Apple machine.
