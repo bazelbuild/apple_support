@@ -93,7 +93,7 @@ A dictionary with environment variables required for Xcode path resolution.
 ## apple_support.action_required_execution_requirements
 
 <pre style="white-space: normal">
-apple_support.action_required_execution_requirements()
+apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.ctx">ctx</a>)
 </pre>
 
 Returns a dictionary with the execution requirements for running actions on Apple platforms.
@@ -104,6 +104,22 @@ where the test action registration API is not available in Starlark.
 To use these environment variables for a test, your test rule needs to propagate the
 `testing.TestExecution` provider, which takes a dictionary with execution requirements for the
 test action.
+
+<a name="apple_support.action_required_execution_requirements.arguments"></a>
+### Arguments
+
+<table class="params-table">
+  <colgroup>
+    <col class="col-param" />
+    <col class="col-description" />
+  </colgroup>
+  <tbody>
+    <tr id="apple_support.action_required_execution_requirements.ctx">
+      <td><code>ctx</code></td>
+      <td><p><code>Required</code></p><p>The context of the rule registering the action.</p></td>
+    </tr>
+  </tbody>
+</table>
 
 <a name="apple_support.action_required_execution_requirements.returns"></a>
 ### Returns
