@@ -74,12 +74,15 @@ def _add_dicts(*dictionaries):
 
     return result
 
-def _kwargs_for_apple_platform(ctx, additional_env = None, **kwargs):
+def _kwargs_for_apple_platform(ctx, additional_env = None, namespace = None, **kwargs):
     """Returns a modified dictionary with required arguments to run on Apple platforms."""
     processed_args = dict(kwargs)
 
     # Make sure that _xcode_config is properly set.
-    _validate_attribute_present(ctx, "_xcode_config")
+    xcode_config_signature = "_xcode_config"
+    if namespace:
+        xcode_config_signature += namespace
+    _validate_attribute_present(ctx, xcode_config_signature)
 
     env_dicts = []
     original_env = processed_args.get("env")
@@ -90,7 +93,7 @@ def _kwargs_for_apple_platform(ctx, additional_env = None, **kwargs):
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding this value.
-    env_dicts.append(_action_required_env(ctx))
+    env_dicts.append(_action_required_env(ctx, namespace = namespace))
 
     execution_requirement_dicts = []
     original_execution_requirements = processed_args.get("execution_requirements")
@@ -98,7 +101,7 @@ def _kwargs_for_apple_platform(ctx, additional_env = None, **kwargs):
         execution_requirement_dicts.append(original_execution_requirements)
 
     # Add the execution requirements last to avoid clients overriding this value.
-    execution_requirement_dicts.append(_action_required_execution_requirements(ctx))
+    execution_requirement_dicts.append(_action_required_execution_requirements(ctx, namespace = namespace))
 
     processed_args["env"] = _add_dicts(*env_dicts)
     processed_args["execution_requirements"] = _add_dicts(*execution_requirement_dicts)
@@ -128,7 +131,7 @@ def _validate_attribute_present(ctx, attribute_name):
             "",
         ]))
 
-def _action_required_attrs():
+def _action_required_attrs(namespace = None):
     """Returns a dictionary with required attributes for registering actions on Apple platforms.
 
     This method adds private attributes which should not be used outside of the apple_support
@@ -146,21 +149,26 @@ def _action_required_attrs():
     Returns:
         A `dict` object containing attributes to be added to rule implementations.
     """
+    xcode_config_key = "_xcode_config"
+    xcode_path_wrapper_key = "_xcode_path_wrapper"
+    if namespace:
+        xcode_config_key += namespace
+        xcode_path_wrapper_key += namespace
     return {
-        "_xcode_config": attr.label(
+        xcode_config_key: attr.label(
             default = configuration_field(
                 name = "xcode_config_label",
                 fragment = "apple",
             ),
         ),
-        "_xcode_path_wrapper": attr.label(
+        xcode_path_wrapper_key: attr.label(
             cfg = "host",
             executable = True,
             default = Label("@build_bazel_apple_support//tools:xcode_path_wrapper"),
         ),
     }
 
-def _action_required_env(ctx):
+def _action_required_env(ctx, namespace = None):
     """Returns a dictionary with the environment variables required for Xcode path resolution.
 
     In most cases, you should _not_ use this API. It exists solely for using it on test rules,
@@ -172,19 +180,24 @@ def _action_required_env(ctx):
 
     Args:
         ctx: The context of the rule registering the action.
+        namespace: A suffix to add for executing the resource action.
 
     Returns:
         A dictionary with environment variables required for Xcode path resolution.
     """
     platform = ctx.fragments.apple.single_arch_platform
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_config_signature = "_xcode_config"
+    if namespace:
+        xcode_config_signature += namespace
+    xcode_config = getattr(ctx.attr, xcode_config_signature)
+    xcode_version_config = xcode_config[apple_common.XcodeVersionConfig]
 
     return _add_dicts(
-        apple_common.apple_host_system_env(xcode_config),
-        apple_common.target_apple_env(xcode_config, platform),
+        apple_common.apple_host_system_env(xcode_version_config),
+        apple_common.target_apple_env(xcode_version_config, platform),
     )
 
-def _action_required_execution_requirements(ctx):
+def _action_required_execution_requirements(ctx, namespace = None):
     """Returns a dictionary with the execution requirements for running actions on Apple platforms.
 
     In most cases, you should _not_ use this API. It exists solely for using it on test rules,
@@ -196,6 +209,7 @@ def _action_required_execution_requirements(ctx):
 
     Args:
         ctx: The context of the rule registering the action.
+        namespace: A suffix to add for executing the resource action.
 
     Returns:
         A dictionary with execution requirements for running actions on Apple platforms.
@@ -203,16 +217,20 @@ def _action_required_execution_requirements(ctx):
 
     # TODO(steinman): Replace this with xcode_config.execution_info once it is exposed.
     execution_requirements = {"requires-darwin": "1"}
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    if xcode_config:
-        if xcode_config.availability() == "remote":
+    xcode_config_signature = "_xcode_config"
+    if namespace:
+        xcode_config_signature += namespace
+    xcode_config = getattr(ctx.attr, xcode_config_signature)
+    xcode_version_config = xcode_config[apple_common.XcodeVersionConfig]
+    if xcode_version_config:
+        if xcode_version_config.availability() == "remote":
             execution_requirements["no-local"] = "1"
-        elif xcode_config.availability() == "local":
+        elif xcode_version_config.availability() == "local":
             execution_requirements["no-remote"] = "1"
         execution_requirements["supports-xcode-requirements-set"] = "1"
     return execution_requirements
 
-def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwargs):
+def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, namespace = None, **kwargs):
     """Registers an action to run on an Apple machine.
 
     In order to use `apple_support.run()`, you'll need to modify your rule definition to add the
@@ -253,17 +271,22 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
     Args:
         ctx: The context of the rule registering the action.
         xcode_path_resolve_level: The level of Xcode path replacement required for the action.
+        namespace: A suffix to add for executing the resource action.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.none:
-        ctx.actions.run(**_kwargs_for_apple_platform(ctx, **kwargs))
+        ctx.actions.run(**_kwargs_for_apple_platform(ctx, namespace = namespace, **kwargs))
         return
 
     # If using the wrapper script, also make sure that it exists.
-    _validate_attribute_present(ctx, "_xcode_path_wrapper")
+    xcode_path_wrapper_signature = "_xcode_path_wrapper"
+    if namespace:
+        xcode_path_wrapper_signature += namespace
+    _validate_attribute_present(ctx, xcode_path_wrapper_signature)
 
     processed_kwargs = _kwargs_for_apple_platform(
         ctx,
+        namespace = namespace,
         additional_env = {"XCODE_PATH_RESOLVE_LEVEL": xcode_path_resolve_level},
         **kwargs
     )
@@ -304,7 +327,7 @@ def _run(ctx, xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none, **kwarg
         **processed_kwargs
     )
 
-def _run_shell(ctx, **kwargs):
+def _run_shell(ctx, namespace = None, **kwargs):
     """Registers a shell action to run on an Apple machine.
 
     In order to use `apple_support.run_shell()`, you'll need to modify your rule definition to add
@@ -322,9 +345,13 @@ def _run_shell(ctx, **kwargs):
 
     Args:
         ctx: The context of the rule registering the action.
+        namespace: A suffix to add for executing the resource action.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
-    _validate_attribute_present(ctx, "_xcode_config")
+    xcode_config_signature = "_xcode_config"
+    if namespace:
+        xcode_config_signature += namespace
+    _validate_attribute_present(ctx, xcode_config_signature)
 
     # TODO(b/77637734) remove "workaround" once the bazel issue is resolved.
     # Bazel doesn't always get the shell right for a single string `commands`;
@@ -336,7 +363,7 @@ def _run_shell(ctx, **kwargs):
         processed_args["command"] = ["/bin/sh", "-c", command]
         kwargs = processed_args
 
-    ctx.actions.run_shell(**_kwargs_for_apple_platform(ctx, **kwargs))
+    ctx.actions.run_shell(**_kwargs_for_apple_platform(ctx, namespace = namespace, **kwargs))
 
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
