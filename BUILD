@@ -4,15 +4,16 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
-# A bzl_library incase anything needs to depend on this for other libraries
-# (like to then use stardoc).
+# An umbrella bzl_library for anything that needs it (like to then use stardoc),
+# but odds are using the specific sub libraries go wo with the public bzl files
+# are a better choice.
 bzl_library(
     name = "bzl_library",
-    srcs = glob(["*.bzl"]),
     visibility = ["//visibility:public"],
     deps = [
-        "//lib:bzl_library",
-        "//rules:bzl_library",
+        "//lib:apple_support",
+        "//lib:xcode_support",
+        "//rules:apple_genrule",
     ],
 )
 

@@ -2,11 +2,16 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 licenses(["notice"])
 
-# For the bzl_library at the root of the apple_support.
+# Public bzl_library for anything that needs to depend on apple_genrule.bzl.
 bzl_library(
-    name = "bzl_library",
-    srcs = glob(["*.bzl"]),
-    visibility = ["//:__pkg__"],
+    name = "apple_genrule",
+    srcs = ["apple_genrule.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib:apple_support",
+        "@bazel_skylib//lib:dicts",
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 # Consumed by bazel tests.
