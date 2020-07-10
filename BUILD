@@ -5,16 +5,27 @@ licenses(["notice"])
 exports_files(["LICENSE"])
 
 # An umbrella bzl_library for anything that needs it (like to then use stardoc),
-# but odds are using the specific sub libraries go wo with the public bzl files
-# are a better choice.
+# but odds are using the specific sub bzl_library to with the public bzl files
+# are a better choice to get the proper subset of dependencies.
 bzl_library(
-    name = "bzl_library",
+    name = "apple_support",
     visibility = ["//visibility:public"],
     deps = [
         "//lib:apple_support",
         "//lib:xcode_support",
         "//rules:apple_genrule",
     ],
+)
+
+alias(
+    name = "bzl_library",
+    actual = ":apple_support",
+    deprecation = (
+        "bzl_library will go away in the future, please directly depend on the" +
+        " public file's bzl_library being used: lib:apple_support," +
+        " lib:xcode_support, or rules:apple_genrule."
+    ),
+    visibility = ["//visibility:public"],
 )
 
 # Consumed by bazel tests.
