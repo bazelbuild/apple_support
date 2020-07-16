@@ -1,4 +1,5 @@
 load("//rules:apple_genrule.bzl", "apple_genrule")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 
@@ -22,4 +23,13 @@ apple_genrule(
     name = "simple_genrule",
     outs = ["simple_genrule.txt"],
     cmd = "printenv | grep \"^\\(DEVELOPER_DIR\\|SDKROOT\\)\" > $(@)",
+)
+
+bzl_library(
+    name = "starlark_tests_bzls",
+    srcs = glob(["*.bzl"]),
+    deps = [
+        "//lib:apple_support",
+        "//lib:xcode_support",
+    ],
 )
