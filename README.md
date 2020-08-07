@@ -10,15 +10,12 @@ Apple platforms.
 Add the following to your `WORKSPACE` file to add this repository as a dependency:
 
 ```python
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# apple_support no longer supports releases. If you'd like to pin down these
-# dependencies to a specific commit, please add the following to the top of your
-# WORKSPACE, using the commit you'd like to pin the repository.
-git_repository(
+http_archive(
     name = "build_bazel_apple_support",
-    remote = "https://github.com/bazelbuild/apple_support.git",
-    commit = "[SOME_HASH_VALUE]",
+    sha256 = "a5117190075ba395c7f6ee5ac42bb9f8bc44cc11f427a55b5f16ec69a01c89cb",
+    url = "https://github.com/bazelbuild/apple_support/releases/download/0.8.0/apple_support.0.8.0.tar.gz",
 )
 
 load(
