@@ -1,0 +1,29 @@
+load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
+
+stardoc(
+    name = "apple_support-docs",
+    out = "apple_support.md",
+    input = "//lib:apple_support.bzl",
+    deps = ["//lib:apple_support"],
+)
+
+stardoc(
+    name = "xcode_support-docs",
+    out = "xcode_support.md",
+    input = "//lib:xcode_support.bzl",
+    deps = ["//lib:xcode_support"],
+)
+
+stardoc(
+    name = "repositories-docs",
+    out = "repositories.md",
+    input = "//lib:repositories.bzl",
+    deps = ["//lib:repositories"],
+)
+
+stardoc(
+    name = "rules-docs",
+    out = "rules.md",
+    input = "//rules:apple_genrule.bzl",
+    deps = ["//rules:apple_genrule"],
+)
