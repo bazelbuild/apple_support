@@ -94,6 +94,7 @@ A dictionary with environment variables required for Xcode path resolution.
 
 <pre style="white-space: normal">
 apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.ctx">ctx</a>)
+apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.xcode_config">xcode_config</a>)
 </pre>
 
 Returns a dictionary with the execution requirements for running actions on Apple platforms.
@@ -116,7 +117,14 @@ test action.
   <tbody>
     <tr id="apple_support.action_required_execution_requirements.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Required</code></p><p>The context of the rule registering the action.</p></td>
+      <td><p><code>Optional</code></p><p>The context of the rule registering the action. Deprecated.</p></td>
+    </tr>
+    <tr id="apple_support.action_required_execution_requirements.xcode_config">
+      <td><code>xcode_config</code></td>
+      <td><p><code>Optional</code></p><p>The <code>apple_common.XcodeVersionConfig</code>
+            provider as found in the current rule or aspect's context. Typically from
+            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
+            <code>ctx</code> is not provided.</p></td>
     </tr>
   </tbody>
 </table>
