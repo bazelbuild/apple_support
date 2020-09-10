@@ -184,7 +184,7 @@ def _action_required_env(ctx):
         apple_common.target_apple_env(xcode_config, platform),
     )
 
-def _action_required_execution_requirements(ctx):
+def _action_required_execution_requirements(ctx = None, *, xcode_config = None):
     """Returns a dictionary with the execution requirements for running actions on Apple platforms.
 
     In most cases, you should _not_ use this API. It exists solely for using it on test rules,
@@ -195,15 +195,23 @@ def _action_required_execution_requirements(ctx):
     test action.
 
     Args:
-        ctx: The context of the rule registering the action.
+        ctx: The context of the rule registering the action. Deprecated.
+        xcode_config: The xcode_config as found in the current rule or aspect's
+            context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+            Required if ctx is not given.
 
     Returns:
         A dictionary with execution requirements for running actions on Apple platforms.
     """
 
     # TODO(steinman): Replace this with xcode_config.execution_info once it is exposed.
+    if ctx != None and xcode_config != None:
+        fail("Can't specify both ctx and xcode_config.")
+    elif ctx == None and xcode_config == None:
+        fail("Must specify either ctx or xcode_config.")
     execution_requirements = {"requires-darwin": "1"}
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    if not xcode_config:
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     if xcode_config:
         if xcode_config.availability() == "remote":
             execution_requirements["no-local"] = "1"
