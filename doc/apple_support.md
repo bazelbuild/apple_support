@@ -56,7 +56,9 @@ A `dict` object containing attributes to be added to rule implementations.
 ## apple_support.action_required_env
 
 <pre style="white-space: normal">
-apple_support.action_required_env(<a href="#apple_support.action_required_env.ctx">ctx</a>)
+apple_support.action_required_env(<a href="#apple_support.action_required_env.ctx">ctx</a>, *,
+<a href="#apple_support.action_required_env.xcode_config">xcode_config</a>,
+<a href="#apple_support.action_required_env.apple_fragment">apple_fragment</a>)
 </pre>
 
 Returns a dictionary with the environment variables required for Xcode path resolution.
@@ -79,7 +81,23 @@ during the test execution.
   <tbody>
     <tr id="apple_support.action_required_env.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Required</code></p><p>The context of the rule registering the action.</p></td>
+      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
+            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
+            provided. Deprecated.</p></td>
+    </tr>
+    <tr id="apple_support.action_required_env.xcode_config">
+      <td><code>xcode_config</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The
+            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
+            aspect's context. Typically from
+            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
+            <code>ctx</code> is not given.</p></td>
+    </tr>
+    <tr id="apple_support.action_required_env.apple_fragment">
+      <td><code>apple_fragment</code></td>
+      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
+            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
+            given.</p></td>
     </tr>
   </tbody>
 </table>
@@ -93,8 +111,7 @@ A dictionary with environment variables required for Xcode path resolution.
 ## apple_support.action_required_execution_requirements
 
 <pre style="white-space: normal">
-apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.ctx">ctx</a>)
-apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.xcode_config">xcode_config</a>)
+apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.ctx">ctx</a>, *, <a href="#apple_support.action_required_execution_requirements.xcode_config">xcode_config</a>)
 </pre>
 
 Returns a dictionary with the execution requirements for running actions on Apple platforms.
@@ -117,14 +134,16 @@ test action.
   <tbody>
     <tr id="apple_support.action_required_execution_requirements.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Optional</code></p><p>The context of the rule registering the action. Deprecated.</p></td>
+      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
+            action. Required if <code>xcode_config</code> is not provided. Deprecated.</p></td>
     </tr>
     <tr id="apple_support.action_required_execution_requirements.xcode_config">
       <td><code>xcode_config</code></td>
-      <td><p><code>Optional</code></p><p>The <code>apple_common.XcodeVersionConfig</code>
-            provider as found in the current rule or aspect's context. Typically from
+      <td><p><code>Optional; default is None</code></p><p>The
+            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
+            aspect's context. Typically from
             <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
-            <code>ctx</code> is not provided.</p></td>
+            <code>ctx</code> is not given.</p></td>
     </tr>
   </tbody>
 </table>
@@ -139,7 +158,7 @@ A dictionary with execution requirements for running actions on Apple platforms.
 ## apple_support.path_placeholders.platform_frameworks
 
 <pre style="white-space: normal">
-apple_support.path_placeholders.platform_frameworks(<a href="#apple_support.path_placeholders.platform_frameworks.ctx">ctx</a>)
+apple_support.path_placeholders.platform_frameworks(<a href="#apple_support.path_placeholders.platform_frameworks.ctx">ctx</a>, *, <a href="#apple_support.path_placeholders.platform_frameworks.apple_fragment">apple_fragment</a>)
 </pre>
 
 Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
@@ -155,7 +174,14 @@ Returns the platform's frameworks directory, anchored to the Xcode path placehol
   <tbody>
     <tr id="apple_support.path_placeholders.platform_frameworks.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Required</code></p><p>The context of the rule that will register an action.</p></td>
+      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
+            action. Required if <code>apple_fragment</code> is not provided. Deprecated.</p></td>
+    </tr>
+    <tr id="apple_support.path_placeholders.platform_frameworks.apple_fragment">
+      <td><code>apple_fragment</code></td>
+      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
+            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
+            given.</p></td>
     </tr>
   </tbody>
 </table>
@@ -209,7 +235,7 @@ Returns a placeholder value to be replaced with DEVELOPER_DIR during action exec
 ## apple_support.run
 
 <pre style="white-space: normal">
-apple_support.run(<a href="#apple_support.run.ctx">ctx</a>, <a href="#apple_support.run.xcode_path_resolve_level">xcode_path_resolve_level</a>=None, <a href="#apple_support.run.**kwargs">**kwargs</a>)
+apple_support.run(<a href="#apple_support.run.ctx">ctx</a>, <a href="#apple_support.run.xcode_path_resolve_level">xcode_path_resolve_level</a>, *, <a href="#apple_support.run.actions">actions</a>, <a href="#apple_support.run.xcode_config">xcode_config</a>, <a href="#apple_support.run.apple_fragment">apple_fragment</a>, <a href="#apple_support.run.xcode_path_wrapper">xcode_path_wrapper</a>, <a href="#apple_support.run.**kwargs">**kwargs</a>)
 </pre>
 
 Registers an action to run on an Apple machine.
@@ -260,11 +286,39 @@ If the `xcode_path_resolve_level` value is:
   <tbody>
     <tr id="apple_support.run.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Required</code></p><p>The context of the rule registering the action.</p></td>
+      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
+            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
+            provided. Deprecated.</p></td>
     </tr>
     <tr id="apple_support.run.xcode_path_resolve_level">
       <td><code>xcode_path_resolve_level</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The level of Xcode path replacement required for the action.</p></td>
+      <td><p><code>Optional; default is apple_support.xcode_path_resolve_level.none</code></p>
+      <p>The level of Xcode path replacement required for the action.</p></td>
+    </tr>
+    <tr id="apple_support.run.actions">
+      <td><code>actions</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The actions provider from
+            <code>ctx.actions</code>. Required if <code>ctx</code> is not given.</p></td>
+    </tr>
+    <tr id="apple_support.run.xcode_config">
+      <td><code>xcode_config</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The
+            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
+            aspect's context. Typically from
+            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
+            <code>ctx</code> is not given.</p></td>
+    </tr>
+    <tr id="apple_support.run.apple_fragment">
+      <td><code>apple_fragment</code></td>
+      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
+            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
+            given.</p></td>
+    </tr>
+    <tr id="apple_support.run.xcode_path_wrapper">
+      <td><code>xcode_path_wrapper</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The Xcode path wrapper script. Required
+            if <code>ctx</code> is not given and <code>xcode_path_resolve_level</code> is not
+            <code>apple_support.xcode_path_resolve_level.none</code>.</p></td>
     </tr>
     <tr id="apple_support.run.**kwargs">
       <td><code>**kwargs</code></td>
@@ -277,7 +331,7 @@ If the `xcode_path_resolve_level` value is:
 ## apple_support.run_shell
 
 <pre style="white-space: normal">
-apple_support.run_shell(<a href="#apple_support.run_shell.ctx">ctx</a>, <a href="#apple_support.run_shell.**kwargs">**kwargs</a>)
+apple_support.run_shell(<a href="#apple_support.run_shell.ctx">ctx</a>, *, <a href="#apple_support.run_shell.actions">actions</a>, <a href="#apple_support.run_shell.xcode_config">xcode_config</a>, <a href="#apple_support.run_shell.apple_fragment">apple_fragment</a>, <a href="#apple_support.run_shell.**kwargs">**kwargs</a>)
 </pre>
 
 Registers a shell action to run on an Apple machine.
@@ -306,7 +360,28 @@ please use `run` instead.
   <tbody>
     <tr id="apple_support.run_shell.ctx">
       <td><code>ctx</code></td>
-      <td><p><code>Required</code></p><p>The context of the rule registering the action.</p></td>
+      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
+            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
+            provided. Deprecated.</p></td>
+    </tr>
+    <tr id="apple_support.run_shell.actions">
+      <td><code>actions</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The actions provider from
+            <code>ctx.actions</code>. Required if <code>ctx</code> is not given.</p></td>
+    </tr>
+    <tr id="apple_support.run_shell.xcode_config">
+      <td><code>xcode_config</code></td>
+      <td><p><code>Optional; default is None</code></p><p>The
+            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
+            aspect's context. Typically from
+            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
+            <code>ctx</code> is not given.</p></td>
+    </tr>
+    <tr id="apple_support.run_shell.apple_fragment">
+      <td><code>apple_fragment</code></td>
+      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
+            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
+            given.</p></td>
     </tr>
     <tr id="apple_support.run_shell.**kwargs">
       <td><code>**kwargs</code></td>
