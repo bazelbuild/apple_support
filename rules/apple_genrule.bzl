@@ -80,7 +80,7 @@ def _apple_genrule_impl(ctx):
         inputs = resolved_srcs.to_list() + resolved_inputs,
         outputs = files_to_build.to_list(),
         env = ctx.configuration.default_shell_env,
-        command = argv,
+        command = " ".join(argv),
         progress_message = "%s %s" % (message, ctx.label),
         mnemonic = "Genrule",
         input_manifests = runfiles_manifests,
