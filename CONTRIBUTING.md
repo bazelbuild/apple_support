@@ -36,7 +36,7 @@ again.
 
 To enforce a consistent code style through our code base, we use `buildifier`
 from the [bazelbuild/buildtools](https://github.com/bazelbuild/buildtools) to
-format `BUILD` and `*.bzl` files. We also use `buildifier --lint=warn` to check
+format `BUILD.bazel` and `*.bzl` files. We also use `buildifier --lint=warn` to check
 for common issues.
 
 You can download `buildifier` from
