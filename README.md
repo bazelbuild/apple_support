@@ -14,8 +14,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "build_bazel_apple_support",
-    sha256 = "a5117190075ba395c7f6ee5ac42bb9f8bc44cc11f427a55b5f16ec69a01c89cb",
-    url = "https://github.com/bazelbuild/apple_support/releases/download/0.8.0/apple_support.0.8.0.tar.gz",
+    sha256 = "02ac04ff0a0de1e891a1fa8839cc6a5957e3c4a80856545aa35a786d15aad108",
+    url = "https://github.com/bazelbuild/apple_support/releases/download/0.9.1/apple_support.0.9.1.tar.gz",
 )
 
 load(
