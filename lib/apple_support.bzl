@@ -446,16 +446,6 @@ def _run_shell(
         actions = actions,
     )
 
-    # TODO(b/77637734) remove "workaround" once the bazel issue is resolved.
-    # Bazel doesn't always get the shell right for a single string `commands`;
-    # so work around that case by faking it as a list of strings that forces
-    # the shell correctly.
-    command = kwargs.get("command")
-    if command and types.is_string(command):
-        processed_args = dict(kwargs)
-        processed_args["command"] = ["/bin/sh", "-c", command]
-        kwargs = processed_args
-
     if not actions:
         actions = ctx.actions
 
