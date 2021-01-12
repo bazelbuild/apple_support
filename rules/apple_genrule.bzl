@@ -103,8 +103,9 @@ _apple_genrule_inner = rule(
         "executable": attr.bool(default = False),
         "message": attr.string(),
         "no_sandbox": attr.bool(),
-        "tools": attr.label_list(cfg = "host", allow_files = True),
+        "tools": attr.label_list(cfg = "exec", allow_files = True),
     }),
+    exec_compatible_with = ["@platforms//os:macos"],
     output_to_genfiles = True,
     fragments = ["apple"],
 )
