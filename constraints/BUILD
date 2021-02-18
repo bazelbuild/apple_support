@@ -24,3 +24,8 @@ constraint_value(
     name = "simulator",
     constraint_setting = ":target_environment",
 )
+
+constraint_value(
+    name = "catalyst",
+    constraint_setting = ":target_environment",
+)
