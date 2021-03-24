@@ -129,6 +129,10 @@ def _apple_support_test_impl(ctx):
         arguments = [run_output.path],
     )
 
+    platform_frameworks = apple_support.path_placeholders.platform_frameworks(
+        apple_fragment = ctx.fragments.apple,
+    )
+
     apple_support.run(
         ctx,
         outputs = [run_output_xcode_path_in_args],
@@ -136,9 +140,7 @@ def _apple_support_test_impl(ctx):
         arguments = [
             run_output_xcode_path_in_args.path,
             "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
-            "FRAMEWORKS_PATH_ARG={}".format(
-                apple_support.path_placeholders.platform_frameworks(ctx),
-            ),
+            "FRAMEWORKS_PATH_ARG={}".format(platform_frameworks),
             "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
@@ -149,7 +151,7 @@ def _apple_support_test_impl(ctx):
         "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
     )
     action_args.add(
-        "FRAMEWORKS_PATH_ARG={}".format(apple_support.path_placeholders.platform_frameworks(ctx)),
+        "FRAMEWORKS_PATH_ARG={}".format(platform_frameworks),
     )
     action_args.add(
         "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
