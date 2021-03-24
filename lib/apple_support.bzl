@@ -41,24 +41,16 @@ def _validate_actions_arg_requirements(*, ctx, actions):
     elif ctx == None and actions == None:
         fail("Must specify actions with xcode_config and apple_fragment.")
 
-def _platform_frameworks_path_placeholder(ctx = None, *, apple_fragment = None):
+def _platform_frameworks_path_placeholder(*, apple_fragment):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
     Args:
-        ctx: The context of the rule that will register an action. Deprecated.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Required if ctx is not given.
 
     Returns:
         Returns a string with the platform's frameworks directory, anchored to the Xcode path
         placeholder.
     """
-    if ctx != None and apple_fragment != None:
-        fail("Can't specify ctx with apple_fragment.")
-    elif ctx == None and apple_fragment == None:
-        fail("Must specify either ctx or apple_fragment.")
-    elif ctx != None:
-        apple_fragment = ctx.fragments.apple
     return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
         platform_name = apple_fragment.single_arch_platform.name_in_plist,
         xcode_path = _xcode_path_placeholder(),
