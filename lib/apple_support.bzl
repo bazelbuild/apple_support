@@ -130,12 +130,12 @@ def _kwargs_for_apple_platform(
             xcode_config = xcode_config,
             apple_fragment = apple_fragment,
         ))
-        action_execution_requirements = apple_support.action_required_execution_requirements(
+        action_execution_requirements = _action_required_execution_requirements(
             xcode_config = xcode_config,
         )
     else:
         env_dicts.append(_action_required_env(ctx))
-        action_execution_requirements = apple_support.action_required_execution_requirements(ctx)
+        action_execution_requirements = _action_required_execution_requirements(ctx)
 
     execution_requirement_dicts = []
     original_execution_requirements = processed_args.get("execution_requirements")
@@ -266,22 +266,15 @@ def _action_required_execution_requirements(ctx = None, *, xcode_config = None):
     Returns:
         A dictionary with execution requirements for running actions on Apple platforms.
     """
-
-    # TODO(steinman): Replace this with xcode_config.execution_info once it is exposed.
     if ctx != None and xcode_config != None:
         fail("Can't specify both ctx and xcode_config.")
     elif ctx == None and xcode_config == None:
         fail("Must specify either ctx or xcode_config.")
-    execution_requirements = {"requires-darwin": "1"}
+
     if not xcode_config:
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    if xcode_config:
-        if xcode_config.availability() == "remote":
-            execution_requirements["no-local"] = "1"
-        elif xcode_config.availability() == "local":
-            execution_requirements["no-remote"] = "1"
-        execution_requirements["supports-xcode-requirements-set"] = "1"
-    return execution_requirements
+
+    return xcode_config.execution_info()
 
 def _run(
         ctx = None,
