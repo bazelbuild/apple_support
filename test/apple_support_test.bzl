@@ -192,9 +192,16 @@ def _apple_support_test_impl(ctx):
         xcode_path_placeholder = apple_support.path_placeholders.xcode(),
     ), is_executable = True)
 
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    apple_platform = ctx.fragments.apple.single_arch_platform
+
+    test_env = {}
+    test_env.update(apple_common.apple_host_system_env(xcode_config))
+    test_env.update(apple_common.target_apple_env(xcode_config, apple_platform))
+
     return [
-        testing.ExecutionInfo(apple_support.action_required_execution_requirements(ctx)),
-        testing.TestEnvironment(apple_support.action_required_env(ctx)),
+        testing.ExecutionInfo(xcode_config.execution_info()),
+        testing.TestEnvironment(test_env),
         DefaultInfo(
             executable = test_script,
             files = depset([run_output_xcode_path_in_args]),
