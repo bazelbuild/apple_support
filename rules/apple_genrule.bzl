@@ -54,6 +54,8 @@ def _apple_genrule_impl(ctx):
     resolved_srcs = depset(transitive = [dep.files for dep in ctx.attr.srcs])
     label_dict = {dep.label: dep.files.to_list() for dep in ctx.attr.srcs}
 
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+
     resolved_inputs, argv, runfiles_manifests = ctx.resolve_command(
         command = ctx.attr.cmd,
         attribute = "cmd",
@@ -66,7 +68,7 @@ def _apple_genrule_impl(ctx):
         ),
         tools = ctx.attr.tools,
         label_dict = label_dict,
-        execution_requirements = apple_support.action_required_execution_requirements(ctx),
+        execution_requirements = xcode_config.execution_info(),
     )
 
     message = ctx.attr.message or "Executing apple_genrule"
