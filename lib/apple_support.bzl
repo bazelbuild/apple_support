@@ -23,23 +23,15 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
-def _validate_ctx_xor_platform_requirements(*, ctx, xcode_config, apple_fragment):
+def _validate_ctx_xor_platform_requirements(*, ctx, actions, apple_fragment, xcode_config):
     """Raises an error if there is overlap in platform requirements or if they are insufficent."""
 
-    if ctx != None and (xcode_config != None or apple_fragment != None):
-        fail("Can't specify ctx with xcode_config or apple_fragment.")
-    elif ctx == None and (xcode_config == None or apple_fragment == None):
-        fail("Must specify either ctx or xcode_config with apple_fragment.")
-    elif ctx != None:
+    if ctx != None and any([actions, xcode_config, apple_fragment]):
+        fail("Can't specific ctx along with actions, xcode_config, apple_fragment.")
+    if ctx == None and not all([actions, xcode_config, apple_fragment]):
+        fail("Must specify all of actions, xcode_config, and apple_fragment.")
+    if ctx != None:
         _validate_ctx_attribute_present(ctx, "_xcode_config")
-
-def _validate_actions_arg_requirements(*, ctx, actions):
-    """Raises an error if both ctx and actions are provided, or none are."""
-
-    if ctx != None and actions != None:
-        fail("Can't specify actions if ctx was provided.")
-    elif ctx == None and actions == None:
-        fail("Must specify actions with xcode_config and apple_fragment.")
 
 def _platform_frameworks_path_placeholder(*, apple_fragment):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
@@ -93,19 +85,12 @@ def _add_dicts(*dictionaries):
     return result
 
 def _kwargs_for_apple_platform(
-        ctx = None,
-        additional_env = None,
         *,
-        xcode_config = None,
-        apple_fragment = None,
+        additional_env = None,
+        apple_fragment,
+        xcode_config,
         **kwargs):
     """Returns a modified dictionary with required arguments to run on Apple platforms."""
-    _validate_ctx_xor_platform_requirements(
-        ctx = ctx,
-        xcode_config = xcode_config,
-        apple_fragment = apple_fragment,
-    )
-
     processed_args = dict(kwargs)
 
     env_dicts = []
@@ -117,17 +102,10 @@ def _kwargs_for_apple_platform(
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding this value.
-    if xcode_config != None and apple_fragment != None:
-        env_dicts.append(_action_required_env(
-            xcode_config = xcode_config,
-            apple_fragment = apple_fragment,
-        ))
-        action_execution_requirements = _action_required_execution_requirements(
-            xcode_config = xcode_config,
-        )
-    else:
-        env_dicts.append(_action_required_env(ctx))
-        action_execution_requirements = _action_required_execution_requirements(ctx)
+    env_dicts.append(apple_common.apple_host_system_env(xcode_config))
+    env_dicts.append(
+        apple_common.target_apple_env(xcode_config, apple_fragment.single_arch_platform),
+    )
 
     execution_requirement_dicts = []
     original_execution_requirements = processed_args.get("execution_requirements")
@@ -135,7 +113,7 @@ def _kwargs_for_apple_platform(
         execution_requirement_dicts.append(original_execution_requirements)
 
     # Add the execution requirements last to avoid clients overriding this value.
-    execution_requirement_dicts.append(action_execution_requirements)
+    execution_requirement_dicts.append(xcode_config.execution_info())
 
     processed_args["env"] = _add_dicts(*env_dicts)
     processed_args["execution_requirements"] = _add_dicts(*execution_requirement_dicts)
@@ -197,77 +175,6 @@ def _action_required_attrs():
         ),
     }
 
-def _action_required_env(
-        ctx = None,
-        *,
-        xcode_config = None,
-        apple_fragment = None):
-    """Returns a dictionary with the environment variables required for Xcode path resolution.
-
-    In most cases, you should _not_ use this API. It exists solely for using it on test rules,
-    where the test action registration API is not available in Starlark.
-
-    To use these environment variables for a test, your test rule needs to propagate the
-    `testing.TestEnvironment` provider, which takes a dictionary with environment variables to set
-    during the test execution.
-
-    Args:
-        ctx: The context of the rule registering the action.
-        xcode_config: The xcode_config as found in the current rule or aspect's
-            context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-            Required if ctx is not given.
-        apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Required if ctx is not given.
-
-    Returns:
-        A dictionary with environment variables required for Xcode path resolution.
-    """
-    _validate_ctx_xor_platform_requirements(
-        ctx = ctx,
-        xcode_config = xcode_config,
-        apple_fragment = apple_fragment,
-    )
-
-    if apple_fragment != None:
-        platform = apple_fragment.single_arch_platform
-    else:
-        platform = ctx.fragments.apple.single_arch_platform
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-
-    return _add_dicts(
-        apple_common.apple_host_system_env(xcode_config),
-        apple_common.target_apple_env(xcode_config, platform),
-    )
-
-def _action_required_execution_requirements(ctx = None, *, xcode_config = None):
-    """Returns a dictionary with the execution requirements for running actions on Apple platforms.
-
-    In most cases, you should _not_ use this API. It exists solely for using it on test rules,
-    where the test action registration API is not available in Starlark.
-
-    To use these environment variables for a test, your test rule needs to propagate the
-    `testing.TestExecution` provider, which takes a dictionary with execution requirements for the
-    test action.
-
-    Args:
-        ctx: The context of the rule registering the action. Deprecated.
-        xcode_config: The xcode_config as found in the current rule or aspect's
-            context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-            Required if ctx is not given.
-
-    Returns:
-        A dictionary with execution requirements for running actions on Apple platforms.
-    """
-    if ctx != None and xcode_config != None:
-        fail("Can't specify both ctx and xcode_config.")
-    elif ctx == None and xcode_config == None:
-        fail("Must specify either ctx or xcode_config.")
-
-    if not xcode_config:
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-
-    return xcode_config.execution_info()
-
 def _run(
         ctx = None,
         xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
@@ -327,17 +234,22 @@ def _run(
             xcode_path_resolve_level is not `apple_support.xcode_path_resolve_level.none`.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
-    _validate_actions_arg_requirements(
+    _validate_ctx_xor_platform_requirements(
         ctx = ctx,
         actions = actions,
+        apple_fragment = apple_fragment,
+        xcode_config = xcode_config,
     )
 
     if not actions:
         actions = ctx.actions
+    if not xcode_config:
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    if not apple_fragment:
+        apple_fragment = ctx.fragments.apple
 
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.none:
         actions.run(**_kwargs_for_apple_platform(
-            ctx = ctx,
             xcode_config = xcode_config,
             apple_fragment = apple_fragment,
             **kwargs
@@ -353,7 +265,8 @@ def _run(
         xcode_path_wrapper = ctx.executable._xcode_path_wrapper
 
     processed_kwargs = _kwargs_for_apple_platform(
-        ctx,
+        xcode_config = xcode_config,
+        apple_fragment = apple_fragment,
         additional_env = {"XCODE_PATH_RESOLVE_LEVEL": xcode_path_resolve_level},
         **kwargs
     )
@@ -426,16 +339,21 @@ def _run_shell(
             Required if ctx is not given.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
-    _validate_actions_arg_requirements(
+    _validate_ctx_xor_platform_requirements(
         ctx = ctx,
         actions = actions,
+        apple_fragment = apple_fragment,
+        xcode_config = xcode_config,
     )
 
     if not actions:
         actions = ctx.actions
+    if not xcode_config:
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    if not apple_fragment:
+        apple_fragment = ctx.fragments.apple
 
     actions.run_shell(**_kwargs_for_apple_platform(
-        ctx = ctx,
         xcode_config = xcode_config,
         apple_fragment = apple_fragment,
         **kwargs
@@ -443,8 +361,6 @@ def _run_shell(
 
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
-    action_required_env = _action_required_env,
-    action_required_execution_requirements = _action_required_execution_requirements,
     path_placeholders = struct(
         platform_frameworks = _platform_frameworks_path_placeholder,
         sdkroot = _sdkroot_path_placeholder,
