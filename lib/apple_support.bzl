@@ -74,16 +74,6 @@ def _xcode_path_placeholder():
     """
     return "__BAZEL_XCODE_DEVELOPER_DIR__"
 
-def _add_dicts(*dictionaries):
-    """Adds a list of dictionaries into a single dictionary."""
-
-    # If keys are repeated in multiple dictionaries, the latter one "wins".
-    result = {}
-    for d in dictionaries:
-        result.update(d)
-
-    return result
-
 def _kwargs_for_apple_platform(
         *,
         additional_env = None,
@@ -93,31 +83,30 @@ def _kwargs_for_apple_platform(
     """Returns a modified dictionary with required arguments to run on Apple platforms."""
     processed_args = dict(kwargs)
 
-    env_dicts = []
+    merged_env = {}
     original_env = processed_args.get("env")
     if original_env:
-        env_dicts.append(original_env)
+        merged_env.update(original_env)
     if additional_env:
-        env_dicts.append(additional_env)
+        merged_env.update(additional_env)
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
-    # overriding this value.
-    env_dicts.append(apple_common.apple_host_system_env(xcode_config))
-    env_dicts.append(
+    # overriding these values.
+    merged_env.update(apple_common.apple_host_system_env(xcode_config))
+    merged_env.update(
         apple_common.target_apple_env(xcode_config, apple_fragment.single_arch_platform),
     )
 
-    execution_requirement_dicts = []
+    merged_execution_requirements = {}
     original_execution_requirements = processed_args.get("execution_requirements")
     if original_execution_requirements:
-        execution_requirement_dicts.append(original_execution_requirements)
+        merged_execution_requirements.update(original_execution_requirements)
 
-    # Add the execution requirements last to avoid clients overriding this value.
-    execution_requirement_dicts.append(xcode_config.execution_info())
+    # Add the Xcode execution requirements last to avoid clients overriding these values.
+    merged_execution_requirements.update(xcode_config.execution_info())
 
-    processed_args["env"] = _add_dicts(*env_dicts)
-    processed_args["execution_requirements"] = _add_dicts(*execution_requirement_dicts)
-
+    processed_args["env"] = merged_env
+    processed_args["execution_requirements"] = merged_execution_requirements
     return processed_args
 
 def _validate_ctx_attribute_present(ctx, attribute_name):
