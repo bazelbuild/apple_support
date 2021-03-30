@@ -116,6 +116,18 @@ def _apple_support_test_impl(ctx):
     run_shell_output = ctx.actions.declare_file(
         "{}_run_shell_output".format(ctx.label.name),
     )
+    run_output_ctx = ctx.actions.declare_file(
+        "{}_run_output_ctx".format(ctx.label.name),
+    )
+    run_output_xcode_path_in_args_ctx = ctx.actions.declare_file(
+        "{}_run_output_xcode_path_in_args_ctx".format(ctx.label.name),
+    )
+    run_output_xcode_path_in_file_ctx = ctx.actions.declare_file(
+        "{}_run_output_xcode_path_in_file_ctx".format(ctx.label.name),
+    )
+    run_shell_output_ctx = ctx.actions.declare_file(
+        "{}_run_shell_output_ctx".format(ctx.label.name),
+    )
 
     test_tool = ctx.actions.declare_file("{}_test_tool".format(ctx.label.name))
     ctx.actions.write(test_tool, _TEST_TOOL_CONTENTS, is_executable = True)
@@ -123,10 +135,18 @@ def _apple_support_test_impl(ctx):
     # Create one action per possible combination of inputs to the apple_support.run and
     # apple_support.run_shell helper methods.
     apple_support.run(
-        ctx,
+        actions = ctx.actions,
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        apple_fragment = ctx.fragments.apple,
         outputs = [run_output],
         executable = test_tool,
         arguments = [run_output.path],
+    )
+    apple_support.run(
+        ctx,
+        outputs = [run_output_ctx],
+        executable = test_tool,
+        arguments = [run_output_ctx.path],
     )
 
     platform_frameworks = apple_support.path_placeholders.platform_frameworks(
@@ -134,11 +154,26 @@ def _apple_support_test_impl(ctx):
     )
 
     apple_support.run(
-        ctx,
+        actions = ctx.actions,
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        apple_fragment = ctx.fragments.apple,
+        xcode_path_wrapper = ctx.executable._xcode_path_wrapper,
         outputs = [run_output_xcode_path_in_args],
         executable = test_tool,
         arguments = [
             run_output_xcode_path_in_args.path,
+            "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
+            "FRAMEWORKS_PATH_ARG={}".format(platform_frameworks),
+            "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
+        ],
+        xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
+    )
+    apple_support.run(
+        ctx,
+        outputs = [run_output_xcode_path_in_args_ctx],
+        executable = test_tool,
+        arguments = [
+            run_output_xcode_path_in_args_ctx.path,
             "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
             "FRAMEWORKS_PATH_ARG={}".format(platform_frameworks),
             "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
@@ -160,7 +195,10 @@ def _apple_support_test_impl(ctx):
     action_args.use_param_file("@%s", use_always = True)
 
     apple_support.run(
-        ctx,
+        actions = ctx.actions,
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        apple_fragment = ctx.fragments.apple,
+        xcode_path_wrapper = ctx.executable._xcode_path_wrapper,
         outputs = [run_output_xcode_path_in_file],
         executable = test_tool,
         arguments = [
@@ -169,9 +207,21 @@ def _apple_support_test_impl(ctx):
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args_and_files,
     )
+    apple_support.run(
+        ctx,
+        outputs = [run_output_xcode_path_in_file_ctx],
+        executable = test_tool,
+        arguments = [
+            run_output_xcode_path_in_file_ctx.path,
+            action_args,
+        ],
+        xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args_and_files,
+    )
 
     apple_support.run_shell(
-        ctx,
+        actions = ctx.actions,
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        apple_fragment = ctx.fragments.apple,
         outputs = [run_shell_output],
         tools = [test_tool],
         command = "{tool} {output}".format(
@@ -179,12 +229,25 @@ def _apple_support_test_impl(ctx):
             tool = test_tool.path,
         ),
     )
+    apple_support.run_shell(
+        ctx,
+        outputs = [run_shell_output_ctx],
+        tools = [test_tool],
+        command = ["/bin/bash", "-c", "{tool} {output}".format(
+            output = run_shell_output_ctx.path,
+            tool = test_tool.path,
+        )],
+    )
 
     test_files = [
         run_output,
+        run_output_ctx,
         run_output_xcode_path_in_args,
+        run_output_xcode_path_in_args_ctx,
         run_output_xcode_path_in_file,
+        run_output_xcode_path_in_file_ctx,
         run_shell_output,
+        run_shell_output_ctx,
     ]
 
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
