@@ -78,7 +78,9 @@ def _apple_genrule_impl(ctx):
         extra_args["execution_requirements"] = {"no-sandbox": "1"}
 
     apple_support.run_shell(
-        ctx,
+        actions = ctx.actions,
+        xcode_config = xcode_config,
+        apple_fragment = ctx.fragments.apple,
         inputs = resolved_srcs.to_list() + resolved_inputs,
         outputs = files_to_build.to_list(),
         env = ctx.configuration.default_shell_env,
