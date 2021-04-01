@@ -10,7 +10,6 @@ bzl_library(
     deps = [
         "//lib:apple_support",
         "@bazel_skylib//lib:dicts",
-        "@bazel_skylib//lib:paths",
     ],
 )
 

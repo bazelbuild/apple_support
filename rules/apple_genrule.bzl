@@ -15,7 +15,6 @@
 """Genrule which provides Apple's Xcode environment."""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//lib:apple_support.bzl", "apple_support")
 
 def _compute_make_variables(
@@ -24,16 +23,15 @@ def _compute_make_variables(
         resolved_srcs,
         files_to_build):
     resolved_srcs_list = resolved_srcs.to_list()
-    files_to_build_list = files_to_build.to_list()
     variables = {
-        "OUTS": " ".join([x.path for x in files_to_build_list]),
+        "OUTS": " ".join([x.path for x in files_to_build]),
         "SRCS": " ".join([x.path for x in resolved_srcs_list]),
     }
     if len(resolved_srcs_list) == 1:
         variables["<"] = resolved_srcs_list[0].path
-    if len(files_to_build_list) == 1:
-        variables["@"] = files_to_build_list[0].path
-        variables["@D"] = paths.dirname(variables["@"])
+    if len(files_to_build) == 1:
+        variables["@"] = files_to_build[0].path
+        variables["@D"] = files_to_build[0].dirname
     else:
         variables["@D"] = genfiles_dir.path + "/" + label.package
     return variables
@@ -41,9 +39,9 @@ def _compute_make_variables(
 def _apple_genrule_impl(ctx):
     if not ctx.outputs.outs:
         fail("apple_genrule must have one or more outputs", attr = "outs")
-    files_to_build = depset(ctx.outputs.outs)
+    files_to_build = ctx.outputs.outs
 
-    if ctx.attr.executable and len(files_to_build.to_list()) > 1:
+    if ctx.attr.executable and len(files_to_build) > 1:
         fail(
             "if genrules produce executables, they are allowed only one output. " +
             "If you need the executable=1 argument, then you should split this " +
@@ -63,7 +61,7 @@ def _apple_genrule_impl(ctx):
         make_variables = _compute_make_variables(
             ctx.genfiles_dir,
             ctx.label,
-            depset(resolved_srcs.to_list()),
+            resolved_srcs,
             files_to_build,
         ),
         tools = ctx.attr.tools,
@@ -81,8 +79,8 @@ def _apple_genrule_impl(ctx):
         actions = ctx.actions,
         xcode_config = xcode_config,
         apple_fragment = ctx.fragments.apple,
-        inputs = resolved_srcs.to_list() + resolved_inputs,
-        outputs = files_to_build.to_list(),
+        inputs = depset(resolved_inputs, transitive = [resolved_srcs]),
+        outputs = files_to_build,
         env = ctx.configuration.default_shell_env,
         command = " ".join(argv),
         progress_message = "%s %s" % (message, ctx.label),
@@ -93,8 +91,8 @@ def _apple_genrule_impl(ctx):
 
     return [
         DefaultInfo(
-            files = files_to_build,
-            data_runfiles = ctx.runfiles(transitive_files = files_to_build),
+            files = depset(files_to_build),
+            data_runfiles = ctx.runfiles(files = files_to_build),
         ),
     ]
 
