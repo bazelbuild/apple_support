@@ -233,10 +233,10 @@ def _apple_support_test_impl(ctx):
         ctx,
         outputs = [run_shell_output_ctx],
         tools = [test_tool],
-        command = ["/bin/bash", "-c", "{tool} {output}".format(
+        command = "{tool} {output}".format(
             output = run_shell_output_ctx.path,
             tool = test_tool.path,
-        )],
+        ),
     )
 
     test_files = [
