@@ -12,6 +12,7 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//lib:apple_support",
+        "//lib:lipo",
         "//lib:xcode_support",
         "//rules:apple_genrule",
     ],
