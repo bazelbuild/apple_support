@@ -158,7 +158,7 @@ def _action_required_attrs():
             ),
         ),
         "_xcode_path_wrapper": attr.label(
-            cfg = "host",
+            cfg = "exec",
             executable = True,
             default = Label("@build_bazel_apple_support//tools:xcode_path_wrapper"),
         ),
