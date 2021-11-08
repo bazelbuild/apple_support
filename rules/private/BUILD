@@ -6,9 +6,10 @@ licenses(["notice"])
 bzl_library(
     name = "apple_genrule",
     srcs = ["apple_genrule.bzl"],
-    visibility = ["//visibility:public"],
+    visibility = ["//rules:__pkg__"],
     deps = [
-        "//rules/private:apple_genrule",
+        "//lib:apple_support",
+        "@bazel_skylib//lib:dicts",
     ],
 )
 
@@ -16,8 +17,6 @@ bzl_library(
 filegroup(
     name = "for_bazel_tests",
     testonly = 1,
-    srcs = glob(["**"]) + [
-        "//rules/private:for_bazel_tests",
-    ],
-    visibility = ["//:__pkg__"],
+    srcs = glob(["**"]),
+    visibility = ["//rules:__pkg__"],
 )
