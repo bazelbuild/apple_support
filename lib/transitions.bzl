@@ -17,14 +17,14 @@
 def _macos_universal_transition_impl(settings, attr):
     _ignore = [attr]
 
-    if not settings["//command_line_option:cpu"].startswith("darwin"):
-        fail("`macos_universal_transition` can't be used with a non-macOS cpu")
-
     # Create a split transition from any macOS cpu to a list of all macOS cpus
-    return [
-        {"//command_line_option:cpu": "darwin_x86_64"},
-        {"//command_line_option:cpu": "darwin_arm64"},
-    ]
+    if settings["//command_line_option:cpu"].startswith("darwin"):
+        return [
+            {"//command_line_option:cpu": "darwin_x86_64"},
+            {"//command_line_option:cpu": "darwin_arm64"},
+        ]
+    else:
+        return settings
 
 macos_universal_transition = transition(
     implementation = _macos_universal_transition_impl,

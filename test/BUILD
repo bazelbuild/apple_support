@@ -1,6 +1,7 @@
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":apple_support_test.bzl", "apple_support_test")
+load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 
 licenses(["notice"])
@@ -32,4 +33,24 @@ bzl_library(
         "//lib:apple_support",
         "//lib:xcode_support",
     ],
+)
+
+universal_binary_test(
+    name = "universal_binary_test_x86_64",
+    binary_contains_symbols = [
+        "__Z19function_for_x86_64v",
+        "__Z19function_for_arch64v",
+    ],
+    cpu = "darwin_x86_64",
+    target_under_test = "//test/test_data:multi_arch_cc_binary",
+)
+
+universal_binary_test(
+    name = "universal_binary_test_arm64",
+    binary_contains_symbols = [
+        "__Z19function_for_x86_64v",
+        "__Z19function_for_arch64v",
+    ],
+    cpu = "darwin_arm64",
+    target_under_test = "//test/test_data:multi_arch_cc_binary",
 )

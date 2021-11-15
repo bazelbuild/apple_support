@@ -19,7 +19,7 @@ load(":lipo.bzl", "lipo")
 load(":transitions.bzl", "macos_universal_transition")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 
-def _macos_universal_binary_impl(ctx):
+def _universal_binary_impl(ctx):
     inputs = [
         binary.files.to_list()[0]
         for binary in ctx.split_attr.binary.values()
@@ -29,24 +29,30 @@ def _macos_universal_binary_impl(ctx):
         fail("Target (%s) `binary` label ('%s') does not provide any " +
              "file for universal binary" % (ctx.attr.name, ctx.attr.binary))
 
-    fat_binary = ctx.actions.declare_file(ctx.label.name)
+    output = ctx.actions.declare_file(ctx.label.name)
 
-    lipo.create(
-        actions = ctx.actions,
-        apple_fragment = ctx.fragments.apple,
-        inputs = inputs,
-        output = fat_binary,
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
-    )
+    if len(inputs) > 1:
+        lipo.create(
+            actions = ctx.actions,
+            apple_fragment = ctx.fragments.apple,
+            inputs = inputs,
+            output = output,
+            xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        )
+
+    else:
+        # If the transition doesn't split, this is building for a non-macOS
+        # target, so just create a symbolic link of the input binary.
+        ctx.actions.symlink(target_file = inputs[0], output = output)
 
     return [
         DefaultInfo(
-            executable = fat_binary,
-            files = depset([fat_binary]),
+            executable = output,
+            files = depset([output]),
         ),
     ]
 
-macos_universal_binary = rule(
+universal_binary = rule(
     attrs = dicts.add(
         apple_support.action_required_attrs(),
         {
@@ -62,9 +68,11 @@ macos_universal_binary = rule(
     ),
     doc = """
 This rule produces a multi-architecture ("fat") binary targeting Apple macOS
-platforms *regardless* the architecture of the host platform. The `lipo` tool
-is used to combine built binaries of multiple architectures.
+platforms *regardless* of the architecture of the macOS host platform. The
+`lipo` tool is used to combine built binaries of multiple architectures. For
+non-macOS platforms, this simply just creates a symbolic link of the input
+binary.
 """,
     fragments = ["apple"],
-    implementation = _macos_universal_binary_impl,
+    implementation = _universal_binary_impl,
 )
