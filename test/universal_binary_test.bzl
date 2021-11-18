@@ -32,7 +32,7 @@ if [[ ! -f "{file}" ]]; then
   exit 1
 fi
 
-actual_symbols=$(objdump -t -macho -arch=x86_64 -arch arm64 {file} | grep -v "*UND*" | awk '{{print substr($0,index($0,$5))}}')
+actual_symbols=$(nm -Uj -arch x86_64 -arch arm64 {file})
 for symbol in "${{SYMBOLS[@]}}"; do
   echo "$actual_symbols" | grep -Fxq "$symbol" || \
     (echo "In file: {file}"; \
