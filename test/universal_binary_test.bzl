@@ -19,7 +19,7 @@
 _TEST_SCRIPT_CONTENTS = """\
 #!/bin/bash
 
-set -eu
+set -euo pipefail
 
 newline=$'\n'
 
