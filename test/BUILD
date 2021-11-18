@@ -1,5 +1,6 @@
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 
@@ -19,10 +20,21 @@ sh_test(
     data = ["simple_genrule.txt"],
 )
 
+build_test(
+    name = "touched_test",
+    targets = [":touched"],
+)
+
 apple_genrule(
     name = "simple_genrule",
     outs = ["simple_genrule.txt"],
     cmd = "printenv | grep \"^\\(DEVELOPER_DIR\\|SDKROOT\\)\" > $(@)",
+)
+
+apple_genrule(
+    name = "touched",
+    outs = ["genrule_touched.txt"],
+    cmd = "touch $(OUTS)",
 )
 
 bzl_library(
