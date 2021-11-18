@@ -75,14 +75,15 @@ def _apple_genrule_impl(ctx):
     if ctx.attr.no_sandbox:
         extra_args["execution_requirements"] = {"no-sandbox": "1"}
 
-    apple_support.run_shell(
+    apple_support.run(
         actions = ctx.actions,
         xcode_config = xcode_config,
         apple_fragment = ctx.fragments.apple,
+        executable = argv[0],
+        arguments = argv[1:],
         inputs = depset(resolved_inputs, transitive = [resolved_srcs]),
         outputs = files_to_build,
         env = ctx.configuration.default_shell_env,
-        command = " ".join(argv),
         progress_message = "%s %s" % (message, ctx.label),
         mnemonic = "Genrule",
         input_manifests = runfiles_manifests,
