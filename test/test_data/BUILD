@@ -1,5 +1,5 @@
 load(
-    "//lib:universal_binary.bzl",
+    "//rules:universal_binary.bzl",
     "universal_binary",
 )
 
