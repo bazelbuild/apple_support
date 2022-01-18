@@ -1,0 +1,6 @@
+bazel_dep(name = "apple_support", version = "")
+
+local_path_override(
+    module_name = "apple_support",
+    path = "..",
+)
