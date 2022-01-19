@@ -1,4 +1,10 @@
-bazel_dep(name = "apple_support", version = "")
+module(
+    name = "apple_support_tests",
+    version = "0.11.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "apple_support", version = "", repo_name = "build_bazel_apple_support")
 
 local_path_override(
     module_name = "apple_support",
