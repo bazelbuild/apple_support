@@ -14,7 +14,7 @@
 """Definition of a test rule to test apple_support."""
 
 load(
-    "@build_bazel_apple_support//lib:apple_support.bzl",
+    "//lib:apple_support.bzl",
     "apple_support",
 )
 
