@@ -14,11 +14,11 @@
 """Definition of a test rule to test xcode_support."""
 
 load(
-    "@build_bazel_apple_support//lib:apple_support.bzl",
+    "//lib:apple_support.bzl",
     "apple_support",
 )
 load(
-    "@build_bazel_apple_support//lib:xcode_support.bzl",
+    "//lib:xcode_support.bzl",
     "xcode_support",
 )
 
