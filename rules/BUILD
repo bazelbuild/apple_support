@@ -2,6 +2,8 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 licenses(["notice"])
 
+exports_files(["rules.doc.bzl"])
+
 # Public bzl_library for anything that needs to depend on apple_genrule.bzl.
 bzl_library(
     name = "apple_genrule",
@@ -21,6 +23,16 @@ bzl_library(
         "//lib:lipo",
         "//lib:transitions",
         "@bazel_skylib//lib:dicts",
+    ],
+)
+
+bzl_library(
+    name = "rules",
+    srcs = ["rules.doc.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":universal_binary",
+        "//rules/private:apple_genrule",
     ],
 )
 
