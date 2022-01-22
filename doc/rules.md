@@ -1,8 +1,6 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 
-
-test
-
+Helper rules for Apple platforms
 On this page:
 
   * [apple_genrule](#apple_genrule)
