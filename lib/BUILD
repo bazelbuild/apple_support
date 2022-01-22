@@ -21,6 +21,12 @@ bzl_library(
     ],
 )
 
+bzl_library(
+    name = "transitions",
+    srcs = ["transitions.bzl"],
+    visibility = ["//visibility:public"],
+)
+
 # Public bzl_library for anything that needs to depend on xcode_support.bzl.
 bzl_library(
     name = "xcode_support",
