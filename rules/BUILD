@@ -12,6 +12,18 @@ bzl_library(
     ],
 )
 
+bzl_library(
+    name = "universal_binary",
+    srcs = ["universal_binary.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib:apple_support",
+        "//lib:lipo",
+        "//lib:transitions",
+        "@bazel_skylib//lib:dicts",
+    ],
+)
+
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
