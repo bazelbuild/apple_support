@@ -15,7 +15,7 @@
 """Genrule which provides Apple's Xcode environment."""
 
 load(
-    "@build_bazel_apple_support//rules/private:apple_genrule.bzl",
+    "//rules/private:apple_genrule.bzl",
     _apple_genrule_inner = "apple_genrule",
 )
 
