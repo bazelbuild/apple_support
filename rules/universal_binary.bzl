@@ -73,6 +73,7 @@ platforms *regardless* of the architecture of the macOS host platform. The
 non-macOS platforms, this simply just creates a symbolic link of the input
 binary.
 """,
+    executable = True,
     fragments = ["apple"],
     implementation = _universal_binary_impl,
 )
