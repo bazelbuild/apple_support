@@ -46,7 +46,7 @@ echo "Test passed"
 exit 0
 """
 
-def _universal_binary_test_transition(settings, attr):
+def _universal_binary_test_transition(_settings, attr):
     """Implementation of the universal_binary_test_transition transition."""
 
     return {

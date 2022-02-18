@@ -14,9 +14,7 @@
 
 """Transition support."""
 
-def _macos_universal_transition_impl(settings, attr):
-    _ignore = [attr]
-
+def _macos_universal_transition_impl(settings, _attr):
     # Create a split transition from any macOS cpu to a list of all macOS cpus
     if settings["//command_line_option:cpu"].startswith("darwin"):
         return [
