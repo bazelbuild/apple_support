@@ -4,6 +4,7 @@ licenses(["notice"])
 # during coverage collection.
 filegroup(
     name = "coverage_support",
+    srcs = ["@bazel_tools//tools/objc:llvm-cov-darwin_x86_64"],
     # Public so other rules can add the dependencies via this group.
     visibility = ["//visibility:public"],
 )
