@@ -385,7 +385,7 @@ please use `run` instead.
     </tr>
     <tr id="apple_support.run_shell.**kwargs">
       <td><code>**kwargs</code></td>
-      <td><p>See <code>ctx.actions.run</code> for the rest of the available arguments.</p></td>
+      <td><p>See <code>ctx.actions.run_shell</code> for the rest of the available arguments.</p></td>
     </tr>
   </tbody>
 </table>
