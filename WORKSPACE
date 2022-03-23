@@ -24,3 +24,7 @@ http_archive(
         "https://github.com/bazelbuild/stardoc/releases/download/0.5.0/stardoc-0.5.0.tar.gz",
     ],
 )
+
+load("//:tcsetup.bzl", "apple_cc_configure")
+
+apple_cc_configure()
