@@ -326,7 +326,7 @@ def _run_shell(
             Required if ctx is not given.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
             Required if ctx is not given.
-        **kwargs: See `ctx.actions.run` for the rest of the available arguments.
+        **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.
     """
     _validate_ctx_xor_platform_requirements(
         ctx = ctx,
