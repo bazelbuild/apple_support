@@ -6,7 +6,9 @@ licenses(["notice"])
 bzl_library(
     name = "apple_genrule",
     srcs = ["apple_genrule.bzl"],
-    visibility = ["//rules:__pkg__"],
+    visibility = [
+        "//rules:__pkg__",
+    ],
     deps = [
         "//lib:apple_support",
         "@bazel_skylib//lib:dicts",
