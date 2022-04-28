@@ -264,6 +264,8 @@ def _run(
 
     # If the client requires Xcode path resolving, push the original executable to be the first
     # argument, as the executable will be set to be the xcode_path_wrapper script.
+    # Note: Bounce through an actions.args() incase the executable was a `File`, this allows it
+    # to then work within the arguments list.
     executable_args = actions.args()
     original_executable = processed_kwargs.pop("executable")
     executable_args.add(original_executable)
@@ -271,8 +273,9 @@ def _run(
 
     # Append the original arguments to the full list of arguments, after the original executable.
     original_args_list = processed_kwargs.pop("arguments", [])
-    if original_args_list:
-        all_arguments.extend(original_args_list)
+    if not original_args_list:
+        fail("Error: Does not make sense to request args processing without any `arguments`.")
+    all_arguments.extend(original_args_list)
 
     # We also need to include the user executable in the "tools" argument of the action, since it
     # won't be referenced by "executable" anymore.
