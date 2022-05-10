@@ -23,6 +23,108 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
+_XCODE_PROCESSOR__ARGS = r"""#!/bin/bash
+
+set -eu
+
+# SYNOPSIS
+#   Rewrites any Bazel placeholder strings in the given argument string,
+#   echoing the result.
+#
+# USAGE
+#   rewrite_argument <argument>
+function rewrite_argument {
+  ARG="$1"
+  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
+  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
+  echo "$ARG"
+}
+
+TOOLNAME="$1"
+shift
+
+ARGS=()
+
+for ARG in "$@" ; do
+  ARGS+=("$(rewrite_argument "$ARG")")
+done
+
+exec "$TOOLNAME" "${ARGS[@]}"
+"""
+
+_XCODE_PROCESSOR__ARGS_AND_FILES = r"""#!/bin/bash
+
+set -eu
+
+# SYNOPSIS
+#   Rewrites any Bazel placeholder strings in the given argument string,
+#   echoing the result.
+#
+# USAGE
+#   rewrite_argument <argument>
+function rewrite_argument {
+  ARG="$1"
+  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
+  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
+  echo "$ARG"
+}
+
+# SYNOPSIS
+#   Rewrites any Bazel placeholder strings in the given params file, if any.
+#   If there were no substitutions to be made, the original path is echoed back
+#   out; otherwise, this function echoes the path to a temporary file
+#   containing the rewritten file.
+#
+# USAGE
+#   rewrite_params_file <path>
+function rewrite_params_file {
+  PARAMSFILE="$1"
+  if grep -qe '__BAZEL_XCODE_\(DEVELOPER_DIR\|SDKROOT\)__' "$PARAMSFILE" ; then
+    NEWFILE="$(mktemp "${TMPDIR%/}/bazel_xcode_wrapper_params.XXXXXXXXXX")"
+    sed \
+        -e "s#__BAZEL_XCODE_DEVELOPER_DIR__#$DEVELOPER_DIR#g" \
+        -e "s#__BAZEL_XCODE_SDKROOT__#$SDKROOT#g" \
+        "$PARAMSFILE" > "$NEWFILE"
+    echo "$NEWFILE"
+  else
+    # There were no placeholders to substitute, so just return the original
+    # file.
+    echo "$PARAMSFILE"
+  fi
+}
+
+TOOLNAME="$1"
+shift
+
+ARGS=()
+
+# If any temporary files are created (like rewritten response files), clean
+# them up when the script exits.
+TEMPFILES=()
+trap '[[ ${#TEMPFILES[@]} -ne 0 ]] && rm "${TEMPFILES[@]}"' EXIT
+
+for ARG in "$@" ; do
+  case "$ARG" in
+  @*)
+    PARAMSFILE="${ARG:1}"
+    NEWFILE=$(rewrite_params_file "$PARAMSFILE")
+    if [[ "$PARAMSFILE" != "$NEWFILE" ]] ; then
+      TEMPFILES+=("$NEWFILE")
+    fi
+    ARG="@$NEWFILE"
+    ;;
+  *)
+    ARG=$(rewrite_argument "$ARG")
+    ;;
+  esac
+  ARGS+=("$ARG")
+done
+
+# We can't use `exec` here because we need to make sure the `trap` runs
+# afterward.
+"$TOOLNAME" "${ARGS[@]}"
+"""
+
 def _validate_ctx_xor_platform_requirements(*, ctx, actions, apple_fragment, xcode_config):
     """Raises an error if there is overlap in platform requirements or if they are insufficent."""
 
@@ -76,7 +178,6 @@ def _xcode_path_placeholder():
 
 def _kwargs_for_apple_platform(
         *,
-        additional_env = None,
         apple_fragment,
         xcode_config,
         **kwargs):
@@ -87,8 +188,6 @@ def _kwargs_for_apple_platform(
     original_env = processed_args.get("env")
     if original_env:
         merged_env.update(original_env)
-    if additional_env:
-        merged_env.update(additional_env)
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding these values.
@@ -157,11 +256,6 @@ def _action_required_attrs():
                 fragment = "apple",
             ),
         ),
-        "_xcode_path_wrapper": attr.label(
-            cfg = "exec",
-            executable = True,
-            default = "//tools:xcode_path_wrapper",
-        ),
     }
 
 def _run(
@@ -171,7 +265,6 @@ def _run(
         actions = None,
         xcode_config = None,
         apple_fragment = None,
-        xcode_path_wrapper = None,
         **kwargs):
     """Registers an action to run on an Apple machine.
 
@@ -219,8 +312,6 @@ def _run(
             Required if ctx is not given.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
             Required if ctx is not given.
-        xcode_path_wrapper: The Xcode path wrapper script. Required if ctx is not given and
-            xcode_path_resolve_level is not `apple_support.xcode_path_resolve_level.none`.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
     _validate_ctx_xor_platform_requirements(
@@ -245,18 +336,22 @@ def _run(
         ))
         return
 
-    if ctx == None and xcode_path_wrapper == None:
-        fail("Must specify xcode_path_wrapper with xcode_config and apple_fragment.")
-    elif ctx != None and xcode_path_wrapper != None:
-        fail("Can't specify xcode_path_wrapper if ctx was provided.")
-    elif not xcode_path_wrapper:
-        _validate_ctx_attribute_present(ctx, "_xcode_path_wrapper")
-        xcode_path_wrapper = ctx.executable._xcode_path_wrapper
+    # Since a label/name isn't passed in, use the first output to derive a name
+    # that will hopefully be unique. For added attempt at safety, name the file
+    # based on the content, so any dup actions might still merge.
+    base = kwargs.get("outputs")[0].short_path.replace("/", "_")
+    if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
+        script = _XCODE_PROCESSOR__ARGS
+        suffix = "args"
+    else:
+        script = _XCODE_PROCESSOR__ARGS_AND_FILES
+        suffix = "args_and_files"
+    processor_script = actions.declare_file("{}_processor_script_{}.sh".format(base, suffix))
+    actions.write(processor_script, script, is_executable = True)
 
     processed_kwargs = _kwargs_for_apple_platform(
         xcode_config = xcode_config,
         apple_fragment = apple_fragment,
-        additional_env = {"XCODE_PATH_RESOLVE_LEVEL": xcode_path_resolve_level},
         **kwargs
     )
 
@@ -293,7 +388,7 @@ def _run(
         all_tools = []
 
     actions.run(
-        executable = xcode_path_wrapper,
+        executable = processor_script,
         arguments = all_arguments,
         tools = all_tools,
         **processed_kwargs
