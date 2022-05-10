@@ -8,13 +8,6 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-sh_binary(
-    name = "xcode_path_wrapper",
-    srcs = ["xcode_path_wrapper.sh"],
-    # Added to rules as a private attribute, so it needs to be public.
-    visibility = ["//visibility:public"],
-)
-
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
