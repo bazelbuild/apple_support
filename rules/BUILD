@@ -15,6 +15,12 @@ bzl_library(
 )
 
 bzl_library(
+    name = "toolchain_substitution",
+    srcs = ["toolchain_substitution.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
     name = "universal_binary",
     srcs = ["universal_binary.bzl"],
     visibility = ["//visibility:public"],
@@ -31,6 +37,7 @@ bzl_library(
     srcs = ["rules.doc.bzl"],
     visibility = ["//visibility:public"],
     deps = [
+        ":toolchain_substitution",
         ":universal_binary",
         "//rules/private:apple_genrule",
     ],

@@ -5,6 +5,7 @@ load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
 _DOC_SRCS = {
     "rules": [
         "apple_genrule",
+        "toolchain_substitution",
         "universal_binary",
     ],
 }
