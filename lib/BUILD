@@ -18,6 +18,7 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         ":apple_support",
+        "@bazel_skylib//lib:shell",
     ],
 )
 

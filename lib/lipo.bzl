@@ -15,6 +15,10 @@
 """APIs for operating on universal binaries with `lipo`."""
 
 load(":apple_support.bzl", "apple_support")
+load(
+    "@bazel_skylib//lib:shell.bzl",
+    "shell",
+)
 
 def _create(
         *,
@@ -42,15 +46,22 @@ def _create(
     if not inputs:
         fail("lipo.create requires at least one input file.")
 
-    args = actions.args()
-    args.add("-create")
-    args.add_all(inputs)
-    args.add("-output", output)
+    # Explicitly create the containing directory to avoid an occasional error
+    # from lipo; "can't create temporary output file [...] (Permission denied)"
+    command = [
+        "mkdir -p {} &&".format(shell.quote(output.dirname)),
+        "/usr/bin/lipo",
+        "-create",
+    ]
+    command.extend([
+        shell.quote(input_file.path)
+        for input_file in inputs
+    ])
+    command.extend(["-output", shell.quote(output.path)])
 
-    apple_support.run(
+    apple_support.run_shell(
         actions = actions,
-        arguments = [args],
-        executable = "/usr/bin/lipo",
+        command = " ".join(command),
         inputs = inputs,
         outputs = [output],
         apple_fragment = apple_fragment,
