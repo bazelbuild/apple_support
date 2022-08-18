@@ -2,6 +2,14 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 licenses(["notice"])
 
+objc_library(
+    name = "swizzle_absolute_xcttestsourcelocation",
+    testonly = True,
+    srcs = ["swizzle_absolute_xcttestsourcelocation.m"],
+    visibility = ["//visibility:public"],
+    alwayslink = True,
+)
+
 # Public bzl_library for anything that needs to depend on apple_support.bzl.
 bzl_library(
     name = "apple_support",
