@@ -62,6 +62,7 @@ def _create(
     apple_support.run_shell(
         actions = actions,
         command = " ".join(command),
+        mnemonic = "AppleLipo",
         inputs = inputs,
         outputs = [output],
         apple_fragment = apple_fragment,
