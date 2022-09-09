@@ -363,7 +363,14 @@ def _run(
     # to then work within the arguments list.
     executable_args = actions.args()
     original_executable = processed_kwargs.pop("executable")
-    executable_args.add(original_executable)
+
+    # actions.run supports multiple executable types. (File; or string; or FilesToRunProvider)
+    # If the passed in executable is a FilesToRunProvider, only add the main executable to the
+    # should be added to the executable args.
+    if type(original_executable) == "FilesToRunProvider":
+        executable_args.add(original_executable.executable)
+    else:
+        executable_args.add(original_executable)
     all_arguments.append(executable_args)
 
     # Append the original arguments to the full list of arguments, after the original executable.
