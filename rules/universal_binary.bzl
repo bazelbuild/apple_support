@@ -45,10 +45,18 @@ def _universal_binary_impl(ctx):
         # target, so just create a symbolic link of the input binary.
         ctx.actions.symlink(target_file = inputs[0], output = output)
 
+    runfiles = ctx.runfiles(files = ctx.files.binary)
+    transitive_runfiles = [
+        binary[DefaultInfo].default_runfiles
+        for binary in ctx.split_attr.binary.values()
+    ]
+    runfiles = runfiles.merge_all(transitive_runfiles)
+
     return [
         DefaultInfo(
             executable = output,
             files = depset([output]),
+            runfiles = runfiles,
         ),
     ]
 
