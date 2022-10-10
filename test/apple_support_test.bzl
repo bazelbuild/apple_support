@@ -24,8 +24,7 @@ _TEST_TOOL_CONTENTS = """#!/bin/bash
 
 set -eu
 
-OUTPUT_FILE="$1"
-shift
+OUTPUT_FILE="$1" ; shift
 
 echo "XCODE_PATH_ENV=$DEVELOPER_DIR" > "$OUTPUT_FILE"
 echo "SDKROOT_PATH_ENV=$SDKROOT" >> "$OUTPUT_FILE"
