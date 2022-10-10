@@ -11,12 +11,6 @@ objc_library(
     name = "swizzle_absolute_xcttestsourcelocation",
     testonly = True,
     srcs = ["swizzle_absolute_xcttestsourcelocation.m"],
-    target_compatible_with = [
-        "@platforms//os:macos",
-        "@platforms//os:watchos",
-        "@platforms//os:ios",
-        "@platforms//os:tvos",
-    ],
     visibility = ["//visibility:public"],
     alwayslink = True,
 )
