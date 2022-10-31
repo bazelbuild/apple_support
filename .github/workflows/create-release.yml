@@ -36,7 +36,6 @@ jobs:
           git commit -m "$msg"
           git push -u origin "$tmp_branch"
           gh pr create --title "$msg" --body ""
-          gh pr merge --auto --squash "$tmp_branch"
 
           COPYFILE_DISABLE=1 tar czvf "apple_support.$TAG.tar.gz" ./*
           ./.github/generate-notes.sh "$TAG" | tee notes.md
