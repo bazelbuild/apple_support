@@ -39,7 +39,7 @@ jobs:
 
           COPYFILE_DISABLE=1 tar czvf "apple_support.$TAG.tar.gz" ./*
           ./.github/generate-notes.sh "$TAG" | tee notes.md
-          gh release create "$TAG" --target "$BRANCH" --notes-file notes.md "apple_support.$TAG.tar.gz"
+          gh release create "$TAG" --title "$TAG" --target "$BRANCH" --notes-file notes.md "apple_support.$TAG.tar.gz"
         env:
           TAG: ${{ inputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
