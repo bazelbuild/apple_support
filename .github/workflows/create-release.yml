@@ -27,10 +27,16 @@ jobs:
 
           git config user.name "Automatic version bump"
           git config user.email "keithbsmiley@gmail.com"
+
           ./.github/update-module-version.sh "$TAG"
+          tmp_branch="$(uuidgen)"
+          git checkout -b "$tmp_branch"
           git add MODULE.bazel
-          git commit -m "Update MODULE.bazel to $TAG"
-          git push
+          msg="Update MODULE.bazel to $TAG"
+          git commit -m "$msg"
+          git push -u origin "$tmp_branch"
+          gh pr create --title "$msg" --body ""
+          gh pr merge --auto --squash "$tmp_branch"
 
           COPYFILE_DISABLE=1 tar czvf "apple_support.$TAG.tar.gz" ./*
           ./.github/generate-notes.sh "$TAG" | tee notes.md
