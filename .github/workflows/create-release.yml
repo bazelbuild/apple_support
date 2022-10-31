@@ -7,11 +7,6 @@ on:
         description: 'The new version to tag, ex: 1.0.5'
         required: true
         type: string
-      branch:
-        description: 'The branch to create the release off of'
-        required: true
-        type: string
-        default: 'master'
 
 jobs:
   create-release:
@@ -19,8 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{ inputs.branch }}
       - name: Create Release
         run: |
           set -euo pipefail
@@ -39,8 +32,7 @@ jobs:
 
           COPYFILE_DISABLE=1 tar czvf "apple_support.$TAG.tar.gz" ./*
           ./.github/generate-notes.sh "$TAG" | tee notes.md
-          gh release create "$TAG" --title "$TAG" --target "$BRANCH" --notes-file notes.md "apple_support.$TAG.tar.gz"
+          gh release create "$TAG" --title "$TAG" --target "$GITHUB_REF_NAME" --notes-file notes.md "apple_support.$TAG.tar.gz"
         env:
           TAG: ${{ inputs.tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ inputs.branch }}
