@@ -22,7 +22,6 @@ load(
 )
 load(
     "@bazel_tools//tools/cpp:unix_cc_configure.bzl",
-    "configure_unix_toolchain",
     "get_env",
 )
 
@@ -135,23 +134,22 @@ def _compile_cc_file(repository_ctx, src_name, out_name):
     else:
         _compile_cc_file_single_arch(repository_ctx, src_name, out_name)
 
-def configure_osx_toolchain(repository_ctx, cpu_value, overriden_tools):
+def configure_osx_toolchain(repository_ctx):
     """Configure C++ toolchain on macOS.
 
     Args:
       repository_ctx: The repository context.
-      overriden_tools: dictionary of overridden tools.
     """
     paths = resolve_labels(repository_ctx, [
         "@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl",
-        "@bazel_tools//tools/objc:libtool.sh",
-        "@bazel_tools//tools/objc:libtool_check_unique.cc",
-        "@bazel_tools//tools/objc:make_hashed_objlist.py",
-        "@bazel_tools//tools/objc:xcrunwrapper.sh",
-        "@bazel_tools//tools/osx/crosstool:BUILD.tpl",
-        "@bazel_tools//tools/osx/crosstool:cc_toolchain_config.bzl",
-        "@bazel_tools//tools/osx/crosstool:wrapped_clang.cc",
+        "@build_bazel_apple_support//crosstool:libtool.sh",
+        "@build_bazel_apple_support//crosstool:libtool_check_unique.cc",
+        "@build_bazel_apple_support//crosstool:make_hashed_objlist.py",
+        "@build_bazel_apple_support//crosstool:xcrunwrapper.sh",
+        "@build_bazel_apple_support//crosstool:BUILD.tpl",
+        "@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl",
+        "@build_bazel_apple_support//crosstool:wrapped_clang.cc",
         "@bazel_tools//tools/osx:xcode_locator.m",
     ])
 
@@ -190,27 +188,27 @@ def configure_osx_toolchain(repository_ctx, cpu_value, overriden_tools):
             "armeabi_cc_toolchain_config.bzl",
         )
         repository_ctx.symlink(
-            paths["@bazel_tools//tools/objc:xcrunwrapper.sh"],
+            paths["@build_bazel_apple_support//crosstool:xcrunwrapper.sh"],
             "xcrunwrapper.sh",
         )
         repository_ctx.symlink(
-            paths["@bazel_tools//tools/objc:libtool.sh"],
+            paths["@build_bazel_apple_support//crosstool:libtool.sh"],
             "libtool",
         )
         repository_ctx.symlink(
-            paths["@bazel_tools//tools/objc:make_hashed_objlist.py"],
+            paths["@build_bazel_apple_support//crosstool:make_hashed_objlist.py"],
             "make_hashed_objlist.py",
         )
         repository_ctx.symlink(
-            paths["@bazel_tools//tools/osx/crosstool:cc_toolchain_config.bzl"],
+            paths["@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl"],
             "cc_toolchain_config.bzl",
         )
         libtool_check_unique_src_path = str(repository_ctx.path(
-            paths["@bazel_tools//tools/objc:libtool_check_unique.cc"],
+            paths["@build_bazel_apple_support//crosstool:libtool_check_unique.cc"],
         ))
         _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
         wrapped_clang_src_path = str(repository_ctx.path(
-            paths["@bazel_tools//tools/osx/crosstool:wrapped_clang.cc"],
+            paths["@build_bazel_apple_support//crosstool:wrapped_clang.cc"],
         ))
         _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
         repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
@@ -230,7 +228,7 @@ def configure_osx_toolchain(repository_ctx, cpu_value, overriden_tools):
             escaped_cxx_include_directories.append("            # Error: " + xcodeloc_err)
         repository_ctx.template(
             "BUILD",
-            paths["@bazel_tools//tools/osx/crosstool:BUILD.tpl"],
+            paths["@build_bazel_apple_support//crosstool:BUILD.tpl"],
             {
                 "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
                 "%{tool_paths_overrides}": ",\n            ".join(
@@ -238,5 +236,6 @@ def configure_osx_toolchain(repository_ctx, cpu_value, overriden_tools):
                 ),
             },
         )
+        return True
     else:
-        configure_unix_toolchain(repository_ctx, cpu_value, overriden_tools = overriden_tools)
+        return False

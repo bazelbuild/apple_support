@@ -1,5 +1,6 @@
 """TODO"""
 
+load("@bazel_tools//tools/cpp:cc_configure.bzl", "cc_autoconf_impl")
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
 def _impl(repository_ctx):
@@ -51,13 +52,28 @@ def _apple_cc_autoconf_impl(repository_ctx):
     elif should_use_cpp_only_toolchain:
         repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_USE_CPP_ONLY_TOOLCHAIN env variable.")
     elif repository_ctx.os.name.startswith("mac os"):
-        print("here?")
-        configure_osx_toolchain(repository_ctx)
+        if not configure_osx_toolchain(repository_ctx):
+            cc_autoconf_impl(repository_ctx, {})
+    else:
+        cc_autoconf_impl(repository_ctx, {})
 
-    # TODO: call into upstream
+MSVC_ENVVARS = [
+    "BAZEL_VC",
+    "BAZEL_VC_FULL_VERSION",
+    "BAZEL_VS",
+    "BAZEL_WINSDK_FULL_VERSION",
+    "VS90COMNTOOLS",
+    "VS100COMNTOOLS",
+    "VS110COMNTOOLS",
+    "VS120COMNTOOLS",
+    "VS140COMNTOOLS",
+    "VS150COMNTOOLS",
+    "VS160COMNTOOLS",
+    "TMP",
+    "TEMP",
+]
 
 _apple_cc_autoconf = repository_rule(
-    # TODO: Remove unnecessary env vars
     environ = [
         "ABI_LIBC_VERSION",
         "ABI_VERSION",
@@ -87,7 +103,7 @@ _apple_cc_autoconf = repository_rule(
         "HOMEBREW_RUBY_PATH",
         "SYSTEMROOT",
         "USER",
-    ],
+    ] + MSVC_ENVVARS,
     implementation = _apple_cc_autoconf_impl,
     configure = True,
 )
