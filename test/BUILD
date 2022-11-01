@@ -66,3 +66,17 @@ universal_binary_test(
     cpu = "darwin_arm64",
     target_under_test = "//test/test_data:multi_arch_cc_binary",
 )
+
+sh_test(
+    name = "wrapped_clang_test",
+    size = "small",
+    srcs = [
+        "wrapped_clang_test.sh",
+    ],
+    data = [
+        "unittest.bash",
+        "unittest_utils.sh",
+        "//crosstool:wrapped_clang",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+)

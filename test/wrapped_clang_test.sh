@@ -42,9 +42,9 @@ fi
 
 
 # Load test environment
-source "$(rlocation "io_bazel/src/test/shell/unittest.bash")" \
+source "$(rlocation "build_bazel_apple_support/test/unittest.bash")" \
   || { echo "unittest.bash not found!" >&2; exit 1; }
-WRAPPED_CLANG=$(rlocation "io_bazel/tools/osx/crosstool/wrapped_clang")
+WRAPPED_CLANG=$(rlocation "build_bazel_apple_support/crosstool/wrapped_clang")
 
 
 # This env var tells wrapped_clang to log its command instead of running.
