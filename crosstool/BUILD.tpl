@@ -1,16 +1,31 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@bazel_tools//tools/osx/crosstool:osx_archs.bzl", "OSX_TOOLS_ARCHS")
+OSX_TOOLS_NON_DEVICE_ARCHS = [
+    "darwin_x86_64",
+    "darwin_arm64",
+    "darwin_arm64e",
+    "ios_i386",
+    "ios_x86_64",
+    "ios_sim_arm64",
+    "watchos_arm64",
+    "watchos_i386",
+    "watchos_x86_64",
+    "tvos_x86_64",
+    "tvos_sim_arm64",
+]
+
+OSX_TOOLS_ARCHS = [
+    "ios_armv7",
+    "ios_arm64",
+    "ios_arm64e",
+    "watchos_armv7k",
+    "watchos_arm64_32",
+    "tvos_arm64",
+] + OSX_TOOLS_NON_DEVICE_ARCHS
+
 load("@rules_cc//cc:defs.bzl", "cc_toolchain_suite", "cc_library")
 load(":armeabi_cc_toolchain_config.bzl", "armeabi_cc_toolchain_config")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
-
-# Reexporting osx_arch.bzl for backwards compatibility
-# Originally this file was present in @local_config_cc, but with the split in
-# https://github.com/bazelbuild/bazel/pull/8459 we had to move the file to
-# @local_config_cc_toolchains. This alias is there to keep the code backwards
-# compatible (and serves no other purpose).
-alias(name = "osx_archs.bzl", actual = "@bazel_tools//tools/osx/crosstool:osx_archs.bzl")
 
 CC_TOOLCHAINS = [(
     cpu + "|clang",
