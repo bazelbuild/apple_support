@@ -25,12 +25,11 @@ load(
     "get_env",
 )
 
-def _get_escaped_xcode_cxx_inc_directories(repository_ctx, cc, xcode_toolchains):
+def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
 
     Args:
       repository_ctx: The repository context.
-      cc: The default C++ compiler on the local system.
       xcode_toolchains: A list containing the xcode toolchains available
     Returns:
       include_paths: A list of builtin include paths.
@@ -139,6 +138,9 @@ def configure_osx_toolchain(repository_ctx):
 
     Args:
       repository_ctx: The repository context.
+
+    Returns:
+      Whether or not configuration was successful
     """
     paths = resolve_labels(repository_ctx, [
         "@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl",
@@ -172,8 +174,6 @@ def configure_osx_toolchain(repository_ctx):
         # cc_wrapper.sh script. The wrapped_clang binary is already hardcoded
         # into the Objective-C crosstool actions, anyway, so this ensures that
         # the C++ actions behave consistently.
-        cc = repository_ctx.path("wrapped_clang")
-
         cc_path = '"$(/usr/bin/dirname "$0")"/wrapped_clang'
         repository_ctx.template(
             "cc_wrapper.sh",
@@ -220,7 +220,7 @@ def configure_osx_toolchain(repository_ctx):
                 gcov_path = repository_ctx.which(gcov_path)
             tool_paths["gcov"] = gcov_path
 
-        escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, cc, xcode_toolchains)
+        escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains)
         escaped_cxx_include_directories = []
         for path in escaped_include_paths:
             escaped_cxx_include_directories.append(("            \"%s\"," % path))

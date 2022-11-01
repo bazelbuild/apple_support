@@ -39,8 +39,7 @@ def _compare_versions(dv1, v2):
     return dv1.compare_to(apple_common.dotted_version(v2))
 
 def _can_use_deterministic_libtool(ctx):
-    """Returns `True` if the current version of `libtool` has support for
-    deterministic mode, and `False` otherwise."""
+    """Returns `True` if the current version of `libtool` has support for deterministic mode, and `False` otherwise."""
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     xcode_version = xcode_config.xcode_version()
     if _compare_versions(xcode_version, _SUPPORTS_DETERMINISTIC_MODE) >= 0:
@@ -49,8 +48,7 @@ def _can_use_deterministic_libtool(ctx):
         return False
 
 def _deterministic_libtool_flags(ctx):
-    """Returns additional `libtool` flags to enable deterministic mode, if they
-    are available."""
+    """Returns additional `libtool` flags to enable deterministic mode, if they are available."""
     if _can_use_deterministic_libtool(ctx):
         return ["-D"]
     return []
@@ -116,48 +114,6 @@ def _impl(ctx):
     arch = ctx.attr.cpu.split("_", 1)[-1]
     if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "watchos_arm64"]:
         arch = "arm64"
-
-    all_compile_actions = [
-        ACTION_NAMES.c_compile,
-        ACTION_NAMES.cpp_compile,
-        ACTION_NAMES.linkstamp_compile,
-        ACTION_NAMES.assemble,
-        ACTION_NAMES.preprocess_assemble,
-        ACTION_NAMES.cpp_header_parsing,
-        ACTION_NAMES.cpp_module_compile,
-        ACTION_NAMES.cpp_module_codegen,
-        ACTION_NAMES.clif_match,
-        ACTION_NAMES.lto_backend,
-    ]
-
-    all_cpp_compile_actions = [
-        ACTION_NAMES.cpp_compile,
-        ACTION_NAMES.linkstamp_compile,
-        ACTION_NAMES.cpp_header_parsing,
-        ACTION_NAMES.cpp_module_compile,
-        ACTION_NAMES.cpp_module_codegen,
-        ACTION_NAMES.clif_match,
-    ]
-
-    preprocessor_compile_actions = [
-        ACTION_NAMES.c_compile,
-        ACTION_NAMES.cpp_compile,
-        ACTION_NAMES.linkstamp_compile,
-        ACTION_NAMES.preprocess_assemble,
-        ACTION_NAMES.cpp_header_parsing,
-        ACTION_NAMES.cpp_module_compile,
-        ACTION_NAMES.clif_match,
-    ]
-
-    codegen_compile_actions = [
-        ACTION_NAMES.c_compile,
-        ACTION_NAMES.cpp_compile,
-        ACTION_NAMES.linkstamp_compile,
-        ACTION_NAMES.assemble,
-        ACTION_NAMES.preprocess_assemble,
-        ACTION_NAMES.cpp_module_codegen,
-        ACTION_NAMES.lto_backend,
-    ]
 
     all_link_actions = [
         ACTION_NAMES.cpp_link_executable,
@@ -2765,6 +2721,7 @@ def _impl(ctx):
             ubsan_feature,
             default_sanitizer_flags_feature,
             archive_param_file_feature,
+            supports_pic_feature,
         ]
     elif (ctx.attr.cpu == "darwin_x86_64" or
           ctx.attr.cpu == "darwin_arm64" or
@@ -2847,6 +2804,7 @@ def _impl(ctx):
             ubsan_feature,
             default_sanitizer_flags_feature,
             archive_param_file_feature,
+            supports_pic_feature,
         ]
     else:
         fail("Unreachable")
