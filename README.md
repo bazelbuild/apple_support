@@ -11,4 +11,4 @@ platform rules.
 ## Quick setup
 
 Copy the `WORKSPACE` snippet from [the releases
-page](https://github.com/bazelbuild/apple_support/releases)
+page](https://github.com/bazelbuild/apple_support/releases).
