@@ -39,7 +39,8 @@ def _compare_versions(dv1, v2):
     return dv1.compare_to(apple_common.dotted_version(v2))
 
 def _can_use_deterministic_libtool(ctx):
-    """Returns `True` if the current version of `libtool` has support for deterministic mode, and `False` otherwise."""
+    """Returns `True` if the current version of `libtool` has support for
+    deterministic mode, and `False` otherwise."""
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     xcode_version = xcode_config.xcode_version()
     if _compare_versions(xcode_version, _SUPPORTS_DETERMINISTIC_MODE) >= 0:
@@ -48,7 +49,8 @@ def _can_use_deterministic_libtool(ctx):
         return False
 
 def _deterministic_libtool_flags(ctx):
-    """Returns additional `libtool` flags to enable deterministic mode, if they are available."""
+    """Returns additional `libtool` flags to enable deterministic mode, if they
+    are available."""
     if _can_use_deterministic_libtool(ctx):
         return ["-D"]
     return []
@@ -421,37 +423,6 @@ def _impl(ctx):
         ],
     )
 
-    objc_archive_action = action_config(
-        action_name = "objc-archive",
-        flag_sets = [
-            flag_set(
-                flag_groups = [
-                    flag_group(
-                        flags = _deterministic_libtool_flags(ctx) + [
-                            "-no_warning_for_no_symbols",
-                            "-static",
-                            "-filelist",
-                            "%{obj_list_path}",
-                            "-arch_only",
-                            arch,
-                            "-syslibroot",
-                            "%{sdk_dir}",
-                            "-o",
-                            "%{output_execpath}",
-                        ],
-                    ),
-                ],
-            ),
-        ],
-        implies = ["apple_env"],
-        tools = [
-            tool(
-                path = "libtool",
-                execution_requirements = xcode_execution_requirements,
-            ),
-        ],
-    )
-
     objc_executable_action = action_config(
         action_name = "objc-executable",
         flag_sets = [
@@ -659,7 +630,6 @@ def _impl(ctx):
         objcpp_compile_action,
         assemble_action,
         preprocess_assemble_action,
-        objc_archive_action,
         objc_executable_action,
         objcpp_executable_action,
         cpp_link_executable_action,
@@ -1486,7 +1456,6 @@ def _impl(ctx):
                     ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    "objc-archive",
                     "objc-fully-link",
                     ACTION_NAMES.cpp_link_executable,
                     ACTION_NAMES.cpp_link_dynamic_library,
@@ -1700,7 +1669,6 @@ def _impl(ctx):
             "objc-compile",
             "objc++-compile",
             "objc-fully-link",
-            "objc-archive",
             "objc-executable",
             "objc++-executable",
             "assemble",
@@ -1753,7 +1721,6 @@ def _impl(ctx):
             flag_set(
                 actions = all_link_actions + [
                     ACTION_NAMES.cpp_link_static_library,
-                    ACTION_NAMES.objc_archive,
                     ACTION_NAMES.objc_fully_link,
                     ACTION_NAMES.objc_executable,
                     ACTION_NAMES.objcpp_executable,
