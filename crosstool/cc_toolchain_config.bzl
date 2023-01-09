@@ -39,8 +39,7 @@ def _compare_versions(dv1, v2):
     return dv1.compare_to(apple_common.dotted_version(v2))
 
 def _can_use_deterministic_libtool(ctx):
-    """Returns `True` if the current version of `libtool` has support for
-    deterministic mode, and `False` otherwise."""
+    """Returns `True` if the current version of `libtool` has support for deterministic mode, and `False` otherwise."""
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     xcode_version = xcode_config.xcode_version()
     if _compare_versions(xcode_version, _SUPPORTS_DETERMINISTIC_MODE) >= 0:
@@ -49,8 +48,7 @@ def _can_use_deterministic_libtool(ctx):
         return False
 
 def _deterministic_libtool_flags(ctx):
-    """Returns additional `libtool` flags to enable deterministic mode, if they
-    are available."""
+    """Returns additional `libtool` flags to enable deterministic mode, if they are available."""
     if _can_use_deterministic_libtool(ctx):
         return ["-D"]
     return []
