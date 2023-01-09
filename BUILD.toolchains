@@ -19,6 +19,7 @@ OSX_TOOLS_CONSTRAINTS = {
     "ios_arm64": [
         "@platforms//os:ios",
         "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:device",
     ],
     "ios_arm64e": [
         "@platforms//os:ios",
@@ -39,10 +40,12 @@ OSX_TOOLS_CONSTRAINTS = {
     "ios_sim_arm64": [
         "@platforms//os:ios",
         "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:simulator",
     ],
     "tvos_arm64": [
         "@platforms//os:tvos",
         "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:device",
     ],
     "tvos_x86_64": [
         "@platforms//os:tvos",
@@ -51,6 +54,7 @@ OSX_TOOLS_CONSTRAINTS = {
     "tvos_sim_arm64": [
         "@platforms//os:tvos",
         "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:simulator",
     ],
     "watchos_arm64": [
         "@platforms//os:watchos",
