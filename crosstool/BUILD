@@ -12,3 +12,11 @@ cc_binary(
         "wrapped_clang.cc",
     ],
 )
+
+# Consumed by bazel tests.
+filegroup(
+    name = "for_bazel_tests",
+    testonly = True,
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)
