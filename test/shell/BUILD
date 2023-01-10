@@ -44,3 +44,14 @@ sh_test(
         ":bashunit",
     ],
 )
+
+sh_test(
+    name = "wrapped_clang_test",
+    size = "small",
+    srcs = ["wrapped_clang_test.sh"],
+    data = [
+        ":bashunit",
+        "//crosstool:wrapped_clang",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+)

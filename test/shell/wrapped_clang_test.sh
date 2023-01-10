@@ -42,7 +42,7 @@ fi
 
 
 # Load test environment
-source "$(rlocation "build_bazel_apple_support/test/unittest.bash")" \
+source "$(rlocation "build_bazel_apple_support/test/shell/unittest.bash")" \
   || { echo "unittest.bash not found!" >&2; exit 1; }
 WRAPPED_CLANG=$(rlocation "build_bazel_apple_support/crosstool/wrapped_clang")
 
