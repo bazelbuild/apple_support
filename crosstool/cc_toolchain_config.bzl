@@ -166,6 +166,7 @@ def _impl(ctx):
 
     objc_compile_action = action_config(
         action_name = ACTION_NAMES.objc_compile,
+        enabled = True,
         flag_sets = [
             flag_set(
                 flag_groups = [flag_group(flags = ["-target", target_system_name])],
