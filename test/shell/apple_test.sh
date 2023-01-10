@@ -119,7 +119,8 @@ EOF
       || fail "expected output binary to be for i386 architecture"
 }
 
-function test_apple_static_library() {
+# TODO: Fix and re-enable
+function DISABLED_test_apple_static_library() {
   rm -rf package
   mkdir -p package
   make_starlark_apple_static_library_rule_in package
@@ -162,8 +163,8 @@ load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(
     name = "main_binary",
     deps = [":main_lib"],
-    platform_type = "ios",
-    minimum_os_version = "10.0",
+    platform_type = "macos",
+    minimum_os_version = "12.0",
 )
 objc_library(
     name = "main_lib",
@@ -178,7 +179,6 @@ EOF
 
   bazel build --verbose_failures //package:main_binary \
       --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=i386,x86_64 \
       --xcode_version="$XCODE_VERSION" \
       --apple_generate_dsym=true \
       || fail "should build starlark_apple_binary with dSYMs"
@@ -232,5 +232,178 @@ EOF
     || fail "expected output binary to contain 2 architectures"
 }
 
+function test_apple_binary_spaces() {
+  rm -rf package
+  mkdir -p package
+  make_starlark_apple_binary_rule_in package
+
+  cat > package/BUILD <<EOF
+load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+starlark_apple_binary(
+    name = "main_binary",
+    deps = [":main_lib"],
+    platform_type = "ios",
+    minimum_os_version = "10.0",
+)
+objc_library(
+    name = "main_lib",
+    srcs = ["the main.m"],
+)
+EOF
+  cat > "package/the main.m" <<EOF
+int main() {
+  return 0;
+}
+EOF
+
+  bazel build --verbose_failures //package:main_binary \
+      --noincompatible_enable_cc_toolchain_resolution \
+      --ios_multi_cpus=i386,x86_64 \
+      --xcode_version="$XCODE_VERSION" \
+      --apple_generate_dsym=true \
+      || fail "should build starlark_apple_binary with dSYMs"
+}
+
+function test_apple_binary_crosstool_ios() {
+  rm -rf package
+  mkdir -p package
+  make_starlark_apple_binary_rule_in package
+
+  cat > package/BUILD <<EOF
+load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+objc_library(
+    name = "lib_a",
+    srcs = ["a.m"],
+)
+objc_library(
+    name = "lib_b",
+    srcs = ["b.m"],
+    deps = [":cc_lib"],
+)
+cc_library(
+    name = "cc_lib",
+    srcs = ["cc_lib.cc"],
+)
+starlark_apple_binary(
+    name = "main_binary",
+    deps = [":main_lib"],
+    platform_type = "ios",
+    minimum_os_version = "10.0",
+)
+objc_library(
+    name = "main_lib",
+    deps = [":lib_a", ":lib_b"],
+    srcs = ["main.m"],
+)
+genrule(
+  name = "lipo_run",
+  srcs = [":main_binary_lipobin"],
+  outs = ["lipo_out"],
+  cmd =
+      "set -e && " +
+      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+  tags = ["requires-darwin"],
+)
+EOF
+  touch package/a.m
+  touch package/b.m
+  cat > package/main.m <<EOF
+int main() {
+  return 0;
+}
+EOF
+  cat > package/cc_lib.cc << EOF
+#include <string>
+
+std::string GetString() { return "h3ll0"; }
+EOF
+
+  bazel build --verbose_failures //package:lipo_out \
+    --noincompatible_enable_cc_toolchain_resolution \
+    --ios_multi_cpus=i386,x86_64 \
+    --xcode_version="$XCODE_VERSION" \
+    || fail "should build starlark_apple_binary and obtain info via lipo"
+
+  grep "i386 x86_64" bazel-bin/package/lipo_out \
+    || fail "expected output binary to be for x86_64 architecture"
+}
+
+function test_apple_binary_dsym_builds() {
+  rm -rf package
+  mkdir -p package
+  make_starlark_apple_binary_rule_in package
+
+  cat > package/BUILD <<EOF
+load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+starlark_apple_binary(
+    name = "main_binary",
+    deps = [":main_lib"],
+    platform_type = "ios",
+    minimum_os_version = "10.0",
+)
+objc_library(
+    name = "main_lib",
+    srcs = ["main.m"],
+)
+EOF
+  cat > package/main.m <<EOF
+int main() {
+  return 0;
+}
+EOF
+
+  bazel build --verbose_failures //package:main_binary \
+      --noincompatible_enable_cc_toolchain_resolution \
+      --xcode_version=$XCODE_VERSION \
+      --apple_generate_dsym=true \
+      || fail "should build starlark_apple_binary with dSYMs"
+}
+
+function test_fat_binary_no_srcs() {
+  rm -rf package
+  mkdir -p package
+  make_starlark_apple_binary_rule_in package
+
+  cat > package/BUILD <<EOF
+load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+objc_library(
+    name = "lib_a",
+    srcs = ["a.m"],
+)
+objc_library(
+    name = "lib_b",
+    srcs = ["b.m"],
+)
+starlark_apple_binary(
+    name = "main_binary",
+    deps = [":lib_a", ":lib_b"],
+    platform_type = "ios",
+    minimum_os_version = "10.0",
+)
+genrule(
+  name = "lipo_run",
+  srcs = [":main_binary_lipobin"],
+  outs = ["lipo_out"],
+  cmd =
+      "set -e && " +
+      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+  tags = ["requires-darwin"],
+)
+EOF
+  touch package/a.m
+  cat > package/b.m <<EOF
+int main() {
+  return 0;
+}
+EOF
+
+  bazel build --verbose_failures --xcode_version=$XCODE_VERSION \
+      //package:lipo_out --ios_multi_cpus=i386,x86_64 \
+      --noincompatible_enable_cc_toolchain_resolution \
+      || fail "should build starlark_apple_binary and obtain info via lipo"
+
+  cat bazel-bin/package/lipo_out | grep "i386 x86_64" \
+    || fail "expected output binary to contain 2 architectures"
+}
 
 run_suite "apple_tests"

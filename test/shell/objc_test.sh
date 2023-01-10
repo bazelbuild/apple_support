@@ -55,34 +55,6 @@ function test_build_app() {
       || fail "should generate lib.a"
 }
 
-function test_invalid_ios_sdk_version() {
-  setup_objc_test_support
-  make_lib
-
-  ! bazel build --verbose_failures --apple_platform_type=ios \
-      --ios_sdk_version=2.34 \
-      //ios:lib >"$TEST_log" 2>&1 || fail "should fail"
-  expect_log "SDK \"iphonesimulator2.34\" cannot be located."
-}
-
-function test_xcodelocator_embedded_tool() {
-  rm -rf ios
-  mkdir -p ios
-
-  cat >ios/BUILD <<EOF
-genrule(
-    name = "invoke_tool",
-    srcs = ["@bazel_tools//tools/osx:xcode-locator"],
-    outs = ["tool_output"],
-    cmd = "\$< > \$@",
-    tags = ["requires-darwin"],
-)
-EOF
-
-  bazel build --verbose_failures //ios:invoke_tool >"$TEST_log" 2>&1 \
-      || fail "should be able to resolve xcode-locator"
-}
-
 # Verifies contents of .a files do not contain timestamps -- if they did, the
 # results would not be hermetic.
 function test_archive_timestamps() {

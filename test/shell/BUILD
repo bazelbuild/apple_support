@@ -1,3 +1,11 @@
+filegroup(
+    name = "for_bazel_tests",
+    testonly = True,
+    srcs = [
+        "@build_bazel_apple_support//:for_bazel_tests",
+    ],
+)
+
 sh_library(
     name = "bashunit",
     testonly = True,
@@ -19,6 +27,7 @@ sh_test(
     name = "objc_test",
     size = "large",
     srcs = ["objc_test.sh"],
+    data = [":for_bazel_tests"],
     deps = [
         ":apple_common",
         ":bashunit",
@@ -28,7 +37,9 @@ sh_test(
 sh_test(
     name = "apple_test",
     srcs = ["apple_test.sh"],
-    data = [
+    data = [":for_bazel_tests"],
+    shard_count = 3,
+    deps = [
         ":apple_common",
         ":bashunit",
     ],
