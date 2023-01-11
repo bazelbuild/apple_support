@@ -38,8 +38,3 @@ filegroup(
     # a temporary workspace for the tests.
     visibility = ["//visibility:public"],
 )
-
-cc_binary(
-    name = "main",
-    srcs = ["main.c"],
-)
