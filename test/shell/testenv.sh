@@ -10,9 +10,12 @@ local_repository(
     path = '$(rlocation build_bazel_apple_support)',
 )
 
-load("@build_bazel_apple_support//:tcsetup.bzl", "apple_cc_configure")
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
 
-apple_cc_configure()
+apple_support_dependencies()
 EOF
 
   cat > .bazelrc <<EOF

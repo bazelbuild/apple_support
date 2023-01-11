@@ -23,7 +23,7 @@ def _impl(repository_ctx):
         repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_USE_CPP_ONLY_TOOLCHAIN env variable.")
     elif repository_ctx.os.name.startswith("mac os"):
         repository_ctx.symlink(
-            repository_ctx.path(Label("//:BUILD.toolchains")),
+            repository_ctx.path(Label("@build_bazel_apple_support//crosstool:BUILD.toolchains")),
             "BUILD",
         )
     else:
