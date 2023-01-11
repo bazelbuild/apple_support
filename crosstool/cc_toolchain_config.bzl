@@ -893,8 +893,6 @@ def _impl(ctx):
     else:
         apply_simulator_compiler_flags_feature = feature(name = "apply_simulator_compiler_flags")
 
-    supports_pic_feature = feature(name = "supports_pic", enabled = True)
-
     fastbuild_feature = feature(name = "fastbuild")
 
     no_legacy_features_feature = feature(name = "no_legacy_features")
@@ -2722,7 +2720,6 @@ def _impl(ctx):
             ubsan_feature,
             default_sanitizer_flags_feature,
             archive_param_file_feature,
-            supports_pic_feature,
         ]
     elif (ctx.attr.cpu == "darwin_x86_64" or
           ctx.attr.cpu == "darwin_arm64" or
@@ -2805,7 +2802,6 @@ def _impl(ctx):
             ubsan_feature,
             default_sanitizer_flags_feature,
             archive_param_file_feature,
-            supports_pic_feature,
         ]
     else:
         fail("Unreachable")
