@@ -34,13 +34,17 @@ tasks:
     bazel: latest
     <<: *common
     build_flags:
+      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
       - "--crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
 
   macos_last_green_vendored_toolchain:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *common
     build_flags:
+      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
       - "--crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
 
 buildifier: latest
