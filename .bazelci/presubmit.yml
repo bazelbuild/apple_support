@@ -29,4 +29,18 @@ tasks:
     - .bazelci/update_workspace_to_deps_heads.sh
     <<: *common
 
+  macos_latest_vendored_toolchain:
+    name: "Latest Bazel"
+    bazel: latest
+    <<: *common
+    build_flags:
+      - "--crosstool_top=@local_config_apple_cc//:toolchain"
+
+  macos_last_green_vendored_toolchain:
+    name: "Last Green Bazel"
+    bazel: last_green
+    <<: *common
+    build_flags:
+      - "--crosstool_top=@local_config_apple_cc//:toolchain"
+
 buildifier: latest
