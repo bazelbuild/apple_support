@@ -100,3 +100,9 @@ def apple_cc_configure():
         # Use register_toolchain's target pattern expansion to register all toolchains in the package.
         "@local_config_apple_cc_toolchains//:all",
     )
+
+def _apple_cc_configure_extension_impl(_):
+    _apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
+    _apple_cc_autoconf(name = "local_config_apple_cc")
+
+apple_cc_configure_extension = module_extension(implementation = _apple_cc_configure_extension_impl)
