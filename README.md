@@ -1,14 +1,58 @@
 # Apple Support for [Bazel](https://bazel.build)
 
-This repository contains helper methods that support building rules that
-target Apple platforms. See [the
-docs](https://github.com/bazelbuild/apple_support/tree/master/doc) for
-how you can use these helpers. Also see
-[rules_apple](https://github.com/bazelbuild/rules_apple) and
-[rules_swift](https://github.com/bazelbuild/rules_swift) for more Apple
-platform rules.
+This repository contains the [Apple CC toolchain](#toolchain-setup),
+Apple related [platforms](platforms/BUILD) and
+[constraints](constraints/BUILD) definitions, and small helper functions
+for rules authors targeting Apple platforms.
 
-## Quick setup
+If you want to build iOS, tvOS, watchOS, or macOS apps, use
+[`rules_apple`][rules_apple].
 
-Copy the `WORKSPACE` snippet from [the releases
-page](https://github.com/bazelbuild/apple_support/releases).
+If you want to build Swift use
+[`rules_swift`](https://github.com/bazelbuild/rules_swift).
+
+See [the documentation](doc) for the helper rules provided by this
+repository.
+
+## Installation
+
+Copy the `MODULE.bazel` or `WORKSPACE` snippets from [the releases
+page](https://github.com/bazelbuild/apple_support/releases) into your
+project.
+
+## Toolchain setup
+
+The Apple CC toolchain in by this repository provides toolchains for
+building for Apple platforms besides macOS. Since Bazel 7 this toolchain
+is required when targeting those platforms.
+
+To use the Apple CC toolchain, pull this repository into your build and
+add this to your `.bazelrc`:
+
+```bzl
+build --enable_platform_specific_config
+build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
+```
+
+This ensures that all rules provided by [`rules_apple`][rules_apple], as
+well as other rules like `cc_binary`, all use the toolchain provided by
+this repository when building on macOS.
+
+NOTE: This toolchain requires a full Xcode installation, not just the
+Xcode Command Line Tools. If you only need to build for macOS and don't
+want to require a full Xcode installation in your build, use the builtin
+Unix toolchain provided by Bazel.
+
+### Incompatible toolchain resolution
+
+Bazel is currently working on migrating C++ toolchain configuration to a
+new discovery method that no longer uses the `--*crosstool_top` flags.
+If you would like to test this upcoming feature, or need to use this in
+your build for other reasons, you can use this toolchain with
+`--incompatible_enable_cc_toolchain_resolution` as long as you provide a
+`platform_mappings` file. Please file any issues you find as you test
+this work in progress configuration.
+
+[rules_apple]: https://github.com/bazelbuild/rules_apple
