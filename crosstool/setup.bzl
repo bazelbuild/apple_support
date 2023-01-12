@@ -1,7 +1,8 @@
 """TODO"""
 
-load("@bazel_tools//tools/cpp:cc_configure.bzl", "cc_autoconf_impl")
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
+
+_DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 
 def _impl(repository_ctx):
     """Generate BUILD file with 'toolchain' targets for the local host C++ toolchain.
@@ -10,52 +11,35 @@ def _impl(repository_ctx):
       repository_ctx: repository context
     """
     env = repository_ctx.os.environ
+    should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
 
-    # Should we try to find C++ toolchain at all? If not, we don't have to generate toolchains for C++ at all.
-    should_detect_cpp_toolchain = "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN" not in env or env["BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN"] != "1"
-
-    # Should we unconditionally *not* use xcode? If so, we don't have to run Xcode locator ever.
-    should_use_cpp_only_toolchain = "BAZEL_USE_CPP_ONLY_TOOLCHAIN" in env and env["BAZEL_USE_CPP_ONLY_TOOLCHAIN"] == "1"
-
-    if not should_detect_cpp_toolchain:
-        repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN env variable.")
-    elif should_use_cpp_only_toolchain:
-        repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_USE_CPP_ONLY_TOOLCHAIN env variable.")
+    if should_disable:
+        repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
     elif repository_ctx.os.name.startswith("mac os"):
         repository_ctx.symlink(
             repository_ctx.path(Label("@build_bazel_apple_support//crosstool:BUILD.toolchains")),
             "BUILD",
         )
     else:
-        repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled because you're not running on macOS")
+        repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled because you're not running on macOS")
 
 _apple_cc_autoconf_toolchains = repository_rule(
-    environ = [
-        "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN",
-        "BAZEL_USE_CPP_ONLY_TOOLCHAIN",
-    ],
+    environ = [_DISABLE_ENV_VAR],
     implementation = _impl,
     configure = True,
 )
 
 def _apple_cc_autoconf_impl(repository_ctx):
     env = repository_ctx.os.environ
+    should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
 
-    # Should we try to find C++ toolchain at all? If not, we don't have to generate toolchains for C++ at all.
-    should_detect_cpp_toolchain = "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN" not in env or env["BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN"] != "1"
-
-    # Should we unconditionally *not* use xcode? If so, we don't have to run Xcode locator ever.
-    should_use_cpp_only_toolchain = "BAZEL_USE_CPP_ONLY_TOOLCHAIN" in env and env["BAZEL_USE_CPP_ONLY_TOOLCHAIN"] == "1"
-
-    if not should_detect_cpp_toolchain:
-        repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN env variable.")
-    elif should_use_cpp_only_toolchain:
-        repository_ctx.file("BUILD", "# Apple C++ toolchain autoconfiguration was disabled by BAZEL_USE_CPP_ONLY_TOOLCHAIN env variable.")
+    if should_disable:
+        repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
     elif repository_ctx.os.name.startswith("mac os"):
         if not configure_osx_toolchain(repository_ctx):
-            cc_autoconf_impl(repository_ctx, {})
+            fail("Failed to configure Apple CC toolchain, if you only have the command line tools installed and not Xcode, you cannot use this toolchain. You should either remove it or temporarily set '{}=1' in the environment".format(_DISABLE_ENV_VAR))
     else:
-        cc_autoconf_impl(repository_ctx, {})
+        repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled because you're not on macOS")
 
 MSVC_ENVVARS = [
     "BAZEL_VC",
