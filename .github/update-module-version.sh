@@ -15,5 +15,5 @@ module(
 
 EOF
 
-grep bazel_dep MODULE.bazel >> MODULE.bazel.new
+grep "# --- " -A1000 MODULE.bazel >> MODULE.bazel.new
 mv MODULE.bazel.new MODULE.bazel
