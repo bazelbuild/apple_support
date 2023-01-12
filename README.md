@@ -24,7 +24,8 @@ project.
 
 The Apple CC toolchain in by this repository provides toolchains for
 building for Apple platforms besides macOS. Since Bazel 7 this toolchain
-is required when targeting those platforms.
+is required when targeting those platforms but the toolchain also
+supports Bazel 6.
 
 To use the Apple CC toolchain, pull this repository into your build and
 add this to your `.bazelrc`:
