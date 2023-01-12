@@ -9,6 +9,16 @@ x_defaults:
     test_targets:
       - "//..."
 
+  toolchain_flags: &toolchain_flags
+    build_flags:
+      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
+    test_flags:
+      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--crosstool_top=@local_config_apple_cc//:toolchain"
+      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
+
 tasks:
   macos_latest:
     name: "Latest Bazel"
@@ -33,18 +43,12 @@ tasks:
     name: "Latest Bazel vendored toolchain"
     bazel: latest
     <<: *common
-    build_flags:
-      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
+    <<: *toolchain_flags
 
   macos_last_green_vendored_toolchain:
     name: "Last Green Bazel vendored toolchain"
     bazel: last_green
     <<: *common
-    build_flags:
-      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
+    <<: *toolchain_flags
 
 buildifier: latest
