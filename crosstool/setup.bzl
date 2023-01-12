@@ -59,6 +59,7 @@ MSVC_ENVVARS = [
 
 _apple_cc_autoconf = repository_rule(
     environ = [
+        _DISABLE_ENV_VAR,
         "ABI_LIBC_VERSION",
         "ABI_VERSION",
         "BAZEL_COMPILER",
