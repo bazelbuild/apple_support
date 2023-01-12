@@ -20,5 +20,7 @@ EOF
 
   cat > .bazelrc <<EOF
 build --apple_crosstool_top=@local_config_apple_cc//:toolchain
+build --crosstool_top=@local_config_apple_cc//:toolchain
+build --host_crosstool_top=@local_config_apple_cc//:toolchain
 EOF
 }
