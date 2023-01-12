@@ -28,6 +28,7 @@ def _maybe(repo_rule, name, **kwargs):
     if not native.existing_rule(name):
         repo_rule(name = name, **kwargs)
 
+# buildifier: disable=unnamed-macro
 def apple_support_dependencies():
     """Fetches repository dependencies of the `apple_support` workspace.
 
