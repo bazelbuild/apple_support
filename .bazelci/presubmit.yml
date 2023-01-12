@@ -30,7 +30,7 @@ tasks:
     <<: *common
 
   macos_latest_vendored_toolchain:
-    name: "Latest Bazel"
+    name: "Latest Bazel vendored toolchain"
     bazel: latest
     <<: *common
     build_flags:
@@ -39,7 +39,7 @@ tasks:
       - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
 
   macos_last_green_vendored_toolchain:
-    name: "Last Green Bazel"
+    name: "Last Green Bazel vendored toolchain"
     bazel: last_green
     <<: *common
     build_flags:
