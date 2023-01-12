@@ -23,7 +23,6 @@ OSX_TOOLS_ARCHS = [
     "tvos_arm64",
 ] + OSX_TOOLS_NON_DEVICE_ARCHS
 
-load("@rules_cc//cc:defs.bzl", "cc_toolchain_suite", "cc_library")
 load(":armeabi_cc_toolchain_config.bzl", "armeabi_cc_toolchain_config")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
 
