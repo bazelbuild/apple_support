@@ -1,4 +1,4 @@
-"""TODO"""
+"""Configure the Apple CC toolchain"""
 
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 

@@ -119,8 +119,7 @@ EOF
       || fail "expected output binary to be for i386 architecture"
 }
 
-# TODO: Fix and re-enable
-function DISABLED_test_apple_static_library() {
+function test_apple_static_library() {
   rm -rf package
   mkdir -p package
   make_starlark_apple_static_library_rule_in package
