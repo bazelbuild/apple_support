@@ -25,7 +25,7 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
 
 _apple_cc_autoconf_toolchains = repository_rule(
     environ = [_DISABLE_ENV_VAR],
-    implementation = _impl,
+    implementation = _apple_cc_autoconf_toolchains_impl,
     configure = True,
 )
 
