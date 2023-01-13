@@ -4,7 +4,7 @@ load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 
-def _impl(repository_ctx):
+def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     """Generate BUILD file with 'toolchain' targets for the local host C++ toolchain.
 
     Args:
