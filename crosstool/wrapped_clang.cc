@@ -313,14 +313,7 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
     return;
   }
 
-  std::string dest_dir, bitcode_symbol_map;
-  if (SetArgIfFlagPresent(arg, "DEBUG_PREFIX_MAP_PWD", &dest_dir)) {
-    new_arg = "-fdebug-prefix-map=" + cwd + "=" + dest_dir;
-  }
-  if (arg.compare("OSO_PREFIX_MAP_PWD") == 0) {
-    new_arg = "-Wl,-oso_prefix," + cwd + "/";
-  }
-
+  FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
 
