@@ -110,7 +110,6 @@ def _impl(ctx):
         abi_libc_version = "local"
         abi_version = "local"
 
-    host_system_name = "x86_64-apple-macosx"
     arch = ctx.attr.cpu.split("_", 1)[-1]
     if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "watchos_arm64"]:
         arch = "arm64"
@@ -2809,7 +2808,7 @@ def _impl(ctx):
             artifact_name_patterns = artifact_name_patterns,
             cxx_builtin_include_directories = ctx.attr.cxx_builtin_include_directories,
             toolchain_identifier = ctx.attr.cpu,
-            host_system_name = host_system_name,
+            host_system_name = "x86_64-apple-macosx",
             target_system_name = target_system_name,
             target_cpu = ctx.attr.cpu,
             target_libc = target_libc,
