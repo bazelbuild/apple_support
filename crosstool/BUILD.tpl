@@ -23,7 +23,6 @@ OSX_TOOLS_ARCHS = [
     "tvos_arm64",
 ] + OSX_TOOLS_NON_DEVICE_ARCHS
 
-load(":armeabi_cc_toolchain_config.bzl", "armeabi_cc_toolchain_config")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
 
 CC_TOOLCHAINS = [(
@@ -37,8 +36,6 @@ CC_TOOLCHAINS = [(
     ("darwin|clang", ":cc-compiler-darwin_x86_64"),
     ("k8", ":cc-compiler-darwin_x86_64"),
     ("darwin", ":cc-compiler-darwin_x86_64"),
-    ("armeabi-v7a|compiler", ":cc-compiler-armeabi-v7a"),
-    ("armeabi-v7a", ":cc-compiler-armeabi-v7a"),
 ]
 
 cc_library(
@@ -114,21 +111,3 @@ alias(
     )
     for arch in OSX_TOOLS_ARCHS
 ]
-
-# Android tooling requires a default toolchain for the armeabi-v7a cpu.
-cc_toolchain(
-    name = "cc-compiler-armeabi-v7a",
-    toolchain_identifier = "stub_armeabi-v7a",
-    toolchain_config = ":stub_armeabi-v7a",
-    all_files = ":empty",
-    ar_files = ":empty",
-    as_files = ":empty",
-    compiler_files = ":empty",
-    dwp_files = ":empty",
-    linker_files = ":empty",
-    objcopy_files = ":empty",
-    strip_files = ":empty",
-    supports_param_files = 1,
-)
-
-armeabi_cc_toolchain_config(name = "stub_armeabi-v7a")
