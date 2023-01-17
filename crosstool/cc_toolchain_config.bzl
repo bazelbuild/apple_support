@@ -1421,7 +1421,7 @@ def _impl(ctx):
         name = "apple_env",
         env_sets = [
             env_set(
-                actions = [
+                actions = _DYNAMIC_LINK_ACTIONS + [
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_module_compile,
@@ -1432,12 +1432,7 @@ def _impl(ctx):
                     ACTION_NAMES.objcpp_compile,
                     "objc-archive",
                     "objc-fully-link",
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                     ACTION_NAMES.cpp_link_static_library,
-                    "objc-executable",
-                    "objc++-executable",
                     ACTION_NAMES.linkstamp_compile,
                 ],
                 env_entries = [
