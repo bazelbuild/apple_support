@@ -41,54 +41,14 @@ def _apple_cc_autoconf_impl(repository_ctx):
     else:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled because you're not on macOS")
 
-MSVC_ENVVARS = [
-    "BAZEL_VC",
-    "BAZEL_VC_FULL_VERSION",
-    "BAZEL_VS",
-    "BAZEL_WINSDK_FULL_VERSION",
-    "VS90COMNTOOLS",
-    "VS100COMNTOOLS",
-    "VS110COMNTOOLS",
-    "VS120COMNTOOLS",
-    "VS140COMNTOOLS",
-    "VS150COMNTOOLS",
-    "VS160COMNTOOLS",
-    "TMP",
-    "TEMP",
-]
-
 _apple_cc_autoconf = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
-        "ABI_LIBC_VERSION",
-        "ABI_VERSION",
-        "BAZEL_COMPILER",
-        "BAZEL_HOST_SYSTEM",
-        "BAZEL_CXXOPTS",
-        "BAZEL_LINKOPTS",
-        "BAZEL_LINKLIBS",
-        "BAZEL_LLVM_COV",
-        "BAZEL_LLVM_PROFDATA",
-        "BAZEL_PYTHON",
-        "BAZEL_SH",
-        "BAZEL_TARGET_CPU",
-        "BAZEL_TARGET_LIBC",
-        "BAZEL_TARGET_SYSTEM",
-        "BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN",
-        "BAZEL_USE_LLVM_NATIVE_COVERAGE",
-        "BAZEL_LLVM",
-        "BAZEL_IGNORE_SYSTEM_HEADERS_VERSIONS",
-        "USE_CLANG_CL",
-        "CC",
-        "CC_CONFIGURE_DEBUG",
-        "CC_TOOLCHAIN_NAME",
-        "CPLUS_INCLUDE_PATH",
-        "DEVELOPER_DIR",
-        "GCOV",
-        "HOMEBREW_RUBY_PATH",
-        "SYSTEMROOT",
-        "USER",
-    ] + MSVC_ENVVARS,
+        "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain
+        "DEVELOPER_DIR",  # Used for making sure we use the right Xcode for compiling toolchain binaries
+        "GCOV",  # TODO: Remove this
+        "USER",  # Used to allow paths for custom toolchains to be used by C* compiles
+    ],
     implementation = _apple_cc_autoconf_impl,
     configure = True,
 )
