@@ -31,6 +31,14 @@ load(
 )
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 
+_DYNAMIC_LINK_ACTIONS = [
+    ACTION_NAMES.cpp_link_dynamic_library,
+    ACTION_NAMES.cpp_link_executable,
+    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
+    ACTION_NAMES.objc_executable,
+    ACTION_NAMES.objcpp_executable,
+]
+
 def _target_os_version(ctx):
     platform_type = ctx.fragments.apple.single_arch_platform.platform_type
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
@@ -819,8 +827,7 @@ def _impl(ctx):
         name = "strip_debug_symbols",
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-Wl,-S"],
@@ -882,8 +889,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["%{user_link_flags}"],
@@ -1011,8 +1017,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -1031,8 +1036,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -1626,8 +1630,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-lc++"])],
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
@@ -1691,12 +1694,10 @@ def _impl(ctx):
         name = "linker_param_file",
         flag_sets = [
             flag_set(
-                actions = all_link_actions + [
+                actions = _DYNAMIC_LINK_ACTIONS + [
                     ACTION_NAMES.cpp_link_static_library,
                     "objc-archive",
                     ACTION_NAMES.objc_fully_link,
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
                 ],
                 flag_groups = [
                     flag_group(
@@ -1712,10 +1713,7 @@ def _impl(ctx):
         name = "relative_ast_path",
         env_sets = [
             env_set(
-                actions = all_link_actions + [
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 env_entries = [
                     env_entry(
                         key = "RELATIVE_AST_PATH",
@@ -2057,8 +2055,7 @@ def _impl(ctx):
         name = "dead_strip",
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-dead_strip"],
@@ -2073,8 +2070,7 @@ def _impl(ctx):
         name = "oso_prefix_is_pwd",
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          ["objc-executable", "objc++-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/"])],
             ),
         ],
@@ -2308,10 +2304,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = all_link_actions + [
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-headerpad_max_install_names"])],
                 with_features = [with_feature_set(not_features = [
                     "bitcode_embedded",
@@ -2343,10 +2336,7 @@ def _impl(ctx):
                     flag_groups = [flag_group(flags = ["-fembed-bitcode"])],
                 ),
                 flag_set(
-                    actions = all_link_actions + [
-                        ACTION_NAMES.objc_executable,
-                        ACTION_NAMES.objcpp_executable,
-                    ],
+                    actions = _DYNAMIC_LINK_ACTIONS,
                     flag_groups = [
                         flag_group(
                             flags = [
@@ -2379,10 +2369,7 @@ def _impl(ctx):
                     flag_groups = [flag_group(flags = ["-fembed-bitcode-marker"])],
                 ),
                 flag_set(
-                    actions = all_link_actions + [
-                        ACTION_NAMES.objc_executable,
-                        ACTION_NAMES.objcpp_executable,
-                    ],
+                    actions = _DYNAMIC_LINK_ACTIONS,
                     flag_groups = [flag_group(flags = ["-fembed-bitcode-marker"])],
                 ),
             ],
@@ -2582,7 +2569,7 @@ def _impl(ctx):
                 flag_groups = [flag_group(flags = ["-Werror"])],
             ),
             flag_set(
-                actions = all_link_actions,
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-Wl,-fatal_warnings"])],
             ),
         ],
