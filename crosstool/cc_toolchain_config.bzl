@@ -1544,13 +1544,7 @@ def _impl(ctx):
                 ],
             ),
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                    ACTION_NAMES.cpp_link_executable,
-                    "objc-executable",
-                    "objc++-executable",
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-fprofile-instr-generate"])],
             ),
         ],
