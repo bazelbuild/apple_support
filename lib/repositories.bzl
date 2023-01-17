@@ -15,6 +15,7 @@
 """Definitions for handling Bazel repositories used by apple_support."""
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//crosstool:setup.bzl", "apple_cc_configure")
 
 def _maybe(repo_rule, name, **kwargs):
     """Executes the given repository rule if it hasn't been executed already.
@@ -27,6 +28,7 @@ def _maybe(repo_rule, name, **kwargs):
     if not native.existing_rule(name):
         repo_rule(name = name, **kwargs)
 
+# buildifier: disable=unnamed-macro
 def apple_support_dependencies():
     """Fetches repository dependencies of the `apple_support` workspace.
 
@@ -43,3 +45,5 @@ def apple_support_dependencies():
         ],
         sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
+
+    apple_cc_configure()

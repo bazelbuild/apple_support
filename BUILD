@@ -24,6 +24,8 @@ filegroup(
     testonly = 1,
     srcs = [
         "WORKSPACE",
+        "//constraints:for_bazel_tests",
+        "//crosstool:for_bazel_tests",
         "//lib:for_bazel_tests",
         "//rules:for_bazel_tests",
         "//tools:for_bazel_tests",

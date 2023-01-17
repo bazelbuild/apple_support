@@ -29,3 +29,11 @@ constraint_value(
     name = "catalyst",
     constraint_setting = ":target_environment",
 )
+
+# Consumed by bazel tests.
+filegroup(
+    name = "for_bazel_tests",
+    testonly = True,
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)
