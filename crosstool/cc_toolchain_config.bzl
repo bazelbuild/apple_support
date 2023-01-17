@@ -2569,6 +2569,25 @@ def _impl(ctx):
         ],
     )
 
+    treat_warnings_as_errors_feature = feature(
+        name = "treat_warnings_as_errors",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [flag_group(flags = ["-Werror"])],
+            ),
+            flag_set(
+                actions = all_link_actions,
+                flag_groups = [flag_group(flags = ["-Wl,-fatal_warnings"])],
+            ),
+        ],
+    )
+
     archive_param_file_feature = feature(name = "archive_param_file")
 
     if (ctx.attr.cpu == "ios_arm64" or
@@ -2661,6 +2680,7 @@ def _impl(ctx):
             tsan_feature,
             ubsan_feature,
             default_sanitizer_flags_feature,
+            treat_warnings_as_errors_feature,
             archive_param_file_feature,
         ]
     elif (ctx.attr.cpu == "darwin_x86_64" or
@@ -2743,6 +2763,7 @@ def _impl(ctx):
             tsan_feature,
             ubsan_feature,
             default_sanitizer_flags_feature,
+            treat_warnings_as_errors_feature,
             archive_param_file_feature,
         ]
     else:
