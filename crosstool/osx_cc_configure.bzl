@@ -143,7 +143,6 @@ def configure_osx_toolchain(repository_ctx):
       Whether or not configuration was successful
     """
     paths = resolve_labels(repository_ctx, [
-        "@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl",
         "@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl",
         "@build_bazel_apple_support//crosstool:libtool.sh",
         "@build_bazel_apple_support//crosstool:libtool_check_unique.cc",
@@ -176,10 +175,6 @@ def configure_osx_toolchain(repository_ctx):
             "%{cc}": escape_string(cc_path),
             "%{env}": escape_string(get_env(repository_ctx)),
         },
-    )
-    repository_ctx.symlink(
-        paths["@bazel_tools//tools/cpp:armeabi_cc_toolchain_config.bzl"],
-        "armeabi_cc_toolchain_config.bzl",
     )
     repository_ctx.symlink(
         paths["@build_bazel_apple_support//crosstool:xcrunwrapper.sh"],
