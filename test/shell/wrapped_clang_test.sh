@@ -80,6 +80,13 @@ function test_sdkroot_remapping() {
   expect_log "sdkroot=mysdkroot" "Expected sdkroot to be remapped."
 }
 
+function test_execroot_remapped() {
+  env DEVELOPER_DIR=dummy SDKROOT=mysdkroot \
+      "${WRAPPED_CLANG}" "-fdebug-prefix-map=__BAZEL_EXECROOT__=." \
+      >$TEST_log || fail "wrapped_clang failed";
+  expect_log "-fdebug-prefix-map=/" "Expected execroot to be remapped."
+}
+
 function test_params_expansion() {
   params=$(mktemp)
   {
