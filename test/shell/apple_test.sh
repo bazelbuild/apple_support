@@ -35,10 +35,9 @@ function set_up() {
 function test_apple_binary_crosstool_watchos() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 genrule(
   name = "lipo_run",
   srcs = [":main_binary_lipobin"],
@@ -155,10 +154,9 @@ EOF
 function test_apple_binary_dsym_builds() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(
     name = "main_binary",
     deps = [":main_lib"],
@@ -186,10 +184,9 @@ EOF
 function test_additive_cpus_flag() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 objc_library(
     name = "lib_a",
     srcs = ["a.m"],
@@ -234,10 +231,9 @@ EOF
 function test_apple_binary_spaces() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(
     name = "main_binary",
     deps = [":main_lib"],
@@ -266,10 +262,9 @@ EOF
 function test_apple_binary_crosstool_ios() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 objc_library(
     name = "lib_a",
     srcs = ["a.m"],
@@ -330,10 +325,9 @@ EOF
 function test_apple_binary_dsym_builds() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(
     name = "main_binary",
     deps = [":main_lib"],
@@ -361,10 +355,9 @@ EOF
 function test_fat_binary_no_srcs() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_binary_rule_in package
 
   cat > package/BUILD <<EOF
-load("//package:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 objc_library(
     name = "lib_a",
     srcs = ["a.m"],
