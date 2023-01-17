@@ -195,7 +195,6 @@ def _impl(ctx):
                             "-objc_abi_version",
                             "-Xlinker",
                             "2",
-                            "-fobjc-link-runtime",
                             "-ObjC",
                         ],
                     ),
@@ -238,7 +237,6 @@ def _impl(ctx):
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
-            "contains_objc_source",
             "has_configured_linker_path",
             "shared_flag",
             "linkstamps",
@@ -250,6 +248,7 @@ def _impl(ctx):
             "apple_env",
             "sysroot",
             "cpp_linker_flags",
+            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -450,7 +449,6 @@ def _impl(ctx):
                             "-objc_abi_version",
                             "-Xlinker",
                             "2",
-                            "-fobjc-link-runtime",
                             "-ObjC",
                         ],
                     ),
@@ -499,7 +497,6 @@ def _impl(ctx):
     cpp_link_executable_action = action_config(
         action_name = ACTION_NAMES.cpp_link_executable,
         implies = [
-            "contains_objc_source",
             "linkstamps",
             "output_execpath_flags",
             "runtime_root_flags",
@@ -510,6 +507,7 @@ def _impl(ctx):
             "apple_env",
             "sysroot",
             "cpp_linker_flags",
+            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -567,7 +565,6 @@ def _impl(ctx):
     cpp_link_nodeps_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_nodeps_dynamic_library,
         implies = [
-            "contains_objc_source",
             "has_configured_linker_path",
             "shared_flag",
             "linkstamps",
@@ -579,6 +576,7 @@ def _impl(ctx):
             "apple_env",
             "sysroot",
             "cpp_linker_flags",
+            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -900,60 +898,6 @@ def _impl(ctx):
         ],
     )
 
-    if (ctx.attr.cpu == "ios_arm64" or
-        ctx.attr.cpu == "ios_arm64e" or
-        ctx.attr.cpu == "ios_armv7" or
-        ctx.attr.cpu == "ios_i386" or
-        ctx.attr.cpu == "ios_x86_64" or
-        ctx.attr.cpu == "ios_sim_arm64" or
-        ctx.attr.cpu == "tvos_arm64" or
-        ctx.attr.cpu == "tvos_x86_64" or
-        ctx.attr.cpu == "tvos_sim_arm64" or
-        ctx.attr.cpu == "watchos_arm64_32" or
-        ctx.attr.cpu == "watchos_armv7k" or
-        ctx.attr.cpu == "watchos_i386" or
-        ctx.attr.cpu == "watchos_x86_64" or
-        ctx.attr.cpu == "watchos_arm64"):
-        contains_objc_source_feature = feature(
-            name = "contains_objc_source",
-            flag_sets = [
-                flag_set(
-                    actions = [
-                        ACTION_NAMES.cpp_link_dynamic_library,
-                        ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                        ACTION_NAMES.cpp_link_executable,
-                    ],
-                    flag_groups = [flag_group(flags = ["-fobjc-link-runtime"])],
-                ),
-                flag_set(
-                    actions = [
-                        ACTION_NAMES.cpp_link_dynamic_library,
-                        ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                        ACTION_NAMES.cpp_link_executable,
-                    ],
-                    flag_groups = [flag_group(flags = ["-framework", "UIKit"])],
-                ),
-            ],
-        )
-    elif (ctx.attr.cpu == "darwin_x86_64" or
-          ctx.attr.cpu == "darwin_arm64" or
-          ctx.attr.cpu == "darwin_arm64e"):
-        contains_objc_source_feature = feature(
-            name = "contains_objc_source",
-            flag_sets = [
-                flag_set(
-                    actions = [
-                        ACTION_NAMES.cpp_link_dynamic_library,
-                        ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                        ACTION_NAMES.cpp_link_executable,
-                    ],
-                    flag_groups = [flag_group(flags = ["-fobjc-link-runtime"])],
-                ),
-            ],
-        )
-    else:
-        contains_objc_source_feature = None
-
     includes_feature = feature(
         name = "includes",
         enabled = True,
@@ -1023,6 +967,7 @@ def _impl(ctx):
                             "-no-canonical-prefixes",
                             "-target",
                             target_system_name,
+                            "-fobjc-link-runtime",
                         ],
                     ),
                 ],
@@ -1474,7 +1419,7 @@ def _impl(ctx):
             name = "apply_implicit_frameworks",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", "objc++-executable"],
+                    actions = _DYNAMIC_LINK_ACTIONS,
                     flag_groups = [
                         flag_group(
                             flags = ["-framework", "Foundation", "-framework", "UIKit"],
@@ -1490,7 +1435,7 @@ def _impl(ctx):
             name = "apply_implicit_frameworks",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", "objc++-executable"],
+                    actions = _DYNAMIC_LINK_ACTIONS,
                     flag_groups = [flag_group(flags = ["-framework", "Foundation"])],
                     with_features = [with_feature_set(not_features = ["kernel_extension"])],
                 ),
@@ -2560,7 +2505,6 @@ def _impl(ctx):
         generate_dsym_file_feature,
         generate_linkmap_feature,
         oso_prefix_feature,
-        contains_objc_source_feature,
         objc_actions_feature,
         strip_debug_symbols_feature,
         shared_flag_feature,
