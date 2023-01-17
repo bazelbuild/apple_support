@@ -49,7 +49,6 @@ function test_build_app() {
 
   bazel build --verbose_failures --apple_platform_type=ios \
       --noincompatible_enable_cc_toolchain_resolution \
-      --ios_sdk_version="$IOS_SDK_VERSION" \
       //ios:lib >"$TEST_log" 2>&1 || fail "should pass"
   ls bazel-out/*/bin/ios/liblib.a \
       || fail "should generate lib.a"
@@ -75,7 +74,7 @@ int aFunction() {
 EOF
 
   bazel build --verbose_failures --apple_platform_type=ios \
-      --ios_sdk_version="$IOS_SDK_VERSION" //objclib:objclib >"$TEST_log" 2>&1 \
+      //objclib:objclib >"$TEST_log" 2>&1 \
       || fail "Should build objc_library"
 
   # Based on timezones, ar -tv may show the timestamp of the contents as either
@@ -123,7 +122,6 @@ EOF
   bazel build --verbose_failures \
       --noincompatible_enable_cc_toolchain_resolution \
       --apple_platform_type=ios \
-      --ios_sdk_version="$IOS_SDK_VERSION" \
       --objc_enable_binary_stripping=true \
       --compilation_mode=opt \
       //ios:app >"$TEST_log" 2>&1 || fail "should pass"

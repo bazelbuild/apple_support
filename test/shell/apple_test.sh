@@ -23,13 +23,7 @@ source "${CURRENT_DIR}/apple_common.sh" \
   || { echo "apple_common.sh not found!" >&2; exit 1; }
 
 function set_up() {
-  # copy_examples
   setup_objc_test_support
-
-  # Find the version number for an installed Xcode.
-  XCODE_VERSION=$(xcodebuild -version | grep ^Xcode | cut -d' ' -f2)
-
-  # create_new_workspace
 }
 
 function test_apple_binary_crosstool_watchos() {
@@ -103,7 +97,6 @@ EOF
   bazel build --verbose_failures //package:lipo_out \
       --noincompatible_enable_cc_toolchain_resolution \
       --watchos_cpus=armv7k \
-      --xcode_version="$XCODE_VERSION" \
       || fail "should build watch binary"
 
   grep "armv7k" bazel-bin/package/lipo_out \
@@ -112,7 +105,6 @@ EOF
   bazel build --verbose_failures //package:lipo_out \
       --noincompatible_enable_cc_toolchain_resolution \
       --watchos_cpus=i386 \
-      --xcode_version="$XCODE_VERSION" \
       || fail "should build watch binary"
 
   grep "i386" bazel-bin/package/lipo_out \
@@ -148,7 +140,6 @@ EOF
       --noincompatible_enable_cc_toolchain_resolution \
       --ios_multi_cpus=i386,x86_64 \
       --ios_minimum_os=8.0 \
-      --xcode_version="$XCODE_VERSION" \
       || fail "should build starlark_apple_static_library"
 }
 
@@ -178,7 +169,6 @@ EOF
 
   bazel build --verbose_failures //package:main_binary \
       --noincompatible_enable_cc_toolchain_resolution \
-      --xcode_version="$XCODE_VERSION" \
       --apple_generate_dsym=true \
       || fail "should build starlark_apple_binary with dSYMs"
 }
@@ -221,7 +211,7 @@ int main() {
 }
 EOF
 
-  bazel build --verbose_failures --xcode_version="$XCODE_VERSION" \
+  bazel build --verbose_failures \
       //package:lipo_out \
       --noincompatible_enable_cc_toolchain_resolution \
       --ios_multi_cpus=i386 --ios_multi_cpus=x86_64 \
@@ -258,7 +248,6 @@ EOF
   bazel build --verbose_failures //package:main_binary \
       --noincompatible_enable_cc_toolchain_resolution \
       --ios_multi_cpus=i386,x86_64 \
-      --xcode_version="$XCODE_VERSION" \
       --apple_generate_dsym=true \
       || fail "should build starlark_apple_binary with dSYMs"
 }
@@ -320,7 +309,6 @@ EOF
   bazel build --verbose_failures //package:lipo_out \
     --noincompatible_enable_cc_toolchain_resolution \
     --ios_multi_cpus=i386,x86_64 \
-    --xcode_version="$XCODE_VERSION" \
     || fail "should build starlark_apple_binary and obtain info via lipo"
 
   grep "i386 x86_64" bazel-bin/package/lipo_out \
@@ -353,7 +341,6 @@ EOF
 
   bazel build --verbose_failures //package:main_binary \
       --noincompatible_enable_cc_toolchain_resolution \
-      --xcode_version=$XCODE_VERSION \
       --apple_generate_dsym=true \
       || fail "should build starlark_apple_binary with dSYMs"
 }
@@ -396,7 +383,7 @@ int main() {
 }
 EOF
 
-  bazel build --verbose_failures --xcode_version=$XCODE_VERSION \
+  bazel build --verbose_failures \
       //package:lipo_out --ios_multi_cpus=i386,x86_64 \
       --noincompatible_enable_cc_toolchain_resolution \
       || fail "should build starlark_apple_binary and obtain info via lipo"
