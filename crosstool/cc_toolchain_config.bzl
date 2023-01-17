@@ -1847,7 +1847,7 @@ def _impl(ctx):
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                flag_groups = [flag_group(flags = ["-fdebug-prefix-map=__BAZEL_EXECROOT__=."])],
+                flag_groups = [flag_group(flags = ["-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=."])],
             ),
         ],
     )
@@ -2094,7 +2094,7 @@ def _impl(ctx):
             flag_set(
                 actions = all_link_actions +
                           ["objc-executable", "objc++-executable"],
-                flag_groups = [flag_group(flags = ["-Wl,-oso_prefix,__BAZEL_EXECROOT__/"])],
+                flag_groups = [flag_group(flags = ["-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/"])],
             ),
         ],
     )

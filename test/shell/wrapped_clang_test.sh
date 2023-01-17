@@ -82,7 +82,7 @@ function test_sdkroot_remapping() {
 
 function test_execroot_remapped() {
   env DEVELOPER_DIR=dummy SDKROOT=mysdkroot \
-      "${WRAPPED_CLANG}" "-fdebug-prefix-map=__BAZEL_EXECROOT__=." \
+      "${WRAPPED_CLANG}" "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=." \
       >$TEST_log || fail "wrapped_clang failed";
   expect_log "-fdebug-prefix-map=/" "Expected execroot to be remapped."
 }
