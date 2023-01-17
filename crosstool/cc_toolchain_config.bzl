@@ -705,10 +705,6 @@ def _impl(ctx):
     else:
         apply_default_compiler_flags_feature = None
 
-    dynamic_linking_mode_feature = feature(name = "dynamic_linking_mode")
-
-    compile_all_modules_feature = feature(name = "compile_all_modules")
-
     runtime_root_flags_feature = feature(
         name = "runtime_root_flags",
         flag_sets = [
@@ -878,10 +874,6 @@ def _impl(ctx):
         )
     else:
         apply_simulator_compiler_flags_feature = feature(name = "apply_simulator_compiler_flags")
-
-    fastbuild_feature = feature(name = "fastbuild")
-
-    no_legacy_features_feature = feature(name = "no_legacy_features")
 
     user_link_flags_feature = feature(
         name = "user_link_flags",
@@ -1163,8 +1155,6 @@ def _impl(ctx):
         ],
     )
 
-    opt_feature = feature(name = "opt")
-
     pch_feature = feature(
         name = "pch",
         enabled = True,
@@ -1188,8 +1178,6 @@ def _impl(ctx):
             ),
         ],
     )
-
-    coverage_feature = feature(name = "coverage")
 
     include_system_dirs_feature = feature(
         name = "include_system_dirs",
@@ -1499,10 +1487,6 @@ def _impl(ctx):
     else:
         apply_implicit_frameworks_feature = None
 
-    dbg_feature = feature(name = "dbg")
-
-    has_configured_linker_path_feature = feature(name = "has_configured_linker_path")
-
     random_seed_feature = feature(
         name = "random_seed",
         enabled = True,
@@ -1644,8 +1628,6 @@ def _impl(ctx):
             "c++-link-executable",
         ],
     )
-
-    module_maps_feature = feature(name = "module_maps", enabled = True)
 
     unfiltered_compile_flags_feature = feature(
         name = "unfiltered_compile_flags",
@@ -1795,8 +1777,6 @@ def _impl(ctx):
         ],
     )
 
-    exclude_private_headers_in_module_maps_feature = feature(name = "exclude_private_headers_in_module_maps")
-
     debug_prefix_map_pwd_is_dot_feature = feature(
         name = "debug_prefix_map_pwd_is_dot",
         enabled = True,
@@ -1891,8 +1871,6 @@ def _impl(ctx):
             ),
         ],
     )
-
-    only_doth_headers_in_module_maps_feature = feature(name = "only_doth_headers_in_module_maps")
 
     default_compile_flags_feature = feature(
         name = "default_compile_flags",
@@ -2542,18 +2520,22 @@ def _impl(ctx):
         ],
     )
 
-    archive_param_file_feature = feature(name = "archive_param_file")
-
     features = [
-        fastbuild_feature,
-        no_legacy_features_feature,
-        opt_feature,
-        dbg_feature,
+        # Marker features
+        feature(name = "archive_param_file"),
+        feature(name = "compile_all_modules"),
+        feature(name = "coverage"),
+        feature(name = "dbg"),
+        feature(name = "exclude_private_headers_in_module_maps"),
+        feature(name = "fastbuild"),
+        feature(name = "has_configured_linker_path"),
+        feature(name = "module_maps", enabled = True),
+        feature(name = "no_legacy_features"),
+        feature(name = "only_doth_headers_in_module_maps"),
+        feature(name = "opt"),
+
+        # Features with more configuration
         link_libcpp_feature,
-        compile_all_modules_feature,
-        exclude_private_headers_in_module_maps_feature,
-        has_configured_linker_path_feature,
-        only_doth_headers_in_module_maps_feature,
         default_compile_flags_feature,
         debug_prefix_map_pwd_is_dot_feature,
         remap_xcode_path_feature,
@@ -2572,7 +2554,6 @@ def _impl(ctx):
         input_param_flags_feature,
         force_pic_flags_feature,
         pch_feature,
-        module_maps_feature,
         apply_default_warnings_feature,
         includes_feature,
         include_paths_feature,
@@ -2588,7 +2569,6 @@ def _impl(ctx):
         fdo_optimize_feature,
         autofdo_feature,
         lipo_feature,
-        coverage_feature,
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
         apply_default_compiler_flags_feature,
@@ -2621,13 +2601,12 @@ def _impl(ctx):
         ubsan_feature,
         default_sanitizer_flags_feature,
         treat_warnings_as_errors_feature,
-        archive_param_file_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
         ctx.attr.cpu == "darwin_arm64" or
         ctx.attr.cpu == "darwin_arm64e"):
-        features.append(dynamic_linking_mode_feature)
+        features.append(feature(name = "dynamic_linking_mode"))
 
     # macOS artifact name patterns differ from the defaults only for dynamic
     # libraries.
