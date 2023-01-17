@@ -20,10 +20,6 @@ load(
     "escape_string",
     "resolve_labels",
 )
-load(
-    "@bazel_tools//tools/cpp:unix_cc_configure.bzl",
-    "get_env",
-)
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
@@ -173,7 +169,7 @@ def configure_osx_toolchain(repository_ctx):
         paths["@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl"],
         {
             "%{cc}": escape_string(cc_path),
-            "%{env}": escape_string(get_env(repository_ctx)),
+            "%{env}": "",
         },
     )
     repository_ctx.symlink(
