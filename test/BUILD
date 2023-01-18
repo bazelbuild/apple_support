@@ -66,3 +66,11 @@ universal_binary_test(
     cpu = "darwin_arm64",
     target_under_test = "//test/test_data:multi_arch_cc_binary",
 )
+
+# Consumed by bazel tests.
+filegroup(
+    name = "for_bazel_tests",
+    testonly = True,
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)

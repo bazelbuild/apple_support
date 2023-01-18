@@ -93,7 +93,6 @@ function test_strip_symbols() {
 
   rm -rf ios
   mkdir -p ios
-  make_starlark_apple_binary_rule_in ios
 
   cat >ios/main.m <<EOF
 #import <UIKit/UIKit.h>
@@ -111,7 +110,7 @@ int addOne(int num) {
 EOF
 
   cat >ios/BUILD <<EOF
-load("//ios:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(name = 'app',
                       deps = [':main'],
                       platform_type = 'ios')
