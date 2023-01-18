@@ -1544,13 +1544,7 @@ def _impl(ctx):
                 ],
             ),
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                    ACTION_NAMES.cpp_link_executable,
-                    "objc-executable",
-                    "objc++-executable",
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-fprofile-instr-generate"])],
             ),
         ],
@@ -2377,10 +2371,7 @@ def _impl(ctx):
         name = "generate_linkmap",
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -2434,13 +2425,7 @@ def _impl(ctx):
                 ],
             ),
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(flags = ["-fsanitize=address"]),
                 ],
@@ -2469,13 +2454,7 @@ def _impl(ctx):
                 ],
             ),
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(flags = ["-fsanitize=thread"]),
                 ],
@@ -2504,13 +2483,7 @@ def _impl(ctx):
                 ],
             ),
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-                    ACTION_NAMES.objc_executable,
-                    ACTION_NAMES.objcpp_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(flags = ["-fsanitize=undefined"]),
                 ],
