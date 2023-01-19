@@ -18,7 +18,6 @@ load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
 load(
     "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
     "escape_string",
-    "resolve_labels",
 )
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
@@ -138,22 +137,26 @@ def configure_osx_toolchain(repository_ctx):
     Returns:
       Whether or not configuration was successful
     """
-    paths = resolve_labels(repository_ctx, [
-        "@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl",
-        "@build_bazel_apple_support//crosstool:libtool.sh",
-        "@build_bazel_apple_support//crosstool:libtool_check_unique.cc",
-        "@build_bazel_apple_support//crosstool:make_hashed_objlist.py",
-        "@build_bazel_apple_support//crosstool:xcrunwrapper.sh",
-        "@build_bazel_apple_support//crosstool:BUILD.tpl",
-        "@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl",
-        "@build_bazel_apple_support//crosstool:wrapped_clang.cc",
-        "@bazel_tools//tools/osx:xcode_locator.m",
-    ])
 
-    (xcode_toolchains, xcodeloc_err) = run_xcode_locator(
-        repository_ctx,
-        paths["@bazel_tools//tools/osx:xcode_locator.m"],
-    )
+    # All Label resolutions done at the top of the function to avoid issues
+    # with starlark function restarts, see this:
+    # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
+    # for more info
+    xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
+    osx_cc_wrapper = Label("@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl")
+    xcrunwrapper = Label("@build_bazel_apple_support//crosstool:xcrunwrapper.sh")
+    libtool = Label("@build_bazel_apple_support//crosstool:libtool.sh")
+    make_hashed_objlist = Label("@build_bazel_apple_support//crosstool:make_hashed_objlist.py")
+    cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
+    build_template = Label("@build_bazel_apple_support//crosstool:BUILD.tpl")
+    libtool_check_unique_src_path = str(repository_ctx.path(
+        Label("@build_bazel_apple_support//crosstool:libtool_check_unique.cc"),
+    ))
+    wrapped_clang_src_path = str(repository_ctx.path(
+        Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
+    ))
+
+    (xcode_toolchains, xcodeloc_err) = run_xcode_locator(repository_ctx, xcode_locator)
     if not xcode_toolchains:
         return False
 
@@ -166,35 +169,17 @@ def configure_osx_toolchain(repository_ctx):
     cc_path = '"$(/usr/bin/dirname "$0")"/wrapped_clang'
     repository_ctx.template(
         "cc_wrapper.sh",
-        paths["@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl"],
+        osx_cc_wrapper,
         {
             "%{cc}": escape_string(cc_path),
             "%{env}": "",
         },
     )
-    repository_ctx.symlink(
-        paths["@build_bazel_apple_support//crosstool:xcrunwrapper.sh"],
-        "xcrunwrapper.sh",
-    )
-    repository_ctx.symlink(
-        paths["@build_bazel_apple_support//crosstool:libtool.sh"],
-        "libtool",
-    )
-    repository_ctx.symlink(
-        paths["@build_bazel_apple_support//crosstool:make_hashed_objlist.py"],
-        "make_hashed_objlist.py",
-    )
-    repository_ctx.symlink(
-        paths["@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl"],
-        "cc_toolchain_config.bzl",
-    )
-    libtool_check_unique_src_path = str(repository_ctx.path(
-        paths["@build_bazel_apple_support//crosstool:libtool_check_unique.cc"],
-    ))
+    repository_ctx.symlink(xcrunwrapper, "xcrunwrapper.sh")
+    repository_ctx.symlink(libtool, "libtool")
+    repository_ctx.symlink(make_hashed_objlist, "make_hashed_objlist.py")
+    repository_ctx.symlink(cc_toolchain_config, "cc_toolchain_config.bzl")
     _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
-    wrapped_clang_src_path = str(repository_ctx.path(
-        paths["@build_bazel_apple_support//crosstool:wrapped_clang.cc"],
-    ))
     _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
     repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
 
@@ -213,7 +198,7 @@ def configure_osx_toolchain(repository_ctx):
         escaped_cxx_include_directories.append("            # Error: " + xcodeloc_err)
     repository_ctx.template(
         "BUILD",
-        paths["@build_bazel_apple_support//crosstool:BUILD.tpl"],
+        build_template,
         {
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{tool_paths_overrides}": ",\n            ".join(
