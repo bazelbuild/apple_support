@@ -4,6 +4,7 @@ load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
+load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 
 licenses(["notice"])
 
@@ -73,4 +74,24 @@ filegroup(
     testonly = True,
     srcs = glob(["**"]),
     visibility = ["//:__pkg__"],
+)
+
+cc_binary(
+    name = "main_c",
+    srcs = ["main.c"],
+)
+
+cc_binary(
+    name = "main_cpp",
+    srcs = ["main.cc"],
+)
+
+objc_library(
+    name = "main_objc",
+    srcs = ["main.m"],
+)
+
+starlark_apple_binary(
+    name = "main_apple",
+    deps = ["main_objc"],
 )
