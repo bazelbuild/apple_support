@@ -2049,6 +2049,7 @@ def _impl(ctx):
                 flag_groups = [
                     flag_group(
                         flags = [
+                            "-Werror=incompatible-sysroot",
                             "-Wshorten-64-to-32",
                             "-Wbool-conversion",
                             "-Wconstant-conversion",
