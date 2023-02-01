@@ -18,6 +18,8 @@ load(
     "apple_support",
 )
 
+visibility("private")
+
 # Contents of the tool that writes the state of the action into a file. The first argument to this
 # script is the path to the output file.
 _TEST_TOOL_CONTENTS = """#!/bin/bash

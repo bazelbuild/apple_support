@@ -22,6 +22,8 @@ load(
     "xcode_support",
 )
 
+visibility("private")
+
 # Template for the test script used to validate that the action outputs contain the expected
 # values.
 _TEST_SCRIPT_CONTENTS = """

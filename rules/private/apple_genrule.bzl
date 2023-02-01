@@ -17,6 +17,8 @@
 load("//lib:apple_support.bzl", "apple_support")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 
+visibility("//rules")
+
 def _compute_make_variables(
         genfiles_dir,
         label,
