@@ -14,6 +14,8 @@
 
 """Support functions for working with Xcode configurations."""
 
+visibility("public")
+
 def _is_xcode_at_least_version(xcode_config, version):
     """Returns True if Xcode version is at least a given version.
 

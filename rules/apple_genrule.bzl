@@ -19,6 +19,8 @@ load(
     _apple_genrule_inner = "apple_genrule",
 )
 
+visibility("public")
+
 # buildozer: disable=function-docstring-args
 def apple_genrule(name, **kwargs):
     """Genrule which provides Apple specific environment and make variables."""

@@ -20,6 +20,8 @@ load(
     "shell",
 )
 
+visibility("public")
+
 def _create(
         *,
         actions,

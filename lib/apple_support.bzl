@@ -15,6 +15,8 @@
 
 load("@bazel_skylib//lib:types.bzl", "types")
 
+visibility("public")
+
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
 # invocation.
 _XCODE_PATH_RESOLVE_LEVEL = struct(
