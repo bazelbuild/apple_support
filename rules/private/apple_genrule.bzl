@@ -180,13 +180,17 @@ The set of make variables that are supported for this rule:
         root directory in the genfiles tree, even if all the generated
         files belong to the same subdirectory.
 
-The following environment variables are added to the rule action:
+The following environment variables are defined when the rule is executed:
 
 * `DEVELOPER_DIR`: The base developer directory as defined on Apple
                    architectures, most commonly used in invoking Apple
                    tools such as xcrun.
 * `SDKROOT`: The base SDK directory as defined on Apple architectures, most
              commonly used in invoking Apple tools such as xcrun.
+
+NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
+      variables. To refer to them in `cmd` you must use environment variable
+      syntax (i.e. using `$$`). Example: ```cmd = "xcrun --sdkroot $$SDKROOT clang...```
 """,
     exec_compatible_with = ["@platforms//os:macos"],
     output_to_genfiles = True,
