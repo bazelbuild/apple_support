@@ -1483,6 +1483,28 @@ def _impl(ctx):
         requires = [feature_set(features = ["coverage"])],
     )
 
+    coverage_prefix_map_feature = feature(
+        name = "coverage_prefix_map",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = ["-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=."],
+                    ),
+                ],
+            ),
+        ],
+        requires = [feature_set(features = ["coverage"])],
+    )
+
     force_pic_flags_feature = feature(
         name = "force_pic_flags",
         flag_sets = [
@@ -2519,6 +2541,7 @@ def _impl(ctx):
         lipo_feature,
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
+        coverage_prefix_map_feature,
         apply_default_compiler_flags_feature,
         include_system_dirs_feature,
         headerpad_feature,
