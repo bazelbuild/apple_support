@@ -1485,6 +1485,7 @@ def _impl(ctx):
 
     coverage_prefix_map_feature = feature(
         name = "coverage_prefix_map",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
