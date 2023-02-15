@@ -15,6 +15,9 @@ sh_library(
         "unittest.bash",
         "unittest_utils.sh",
     ],
+    deps = [
+        "@bazel_tools//tools/bash/runfiles",
+    ],
 )
 
 sh_library(
