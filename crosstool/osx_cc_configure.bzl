@@ -134,9 +134,13 @@ def configure_osx_toolchain(repository_ctx):
         Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
     ))
 
-    (xcode_toolchains, xcodeloc_err) = run_xcode_locator(repository_ctx, xcode_locator)
-    if not xcode_toolchains:
-        return False, xcodeloc_err
+    xcode_toolchains = []
+    xcodeloc_err = ""
+    allow_non_applications_xcode = "BAZEL_ALLOW_NON_APPLICATIONS_XCODE" in repository_ctx.os.environ and repository_ctx.os.environ["BAZEL_ALLOW_NON_APPLICATIONS_XCODE"] == "1"
+    if allow_non_applications_xcode:
+        (xcode_toolchains, xcodeloc_err) = run_xcode_locator(repository_ctx, xcode_locator)
+        if not xcode_toolchains:
+            return False, xcodeloc_err
 
     # For Xcode toolchains, there's no reason to use anything other than
     # wrapped_clang, so that we still get the Bazel Xcode placeholder
