@@ -31,12 +31,15 @@ load(
 )
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 
+# TODO: Remove when we drop bazel 6.x support
+_OBJCPP_EXECUTABLE_ACTION_NAME = "objc++-executable"
+
 _DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_dynamic_library,
     ACTION_NAMES.cpp_link_executable,
     ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ACTION_NAMES.objc_executable,
-    ACTION_NAMES.objcpp_executable,
+    _OBJCPP_EXECUTABLE_ACTION_NAME,
 ]
 
 def _target_os_version(ctx):
@@ -183,7 +186,7 @@ def _impl(ctx):
     )
 
     objcpp_executable_action = action_config(
-        action_name = "objc++-executable",
+        action_name = _OBJCPP_EXECUTABLE_ACTION_NAME,
         flag_sets = [
             flag_set(
                 flag_groups = [
@@ -1050,7 +1053,7 @@ def _impl(ctx):
             flag_set(
                 actions = [
                     "objc-executable",
-                    "objc++-executable",
+                    _OBJCPP_EXECUTABLE_ACTION_NAME,
                 ],
                 flag_groups = [
                     flag_group(
@@ -1140,7 +1143,7 @@ def _impl(ctx):
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                     "objc-executable",
-                    "objc++-executable",
+                    _OBJCPP_EXECUTABLE_ACTION_NAME,
                     ACTION_NAMES.assemble,
                     ACTION_NAMES.preprocess_assemble,
                 ],
@@ -1589,7 +1592,7 @@ def _impl(ctx):
             "objc-fully-link",
             "objc-archive",
             "objc-executable",
-            "objc++-executable",
+            _OBJCPP_EXECUTABLE_ACTION_NAME,
             "assemble",
             "preprocess-assemble",
             "c-compile",
@@ -2024,12 +2027,12 @@ def _impl(ctx):
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                     "objc-executable",
-                    "objc++-executable",
+                    _OBJCPP_EXECUTABLE_ACTION_NAME,
                 ],
                 flag_groups = [flag_group(flags = ["-g"])],
             ),
             flag_set(
-                actions = ["objc-executable", "objc++-executable"],
+                actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -2049,7 +2052,7 @@ def _impl(ctx):
             name = "kernel_extension",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", "objc++-executable"],
+                    actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
                     flag_groups = [
                         flag_group(
                             flags = [
@@ -2203,7 +2206,7 @@ def _impl(ctx):
             name = "link_cocoa",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", "objc++-executable"],
+                    actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
                     flag_groups = [flag_group(flags = ["-framework", "Cocoa"])],
                 ),
             ],
