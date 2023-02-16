@@ -32,6 +32,7 @@ load(
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 
 # TODO: Remove when we drop bazel 6.x support
+_OBJC_ARCHIVE_ACTION_NAME = "objc-archive"
 _OBJCPP_EXECUTABLE_ACTION_NAME = "objc++-executable"
 
 _DYNAMIC_LINK_ACTIONS = [
@@ -414,7 +415,7 @@ def _impl(ctx):
     )
 
     objc_archive_action = action_config(
-        action_name = "objc-archive",
+        action_name = _OBJC_ARCHIVE_ACTION_NAME,
         flag_sets = [
             flag_set(
                 flag_groups = [
@@ -1369,7 +1370,7 @@ def _impl(ctx):
                     ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    "objc-archive",
+                    _OBJC_ARCHIVE_ACTION_NAME,
                     "objc-fully-link",
                     ACTION_NAMES.cpp_link_static_library,
                     ACTION_NAMES.linkstamp_compile,
@@ -1590,7 +1591,7 @@ def _impl(ctx):
             "objc-compile",
             "objc++-compile",
             "objc-fully-link",
-            "objc-archive",
+            _OBJC_ARCHIVE_ACTION_NAME,
             "objc-executable",
             _OBJCPP_EXECUTABLE_ACTION_NAME,
             "assemble",
@@ -1641,7 +1642,7 @@ def _impl(ctx):
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS + [
                     ACTION_NAMES.cpp_link_static_library,
-                    "objc-archive",
+                    _OBJC_ARCHIVE_ACTION_NAME,
                     ACTION_NAMES.objc_fully_link,
                 ],
                 flag_groups = [
