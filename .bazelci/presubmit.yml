@@ -46,7 +46,7 @@ tasks:
 
   macos_last_green:
     name: "Last Green Bazel"
-    bazel: last_green
+    bazel: 1a6ffe6d453708e3cefc98a07965c680e48d6bac
     <<: *common
 
   macos_latest_head_deps:
@@ -66,7 +66,7 @@ tasks:
 
   macos_last_green_vendored_toolchain:
     name: "Last Green Bazel vendored toolchain"
-    bazel: last_green
+    bazel: 1a6ffe6d453708e3cefc98a07965c680e48d6bac
     <<: *common
     <<: *toolchain_flags
 
