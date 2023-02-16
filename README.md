@@ -46,6 +46,17 @@ Xcode Command Line Tools. If you only need to build for macOS and don't
 want to require a full Xcode installation in your build, use the builtin
 Unix toolchain provided by Bazel.
 
+### bzlmod
+
+If you're using bzlmod with the `--crosstool_top` configurations you
+must expose the `local_config_apple_cc` repository to your project by
+putting this in your `MODULE.bazel`:
+
+```bzl
+apple_cc_configure = use_extension("@build_bazel_apple_support//crosstool:setup.bzl", "apple_cc_configure_extension")
+use_repo(apple_cc_configure, "local_config_apple_cc")
+```
+
 ### Incompatible toolchain resolution
 
 Bazel is currently working on migrating C++ toolchain configuration to a
