@@ -64,7 +64,7 @@ def _compile_cc_file_single_arch(repository_ctx, src_name, out_name):
         "-o",
         out_name,
         src_name,
-    ], 60)
+    ])
     if (xcrun_result.return_code != 0):
         error_msg = (
             "return code {code}, stderr: {err}, stdout: {out}"
@@ -100,7 +100,7 @@ def _compile_cc_file(repository_ctx, src_name, out_name):
         "-o",
         out_name,
         src_name,
-    ], 60)
+    ])
 
     if xcrun_result.return_code == 0:
         xcrun_result = repository_ctx.execute([
@@ -113,7 +113,7 @@ def _compile_cc_file(repository_ctx, src_name, out_name):
             "--sign",
             "-",
             out_name,
-        ], 60)
+        ])
         if xcrun_result.return_code != 0:
             error_msg = (
                 "codesign return code {code}, stderr: {err}, stdout: {out}"
