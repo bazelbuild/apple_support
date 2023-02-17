@@ -1657,6 +1657,7 @@ def _impl(ctx):
 
     relative_ast_path_feature = feature(
         name = "relative_ast_path",
+        enabled = True,
         env_sets = [
             env_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
@@ -1777,6 +1778,7 @@ def _impl(ctx):
 
     remap_xcode_path_feature = feature(
         name = "remap_xcode_path",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
@@ -2010,6 +2012,7 @@ def _impl(ctx):
 
     oso_prefix_feature = feature(
         name = "oso_prefix_is_pwd",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
