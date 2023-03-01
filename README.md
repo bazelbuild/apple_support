@@ -77,10 +77,11 @@ toolchain works. Here are some of the more commonly useful ones:
   changes, which ensures that toolchain binaries will be rebuilt with
   the new version of Xcode so that caches are correctly shared across
   machines.
-- Setting `BAZEL_ALLOW_NON_APPLICATIONS_XCODE` in the environment allows
-  the toolchain to discover Xcode versions outside of the
-  `/Applications` to avoid header inclusion errors from bazel. This is
-  not enabled by default because `/Applications` is the standard
-  directory, and this improves toolchain setup performance.
+- Setting `BAZEL_ALLOW_NON_APPLICATIONS_XCODE=1` in the environment (or
+  using `--repo_env`) allows the toolchain to discover Xcode versions
+  outside of the `/Applications` directory to avoid header inclusion
+  errors from bazel. This is not enabled by default because
+  `/Applications` is the standard directory, and this improves toolchain
+  setup performance.
 
 [rules_apple]: https://github.com/bazelbuild/rules_apple
