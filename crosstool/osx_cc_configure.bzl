@@ -136,7 +136,7 @@ def configure_osx_toolchain(repository_ctx):
 
     (xcode_toolchains, xcodeloc_err) = run_xcode_locator(repository_ctx, xcode_locator)
     if not xcode_toolchains:
-        return False
+        return False, xcodeloc_err
 
     # For Xcode toolchains, there's no reason to use anything other than
     # wrapped_clang, so that we still get the Bazel Xcode placeholder
@@ -185,4 +185,4 @@ def configure_osx_toolchain(repository_ctx):
         },
     )
 
-    return True
+    return True, ""
