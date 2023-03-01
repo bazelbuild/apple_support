@@ -36,8 +36,8 @@ def _apple_cc_autoconf_impl(repository_ctx):
     if should_disable:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
     elif repository_ctx.os.name.startswith("mac os"):
-        failed, error = configure_osx_toolchain(repository_ctx)
-        if failed:
+        success, error = configure_osx_toolchain(repository_ctx)
+        if not success:
             fail("Failed to configure Apple CC toolchain, if you only have the command line tools installed and not Xcode, you cannot use this toolchain. You should either remove it or temporarily set '{}=1' in the environment: {}".format(_DISABLE_ENV_VAR, error))
     else:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled because you're not on macOS")
