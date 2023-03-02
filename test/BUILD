@@ -5,6 +5,7 @@ load(":apple_support_test.bzl", "apple_support_test")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
+load(":linking_tests.bzl", "linking_test_suite")
 
 licenses(["notice"])
 
@@ -12,6 +13,8 @@ licenses(["notice"])
 apple_support_test(name = "apple_support_test")
 
 xcode_support_test(name = "xcode_support_test")
+
+linking_test_suite(name = "linking")
 
 # Test to ensure the environment variable contract of apple_genrule.
 sh_test(
