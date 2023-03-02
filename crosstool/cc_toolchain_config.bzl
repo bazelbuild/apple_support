@@ -186,6 +186,18 @@ def _impl(ctx):
         ],
     )
 
+    objc_link_flag_feature = feature(
+        name = "objc_link_flag",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [flag_group(flags = ["-ObjC"])],
+                with_features = [with_feature_set(not_features = ["kernel_extension"])],
+            ),
+        ],
+    )
+
     objcpp_executable_action = action_config(
         action_name = _OBJCPP_EXECUTABLE_ACTION_NAME,
         flag_sets = [
@@ -197,7 +209,6 @@ def _impl(ctx):
                             "-objc_abi_version",
                             "-Xlinker",
                             "2",
-                            "-ObjC",
                         ],
                     ),
                 ],
@@ -457,7 +468,6 @@ def _impl(ctx):
                             "-objc_abi_version",
                             "-Xlinker",
                             "2",
-                            "-ObjC",
                         ],
                     ),
                 ],
@@ -2530,6 +2540,7 @@ def _impl(ctx):
         archiver_flags_feature,
         runtime_root_flags_feature,
         input_param_flags_feature,
+        objc_link_flag_feature,
         force_pic_flags_feature,
         pch_feature,
         apply_default_warnings_feature,
