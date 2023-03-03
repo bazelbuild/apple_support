@@ -17,22 +17,6 @@ disable_objc_test = make_action_command_line_test_rule(
 
 def linking_test_suite(name):
     default_test(
-        name = "{}_default_link_test".format(name),
-        tags = [name],
-        expected_argv = ["-ObjC"],
-        mnemonic = "CppLink",
-        target_under_test = "//test/test_data:cc_test_binary",
-    )
-
-    disable_objc_test(
-        name = "{}_disable_objc_link_test".format(name),
-        tags = [name],
-        not_expected_argv = ["-ObjC"],
-        mnemonic = "CppLink",
-        target_under_test = "//test/test_data:cc_test_binary",
-    )
-
-    default_test(
         name = "{}_default_apple_link_test".format(name),
         tags = [name],
         expected_argv = [

@@ -191,7 +191,7 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
+                actions = [ACTION_NAMES.objc_executable, _OBJCPP_EXECUTABLE_ACTION_NAME],
                 flag_groups = [flag_group(flags = ["-ObjC"])],
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
