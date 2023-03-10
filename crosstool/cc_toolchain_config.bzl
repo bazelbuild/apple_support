@@ -982,6 +982,17 @@ def _impl(ctx):
                     ),
                 ],
             ),
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = ctx.attr.default_linker_args,
+                    ),
+                ],
+                with_features = [
+                    with_feature_set(not_features = ["alternate_linker"]),
+                ],
+            ),
         ],
     )
 
@@ -1001,6 +1012,22 @@ def _impl(ctx):
                 ],
                 with_features = [
                     with_feature_set(not_features = ["opt"]),
+                ],
+            ),
+        ],
+    )
+
+    alternate_linker_feature = feature(
+        name = "alternate_linker",
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "--ld-path={}".format(ctx.file.alternate_linker_path.path),
+                        ] + ctx.attr.alternate_linker_args,
+                    ),
                 ],
             ),
         ],
@@ -2574,6 +2601,7 @@ def _impl(ctx):
         default_link_flags_feature,
         no_deduplicate_feature,
         dead_strip_feature,
+        alternate_linker_feature,
         cpp_linker_flags_feature,
         apply_implicit_frameworks_feature,
         link_cocoa_feature,
@@ -2665,6 +2693,9 @@ cc_toolchain_config = rule(
         "cxx_builtin_include_directories": attr.string_list(),
         "tool_paths_overrides": attr.string_dict(),
         "extra_env": attr.string_dict(),
+        "default_linker_args": attr.string_list(),
+        "alternate_linker_path": attr.label(allow_single_file = True),
+        "alternate_linker_args": attr.string_list(),
         "_xcode_config": attr.label(default = configuration_field(
             fragment = "apple",
             name = "xcode_config_label",

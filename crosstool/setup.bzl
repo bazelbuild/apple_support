@@ -36,7 +36,12 @@ def _apple_cc_autoconf_impl(repository_ctx):
     if should_disable:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
     elif repository_ctx.os.name.startswith("mac os"):
-        success, error = configure_osx_toolchain(repository_ctx)
+        success, error = configure_osx_toolchain(
+            repository_ctx = repository_ctx,
+            alternate_linker_path = repository_ctx.attr.alternate_linker_path,
+            alternate_linker_args = repository_ctx.attr.alternate_linker_args,
+            default_linker_args = repository_ctx.attr.default_linker_args,
+        )
         if not success:
             fail("Failed to configure Apple CC toolchain, if you only have the command line tools installed and not Xcode, you cannot use this toolchain. You should either remove it or temporarily set '{}=1' in the environment: {}".format(_DISABLE_ENV_VAR, error))
     else:
@@ -52,6 +57,11 @@ _apple_cc_autoconf = repository_rule(
     ],
     implementation = _apple_cc_autoconf_impl,
     configure = True,
+    attrs = {
+        "alternate_linker_path": attr.label(allow_single_file = True),
+        "alternate_linker_args": attr.string_list(),
+        "default_linker_args": attr.string_list(),
+    },
 )
 
 # buildifier: disable=unnamed-macro
@@ -63,8 +73,36 @@ def apple_cc_configure():
         "@local_config_apple_cc_toolchains//:all",
     )
 
-def _apple_cc_configure_extension_impl(_):
+def _apple_cc_configure_extension_impl(module_ctx):
     _apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
-    _apple_cc_autoconf(name = "local_config_apple_cc")
 
-apple_cc_configure_extension = module_extension(implementation = _apple_cc_configure_extension_impl)
+    root_modules = [m for m in module_ctx.modules if m.is_root and m.tags.setup]
+    if len(root_modules) > 1:
+        fail("Expected at most one root module, found {}".format(", ".join([x.name for x in root_modules])))
+
+    if root_modules:
+        root_module = root_modules[0]
+    else:
+        root_module = module_ctx.modules[0]
+
+    kwargs = {}
+    if root_module.tags.setup:
+        kwargs["alternate_linker_path"] = root_module.tags.setup[0].alternate_linker_path
+        kwargs["alternate_linker_args"] = root_module.tags.setup[0].alternate_linker_args
+        kwargs["default_linker_args"] = root_module.tags.setup[0].default_linker_args
+
+    _apple_cc_autoconf(
+        name = "local_config_apple_cc",
+        **kwargs
+    )
+
+apple_cc_configure_extension = module_extension(
+    implementation = _apple_cc_configure_extension_impl,
+    tag_classes = {
+        "setup": tag_class(attrs = {
+            "alternate_linker_path": attr.label(allow_single_file = True),
+            "alternate_linker_args": attr.string_list(),
+            "default_linker_args": attr.string_list(),
+        }),
+    },
+)

@@ -106,7 +106,12 @@ def _compile_cc_file(repository_ctx, src_name, out_name):
              "https://github.com/bazelbuild/apple_support/issues with the following:\n" +
              error_msg)
 
-def configure_osx_toolchain(repository_ctx):
+def configure_osx_toolchain(
+        *,
+        repository_ctx,
+        alternate_linker_path,
+        alternate_linker_args,
+        default_linker_args):
     """Configure C++ toolchain on macOS.
 
     Args:
@@ -186,6 +191,9 @@ def configure_osx_toolchain(repository_ctx):
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),
+            "%{alternate_linker_path}": '"{}"'.format(alternate_linker_path) if alternate_linker_path else "None",
+            "%{alternate_linker_args}": ",\n".join(['"{}"'.format(arg) for arg in alternate_linker_args]),
+            "%{default_linker_args}": ",\n".join(['"{}"'.format(arg) for arg in default_linker_args]),
         },
     )
 

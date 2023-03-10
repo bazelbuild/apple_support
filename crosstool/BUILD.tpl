@@ -104,6 +104,13 @@ cc_toolchain_suite(
 %{cxx_builtin_include_directories}
         ],
         tool_paths_overrides = {%{tool_paths_overrides}},
+        alternate_linker_path = %{alternate_linker_path},
+        alternate_linker_args = [
+%{alternate_linker_args}
+        ],
+        default_linker_args = [
+%{default_linker_args}
+        ],
     )
     for arch in OSX_TOOLS_ARCHS
 ]
