@@ -30,10 +30,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <array>
 #include <cerrno>
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -258,13 +260,13 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path,
+                     std::string &dsym_path, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
                          bool relative_ast_path, std::string &linked_binary,
-                         std::string &dsym_path,
+                         std::string &dsym_path, std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -278,7 +280,8 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    relative_ast_path, linked_binary, dsym_path, consumer);
+                    relative_ast_path, linked_binary, dsym_path,
+                    toolchain_path, consumer);
   }
 
   return true;
@@ -292,16 +295,54 @@ std::string GetCurrentDirectory() {
   return cwd;
 }
 
+std::string exec(std::string cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+    if (!pipe) {
+      std::cerr << "Error: failed to open pipe to '" << cmd << "'" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+      result += buffer.data();
+    }
+    return result;
+}
+
+std::string GetToolchainPath(const std::string &toolchain_id) {
+  // NOTE: This requires all toolchains to contain a 'clang' executable. This
+  // is true today for custom Swift toolchains, but could change in the future.
+  std::string output = exec("xcrun --find clang --toolchain " + toolchain_id);
+
+  if (output.empty()) {
+    std::cerr << "Error: TOOLCHAINS was set to '" << toolchain_id
+      << "' but no toolchain with that ID was found" << std::endl;
+    exit(EXIT_FAILURE);
+  } else if (output.find("XcodeDefault.xctoolchain") != std::string::npos) {
+    // NOTE: Ideally xcrun would fail if the toolchain we asked for didn't exist
+    // but it falls back to the DEVELOPER_DIR instead, so we have to check the
+    // output ourselves.
+    std::cerr << "Error: TOOLCHAINS was set to '" << toolchain_id
+      << "' but the default toolchain was found, that likely means a matching "
+      << "toolchain isn't installed" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::filesystem::path toolchain_path(output);
+  // Remove usr/bin/clang components to get the root of the custom toolchain
+  return toolchain_path.parent_path().parent_path().parent_path();
+}
+
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path,
+                     std::string &dsym_path, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
     if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
                             relative_ast_path, linked_binary, dsym_path,
-                            consumer)) {
+                            toolchain_path, consumer)) {
       return;
     }
   }
@@ -316,6 +357,9 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
+  if (!toolchain_path.empty()) {
+    FindAndReplace("__BAZEL_CUSTOM_XCODE_TOOLCHAIN_PATH__", toolchain_path, &new_arg);
+  }
 
   // Make the `add_ast_path` options used to embed Swift module references
   // absolute to enable Swift debugging without dSYMs: see
@@ -350,6 +394,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  const char *toolchain_id = getenv("TOOLCHAINS");
+  std::string toolchain_path = "";
+  if (toolchain_id != nullptr) {
+    toolchain_path = GetToolchainPath(toolchain_id);
+  }
+
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
   std::string linked_binary, dsym_path;
@@ -366,7 +416,7 @@ int main(int argc, char *argv[]) {
     std::string arg(argv[i]);
 
     ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
-                    linked_binary, dsym_path, consumer);
+                    linked_binary, dsym_path, toolchain_path, consumer);
   }
 
   // Special mode that only prints the command. Used for testing.
