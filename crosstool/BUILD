@@ -11,6 +11,7 @@ cc_binary(
     srcs = [
         "wrapped_clang.cc",
     ],
+    copts = ["-std=c++17"],
 )
 
 # Consumed by bazel tests.
