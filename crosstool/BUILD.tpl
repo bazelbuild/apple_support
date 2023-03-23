@@ -1,37 +1,17 @@
 package(default_visibility = ["//visibility:public"])
 
-OSX_TOOLS_NON_DEVICE_ARCHS = [
-    "darwin_x86_64",
-    "darwin_arm64",
-    "darwin_arm64e",
-    "ios_i386",
-    "ios_x86_64",
-    "ios_sim_arm64",
-    "watchos_arm64",
-    "watchos_i386",
-    "watchos_x86_64",
-    "tvos_x86_64",
-    "tvos_sim_arm64",
-]
-
-OSX_TOOLS_ARCHS = [
-    "ios_armv7",
-    "ios_arm64",
-    "ios_arm64e",
-    "watchos_armv7k",
-    "watchos_arm64_32",
-    "tvos_arm64",
-] + OSX_TOOLS_NON_DEVICE_ARCHS
-
+load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+
+_APPLE_ARCHS = APPLE_PLATFORMS_CONSTRAINTS.keys()
 
 CC_TOOLCHAINS = [(
     cpu + "|clang",
     ":cc-compiler-" + cpu,
-) for cpu in OSX_TOOLS_ARCHS] + [(
+) for cpu in _APPLE_ARCHS] + [(
     cpu,
     ":cc-compiler-" + cpu,
-) for cpu in OSX_TOOLS_ARCHS] + [
+) for cpu in _APPLE_ARCHS] + [
     ("k8|clang", ":cc-compiler-darwin_x86_64"),
     ("darwin|clang", ":cc-compiler-darwin_x86_64"),
     ("k8", ":cc-compiler-darwin_x86_64"),
@@ -74,7 +54,7 @@ cc_toolchain_suite(
             ":xcrunwrapper.sh",
         ],
     )
-    for arch in OSX_TOOLS_ARCHS
+    for arch in _APPLE_ARCHS
 ]
 
 [
@@ -92,7 +72,7 @@ cc_toolchain_suite(
         toolchain_config = arch,
         toolchain_identifier = arch,
     )
-    for arch in OSX_TOOLS_ARCHS
+    for arch in _APPLE_ARCHS
 ]
 
 [
@@ -105,5 +85,5 @@ cc_toolchain_suite(
         ],
         tool_paths_overrides = {%{tool_paths_overrides}},
     )
-    for arch in OSX_TOOLS_ARCHS
+    for arch in _APPLE_ARCHS
 ]
