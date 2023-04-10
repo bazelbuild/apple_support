@@ -12,6 +12,7 @@ filegroup(
 # Constraint indicating the target environment (e.g. device, simulator).
 constraint_setting(
     name = "target_environment",
+    default_constraint_value = ":device",
     visibility = ["//visibility:private"],
 )
 
