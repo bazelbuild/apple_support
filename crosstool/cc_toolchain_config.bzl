@@ -2262,77 +2262,9 @@ def _impl(ctx):
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-headerpad_max_install_names"])],
-                with_features = [with_feature_set(not_features = [
-                    "bitcode_embedded",
-                    "bitcode_embedded_markers",
-                ])],
             ),
         ],
     )
-
-    if (ctx.attr.cpu == "ios_arm64" or
-        ctx.attr.cpu == "ios_arm64e" or
-        ctx.attr.cpu == "ios_armv7" or
-        ctx.attr.cpu == "tvos_arm64" or
-        ctx.attr.cpu == "watchos_arm64_32" or
-        ctx.attr.cpu == "watchos_armv7k" or
-        ctx.attr.cpu == "darwin_x86_64" or
-        ctx.attr.cpu == "darwin_arm64" or
-        ctx.attr.cpu == "darwin_arm64e"):
-        bitcode_embedded_feature = feature(
-            name = "bitcode_embedded",
-            flag_sets = [
-                flag_set(
-                    actions = [
-                        ACTION_NAMES.c_compile,
-                        ACTION_NAMES.cpp_compile,
-                        ACTION_NAMES.objc_compile,
-                        ACTION_NAMES.objcpp_compile,
-                    ],
-                    flag_groups = [flag_group(flags = ["-fembed-bitcode"])],
-                ),
-                flag_set(
-                    actions = _DYNAMIC_LINK_ACTIONS,
-                    flag_groups = [
-                        flag_group(
-                            flags = [
-                                "-fembed-bitcode",
-                                "-Xlinker",
-                                "-bitcode_verify",
-                                "-Xlinker",
-                                "-bitcode_hide_symbols",
-                                "-Xlinker",
-                                "-bitcode_symbol_map",
-                                "-Xlinker",
-                                "%{bitcode_symbol_map_path}",
-                            ],
-                            expand_if_available = "bitcode_symbol_map_path",
-                        ),
-                    ],
-                ),
-            ],
-        )
-        bitcode_embedded_markers_feature = feature(
-            name = "bitcode_embedded_markers",
-            flag_sets = [
-                flag_set(
-                    actions = [
-                        ACTION_NAMES.c_compile,
-                        ACTION_NAMES.cpp_compile,
-                        ACTION_NAMES.objc_compile,
-                        ACTION_NAMES.objcpp_compile,
-                    ],
-                    flag_groups = [flag_group(flags = ["-fembed-bitcode-marker"])],
-                ),
-                flag_set(
-                    actions = _DYNAMIC_LINK_ACTIONS,
-                    flag_groups = [flag_group(flags = ["-fembed-bitcode-marker"])],
-                ),
-            ],
-        )
-    else:
-        bitcode_embedded_markers_feature = feature(name = "bitcode_embedded_markers")
-        bitcode_embedded_feature = feature(name = "bitcode_embedded")
 
     generate_linkmap_feature = feature(
         name = "generate_linkmap",
@@ -2564,8 +2496,6 @@ def _impl(ctx):
         apply_default_compiler_flags_feature,
         include_system_dirs_feature,
         headerpad_feature,
-        bitcode_embedded_feature,
-        bitcode_embedded_markers_feature,
         objc_arc_feature,
         no_objc_arc_feature,
         apple_env_feature,
