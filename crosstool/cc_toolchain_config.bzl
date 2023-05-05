@@ -350,7 +350,7 @@ def _impl(ctx):
                             "-target",
                             target_system_name,
                             "-stdlib=libc++",
-                            "-std=gnu++11",
+                            "-std=gnu++14",
                         ],
                     ),
                 ],
@@ -1989,7 +1989,7 @@ def _impl(ctx):
                     ACTION_NAMES.lto_backend,
                     ACTION_NAMES.clif_match,
                 ],
-                flag_groups = [flag_group(flags = ["-std=c++11"])],
+                flag_groups = [flag_group(flags = ["-std=c++14"])],
             ),
         ],
     )
