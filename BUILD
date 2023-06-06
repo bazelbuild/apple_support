@@ -2,6 +2,10 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 licenses(["notice"])
 
+package(
+    default_visibility = ["//visibility:private"],
+)
+
 exports_files(["LICENSE"])
 
 # An umbrella bzl_library for anything that needs it (like to then use stardoc),

@@ -1,6 +1,8 @@
 # Standard constraint_settings and constraint_values for items common to rules_swift and rules_apple.
 
-package(default_visibility = ["//visibility:public"])
+package(
+    default_visibility = ["//visibility:public"],
+)
 
 licenses(["notice"])
 
