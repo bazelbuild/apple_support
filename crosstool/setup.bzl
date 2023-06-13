@@ -45,10 +45,11 @@ def _apple_cc_autoconf_impl(repository_ctx):
 _apple_cc_autoconf = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
-        "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain
         "DEVELOPER_DIR",  # Used for making sure we use the right Xcode for compiling toolchain binaries
         "GCOV",  # TODO: Remove this
+        "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain
         "USER",  # Used to allow paths for custom toolchains to be used by C* compiles
+        "XCODE_VERSION",  # Force re-computing the toolchain by including the current Xcode version info in an env var
     ],
     implementation = _apple_cc_autoconf_impl,
     configure = True,
