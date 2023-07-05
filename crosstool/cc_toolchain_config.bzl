@@ -1804,7 +1804,7 @@ def _impl(ctx):
                     ACTION_NAMES.objcpp_compile,
                 ],
                 flag_groups = [flag_group(flags = [
-                    "-fdebug-prefix-map=__BAZEL_XCODE_DEVELOPER_DIR__=DEVELOPER_DIR",
+                    "-fdebug-prefix-map=__BAZEL_XCODE_DEVELOPER_DIR__=/PLACEHOLDER_DEVELOPER_DIR",
                 ])],
             ),
         ],
