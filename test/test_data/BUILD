@@ -39,3 +39,30 @@ starlark_apple_binary(
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":cc_main"],
 )
+
+cc_library(
+    name = "cc_lib",
+    srcs = ["lib.cc"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+objc_library(
+    name = "objc_lib",
+    srcs = ["lib.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = ["cc_lib"],
+)
+
+objc_library(
+    name = "objc_main",
+    srcs = ["main.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = ["objc_lib"],
+)
+
+starlark_apple_binary(
+    name = "visionos_binary",
+    platform_type = "visionos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":objc_main"],
+)

@@ -55,6 +55,8 @@ def _impl(ctx):
         target_system_name = "arm64-apple-ios{}".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_arm64"):
         target_system_name = "arm64-apple-tvos{}".format(target_os_version)
+    elif (ctx.attr.cpu == "visionos_arm64"):
+        target_system_name = "arm64-apple-xros{}".format(target_os_version)
     elif (ctx.attr.cpu == "watchos_arm64_32"):
         target_system_name = "arm64_32-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "ios_arm64e"):
@@ -73,6 +75,8 @@ def _impl(ctx):
         target_system_name = "arm64-apple-ios{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_sim_arm64"):
         target_system_name = "arm64-apple-tvos{}-simulator".format(target_os_version)
+    elif (ctx.attr.cpu == "visionos_sim_arm64"):
+        target_system_name = "arm64-apple-xros{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "watchos_arm64"):
         target_system_name = "arm64-apple-watchos{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "darwin_x86_64"):
@@ -83,6 +87,8 @@ def _impl(ctx):
         target_system_name = "arm64e-apple-macosx{}".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_x86_64"):
         target_system_name = "x86_64-apple-tvos{}-simulator".format(target_os_version)
+    elif (ctx.attr.cpu == "visionos_x86_64"):
+        target_system_name = "x86_64-apple-xros{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "watchos_x86_64"):
         target_system_name = "x86_64-apple-watchos{}-simulator".format(target_os_version)
     else:
@@ -101,7 +107,7 @@ def _impl(ctx):
         abi_version = "local"
 
     arch = ctx.attr.cpu.split("_", 1)[-1]
-    if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "watchos_arm64"]:
+    if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "visionos_sim_arm64", "watchos_arm64"]:
         arch = "arm64"
 
     all_link_actions = [
@@ -675,8 +681,11 @@ def _impl(ctx):
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_armv7" or
         ctx.attr.cpu == "ios_i386" or
-        ctx.attr.cpu == "ios_x86_64" or
         ctx.attr.cpu == "ios_sim_arm64" or
+        ctx.attr.cpu == "ios_x86_64" or
+        ctx.attr.cpu == "visionos_arm64" or
+        ctx.attr.cpu == "visionos_sim_arm64" or
+        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_i386" or
@@ -864,6 +873,8 @@ def _impl(ctx):
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "tvos_x86_64" or
         ctx.attr.cpu == "tvos_sim_arm64" or
+        ctx.attr.cpu == "visionos_sim_arm64" or
+        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "watchos_i386" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
@@ -1413,6 +1424,9 @@ def _impl(ctx):
         ctx.attr.cpu == "tvos_arm64" or
         ctx.attr.cpu == "tvos_x86_64" or
         ctx.attr.cpu == "tvos_sim_arm64" or
+        ctx.attr.cpu == "visionos_arm64" or
+        ctx.attr.cpu == "visionos_x86_64" or
+        ctx.attr.cpu == "visionos_sim_arm64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_i386" or

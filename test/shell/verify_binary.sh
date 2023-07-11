@@ -8,6 +8,10 @@ if [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "device" ]]; then
   expected_platform="IPHONEOS"
 elif [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "simulator" ]]; then
   expected_platform="IPHONESIMULATOR"
+elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "device" ]]; then
+  expected_platform="XROS"
+elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "simulator" ]]; then
+  expected_platform="XROSSIMULATOR"
 fi
 
 otool_output=$(otool -lv "$binary")

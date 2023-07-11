@@ -5,7 +5,7 @@ Apple related [platforms](platforms/BUILD) and
 [constraints](constraints/BUILD) definitions, and small helper functions
 for rules authors targeting Apple platforms.
 
-If you want to build iOS, tvOS, watchOS, or macOS apps, use
+If you want to build iOS, tvOS, visionOS, watchOS, or macOS apps, use
 [`rules_apple`][rules_apple].
 
 If you want to build Swift use

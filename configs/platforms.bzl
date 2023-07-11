@@ -61,6 +61,21 @@ APPLE_PLATFORMS_CONSTRAINTS = {
         "@platforms//cpu:arm64",
         "@build_bazel_apple_support//constraints:simulator",
     ],
+    "visionos_arm64": [
+        "@platforms//os:visionos",
+        "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:device",
+    ],
+    "visionos_sim_arm64": [
+        "@platforms//os:visionos",
+        "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:simulator",
+    ],
+    "visionos_x86_64": [
+        "@platforms//os:visionos",
+        "@platforms//cpu:x86_64",
+        "@build_bazel_apple_support//constraints:simulator",
+    ],
     "watchos_arm64": [
         "@platforms//os:watchos",
         "@platforms//cpu:arm64",
