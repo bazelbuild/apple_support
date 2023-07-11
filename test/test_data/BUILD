@@ -21,7 +21,7 @@ cc_binary(
 )
 
 cc_library(
-    name = "lib",
+    name = "cc_main",
     srcs = ["main.cc"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
@@ -34,6 +34,7 @@ universal_binary(
 
 starlark_apple_binary(
     name = "apple_binary",
+    platform_type = "macos",
     tags = TARGETS_UNDER_TEST_TAGS,
-    deps = [":lib"],
+    deps = [":cc_main"],
 )

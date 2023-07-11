@@ -1,3 +1,5 @@
+exports_files(["verify_binary.sh"])
+
 filegroup(
     name = "for_bazel_tests",
     testonly = True,
