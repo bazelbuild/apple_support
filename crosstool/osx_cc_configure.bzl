@@ -38,7 +38,10 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 
     user = repository_ctx.os.environ.get("USER")
     if user:
-        include_dirs.append("/Users/{}/Library/".format(user))
+        include_dirs.extend([
+            "/Users/{}/Applications/".format(user),
+            "/Users/{}/Library/".format(user),
+        ])
 
     # Include extra Xcode paths in case they're installed on other volumes
     for toolchain in xcode_toolchains:
