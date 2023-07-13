@@ -266,7 +266,6 @@ def _impl(ctx):
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "cpp_linker_flags",
             "apply_implicit_frameworks",
         ],
         tools = [
@@ -524,7 +523,6 @@ def _impl(ctx):
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "cpp_linker_flags",
             "apply_implicit_frameworks",
         ],
         tools = [
@@ -593,7 +591,6 @@ def _impl(ctx):
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "cpp_linker_flags",
             "apply_implicit_frameworks",
         ],
         tools = [
@@ -1747,23 +1744,6 @@ def _impl(ctx):
         ],
     )
 
-    cpp_linker_flags_feature = feature(
-        name = "cpp_linker_flags",
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                ],
-                flag_groups = [
-                    flag_group(
-                        flags = ["-lc++", "-target", target_system_name],
-                    ),
-                ],
-            ),
-        ],
-    )
-
     debug_prefix_map_pwd_is_dot_feature = feature(
         name = "debug_prefix_map_pwd_is_dot",
         enabled = True,
@@ -2504,7 +2484,6 @@ def _impl(ctx):
         default_link_flags_feature,
         no_deduplicate_feature,
         dead_strip_feature,
-        cpp_linker_flags_feature,
         apply_implicit_frameworks_feature,
         link_cocoa_feature,
         apply_simulator_compiler_flags_feature,
