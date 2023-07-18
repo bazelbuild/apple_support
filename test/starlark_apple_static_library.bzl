@@ -81,9 +81,6 @@ starlark_apple_static_library = rule(
         "platform_type": attr.string(),
         "minimum_os_version": attr.string(),
     },
-    outputs = {
-        "lipo_archive": "%{name}_lipo.a",
-    },
     cfg = apple_common.apple_crosstool_transition,
     fragments = ["apple", "objc", "cpp"],
 )
