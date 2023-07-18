@@ -68,9 +68,10 @@ def _starlark_apple_static_library_impl(ctx):
         )
     providers = [
         DefaultInfo(files = depset(files_to_build), runfiles = runfiles),
-        link_result.objc,
         link_result.output_groups,
     ]
+    if getattr(link_result, "objc", None):
+        providers.append(link_result.objc)
     return providers
 
 starlark_apple_static_library = rule(
