@@ -22,19 +22,12 @@ sh_library(
     ],
 )
 
-sh_library(
-    name = "apple_common",
-    testonly = True,
-    srcs = ["apple_common.sh"],
-)
-
 sh_test(
     name = "objc_test",
     size = "large",
     srcs = ["objc_test.sh"],
     data = [":for_bazel_tests"],
     deps = [
-        ":apple_common",
         ":bashunit",
     ],
 )
@@ -45,7 +38,6 @@ sh_test(
     data = [":for_bazel_tests"],
     shard_count = 3,
     deps = [
-        ":apple_common",
         ":bashunit",
     ],
 )

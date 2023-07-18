@@ -1,36 +1,11 @@
-#!/bin/bash
-#
-# Copyright 2022 The Bazel Authors. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Common Bash functions to test Apple rules in Bazel.
-#
+"""Test rule for static linking with bazel's builtin Apple logic"""
 
-function make_starlark_apple_static_library_rule_in() {
-  local dir="$1"; shift
-
-  # All of the attributes below are required as part of the implied contract of
-  # `apple_common.link_multi_arch_static_library` since it asks for attributes
-  # directly from the rule context. As these requirements are changed from
-  # implied attributes to function arguments, they can be removed.
-  cat >> "${dir}/starlark_apple_static_library.bzl" <<EOF
 def _starlark_apple_static_library_impl(ctx):
     if not hasattr(apple_common.platform_type, ctx.attr.platform_type):
         fail('Unsupported platform type \"{}\"'.format(ctx.attr.platform_type))
     link_result = apple_common.link_multi_arch_static_library(ctx = ctx)
     processed_library = ctx.actions.declare_file(
-        '{}_lipo.a'.format(ctx.label.name)
+        "{}_lipo.a".format(ctx.label.name),
     )
     files_to_build = [processed_library]
     runfiles = ctx.runfiles(
@@ -50,13 +25,13 @@ def _starlark_apple_static_library_impl(ctx):
             ),
         )
         args = ctx.actions.args()
-        args.add('-create')
+        args.add("-create")
         args.add_all(lipo_inputs)
-        args.add('-output', processed_library)
+        args.add("-output", processed_library)
         ctx.actions.run(
             arguments = [args],
             env = apple_env,
-            executable = '/usr/bin/lipo',
+            executable = "/usr/bin/lipo",
             execution_requirements = xcode_config.execution_info(),
             inputs = lipo_inputs,
             outputs = [processed_library],
@@ -77,40 +52,38 @@ def _starlark_apple_static_library_impl(ctx):
 starlark_apple_static_library = rule(
     _starlark_apple_static_library_impl,
     attrs = {
-        '_child_configuration_dummy': attr.label(
+        "_child_configuration_dummy": attr.label(
             cfg = apple_common.multi_arch_split,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
-        '_xcode_config': attr.label(
+        "_xcode_config": attr.label(
             default = configuration_field(
                 fragment = "apple",
                 name = "xcode_config_label",
             ),
         ),
-        '_xcrunwrapper': attr.label(
+        "_xcrunwrapper": attr.label(
             executable = True,
-            cfg = 'exec',
+            cfg = "exec",
             default = Label("@bazel_tools//tools/objc:xcrunwrapper"),
         ),
-        'additional_linker_inputs': attr.label_list(
+        "additional_linker_inputs": attr.label_list(
             allow_files = True,
         ),
-        'avoid_deps': attr.label_list(
+        "avoid_deps": attr.label_list(
             cfg = apple_common.multi_arch_split,
             default = [],
         ),
-        'deps': attr.label_list(
+        "deps": attr.label_list(
             cfg = apple_common.multi_arch_split,
         ),
-        'linkopts': attr.string_list(),
-        'platform_type': attr.string(),
-        'minimum_os_version': attr.string(),
+        "linkopts": attr.string_list(),
+        "platform_type": attr.string(),
+        "minimum_os_version": attr.string(),
     },
     outputs = {
-        'lipo_archive': '%{name}_lipo.a',
+        "lipo_archive": "%{name}_lipo.a",
     },
     cfg = apple_common.apple_crosstool_transition,
-    fragments = ['apple', 'objc', 'cpp',],
+    fragments = ["apple", "objc", "cpp"],
 )
-EOF
-}

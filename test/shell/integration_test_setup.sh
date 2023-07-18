@@ -23,5 +23,3 @@ source "$(rlocation build_bazel_apple_support/test/shell/unittest.bash)" \
   || print_message_and_exit "unittest.bash not found!"
 source "$(rlocation build_bazel_apple_support/test/shell/testenv.sh)" \
   || print_message_and_exit "testenv.sh not found!"
-source "$(rlocation build_bazel_apple_support/test/shell/apple_common.sh)" \
-  || print_message_and_exit "apple_common.sh not found!"
