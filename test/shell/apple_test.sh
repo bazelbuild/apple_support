@@ -120,13 +120,9 @@ EOF
 function test_apple_static_library() {
   rm -rf package
   mkdir -p package
-  make_starlark_apple_static_library_rule_in package
 
   cat > package/BUILD <<EOF
-load(
-    "//package:starlark_apple_static_library.bzl",
-    "starlark_apple_static_library",
-)
+load("@build_bazel_apple_support//test:starlark_apple_static_library.bzl", "starlark_apple_static_library")
 starlark_apple_static_library(
     name = "static_lib",
     deps = [":dummy_lib"],
