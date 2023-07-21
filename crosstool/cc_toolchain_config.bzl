@@ -1585,7 +1585,12 @@ def _impl(ctx):
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
+                actions = [
+                    ACTION_NAMES.cpp_link_dynamic_library,
+                    ACTION_NAMES.cpp_link_executable,
+                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
+                    _OBJCPP_EXECUTABLE_ACTION_NAME,
+                ],
                 flag_groups = [flag_group(flags = ["-lc++"])],
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
