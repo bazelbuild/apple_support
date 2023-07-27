@@ -60,11 +60,6 @@ starlark_apple_binary = rule(
                 name = "xcode_config_label",
             ),
         ),
-        "_xcrunwrapper": attr.label(
-            cfg = "exec",
-            default = Label("@bazel_tools//tools/objc:xcrunwrapper"),
-            executable = True,
-        ),
         "binary_type": attr.string(default = "executable"),
         "bundle_loader": attr.label(),
         "deps": attr.label_list(

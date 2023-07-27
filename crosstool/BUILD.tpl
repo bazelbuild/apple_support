@@ -51,7 +51,6 @@ cc_toolchain_suite(
             ":make_hashed_objlist.py",
             ":wrapped_clang",
             ":wrapped_clang_pp",
-            ":xcrunwrapper.sh",
         ],
     )
     for arch in _APPLE_ARCHS

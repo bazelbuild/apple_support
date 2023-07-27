@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# libtool.sh runs the command passed to it using "xcrunwrapper libtool".
-#
 # It creates symbolic links for all input files with a path-hash appended
 # to their original name (foo.o becomes foo_{md5sum}.o). This is to circumvent
 # a bug in the original libtool that arises when two input files have the same
@@ -33,8 +31,7 @@ if [ -z ${MY_LOCATION+x} ]; then
 fi
 
 function invoke_libtool() {
-  # Just invoke libtool via xcrunwrapper
-  "${MY_LOCATION}/xcrunwrapper.sh" libtool "$@" \
+  /usr/bin/xcrun libtool "$@" \
   2> >(grep -v "the table of contents is empty (no object file members in the"`
               `" library define global symbols)$" >&2)
   # ^ Filtering a warning that's unlikely to indicate a real issue
@@ -137,5 +134,12 @@ for arg in "$@"; do
   parse_option "$arg"
 done
 
-printf '%s\n' "${ARGS[@]}" > "$TEMPDIR/processed.params"
+UPDATEDARGS=()
+for ARG in "$@" ; do
+  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/${DEVELOPER_DIR}}"
+  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/${SDKROOT}}"
+  UPDATEDARGS+=("${ARG}")
+done
+
+printf '%s\n' "${UPDATEDARGS[@]}" > "$TEMPDIR/processed.params"
 invoke_libtool "@$TEMPDIR/processed.params"

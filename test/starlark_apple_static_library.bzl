@@ -64,11 +64,6 @@ starlark_apple_static_library = rule(
                 name = "xcode_config_label",
             ),
         ),
-        "_xcrunwrapper": attr.label(
-            executable = True,
-            cfg = "exec",
-            default = Label("@bazel_tools//tools/objc:xcrunwrapper"),
-        ),
         "additional_linker_inputs": attr.label_list(
             allow_files = True,
         ),

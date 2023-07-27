@@ -125,7 +125,6 @@ def configure_osx_toolchain(repository_ctx):
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
     osx_cc_wrapper = Label("@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl")
-    xcrunwrapper = Label("@build_bazel_apple_support//crosstool:xcrunwrapper.sh")
     libtool = Label("@build_bazel_apple_support//crosstool:libtool.sh")
     make_hashed_objlist = Label("@build_bazel_apple_support//crosstool:make_hashed_objlist.py")
     cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
@@ -160,7 +159,6 @@ def configure_osx_toolchain(repository_ctx):
             "%{env}": "",
         },
     )
-    repository_ctx.symlink(xcrunwrapper, "xcrunwrapper.sh")
     repository_ctx.symlink(libtool, "libtool")
     repository_ctx.symlink(make_hashed_objlist, "make_hashed_objlist.py")
     repository_ctx.symlink(cc_toolchain_config, "cc_toolchain_config.bzl")
