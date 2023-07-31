@@ -17,12 +17,14 @@ TARGETS_UNDER_TEST_TAGS = [
 cc_binary(
     name = "cc_test_binary",
     srcs = ["main.cc"],
+    linkopts = ["-lc++"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
 cc_library(
     name = "cc_main",
     srcs = ["main.cc"],
+    linkopts = ["-lc++"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 

@@ -1580,18 +1580,6 @@ def _impl(ctx):
         provides = ["profile"],
     )
 
-    link_libcpp_feature = feature(
-        name = "link_libc++",
-        enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
-                flag_groups = [flag_group(flags = ["-lc++"])],
-                with_features = [with_feature_set(not_features = ["kernel_extension"])],
-            ),
-        ],
-    )
-
     objc_actions_feature = feature(
         name = "objc_actions",
         implies = [
@@ -2436,7 +2424,6 @@ def _impl(ctx):
         feature(name = "opt"),
 
         # Features with more configuration
-        link_libcpp_feature,
         default_compile_flags_feature,
         debug_prefix_map_pwd_is_dot_feature,
         remap_xcode_path_feature,

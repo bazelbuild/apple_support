@@ -167,6 +167,7 @@ objc_library(
 cc_test(
     name = "d",
     deps = [":b"],
+    linkopts = ["-lc++"],
 )
 EOF
 
