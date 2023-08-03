@@ -14,8 +14,8 @@
 
 """Genrule which provides Apple's Xcode environment."""
 
-load("//lib:apple_support.bzl", "apple_support")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("//lib:apple_support.bzl", "apple_support")
 
 visibility("//rules")
 

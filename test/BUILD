@@ -1,5 +1,5 @@
-load("//rules:apple_genrule.bzl", "apple_genrule")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
 
