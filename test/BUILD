@@ -79,7 +79,7 @@ filegroup(
     name = "for_bazel_tests",
     testonly = True,
     srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
+    visibility = ["//test/shell:__pkg__"],
 )
 
 cc_binary(

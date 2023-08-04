@@ -29,7 +29,6 @@ filegroup(
         "//crosstool:for_bazel_tests",
         "//lib:for_bazel_tests",
         "//rules:for_bazel_tests",
-        "//test:for_bazel_tests",
         "//tools:for_bazel_tests",
     ],
     # Exposed publicly just so other rules can use this if they set up
