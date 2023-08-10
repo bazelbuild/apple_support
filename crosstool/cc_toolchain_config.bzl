@@ -721,7 +721,11 @@ def _impl(ctx):
                 ),
             ],
         )
-    else:
+    elif (
+        ctx.attr.cpu == "visionos_arm64" or
+        ctx.attr.cpu == "visionos_x86_64" or
+        ctx.attr.cpu == "visionos_sim_arm64"
+    ):
         apply_default_compiler_flags_feature = feature(
             name = "apply_default_compiler_flags",
             flag_sets = [
@@ -731,6 +735,8 @@ def _impl(ctx):
                 ),
             ],
         )
+    else:
+        fail("Unreachable")
 
     runtime_root_flags_feature = feature(
         name = "runtime_root_flags",
