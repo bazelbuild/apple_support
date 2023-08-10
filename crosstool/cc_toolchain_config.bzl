@@ -683,9 +683,6 @@ def _impl(ctx):
         ctx.attr.cpu == "ios_i386" or
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_x86_64" or
-        ctx.attr.cpu == "visionos_arm64" or
-        ctx.attr.cpu == "visionos_sim_arm64" or
-        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_i386" or
@@ -725,7 +722,15 @@ def _impl(ctx):
             ],
         )
     else:
-        apply_default_compiler_flags_feature = None
+        apply_default_compiler_flags_feature = feature(
+            name = "apply_default_compiler_flags",
+            flag_sets = [
+                flag_set(
+                    actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
+                    flag_groups = [flag_group(flags = ["-fno-autolink"])],
+                ),
+            ],
+        )
 
     runtime_root_flags_feature = feature(
         name = "runtime_root_flags",
