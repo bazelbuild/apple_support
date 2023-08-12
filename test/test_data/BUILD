@@ -33,7 +33,7 @@ universal_binary(
 )
 
 starlark_apple_binary(
-    name = "apple_binary",
+    name = "macos_binary",
     minimum_os_version = "13.0",
     platform_type = "macos",
     tags = TARGETS_UNDER_TEST_TAGS,

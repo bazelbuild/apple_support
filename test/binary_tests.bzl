@@ -13,7 +13,7 @@ def binary_test_suite(name):
         cpus = {"macos_cpus": "x86_64"},
         expected_platform_type = "macos",
         verifier_script = "//test/shell:verify_binary.sh",
-        target_under_test = "//test/test_data:apple_binary",
+        target_under_test = "//test/test_data:macos_binary",
     )
 
     apple_verification_test(
