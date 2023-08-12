@@ -1,5 +1,7 @@
 """Test rule for linking with bazel's builtin Apple logic"""
 
+load("//test:transitions.bzl", "apple_platform_split_transition")
+
 def _starlark_apple_binary_impl(ctx):
     link_result = apple_common.link_multi_arch_binary(
         ctx = ctx,
@@ -49,7 +51,7 @@ def _starlark_apple_binary_impl(ctx):
 starlark_apple_binary = rule(
     attrs = {
         "_child_configuration_dummy": attr.label(
-            cfg = apple_common.multi_arch_split,
+            cfg = apple_platform_split_transition,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
         "_xcode_config": attr.label(
@@ -66,13 +68,16 @@ starlark_apple_binary = rule(
         "binary_type": attr.string(default = "executable"),
         "bundle_loader": attr.label(),
         "deps": attr.label_list(
-            cfg = apple_common.multi_arch_split,
+            cfg = apple_platform_split_transition,
         ),
         "dylibs": attr.label_list(),
         "linkopts": attr.string_list(),
-        "minimum_os_version": attr.string(),
-        "platform_type": attr.string(),
+        "minimum_os_version": attr.string(mandatory = True),
+        "platform_type": attr.string(mandatory = True),
         "stamp": attr.int(default = -1, values = [-1, 0, 1]),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
     },
     fragments = ["apple", "objc", "cpp"],
     implementation = _starlark_apple_binary_impl,
