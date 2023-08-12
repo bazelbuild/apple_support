@@ -27,7 +27,7 @@ def linking_test_suite(name):
             "-ObjC",
         ],
         mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:apple_binary",
+        target_under_test = "//test/test_data:macos_binary",
     )
 
     disable_objc_test(
@@ -41,5 +41,5 @@ def linking_test_suite(name):
         ],
         not_expected_argv = ["-ObjC"],
         mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:apple_binary",
+        target_under_test = "//test/test_data:macos_binary",
     )

@@ -33,9 +33,53 @@ universal_binary(
 )
 
 starlark_apple_binary(
-    name = "apple_binary",
+    name = "macos_binary",
     minimum_os_version = "13.0",
     platform_type = "macos",
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":cc_main"],
+)
+
+cc_library(
+    name = "cc_lib",
+    srcs = ["lib.cc"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+objc_library(
+    name = "objc_lib",
+    srcs = ["lib.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = ["cc_lib"],
+)
+
+objc_library(
+    name = "objc_main",
+    srcs = ["main.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = ["objc_lib"],
+)
+
+config_setting(
+    name = "compiler_gcc",
+    flag_values = {
+        "@bazel_tools//tools/cpp:compiler": "gcc",
+    },
+)
+
+config_setting(
+    name = "supports_visionos",
+    values = {"define": "supports_visionos=1"},
+)
+
+starlark_apple_binary(
+    name = "visionos_binary",
+    minimum_os_version = "1.0",
+    platform_type = "visionos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    target_compatible_with = select({
+        ":supports_visionos": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    deps = [":objc_main"],
 )

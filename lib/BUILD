@@ -15,6 +15,7 @@ objc_library(
         "@platforms//os:ios": [],
         "@platforms//os:macos": [],
         "@platforms//os:tvos": [],
+        "@platforms//os:visionos": [],
         "@platforms//os:watchos": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
