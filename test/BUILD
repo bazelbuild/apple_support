@@ -99,5 +99,7 @@ objc_library(
 
 starlark_apple_binary(
     name = "main_apple",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
     deps = ["main_objc"],
 )

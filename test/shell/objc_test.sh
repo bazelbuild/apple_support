@@ -120,6 +120,7 @@ EOF
 load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 starlark_apple_binary(name = 'app',
                       deps = [':main'],
+                      minimum_os_version = '13.0',
                       platform_type = 'ios')
 objc_library(name = 'main',
              non_arc_srcs = ['main.m'])

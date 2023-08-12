@@ -1,5 +1,7 @@
 """Test rule for static linking with bazel's builtin Apple logic"""
 
+load("//test:transitions.bzl", "apple_platform_split_transition")
+
 def _starlark_apple_static_library_impl(ctx):
     if not hasattr(apple_common.platform_type, ctx.attr.platform_type):
         fail('Unsupported platform type \"{}\"'.format(ctx.attr.platform_type))
@@ -53,7 +55,7 @@ starlark_apple_static_library = rule(
     _starlark_apple_static_library_impl,
     attrs = {
         "_child_configuration_dummy": attr.label(
-            cfg = apple_common.multi_arch_split,
+            cfg = apple_platform_split_transition,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
         "_xcode_config": attr.label(
@@ -71,16 +73,18 @@ starlark_apple_static_library = rule(
             allow_files = True,
         ),
         "avoid_deps": attr.label_list(
-            cfg = apple_common.multi_arch_split,
+            cfg = apple_platform_split_transition,
             default = [],
         ),
         "deps": attr.label_list(
-            cfg = apple_common.multi_arch_split,
+            cfg = apple_platform_split_transition,
         ),
         "linkopts": attr.string_list(),
-        "platform_type": attr.string(),
-        "minimum_os_version": attr.string(),
+        "platform_type": attr.string(mandatory = True),
+        "minimum_os_version": attr.string(mandatory = True),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
     },
-    cfg = apple_common.apple_crosstool_transition,
     fragments = ["apple", "objc", "cpp"],
 )

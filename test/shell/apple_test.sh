@@ -53,6 +53,7 @@ starlark_apple_binary(
     name = "main_binary",
     deps = [":main_lib"],
     platform_type = "watchos",
+    minimum_os_version = '8.0',
 )
 objc_library(
     name = "main_lib",
