@@ -81,8 +81,4 @@ starlark_apple_binary = rule(
     },
     fragments = ["apple", "objc", "cpp"],
     implementation = _starlark_apple_binary_impl,
-    outputs = {
-        # Provided for compatibility with apple_binary tests only.
-        "lipobin": "%{name}_lipobin",
-    },
 )
