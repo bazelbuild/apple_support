@@ -4,6 +4,7 @@ _PLATFORM_TYPE_TO_CPUS_FLAG = {
     "ios": "//command_line_option:ios_multi_cpus",
     "macos": "//command_line_option:macos_cpus",
     "tvos": "//command_line_option:tvos_cpus",
+    "visionos": "//command_line_option:visionos_cpus",
     "watchos": "//command_line_option:watchos_cpus",
 }
 
@@ -11,8 +12,11 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
     "ios": "x86_64",
     "macos": "x86_64",
     "tvos": "x86_64",
+    "visionos": "x86_64",
     "watchos": "i386",
 }
+
+_supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _cpu_string(*, environment_arch, platform_type, settings = {}):
     if platform_type == "ios":
@@ -51,6 +55,13 @@ def _cpu_string(*, environment_arch, platform_type, settings = {}):
         if watchos_cpus:
             return "watchos_{}".format(watchos_cpus[0])
         return "watchos_i386"
+    if platform_type == "visionos":
+        if environment_arch:
+            return "visionos_{}".format(environment_arch)
+        visionos_cpus = settings["//command_line_option:visionos_cpus"]
+        if visionos_cpus:
+            return "visionos_{}".format(visionos_cpus[0])
+        return "visionos_x86_64"
 
     fail("ERROR: Unknown platform type: {}".format(platform_type))
 
@@ -104,16 +115,17 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
     return output_dictionary
 
 _apple_platform_transition_inputs = [
+    "//command_line_option:apple_crosstool_top",
     "//command_line_option:apple_platforms",
     "//command_line_option:cpu",
-    "//command_line_option:apple_crosstool_top",
+    "//command_line_option:incompatible_enable_apple_toolchain_resolution",
     "//command_line_option:ios_multi_cpus",
     "//command_line_option:macos_cpus",
+    "//command_line_option:platforms",
     "//command_line_option:tvos_cpus",
     "//command_line_option:watchos_cpus",
-    "//command_line_option:incompatible_enable_apple_toolchain_resolution",
-    "//command_line_option:platforms",
-]
+] + (["//command_line_option:visionos_cpus"] if _supports_visionos else [])
+
 _apple_rule_base_transition_outputs = [
     "//command_line_option:apple configuration distinguisher",
     "//command_line_option:apple_platform_type",

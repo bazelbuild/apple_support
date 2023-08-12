@@ -16,6 +16,8 @@
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 
+_supports_visionos = hasattr(apple_common.platform_type, "visionos")
+
 def _transition_impl(_, attr):
     output_dictionary = {
         "//command_line_option:cpu": "darwin_x86_64",
@@ -29,6 +31,7 @@ def _transition_impl(_, attr):
             "//command_line_option:visionos_cpus": "x86_64",
             "//command_line_option:watchos_cpus": "x86_64",
         })
+
     else:
         output_dictionary.update({
             "//command_line_option:ios_multi_cpus": "arm64",
@@ -42,6 +45,9 @@ def _transition_impl(_, attr):
             command_line_option = "//command_line_option:%s" % cpu_option
             output_dictionary.update({command_line_option: cpu})
 
+    if not _supports_visionos:
+        output_dictionary.pop("//command_line_option:visionos_cpus", None)
+
     return output_dictionary
 
 _transition = transition(
@@ -53,9 +59,8 @@ _transition = transition(
         "//command_line_option:ios_signing_cert_name",
         "//command_line_option:macos_cpus",
         "//command_line_option:tvos_cpus",
-        "//command_line_option:visionos_cpus",
         "//command_line_option:watchos_cpus",
-    ],
+    ] + (["//command_line_option:visionos_cpus"] if _supports_visionos else []),
 )
 
 def _apple_verification_test_impl(ctx):
