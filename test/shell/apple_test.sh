@@ -41,11 +41,11 @@ function test_apple_binary_crosstool_watchos() {
 load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 genrule(
   name = "lipo_run",
-  srcs = [":main_binary_lipobin"],
+  srcs = [":main_binary"],
   outs = ["lipo_out"],
   cmd =
       "set -e && " +
-      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+      "lipo -info \$(location :main_binary) > \$(@)",
   tags = ["requires-darwin"],
 )
 
@@ -197,11 +197,11 @@ starlark_apple_binary(
 )
 genrule(
   name = "lipo_run",
-  srcs = [":main_binary_lipobin"],
+  srcs = [":main_binary"],
   outs = ["lipo_out"],
   cmd =
       "set -e && " +
-      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+      "lipo -info \$(location :main_binary) > \$(@)",
   tags = ["requires-darwin"],
 )
 EOF
@@ -284,11 +284,11 @@ objc_library(
 )
 genrule(
   name = "lipo_run",
-  srcs = [":main_binary_lipobin"],
+  srcs = [":main_binary"],
   outs = ["lipo_out"],
   cmd =
       "set -e && " +
-      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+      "lipo -info \$(location :main_binary) > \$(@)",
   tags = ["requires-darwin"],
 )
 EOF
@@ -365,11 +365,11 @@ starlark_apple_binary(
 )
 genrule(
   name = "lipo_run",
-  srcs = [":main_binary_lipobin"],
+  srcs = [":main_binary"],
   outs = ["lipo_out"],
   cmd =
       "set -e && " +
-      "lipo -info \$(location :main_binary_lipobin) > \$(@)",
+      "lipo -info \$(location :main_binary) > \$(@)",
   tags = ["requires-darwin"],
 )
 EOF
