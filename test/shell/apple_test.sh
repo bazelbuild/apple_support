@@ -218,7 +218,7 @@ EOF
       --ios_multi_cpus=sim_arm64 --ios_multi_cpus=x86_64 \
       || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  grep "arm64 x86_64" bazel-bin/package/lipo_out \
+  grep "x86_64 arm64" bazel-bin/package/lipo_out \
     || fail "expected output binary to contain 2 architectures"
 }
 
@@ -310,7 +310,7 @@ EOF
     --ios_multi_cpus=sim_arm64,x86_64 \
     || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  grep "arm64 x86_64" bazel-bin/package/lipo_out \
+  grep "x86_64 arm64" bazel-bin/package/lipo_out \
     || fail "expected output binary to be for x86_64 architecture"
 }
 
@@ -385,7 +385,7 @@ EOF
       --noincompatible_enable_cc_toolchain_resolution \
       || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  cat bazel-bin/package/lipo_out | grep "arm64 x86_64" \
+  cat bazel-bin/package/lipo_out | grep "x86_64 arm64" \
     || fail "expected output binary to contain 2 architectures"
 }
 
