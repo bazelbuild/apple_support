@@ -38,6 +38,14 @@ starlark_apple_binary(
     deps = [":cc_main"],
 )
 
+starlark_apple_binary(
+    name = "macos_binary_with_spaces",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":objc_lib_with_spaces"],
+)
+
 cc_library(
     name = "cc_lib",
     srcs = ["lib.cc"],
@@ -49,6 +57,12 @@ objc_library(
     srcs = ["lib.m"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
+)
+
+objc_library(
+    name = "objc_lib_with_spaces",
+    srcs = ["objc lib with spaces.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
 )
 
 starlark_apple_static_library(

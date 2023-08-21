@@ -23,6 +23,17 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
+        name = "{}_macos_binary_with_spaces_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"macos_cpus": "x86_64"},
+        expected_platform_type = "macos",
+        generate_dsym = True,
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:macos_binary_with_spaces",
+    )
+
+    apple_verification_test(
         name = "{}_visionos_device_test".format(name),
         tags = [name],
         build_type = "device",
