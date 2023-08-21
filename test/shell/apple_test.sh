@@ -33,64 +33,6 @@ function set_up() {
   setup_objc_test_support
 }
 
-function test_apple_binary_dsym_builds() {
-  rm -rf package
-  mkdir -p package
-
-  cat > package/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
-starlark_apple_binary(
-    name = "main_binary",
-    deps = [":main_lib"],
-    platform_type = "macos",
-    minimum_os_version = "12.0",
-)
-objc_library(
-    name = "main_lib",
-    srcs = ["main.m"],
-)
-EOF
-  cat > package/main.m <<EOF
-int main() {
-  return 0;
-}
-EOF
-
-  bazel build --verbose_failures //package:main_binary \
-      --noincompatible_enable_cc_toolchain_resolution \
-      --apple_generate_dsym=true \
-      || fail "should build starlark_apple_binary with dSYMs"
-}
-
-function test_apple_binary_dsym_builds() {
-  rm -rf package
-  mkdir -p package
-
-  cat > package/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
-starlark_apple_binary(
-    name = "main_binary",
-    deps = [":main_lib"],
-    platform_type = "ios",
-    minimum_os_version = "10.0",
-)
-objc_library(
-    name = "main_lib",
-    srcs = ["main.m"],
-)
-EOF
-  cat > package/main.m <<EOF
-int main() {
-  return 0;
-}
-EOF
-
-  bazel build --verbose_failures //package:main_binary \
-      --noincompatible_enable_cc_toolchain_resolution \
-      --apple_generate_dsym=true \
-      || fail "should build starlark_apple_binary with dSYMs"
-}
-
 function test_fat_binary_no_srcs() {
   rm -rf package
   mkdir -p package

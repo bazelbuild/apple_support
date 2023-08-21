@@ -15,6 +15,12 @@ disable_objc_test = make_action_command_line_test_rule(
     },
 )
 
+dsym_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:apple_generate_dsym": True,
+    },
+)
+
 def linking_test_suite(name):
     default_test(
         name = "{}_default_apple_link_test".format(name),
@@ -25,6 +31,10 @@ def linking_test_suite(name):
             "-Xlinker",
             "2",
             "-ObjC",
+        ],
+        not_expected_argv = [
+            "-g",
+            "DSYM_HINT_LINKED_BINARY",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
@@ -40,6 +50,17 @@ def linking_test_suite(name):
             "2",
         ],
         not_expected_argv = ["-ObjC"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    dsym_test(
+        name = "{}_generate_dsym_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-g",
+            "DSYM_HINT_LINKED_BINARY",
+        ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )

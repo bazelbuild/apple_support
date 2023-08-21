@@ -20,6 +20,7 @@ _supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _transition_impl(_, attr):
     output_dictionary = {
+        "//command_line_option:apple_generate_dsym": attr.generate_dsym,
         "//command_line_option:compilation_mode": attr.compilation_mode,
         "//command_line_option:cpu": "darwin_x86_64",
         "//command_line_option:ios_signing_cert_name": "-",
@@ -56,6 +57,7 @@ _transition = transition(
     implementation = _transition_impl,
     inputs = [],
     outputs = [
+        "//command_line_option:apple_generate_dsym",
         "//command_line_option:compilation_mode",
         "//command_line_option:cpu",
         "//command_line_option:ios_multi_cpus",
@@ -110,6 +112,12 @@ def _apple_verification_test_impl(ctx):
 apple_verification_test = rule(
     implementation = _apple_verification_test_impl,
     attrs = {
+        "generate_dsym": attr.bool(
+            default = False,
+            doc = """
+Whether to generate a dSYM file for the binary under test.
+""",
+        ),
         "build_type": attr.string(
             mandatory = True,
             values = ["simulator", "device"],
