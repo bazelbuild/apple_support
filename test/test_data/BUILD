@@ -60,11 +60,18 @@ objc_library(
     deps = ["objc_lib"],
 )
 
-config_setting(
-    name = "compiler_gcc",
-    flag_values = {
-        "@bazel_tools//tools/cpp:compiler": "gcc",
-    },
+objc_library(
+    name = "objc_lib_with_unused_symbol",
+    srcs = ["objc_lib_with_unused_symbol.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+starlark_apple_binary(
+    name = "ios_app_with_unused_symbol",
+    minimum_os_version = "13.0",
+    platform_type = "ios",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":objc_lib_with_unused_symbol"],
 )
 
 config_setting(

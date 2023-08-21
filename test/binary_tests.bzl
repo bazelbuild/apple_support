@@ -45,3 +45,27 @@ def binary_test_suite(name):
         verifier_script = "//test/shell:verify_binary.sh",
         target_under_test = "//test/test_data:visionos_binary",
     )
+
+    apple_verification_test(
+        name = "{}_unused_symbol_is_kept_by_default".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64"},
+        compilation_mode = "fastbuild",
+        objc_enable_binary_stripping = False,
+        expected_platform_type = "visionos",
+        verifier_script = "//test:verify_unused_symbol_exists.sh",
+        target_under_test = "//test/test_data:ios_app_with_unused_symbol",
+        tags = [name],
+    )
+
+    apple_verification_test(
+        name = "{}_unused_symbol_is_stripped".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64"},
+        compilation_mode = "opt",
+        objc_enable_binary_stripping = True,
+        expected_platform_type = "visionos",
+        verifier_script = "//test:verify_stripped_symbols.sh",
+        target_under_test = "//test/test_data:ios_app_with_unused_symbol",
+        tags = [name],
+    )

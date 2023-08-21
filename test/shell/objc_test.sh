@@ -95,47 +95,4 @@ EOF
       fail "Timestamp of contents of archive file should be zero"
 }
 
-function test_strip_symbols() {
-  setup_objc_test_support
-
-  rm -rf ios
-  mkdir -p ios
-
-  cat >ios/main.m <<EOF
-#import <UIKit/UIKit.h>
-/* function declaration */
-int addOne(int num);
-int addOne(int num) {
-  return num + 1;
-}
- int main(int argc, char *argv[]) {
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-  int retVal = UIApplicationMain(argc, argv, nil, nil);
-  [pool release];
-  return retVal;
-}
-EOF
-
-  cat >ios/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
-starlark_apple_binary(name = 'app',
-                      deps = [':main'],
-                      minimum_os_version = '13.0',
-                      platform_type = 'ios')
-objc_library(name = 'main',
-             non_arc_srcs = ['main.m'])
-EOF
-
-  bazel build --verbose_failures \
-      --noincompatible_enable_cc_toolchain_resolution \
-      --apple_platform_type=ios \
-      --objc_enable_binary_stripping=true \
-      --compilation_mode=opt \
-      //ios:app >"$TEST_log" 2>&1 || fail "should pass"
-  ls bazel-out/*/bin/ios/app_lipobin \
-    || fail "should generate lipobin (stripped binary)"
-  ! nm bazel-out/*/bin/ios/app_lipobin | grep addOne \
-    || fail "should fail to find symbol addOne"
-}
-
 run_suite "objc/ios test suite"
