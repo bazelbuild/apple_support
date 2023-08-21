@@ -95,3 +95,16 @@ starlark_apple_binary(
     }),
     deps = [":objc_main"],
 )
+
+objc_library(
+    name = "watch_main",
+    srcs = ["watch_main.m"],
+    deps = [":cc_lib"],
+)
+
+starlark_apple_binary(
+    name = "watch_binary",
+    minimum_os_version = "8.0",
+    platform_type = "watchos",
+    deps = [":watch_main"],
+)

@@ -12,6 +12,10 @@ elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "device" ]]; then
   expected_platform="XROS"
 elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "simulator" ]]; then
   expected_platform="XROSSIMULATOR"
+elif [[ "$PLATFORM_TYPE" == "watchos" && "$BUILD_TYPE" == "device" ]]; then
+  expected_platform="WATCHOS"
+elif [[ "$PLATFORM_TYPE" == "watchos" && "$BUILD_TYPE" == "simulator" ]]; then
+  expected_platform="WATCHSIMULATOR"
 fi
 
 otool_output=$(otool -lv "$binary")
