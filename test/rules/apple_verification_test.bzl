@@ -20,9 +20,11 @@ _supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _transition_impl(_, attr):
     output_dictionary = {
+        "//command_line_option:compilation_mode": attr.compilation_mode,
         "//command_line_option:cpu": "darwin_x86_64",
         "//command_line_option:ios_signing_cert_name": "-",
         "//command_line_option:macos_cpus": "x86_64",
+        "//command_line_option:objc_enable_binary_stripping": attr.objc_enable_binary_stripping,
     }
     if attr.build_type == "simulator":
         output_dictionary.update({
@@ -54,10 +56,12 @@ _transition = transition(
     implementation = _transition_impl,
     inputs = [],
     outputs = [
+        "//command_line_option:compilation_mode",
         "//command_line_option:cpu",
         "//command_line_option:ios_multi_cpus",
         "//command_line_option:ios_signing_cert_name",
         "//command_line_option:macos_cpus",
+        "//command_line_option:objc_enable_binary_stripping",
         "//command_line_option:tvos_cpus",
         "//command_line_option:watchos_cpus",
     ] + (["//command_line_option:visionos_cpus"] if _supports_visionos else []),
@@ -113,15 +117,32 @@ apple_verification_test = rule(
 Type of build for the target under test. Possible values are `simulator` or `device`.
 """,
         ),
-        "expected_platform_type": attr.string(
+        "compilation_mode": attr.string(
+            values = ["fastbuild", "opt", "dbg"],
             doc = """
-The apple_platform_type the binary should have been built for.
+Possible values are `fastbuild`, `dbg` or `opt`. Defaults to `fastbuild`.
+https://docs.bazel.build/versions/master/user-manual.html#flag--compilation_mode
 """,
+            default = "fastbuild",
         ),
         "cpus": attr.string_dict(
             doc = """
 Dictionary of command line options cpu flags and the list of
 cpu's to use for test under target (e.g. {'ios_multi_cpus': ['arm64', 'x86_64']})
+""",
+        ),
+        "expected_platform_type": attr.string(
+            default = "",
+            doc = """
+The apple_platform_type the binary should have been built for.
+""",
+        ),
+        "objc_enable_binary_stripping": attr.bool(
+            default = False,
+            doc = """
+Whether to perform symbol and dead-code strippings on linked binaries. Binary
+strippings will be performed if both this flag and --compilation_mode=opt are
+specified.
 """,
         ),
         "target_under_test": attr.label(
