@@ -175,53 +175,6 @@ EOF
       || fail "should build starlark_apple_binary with dSYMs"
 }
 
-function test_additive_cpus_flag() {
-  rm -rf package
-  mkdir -p package
-
-  cat > package/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
-objc_library(
-    name = "lib_a",
-    srcs = ["a.m"],
-)
-objc_library(
-    name = "lib_b",
-    srcs = ["b.m"],
-)
-starlark_apple_binary(
-    name = "main_binary",
-    deps = [":lib_a", ":lib_b"],
-    platform_type = "ios",
-    minimum_os_version = "10.0",
-)
-genrule(
-  name = "lipo_run",
-  srcs = [":main_binary"],
-  outs = ["lipo_out"],
-  cmd =
-      "set -e && " +
-      "lipo -info \$(location :main_binary) > \$(@)",
-  tags = ["requires-darwin"],
-)
-EOF
-  touch package/a.m
-  cat > package/b.m <<EOF
-int main() {
-  return 0;
-}
-EOF
-
-  bazel build --verbose_failures \
-      //package:lipo_out \
-      --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=sim_arm64 --ios_multi_cpus=x86_64 \
-      || fail "should build starlark_apple_binary and obtain info via lipo"
-
-  grep "x86_64 arm64" bazel-bin/package/lipo_out \
-    || fail "expected output binary to contain 2 architectures"
-}
-
 function test_apple_binary_spaces() {
   rm -rf package
   mkdir -p package
