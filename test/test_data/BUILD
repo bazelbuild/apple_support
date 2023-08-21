@@ -48,13 +48,13 @@ starlark_apple_binary(
 
 cc_library(
     name = "cc_lib",
-    srcs = ["lib.cc"],
+    srcs = ["cc_lib.cc"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
 objc_library(
     name = "objc_lib",
-    srcs = ["lib.m"],
+    srcs = ["objc_lib.m"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
 )
