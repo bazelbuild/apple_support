@@ -23,6 +23,17 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
+        name = "{}_macos_binary_with_spaces_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"macos_cpus": "x86_64"},
+        expected_platform_type = "macos",
+        generate_dsym = True,
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:macos_binary_with_spaces",
+    )
+
+    apple_verification_test(
         name = "{}_visionos_device_test".format(name),
         tags = [name],
         build_type = "device",
@@ -72,4 +83,63 @@ def binary_test_suite(name):
         verifier_script = "//test:verify_stripped_symbols.sh",
         target_under_test = "//test/test_data:ios_app_with_unused_symbol",
         tags = [name],
+    )
+
+    apple_verification_test(
+        name = "{}_archive_timestamps".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64"},
+        verifier_script = "//test:verify_archive_timestamps.sh",
+        target_under_test = "//test/test_data:static_lib",
+        tags = [name],
+    )
+
+    apple_verification_test(
+        name = "{}_fat_static_lib".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64,sim_arm64"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:static_lib",
+        tags = [name],
+    )
+
+    apple_verification_test(
+        name = "{}_watchos_device_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"watchos_cpus": "x86_64"},
+        expected_platform_type = "watchos",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:watch_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_watchos_simulator_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"watchos_cpus": "arm64"},
+        expected_platform_type = "watchos",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:watch_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_ios_device_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"ios_multi_cpus": "x86_64,sim_arm64"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:ios_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_ios_simulator_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"ios_multi_cpus": "arm64,arm64e"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:ios_binary",
     )
