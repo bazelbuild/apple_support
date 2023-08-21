@@ -84,6 +84,16 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
+        name = "{}_fat_static_lib".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64,sim_arm64"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:static_lib",
+        tags = [name],
+    )
+
+    apple_verification_test(
         name = "{}_watchos_device_test".format(name),
         tags = [name],
         build_type = "device",

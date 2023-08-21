@@ -33,34 +33,6 @@ function set_up() {
   setup_objc_test_support
 }
 
-function test_apple_static_library() {
-  rm -rf package
-  mkdir -p package
-
-  cat > package/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_static_library.bzl", "starlark_apple_static_library")
-starlark_apple_static_library(
-    name = "static_lib",
-    deps = [":dummy_lib"],
-    platform_type = "ios",
-    minimum_os_version = "10.0",
-)
-objc_library(
-    name = "dummy_lib",
-    srcs = ["dummy.m"],
-)
-EOF
-  cat > "package/dummy.m" <<EOF
-static int dummy __attribute__((unused,used)) = 0;
-EOF
-
-  bazel build --verbose_failures //package:static_lib \
-      --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=sim_arm64,x86_64 \
-      --ios_minimum_os=8.0 \
-      || fail "should build starlark_apple_static_library"
-}
-
 function test_apple_binary_dsym_builds() {
   rm -rf package
   mkdir -p package

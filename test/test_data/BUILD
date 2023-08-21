@@ -53,7 +53,7 @@ objc_library(
 
 starlark_apple_static_library(
     name = "static_lib",
-    minimum_os_version = "11.0",
+    minimum_os_version = "15.0",
     platform_type = "ios",
     deps = [":objc_lib"],
 )
