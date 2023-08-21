@@ -103,3 +103,24 @@ starlark_apple_binary(
     platform_type = "macos",
     deps = ["main_objc"],
 )
+
+cc_library(
+    name = "underlying_lib",
+    hdrs = ["underlying_lib.h"],
+    tags = ["manual"],
+)
+
+objc_library(
+    name = "objc_lib",
+    srcs = ["objc_lib.m"],
+    hdrs = ["objc_lib.h"],
+    tags = ["manual"],
+    deps = [":underlying_lib"],
+    alwayslink = True,
+)
+
+cc_test(
+    name = "cc_test_with_objc_deps",
+    srcs = ["cc_test_with_objc_deps.cc"],
+    deps = [":objc_lib"],
+)
