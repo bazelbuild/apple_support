@@ -6,6 +6,12 @@ load(
 )
 
 def binary_test_suite(name):
+    """Test various aspects of binary generation
+
+    Args:
+        name: The prefix of each test name
+    """
+
     apple_verification_test(
         name = "{}_macos_binary_test".format(name),
         tags = [name],
