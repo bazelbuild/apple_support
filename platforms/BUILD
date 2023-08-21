@@ -19,3 +19,11 @@ alias(
     name = "macos_arm64",
     actual = "darwin_arm64",
 )
+
+# Consumed by bazel tests.
+filegroup(
+    name = "for_bazel_tests",
+    testonly = True,
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)

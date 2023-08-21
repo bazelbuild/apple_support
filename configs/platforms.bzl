@@ -26,16 +26,6 @@ APPLE_PLATFORMS_CONSTRAINTS = {
         "@platforms//cpu:arm64",
         "@build_bazel_apple_support//constraints:device",
     ],
-    "ios_armv7": [
-        "@platforms//os:ios",
-        "@platforms//cpu:armv7",
-        "@build_bazel_apple_support//constraints:device",
-    ],
-    "ios_i386": [
-        "@platforms//os:ios",
-        "@platforms//cpu:i386",
-        "@build_bazel_apple_support//constraints:simulator",
-    ],
     "ios_x86_64": [
         "@platforms//os:ios",
         "@platforms//cpu:x86_64",
@@ -90,11 +80,6 @@ APPLE_PLATFORMS_CONSTRAINTS = {
         "@platforms//os:watchos",
         "@platforms//cpu:armv7k",
         "@build_bazel_apple_support//constraints:device",
-    ],
-    "watchos_i386": [
-        "@platforms//os:watchos",
-        "@platforms//cpu:i386",
-        "@build_bazel_apple_support//constraints:simulator",
     ],
     "watchos_x86_64": [
         "@platforms//os:watchos",

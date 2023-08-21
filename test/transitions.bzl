@@ -13,7 +13,7 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
     "macos": "x86_64",
     "tvos": "x86_64",
     "visionos": "x86_64",
-    "watchos": "i386",
+    "watchos": "x86_64",
 }
 
 _supports_visionos = hasattr(apple_common.platform_type, "visionos")
@@ -54,7 +54,7 @@ def _cpu_string(*, environment_arch, platform_type, settings = {}):
         watchos_cpus = settings["//command_line_option:watchos_cpus"]
         if watchos_cpus:
             return "watchos_{}".format(watchos_cpus[0])
-        return "watchos_i386"
+        return "watchos_x86_64"
     if platform_type == "visionos":
         if environment_arch:
             return "visionos_{}".format(environment_arch)

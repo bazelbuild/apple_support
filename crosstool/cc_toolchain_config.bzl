@@ -61,14 +61,8 @@ def _impl(ctx):
         target_system_name = "arm64_32-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "ios_arm64e"):
         target_system_name = "arm64e-apple-ios{}".format(target_os_version)
-    elif (ctx.attr.cpu == "ios_armv7"):
-        target_system_name = "armv7-apple-ios{}".format(target_os_version)
     elif (ctx.attr.cpu == "watchos_armv7k"):
         target_system_name = "armv7k-apple-watchos{}".format(target_os_version)
-    elif (ctx.attr.cpu == "ios_i386"):
-        target_system_name = "i386-apple-ios{}-simulator".format(target_os_version)
-    elif (ctx.attr.cpu == "watchos_i386"):
-        target_system_name = "i386-apple-watchos{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "ios_x86_64"):
         target_system_name = "x86_64-apple-ios{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "ios_sim_arm64"):
@@ -679,13 +673,10 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "ios_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
-        ctx.attr.cpu == "ios_armv7" or
-        ctx.attr.cpu == "ios_i386" or
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_x86_64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or
-        ctx.attr.cpu == "watchos_i386" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_default_compiler_flags_feature = feature(
@@ -879,14 +870,12 @@ def _impl(ctx):
         ],
     )
 
-    if (ctx.attr.cpu == "ios_i386" or
-        ctx.attr.cpu == "ios_x86_64" or
+    if (ctx.attr.cpu == "ios_x86_64" or
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "tvos_x86_64" or
         ctx.attr.cpu == "tvos_sim_arm64" or
         ctx.attr.cpu == "visionos_sim_arm64" or
         ctx.attr.cpu == "visionos_x86_64" or
-        ctx.attr.cpu == "watchos_i386" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_simulator_compiler_flags_feature = feature(
@@ -1428,8 +1417,6 @@ def _impl(ctx):
 
     if (ctx.attr.cpu == "ios_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
-        ctx.attr.cpu == "ios_armv7" or
-        ctx.attr.cpu == "ios_i386" or
         ctx.attr.cpu == "ios_x86_64" or
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "tvos_arm64" or
@@ -1440,7 +1427,6 @@ def _impl(ctx):
         ctx.attr.cpu == "visionos_sim_arm64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or
-        ctx.attr.cpu == "watchos_i386" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_implicit_frameworks_feature = feature(
