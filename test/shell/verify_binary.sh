@@ -6,7 +6,7 @@ set -x
 readonly binary="%{binary}s"
 expected_platform="MACOS"
 if [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "device" ]]; then
-  expected_platform="IPHONEOS"
+  expected_platform="IOS"
 elif [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "simulator" ]]; then
   expected_platform="IOSSIMULATOR"
 elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "device" ]]; then

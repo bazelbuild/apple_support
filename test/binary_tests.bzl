@@ -123,3 +123,23 @@ def binary_test_suite(name):
         verifier_script = "//test/shell:verify_binary.sh",
         target_under_test = "//test/test_data:watch_binary",
     )
+
+    apple_verification_test(
+        name = "{}_ios_device_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"ios_multi_cpus": "x86_64,sim_arm64"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:ios_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_ios_simulator_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"ios_multi_cpus": "arm64,arm64e"},
+        expected_platform_type = "ios",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:ios_binary",
+    )

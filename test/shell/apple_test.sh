@@ -62,68 +62,6 @@ EOF
       || fail "should build starlark_apple_binary with dSYMs"
 }
 
-function test_apple_binary_crosstool_ios() {
-  rm -rf package
-  mkdir -p package
-
-  cat > package/BUILD <<EOF
-load("@build_bazel_apple_support//test:starlark_apple_binary.bzl", "starlark_apple_binary")
-objc_library(
-    name = "lib_a",
-    srcs = ["a.m"],
-)
-objc_library(
-    name = "lib_b",
-    srcs = ["b.m"],
-    deps = [":cc_lib"],
-)
-cc_library(
-    name = "cc_lib",
-    srcs = ["cc_lib.cc"],
-)
-starlark_apple_binary(
-    name = "main_binary",
-    deps = [":main_lib"],
-    platform_type = "ios",
-    minimum_os_version = "10.0",
-)
-objc_library(
-    name = "main_lib",
-    deps = [":lib_a", ":lib_b"],
-    srcs = ["main.m"],
-)
-genrule(
-  name = "lipo_run",
-  srcs = [":main_binary"],
-  outs = ["lipo_out"],
-  cmd =
-      "set -e && " +
-      "lipo -info \$(location :main_binary) > \$(@)",
-  tags = ["requires-darwin"],
-)
-EOF
-  touch package/a.m
-  touch package/b.m
-  cat > package/main.m <<EOF
-int main() {
-  return 0;
-}
-EOF
-  cat > package/cc_lib.cc << EOF
-#include <string>
-
-std::string GetString() { return "h3ll0"; }
-EOF
-
-  bazel build --verbose_failures //package:lipo_out \
-    --noincompatible_enable_cc_toolchain_resolution \
-    --ios_multi_cpus=sim_arm64,x86_64 \
-    || fail "should build starlark_apple_binary and obtain info via lipo"
-
-  grep "x86_64 arm64" bazel-bin/package/lipo_out \
-    || fail "expected output binary to be for x86_64 architecture"
-}
-
 function test_apple_binary_dsym_builds() {
   rm -rf package
   mkdir -p package

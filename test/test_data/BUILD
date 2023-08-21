@@ -122,3 +122,16 @@ starlark_apple_binary(
     platform_type = "watchos",
     deps = [":watch_main"],
 )
+
+objc_library(
+    name = "ios_main",
+    srcs = ["ios_main.m"],
+    deps = [":cc_lib"],
+)
+
+starlark_apple_binary(
+    name = "ios_binary",
+    minimum_os_version = "15.0",
+    platform_type = "ios",
+    deps = [":ios_main"],
+)
