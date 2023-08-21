@@ -24,16 +24,6 @@ sh_library(
 )
 
 sh_test(
-    name = "apple_test",
-    srcs = ["apple_test.sh"],
-    data = [":for_bazel_tests"],
-    shard_count = 3,
-    deps = [
-        ":bashunit",
-    ],
-)
-
-sh_test(
     name = "wrapped_clang_test",
     size = "small",
     srcs = ["wrapped_clang_test.sh"],

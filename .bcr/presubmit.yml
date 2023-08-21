@@ -13,6 +13,5 @@ tasks:
     test_targets:
     - '@apple_support//test/...'
     - '--'
-    - '-@apple_support//test/shell:apple_test'
     # Needs the new toolchain
     - '-@apple_support//test:linking_disable_objc_apple_link_test'
