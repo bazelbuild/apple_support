@@ -111,11 +111,11 @@ EOF
 
   bazel build --verbose_failures //package:lipo_out \
       --noincompatible_enable_cc_toolchain_resolution \
-      --watchos_cpus=i386 \
+      --watchos_cpus=x86_64 \
       || fail "should build watch binary"
 
-  grep "i386" bazel-bin/package/lipo_out \
-      || fail "expected output binary to be for i386 architecture"
+  grep "x86_64" bazel-bin/package/lipo_out \
+      || fail "expected output binary to be for x86_64 architecture"
 }
 
 function test_apple_static_library() {
@@ -141,7 +141,7 @@ EOF
 
   bazel build --verbose_failures //package:static_lib \
       --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=i386,x86_64 \
+      --ios_multi_cpus=sim_arm64,x86_64 \
       --ios_minimum_os=8.0 \
       || fail "should build starlark_apple_static_library"
 }
@@ -215,10 +215,10 @@ EOF
   bazel build --verbose_failures \
       //package:lipo_out \
       --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=i386 --ios_multi_cpus=x86_64 \
+      --ios_multi_cpus=sim_arm64 --ios_multi_cpus=x86_64 \
       || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  grep "i386 x86_64" bazel-bin/package/lipo_out \
+  grep "arm64 x86_64" bazel-bin/package/lipo_out \
     || fail "expected output binary to contain 2 architectures"
 }
 
@@ -247,7 +247,7 @@ EOF
 
   bazel build --verbose_failures //package:main_binary \
       --noincompatible_enable_cc_toolchain_resolution \
-      --ios_multi_cpus=i386,x86_64 \
+      --ios_multi_cpus=sim_arm64,x86_64 \
       --apple_generate_dsym=true \
       || fail "should build starlark_apple_binary with dSYMs"
 }
@@ -307,10 +307,10 @@ EOF
 
   bazel build --verbose_failures //package:lipo_out \
     --noincompatible_enable_cc_toolchain_resolution \
-    --ios_multi_cpus=i386,x86_64 \
+    --ios_multi_cpus=sim_arm64,x86_64 \
     || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  grep "i386 x86_64" bazel-bin/package/lipo_out \
+  grep "arm64 x86_64" bazel-bin/package/lipo_out \
     || fail "expected output binary to be for x86_64 architecture"
 }
 
@@ -381,11 +381,11 @@ int main() {
 EOF
 
   bazel build --verbose_failures \
-      //package:lipo_out --ios_multi_cpus=i386,x86_64 \
+      //package:lipo_out --ios_multi_cpus=sim_arm64,x86_64 \
       --noincompatible_enable_cc_toolchain_resolution \
       || fail "should build starlark_apple_binary and obtain info via lipo"
 
-  cat bazel-bin/package/lipo_out | grep "i386 x86_64" \
+  cat bazel-bin/package/lipo_out | grep "arm64 x86_64" \
     || fail "expected output binary to contain 2 architectures"
 }
 
