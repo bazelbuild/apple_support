@@ -113,6 +113,7 @@ starlark_apple_binary(
 objc_library(
     name = "watch_main",
     srcs = ["watch_main.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":cc_lib"],
 )
 
@@ -120,12 +121,14 @@ starlark_apple_binary(
     name = "watch_binary",
     minimum_os_version = "8.0",
     platform_type = "watchos",
+    tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":watch_main"],
 )
 
 objc_library(
     name = "ios_main",
     srcs = ["ios_main.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":cc_lib"],
 )
 
@@ -133,5 +136,6 @@ starlark_apple_binary(
     name = "ios_binary",
     minimum_os_version = "15.0",
     platform_type = "ios",
+    tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":ios_main"],
 )
