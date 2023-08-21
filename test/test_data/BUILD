@@ -1,8 +1,6 @@
-load(
-    "//rules:universal_binary.bzl",
-    "universal_binary",
-)
+load("//rules:universal_binary.bzl", "universal_binary")
 load("//test:starlark_apple_binary.bzl", "starlark_apple_binary")
+load("//test:starlark_apple_static_library.bzl", "starlark_apple_static_library")
 
 package(
     default_testonly = 1,
@@ -51,6 +49,13 @@ objc_library(
     srcs = ["lib.m"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
+)
+
+starlark_apple_static_library(
+    name = "static_lib",
+    minimum_os_version = "11.0",
+    platform_type = "ios",
+    deps = [":objc_lib"],
 )
 
 objc_library(

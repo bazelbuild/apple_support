@@ -73,3 +73,12 @@ def binary_test_suite(name):
         target_under_test = "//test/test_data:ios_app_with_unused_symbol",
         tags = [name],
     )
+
+    apple_verification_test(
+        name = "{}_archive_timestamps".format(name),
+        build_type = "simulator",
+        cpus = {"ios_multi_cpus": "x86_64"},
+        verifier_script = "//test:verify_archive_timestamps.sh",
+        target_under_test = "//test/test_data:static_lib",
+        tags = [name],
+    )
