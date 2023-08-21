@@ -132,6 +132,7 @@ cpu's to use for test under target (e.g. {'ios_multi_cpus': ['arm64', 'x86_64']}
 """,
         ),
         "expected_platform_type": attr.string(
+            default = "",
             doc = """
 The apple_platform_type the binary should have been built for.
 """,
