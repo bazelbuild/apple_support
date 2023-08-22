@@ -136,6 +136,7 @@ def configure_osx_toolchain(repository_ctx):
     wrapped_clang_src_path = str(repository_ctx.path(
         Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
     ))
+    index_import = Label("@build_bazel_apple_support_index_import//:index-import")
 
     xcode_toolchains = []
     xcodeloc_err = ""
@@ -162,6 +163,7 @@ def configure_osx_toolchain(repository_ctx):
     )
     repository_ctx.symlink(xcrunwrapper, "xcrunwrapper.sh")
     repository_ctx.symlink(libtool, "libtool")
+    repository_ctx.symlink(index_import, "index-import")
     repository_ctx.symlink(make_hashed_objlist, "make_hashed_objlist.py")
     repository_ctx.symlink(cc_toolchain_config, "cc_toolchain_config.bzl")
     _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")

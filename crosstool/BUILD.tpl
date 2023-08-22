@@ -51,6 +51,7 @@ cc_toolchain_suite(
             ":make_hashed_objlist.py",
             ":wrapped_clang",
             ":wrapped_clang_pp",
+            "@build_bazel_apple_support_index_import//:index-import",
             ":xcrunwrapper.sh",
         ],
     )

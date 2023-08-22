@@ -2154,6 +2154,50 @@ def _impl(ctx):
         ],
     )
 
+    indexstore_files_feature = feature(
+        name = "indexstore_files",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = ["-index-store-path", "%{indexstore_files}", "-index-ignore-system-symbols"],
+                        expand_if_available = "indexstore_files",
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    use_global_indexstore_feature = feature(
+        name = "use_global_indexstore",
+        env_sets = [
+            env_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                ],
+                env_entries = [
+                    env_entry(
+                        key = "GLOBAL_INDEXSTORE",
+                        value = "true",
+                    ),
+                ],
+            ),
+        ],
+    )
+
     preprocessor_defines_feature = feature(
         name = "preprocessor_defines",
         enabled = True,
@@ -2472,6 +2516,8 @@ def _impl(ctx):
         sysroot_feature,
         dependency_file_feature,
         serialized_diagnostics_file_feature,
+        indexstore_files_feature,
+        use_global_indexstore_feature,
         pic_feature,
         per_object_debug_info_feature,
         preprocessor_defines_feature,
