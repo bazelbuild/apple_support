@@ -13,6 +13,7 @@
 # limitations under the License.
 """A C++ toolchain configuration rule for macOS."""
 
+load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
     "action_config",
@@ -29,7 +30,6 @@ load(
     "variable_with_value",
     "with_feature_set",
 )
-load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 
 # TODO: Remove when we drop bazel 6.x support
 _OBJC_ARCHIVE_ACTION_NAME = "objc-archive"

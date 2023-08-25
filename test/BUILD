@@ -1,12 +1,12 @@
-load("//rules:apple_genrule.bzl", "apple_genrule")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
-load(":universal_binary_test.bzl", "universal_binary_test")
-load(":xcode_support_test.bzl", "xcode_support_test")
-load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":binary_tests.bzl", "binary_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
+load(":starlark_apple_binary.bzl", "starlark_apple_binary")
+load(":universal_binary_test.bzl", "universal_binary_test")
+load(":xcode_support_test.bzl", "xcode_support_test")
 
 licenses(["notice"])
 

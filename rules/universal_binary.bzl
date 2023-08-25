@@ -14,10 +14,10 @@
 
 """Implementation for macOS universal binary rule."""
 
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:apple_support.bzl", "apple_support")
 load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
 
 def _universal_binary_impl(ctx):
     inputs = [
