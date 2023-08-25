@@ -14,11 +14,11 @@
 # limitations under the License.
 """Configuring the C++ toolchain on macOS."""
 
-load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
 load(
     "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
     "escape_string",
 )
+load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.

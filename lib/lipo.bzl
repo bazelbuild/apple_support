@@ -14,11 +14,11 @@
 
 """APIs for operating on universal binaries with `lipo`."""
 
-load(":apple_support.bzl", "apple_support")
 load(
     "@bazel_skylib//lib:shell.bzl",
     "shell",
 )
+load(":apple_support.bzl", "apple_support")
 
 def _create(
         *,
