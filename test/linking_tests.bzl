@@ -64,3 +64,19 @@ def linking_test_suite(name):
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
+
+    default_test(
+        name = "{}_dylib_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-dynamiclib",
+        ],
+        not_expected_argv = [],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_dylib",
+    )

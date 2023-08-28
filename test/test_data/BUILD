@@ -52,6 +52,15 @@ cc_library(
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
+starlark_apple_binary(
+    name = "macos_dylib",
+    binary_type = "dylib",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":cc_lib"],
+)
+
 objc_library(
     name = "objc_lib",
     srcs = ["objc_lib.m"],

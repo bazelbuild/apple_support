@@ -2,10 +2,28 @@
 
 load("//test:transitions.bzl", "apple_platform_split_transition")
 
+_supports_extra_requested_features = hasattr(apple_common.platform_type, "visionos")
+
 def _starlark_apple_binary_impl(ctx):
+    extra_requested_features = []
+    bazel_6_linkopts = []
+    if ctx.attr.binary_type == "dylib":
+        extra_requested_features.append("link_dylib")
+        bazel_6_linkopts = ["-dynamiclib"]
+    elif ctx.attr.binary_type == "loadable_bundle":
+        extra_requested_features.append("link_bundle")
+        bazel_6_linkopts = ["-bundle"]
+
+    kwargs = {}
+    if _supports_extra_requested_features:
+        kwargs["extra_requested_features"] = extra_requested_features
+    else:
+        kwargs["extra_linkopts"] = bazel_6_linkopts
+
     link_result = apple_common.link_multi_arch_binary(
         ctx = ctx,
         stamp = ctx.attr.stamp,
+        **kwargs
     )
     processed_binary = ctx.actions.declare_file(
         "{}_lipobin".format(ctx.label.name),
@@ -65,7 +83,10 @@ starlark_apple_binary = rule(
             default = Label("@bazel_tools//tools/objc:xcrunwrapper"),
             executable = True,
         ),
-        "binary_type": attr.string(default = "executable"),
+        "binary_type": attr.string(
+            default = "executable",
+            values = ["dylib", "executable", "loadable_bundle"],
+        ),
         "bundle_loader": attr.label(),
         "deps": attr.label_list(
             cfg = apple_platform_split_transition,
