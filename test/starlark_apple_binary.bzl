@@ -4,10 +4,17 @@ load("//test:linking_support.bzl", "link_multi_arch_binary")
 load("//test:transitions.bzl", "apple_platform_split_transition")
 
 def _starlark_apple_binary_impl(ctx):
+    extra_requested_features = []
+    if ctx.attr.binary_type == "dylib":
+        extra_requested_features.append("link_dylib")
+    elif ctx.attr.binary_type == "loadable_bundle":
+        extra_requested_features.append("link_bundle")
+
     link_result = link_multi_arch_binary(
         ctx = ctx,
         cc_toolchains = ctx.split_attr._cc_toolchain_forwarder,
         stamp = ctx.attr.stamp,
+        extra_requested_features = extra_requested_features,
     )
     processed_binary = ctx.actions.declare_file(
         "{}_lipobin".format(ctx.label.name),
@@ -62,7 +69,10 @@ starlark_apple_binary = rule(
                 name = "xcode_config_label",
             ),
         ),
-        "binary_type": attr.string(default = "executable"),
+        "binary_type": attr.string(
+            default = "executable",
+            values = ["dylib", "executable", "loadable_bundle"],
+        ),
         "bundle_loader": attr.label(),
         "deps": attr.label_list(
             cfg = apple_platform_split_transition,
