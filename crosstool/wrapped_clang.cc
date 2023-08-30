@@ -58,14 +58,6 @@ const char *Basename(const char *filepath) {
   return base ? (base + 1) : filepath;
 }
 
-// Returns the dir name of the given filepath. For example, given 
-// /foo/bar/baz.txt, returns '/foo/bar'.
-const std::string Dirname(const char *filepath) { 
-  std::string path = std::string(filepath);
-  std::string dirname = path.substr(0, path.find_last_of('/'));
-  return dirname;
-}
-
 // Unescape and unquote an argument read from a line of a response file.
 static std::string Unescape(const std::string &arg) {
   std::string result;
@@ -519,6 +511,36 @@ int main(int argc, char *argv[]) {
     if (!RunSubProcess(index_import_args)) {
       return 1;
     }
+
+    std::string original_indexstore_parent_dir = std::filesystem::path(original_indexstore_path).parent_path();
+    std::string original_indexstore_name = std::filesystem::path(original_indexstore_path).filename();
+    std::vector<std::string> zip_indexstore_args = { "/usr/bin/tar",
+    "-C",
+    original_indexstore_parent_dir,
+    "-cf",
+    original_indexstore_path + ".tar", 
+    original_indexstore_name};
+
+    if (!RunSubProcess(zip_indexstore_args)) {
+      return 1;
+    }
+
+    std::vector<std::string> rm_args = { "/bin/rm",
+    "-r",
+    original_indexstore_path};
+
+    if (!RunSubProcess(rm_args)) {
+      return 1;
+    }
+
+    std::vector<std::string> final_args = { "/bin/mv",
+    original_indexstore_path + ".tar", 
+    original_indexstore_path};
+
+    if (!RunSubProcess(final_args)) {
+      return 1;
+    }
+
   }
 
   if (postprocess) {
