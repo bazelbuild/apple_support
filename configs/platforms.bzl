@@ -23,7 +23,7 @@ APPLE_PLATFORMS_CONSTRAINTS = {
     ],
     "ios_arm64e": [
         "@platforms//os:ios",
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:arm64e",
         "@build_bazel_apple_support//constraints:device",
     ],
     "ios_x86_64": [
