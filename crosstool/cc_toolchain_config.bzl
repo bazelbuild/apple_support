@@ -86,7 +86,12 @@ def _impl(ctx):
     elif (ctx.attr.cpu == "watchos_x86_64"):
         target_system_name = "x86_64-apple-watchos{}-simulator".format(target_os_version)
     else:
-        fail("Unreachable")
+        fail("""\
+Unknown CPU: {cpu}. Please update 'apple_support' to the latest version. If \
+you are sure you are on the latest version, try 'bazel shutdown' to work \
+around a Bazel staleness bug. Finally, if you still encounter this error, \
+please file an issue at https://github.com/bazelbuild/apple_support/issues/new
+""".format(cpu =ctx.attr.cpu))
 
     if ctx.attr.cpu.startswith("darwin_"):
         target_libc = "macosx"
@@ -727,7 +732,12 @@ def _impl(ctx):
             ],
         )
     else:
-        fail("Unreachable")
+        fail("""\
+Unknown CPU: {cpu}. Please update 'apple_support' to the latest version. If \
+you are sure you are on the latest version, try 'bazel shutdown' to work \
+around a Bazel staleness bug. Finally, if you still encounter this error, \
+please file an issue at https://github.com/bazelbuild/apple_support/issues/new
+""".format(cpu =ctx.attr.cpu))
 
     runtime_root_flags_feature = feature(
         name = "runtime_root_flags",
