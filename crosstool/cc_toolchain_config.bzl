@@ -1003,6 +1003,38 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    link_dylib_feature = feature(
+        name = "link_dylib",
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-dynamiclib",
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    link_bundle_feature = feature(
+        name = "link_bundle",
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-bundle",
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
     no_deduplicate_feature = feature(
         name = "no_deduplicate",
         enabled = True,
@@ -2521,6 +2553,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ubsan_feature,
         default_sanitizer_flags_feature,
         treat_warnings_as_errors_feature,
+        link_dylib_feature,
+        link_bundle_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
