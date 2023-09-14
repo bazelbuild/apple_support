@@ -18,8 +18,14 @@ def _macos_universal_transition_impl(settings, _attr):
     # Create a split transition from any macOS cpu to a list of all macOS cpus
     if settings["//command_line_option:cpu"].startswith("darwin"):
         return [
-            {"//command_line_option:cpu": "darwin_x86_64"},
-            {"//command_line_option:cpu": "darwin_arm64"},
+            {
+                "//command_line_option:cpu": "darwin_arm64",
+                "//command_line_option:platforms": "//platforms:macos_arm64",
+            },
+            {
+                "//command_line_option:cpu": "darwin_x86_64",
+                "//command_line_option:platforms": "//platforms:macos_x86_64",
+            },
         ]
     else:
         return settings
@@ -27,5 +33,5 @@ def _macos_universal_transition_impl(settings, _attr):
 macos_universal_transition = transition(
     implementation = _macos_universal_transition_impl,
     inputs = ["//command_line_option:cpu"],
-    outputs = ["//command_line_option:cpu"],
+    outputs = ["//command_line_option:cpu", "//command_line_option:platforms"],
 )
