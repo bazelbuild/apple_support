@@ -43,13 +43,30 @@ _DYNAMIC_LINK_ACTIONS = [
     _OBJCPP_EXECUTABLE_ACTION_NAME,
 ]
 
-def _target_os_version(ctx):
-    platform_type = ctx.fragments.apple.single_arch_platform.platform_type
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    return xcode_config.minimum_os_for_platform_type(platform_type)
-
 def _impl(ctx):
-    target_os_version = _target_os_version(ctx)
+    if ctx.attr.cpu.startswith("darwin"):
+        platform_type = apple_common.platform_type.macos
+    elif ctx.attr.cpu.startswith("ios"):
+        platform_type = apple_common.platform_type.ios
+    elif ctx.attr.cpu.startswith("tvos"):
+        platform_type = apple_common.platform_type.tvos
+    elif ctx.attr.cpu.startswith("watchos"):
+        platform_type = apple_common.platform_type.watchos
+    elif ctx.attr.cpu.startswith("visionos"):
+        # TODO: Remove when we drop bazel 5.x support, falling back to iOS
+        # doesn't hurt since you can't build for visionOS in this case anyways
+        platform_type = getattr(apple_common.platform_type, "visionos", None) or apple_common.platform_type.ios
+    else:
+        fail("""\
+Unknown CPU: {cpu}. Please update 'apple_support' to the latest version. If \
+you are sure you are on the latest version, try 'bazel shutdown' to work \
+around a Bazel staleness bug. Finally, if you still encounter this error, \
+please file an issue at https://github.com/bazelbuild/apple_support/issues/new
+""".format(cpu = ctx.attr.cpu))
+
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_execution_requirements = xcode_config.execution_info().keys()
+    target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
 
     if (ctx.attr.cpu == "ios_arm64"):
         target_system_name = "arm64-apple-ios{}".format(target_os_version)
@@ -131,9 +148,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [tool(path = "/usr/bin/strip")],
     )
-
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    xcode_execution_requirements = xcode_config.execution_info().keys()
 
     cpp_header_parsing_action = action_config(
         action_name = ACTION_NAMES.cpp_header_parsing,
@@ -2602,5 +2616,5 @@ cc_toolchain_config = rule(
     },
     provides = [CcToolchainConfigInfo],
     executable = True,
-    fragments = ["apple", "cpp"],
+    fragments = ["cpp"],
 )
