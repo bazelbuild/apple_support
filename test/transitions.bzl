@@ -16,6 +16,27 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
     "watchos": "x86_64",
 }
 
+_CPU_TO_PLATFORM = {
+    "darwin_x86_64": "//platforms:macos_x86_64",
+    "darwin_arm64": "//platforms:macos_arm64",
+    "darwin_arm64e": "//platforms:darwin_arm64e",
+    "ios_x86_64": "//platforms:ios_x86_64",
+    "ios_arm64": "//platforms:ios_arm64",
+    "ios_sim_arm64": "//platforms:ios_sim_arm64",
+    "ios_arm64e": "//platforms:ios_arm64e",
+    "tvos_sim_arm64": "//platforms:tvos_sim_arm64",
+    "tvos_arm64": "//platforms:tvos_arm64",
+    "tvos_x86_64": "//platforms:tvos_x86_64",
+    "visionos_arm64": "//platforms:visionos_arm64",
+    "visionos_sim_arm64": "//platforms:visionos_sim_arm64",
+    "visionos_x86_64": "//platforms/simulator:visionos_x86_64",
+    "watchos_armv7k": "//platforms:watchos_armv7k",
+    "watchos_arm64": "//platforms:watchos_arm64",
+    "watchos_device_arm64": "//platforms:watchos_arm64",
+    "watchos_arm64_32": "//platforms:watchos_arm64_32",
+    "watchos_x86_64": "//platforms:watchos_x86_64",
+}
+
 _supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _cpu_string(*, environment_arch, platform_type, settings = {}):
@@ -71,6 +92,12 @@ def _min_os_version_or_none(*, minimum_os_version, platform, platform_type):
     return None
 
 def _command_line_options(*, apple_platforms = [], environment_arch = None, minimum_os_version, platform_type, settings):
+    cpu = _cpu_string(
+        environment_arch = environment_arch,
+        platform_type = platform_type,
+        settings = settings,
+    )
+
     output_dictionary = {
         "//command_line_option:apple configuration distinguisher": "applebin_" + platform_type,
         "//command_line_option:apple_platform_type": platform_type,
@@ -79,17 +106,13 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
         # architecture and environment, therefore we set `environment_arch` when it is available.
         "//command_line_option:apple_split_cpu": environment_arch if environment_arch else "",
         "//command_line_option:compiler": None,
-        "//command_line_option:cpu": _cpu_string(
-            environment_arch = environment_arch,
-            platform_type = platform_type,
-            settings = settings,
-        ),
+        "//command_line_option:cpu": cpu,
         "//command_line_option:crosstool_top": (
             settings["//command_line_option:apple_crosstool_top"]
         ),
         "//command_line_option:fission": [],
         "//command_line_option:grte_top": None,
-        "//command_line_option:platforms": [apple_platforms[0]] if apple_platforms else [],
+        "//command_line_option:platforms": [apple_platforms[0]] if apple_platforms else [_CPU_TO_PLATFORM[cpu]],
         "//command_line_option:ios_minimum_os": _min_os_version_or_none(
             minimum_os_version = minimum_os_version,
             platform = "ios",
