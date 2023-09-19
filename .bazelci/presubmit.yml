@@ -41,8 +41,10 @@ tasks:
       - "-//doc/..."
     build_flags:
       - "--enable_bzlmod"
+      - "--platform_mappings=platform_mappings_bzlmod"
     test_flags:
       - "--enable_bzlmod"
+      - "--platform_mappings=platform_mappings_bzlmod"
 
   macos_last_green:
     name: "Last Green Bazel"
