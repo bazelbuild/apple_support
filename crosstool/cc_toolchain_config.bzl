@@ -30,6 +30,7 @@ load(
     "variable_with_value",
     "with_feature_set",
 )
+load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
 
 # TODO: Remove when we drop bazel 6.x support
 _OBJC_ARCHIVE_ACTION_NAME = "objc-archive"
@@ -2456,6 +2457,26 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    # As of Xcode 15, linker warnings are emitted if duplicate `-l` options are
+    # present. Until such linkopts can be deduped by bazel itself, we disable
+    # these warnings.
+    no_warn_duplicate_libraries_feature = feature(
+        name = "no_warn_duplicate_libraries",
+        enabled = xcode_support.is_xcode_at_least_version(xcode_config, "15.0.0"),
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-Wl,-no_warn_duplicate_libraries",
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
     features = [
         # Marker features
         feature(name = "archive_param_file"),
@@ -2535,6 +2556,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ubsan_feature,
         default_sanitizer_flags_feature,
         treat_warnings_as_errors_feature,
+        no_warn_duplicate_libraries_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
