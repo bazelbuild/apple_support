@@ -1,4 +1,8 @@
-load("//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
+load(
+    "//configs:platforms.bzl",
+    "APPLE_PLATFORMS_CONSTRAINTS",
+    "CPU_TO_DEFAULT_PLATFORM_NAME",
+)
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,6 +23,19 @@ alias(
     name = "macos_arm64",
     actual = "darwin_arm64",
 )
+
+alias(
+    name = "macos_arm64e",
+    actual = "darwin_arm64e",
+)
+
+[
+    label_flag(
+        name = platform + "_platform",
+        build_setting_default = platform,
+    )
+    for platform in CPU_TO_DEFAULT_PLATFORM_NAME.values()
+]
 
 # Consumed by bazel tests.
 filegroup(
