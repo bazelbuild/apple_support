@@ -31,7 +31,7 @@ alias(
 
 [
     label_flag(
-        name = "default_" + platform,
+        name = platform + "_platform",
         build_setting_default = platform,
     )
     for platform in CPU_TO_DEFAULT_PLATFORM_NAME.values()

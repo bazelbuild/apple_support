@@ -21,13 +21,13 @@ def _macos_universal_transition_impl(settings, _attr):
             {
                 "//command_line_option:cpu": "darwin_arm64",
                 "//command_line_option:platforms": [
-                    settings["//platforms:default_macos_arm64"],
+                    settings["//platforms:macos_arm64_platform"],
                 ],
             },
             {
                 "//command_line_option:cpu": "darwin_x86_64",
                 "//command_line_option:platforms": [
-                    settings["//platforms:default_macos_x86_64"],
+                    settings["//platforms:macos_x86_64_platform"],
                 ],
             },
         ]
@@ -39,8 +39,8 @@ macos_universal_transition = transition(
     inputs = [
         "//command_line_option:cpu",
         "//command_line_option:platforms",
-        "//platforms:default_macos_x86_64",
-        "//platforms:default_macos_arm64",
+        "//platforms:macos_x86_64_platform",
+        "//platforms:macos_arm64_platform",
     ],
     outputs = ["//command_line_option:cpu", "//command_line_option:platforms"],
 )

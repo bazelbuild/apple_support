@@ -19,7 +19,7 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
 }
 
 _CPU_TO_DEFAULT_PLATFORM_FLAG = {
-    cpu: "//platforms:default_" + platform_name
+    cpu: "//platforms:{}_platform".format(platform_name)
     for cpu, platform_name in CPU_TO_DEFAULT_PLATFORM_NAME.items()
 }
 
