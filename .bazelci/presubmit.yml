@@ -10,15 +10,10 @@ x_defaults:
     test_targets:
       - "//..."
 
-  toolchain_flags: &toolchain_flags
-    build_flags:
-      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
-    test_flags:
-      - "--apple_crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--crosstool_top=@local_config_apple_cc//:toolchain"
-      - "--host_crosstool_top=@local_config_apple_cc//:toolchain"
+  linux_common: &linux_common
+    platform: ubuntu2004
+    build_targets:
+      - "//test/test_data:multi_arch_cc_binary"
 
 tasks:
   macos_latest:
@@ -29,7 +24,6 @@ tasks:
   macos_latest_bzlmod:
     name: "Current LTS using bzlmod"
     bazel: latest
-    <<: *toolchain_flags
     <<: *common
     build_targets:
       - "//..."
@@ -58,16 +52,14 @@ tasks:
       - .bazelci/update_workspace_to_deps_heads.sh
     <<: *common
 
-  macos_latest_vendored_toolchain:
-    name: "Latest Bazel vendored toolchain"
+  linux_latest:
+    name: "Current LTS on Linux"
     bazel: latest
-    <<: *common
-    <<: *toolchain_flags
+    <<: *linux_common
 
-  macos_last_green_vendored_toolchain:
-    name: "Last Green Bazel vendored toolchain"
+  linux_last_green:
+    name: "last_green on Linux"
     bazel: last_green
-    <<: *common
-    <<: *toolchain_flags
+    <<: *linux_common
 
 buildifier: latest

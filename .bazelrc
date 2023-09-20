@@ -1,4 +1,6 @@
-build --apple_crosstool_top=@local_config_apple_cc//:toolchain
-build --crosstool_top=@local_config_apple_cc//:toolchain
-build --host_crosstool_top=@local_config_apple_cc//:toolchain
+build --enable_platform_specific_config
 build --features=treat_warnings_as_errors
+
+build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
