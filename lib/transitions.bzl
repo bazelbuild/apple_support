@@ -20,11 +20,15 @@ def _macos_universal_transition_impl(settings, _attr):
         return [
             {
                 "//command_line_option:cpu": "darwin_arm64",
-                "//command_line_option:platforms": "//platforms:macos_arm64",
+                "//command_line_option:platforms": [
+                    settings["//platforms:default_macos_arm64"],
+                ],
             },
             {
                 "//command_line_option:cpu": "darwin_x86_64",
-                "//command_line_option:platforms": "//platforms:macos_x86_64",
+                "//command_line_option:platforms": [
+                    settings["//platforms:default_macos_x86_64"],
+                ],
             },
         ]
     else:
@@ -32,6 +36,11 @@ def _macos_universal_transition_impl(settings, _attr):
 
 macos_universal_transition = transition(
     implementation = _macos_universal_transition_impl,
-    inputs = ["//command_line_option:cpu", "//command_line_option:platforms"],
+    inputs = [
+        "//command_line_option:cpu",
+        "//command_line_option:platforms",
+        "//platforms:default_macos_x86_64",
+        "//platforms:default_macos_arm64",
+    ],
     outputs = ["//command_line_option:cpu", "//command_line_option:platforms"],
 )

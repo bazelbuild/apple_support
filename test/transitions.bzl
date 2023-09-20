@@ -1,5 +1,7 @@
 """Dummy transitions for testing basic behavior"""
 
+load("//configs:platforms.bzl", "CPU_TO_DEFAULT_PLATFORM_NAME")
+
 _PLATFORM_TYPE_TO_CPUS_FLAG = {
     "ios": "//command_line_option:ios_multi_cpus",
     "macos": "//command_line_option:macos_cpus",
@@ -16,25 +18,9 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
     "watchos": "x86_64",
 }
 
-_CPU_TO_PLATFORM = {
-    "darwin_x86_64": "//platforms:macos_x86_64",
-    "darwin_arm64": "//platforms:macos_arm64",
-    "darwin_arm64e": "//platforms:darwin_arm64e",
-    "ios_x86_64": "//platforms:ios_x86_64",
-    "ios_arm64": "//platforms:ios_arm64",
-    "ios_sim_arm64": "//platforms:ios_sim_arm64",
-    "ios_arm64e": "//platforms:ios_arm64e",
-    "tvos_sim_arm64": "//platforms:tvos_sim_arm64",
-    "tvos_arm64": "//platforms:tvos_arm64",
-    "tvos_x86_64": "//platforms:tvos_x86_64",
-    "visionos_arm64": "//platforms:visionos_arm64",
-    "visionos_sim_arm64": "//platforms:visionos_sim_arm64",
-    "visionos_x86_64": "//platforms/simulator:visionos_x86_64",
-    "watchos_armv7k": "//platforms:watchos_armv7k",
-    "watchos_arm64": "//platforms:watchos_arm64",
-    "watchos_device_arm64": "//platforms:watchos_arm64",
-    "watchos_arm64_32": "//platforms:watchos_arm64_32",
-    "watchos_x86_64": "//platforms:watchos_x86_64",
+_CPU_TO_DEFAULT_PLATFORM_FLAG = {
+    cpu: "//platforms:default_" + platform_name
+    for cpu, platform_name in CPU_TO_DEFAULT_PLATFORM_NAME.items()
 }
 
 _supports_visionos = hasattr(apple_common.platform_type, "visionos")
@@ -112,7 +98,9 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
         ),
         "//command_line_option:fission": [],
         "//command_line_option:grte_top": None,
-        "//command_line_option:platforms": [apple_platforms[0]] if apple_platforms else [_CPU_TO_PLATFORM[cpu]],
+        "//command_line_option:platforms": (
+            [apple_platforms[0]] if apple_platforms else [settings[_CPU_TO_DEFAULT_PLATFORM_FLAG[cpu]]]
+        ),
         "//command_line_option:ios_minimum_os": _min_os_version_or_none(
             minimum_os_version = minimum_os_version,
             platform = "ios",
@@ -147,7 +135,9 @@ _apple_platform_transition_inputs = [
     "//command_line_option:platforms",
     "//command_line_option:tvos_cpus",
     "//command_line_option:watchos_cpus",
-] + (["//command_line_option:visionos_cpus"] if _supports_visionos else [])
+] + (
+    _CPU_TO_DEFAULT_PLATFORM_FLAG.values()
+) + (["//command_line_option:visionos_cpus"] if _supports_visionos else [])
 
 _apple_rule_base_transition_outputs = [
     "//command_line_option:apple configuration distinguisher",
