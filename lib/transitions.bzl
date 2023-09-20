@@ -32,7 +32,10 @@ def _macos_universal_transition_impl(settings, _attr):
             },
         ]
     else:
-        return settings
+        return {
+            "//command_line_option:cpu": settings["//command_line_option:cpu"],
+            "//command_line_option:platforms": settings["//command_line_option:platforms"],
+        }
 
 macos_universal_transition = transition(
     implementation = _macos_universal_transition_impl,
