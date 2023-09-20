@@ -135,9 +135,9 @@ _apple_platform_transition_inputs = [
     "//command_line_option:platforms",
     "//command_line_option:tvos_cpus",
     "//command_line_option:watchos_cpus",
-] + (
-    _CPU_TO_DEFAULT_PLATFORM_FLAG.values()
-) + (["//command_line_option:visionos_cpus"] if _supports_visionos else [])
+] + _CPU_TO_DEFAULT_PLATFORM_FLAG.values() + (
+    ["//command_line_option:visionos_cpus"] if _supports_visionos else []
+)
 
 _apple_rule_base_transition_outputs = [
     "//command_line_option:apple configuration distinguisher",
