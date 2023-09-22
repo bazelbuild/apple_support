@@ -59,13 +59,18 @@ use_repo(apple_cc_configure, "local_config_apple_cc")
 
 ### Incompatible toolchain resolution
 
-Bazel is currently working on migrating C++ toolchain configuration to a
-new discovery method that no longer uses the `--*crosstool_top` flags.
-If you would like to test this upcoming feature, or need to use this in
-your build for other reasons, you can use this toolchain with
-`--incompatible_enable_cc_toolchain_resolution` as long as you provide a
-`platform_mappings` file. Please file any issues you find as you test
-this work in progress configuration.
+Bazel 7.x enabled a new discovery method for CC toolchains. With this
+new method you no longer need to pass any `--*crosstool_top` flags.
+Instead you just need to depend on `apple_support` and bazel
+automatically picks the right toolchain based on what you're building.
+If you have any issues with this you can temporarily disable it with
+`--incompatible_enable_cc_toolchain_resolution=false`. If you do please
+file an issue here.
+
+NOTE: If you're using bzlmod and depend on both `apple_support` and
+`rules_cc` in your `MODULE.bazel`, `apple_support`'s `bazel_dep` must
+come _before_ `rules_cc` in order to take precedence over the default CC
+toolchains.
 
 ## Toolchain configuration
 
