@@ -31,6 +31,17 @@ constraint_value(
     constraint_setting = ":target_environment",
 )
 
+# Constraint indicating if the platform belongs to an "Apple" platform (iOS, watchOS, tvOS, etc.)
+constraint_setting(
+    name = "target_vendor",
+    visibility = ["//visibility:private"],
+)
+
+constraint_value(
+    name = "apple",
+    constraint_setting = ":target_vendor",
+)
+
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
