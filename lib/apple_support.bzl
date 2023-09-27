@@ -460,6 +460,107 @@ def _run_shell(
         **kwargs
     ))
 
+def _target_arch_from_rule_ctx(ctx):
+    """Returns a `String` representing the target architecture based on constraints.
+
+    The returned `String` will represent a cpu architecture, such as `arm64` or `arm64e`.
+
+    In order to use `apple_support.target_arch_from_rule_ctx()`, you'll need to modify your rule
+    definition to add the following:
+
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib.
+
+    Args:
+        ctx: The context of the rule that has Apple platform constraint attributes.
+
+    Returns:
+        A `String` representing the selected target architecture or cpu type (e.g. `arm64`,
+        `arm64e`).
+    """
+    arm64_constraint = ctx.attr._arm64_constraint[platform_common.ConstraintValueInfo]
+    arm64e_constraint = ctx.attr._arm64e_constraint[platform_common.ConstraintValueInfo]
+    arm64_32_constraint = ctx.attr._arm64_32_constraint[platform_common.ConstraintValueInfo]
+    armv7k_constraint = ctx.attr._armv7k_constraint[platform_common.ConstraintValueInfo]
+    x86_64_constraint = ctx.attr._x86_64_constraint[platform_common.ConstraintValueInfo]
+
+    if ctx.target_platform_has_constraint(arm64_constraint):
+        return "arm64"
+    elif ctx.target_platform_has_constraint(arm64e_constraint):
+        return "arm64e"
+    elif ctx.target_platform_has_constraint(arm64_32_constraint):
+        return "arm64_32"
+    elif ctx.target_platform_has_constraint(armv7k_constraint):
+        return "armv7k"
+    elif ctx.target_platform_has_constraint(x86_64_constraint):
+        return "x86_64"
+    fail("ERROR: A valid Apple cpu constraint could not be found from the resolved toolchain.")
+
+def _target_environment_from_rule_ctx(ctx):
+    """Returns a `String` representing the target environment based on constraints.
+
+    The returned `String` will represent an environment, such as `device` or `simulator`.
+
+    For consistency with other Apple platforms, `macos` is considered to be a `device`.
+
+    In order to use `apple_support.target_environment_from_rule_ctx()`, you'll need to modify your
+    rule definition to add the following:
+
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib.
+
+    Args:
+        ctx: The context of the rule that has Apple platform constraint attributes.
+
+    Returns:
+        A `String` representing the selected environment (e.g. `device`, `simulator`).
+    """
+    device_constraint = ctx.attr._apple_device_constraint[platform_common.ConstraintValueInfo]
+    simulator_constraint = ctx.attr._apple_simulator_constraint[platform_common.ConstraintValueInfo]
+
+    if ctx.target_platform_has_constraint(device_constraint):
+        return "device"
+    elif ctx.target_platform_has_constraint(simulator_constraint):
+        return "simulator"
+    fail("ERROR: A valid Apple environment (device, simulator) constraint could not be found from" +
+         " the resolved toolchain.")
+
+def _target_os_from_rule_ctx(ctx):
+    """Returns a `String` representing the target OS based on constraints.
+
+    The returned `String` will match an equivalent value from one of the platform definitions in
+    `apple_common.platform_type`, such as `ios` or `macos`.
+
+    In order to use `apple_support.target_os_from_rule_ctx()`, you'll need to modify your rule
+    definition to add the following:
+
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib.
+
+    Args:
+        ctx: The context of the rule that has Apple platform constraint attributes.
+
+    Returns:
+        A `String` representing the selected Apple OS.
+    """
+    ios_constraint = ctx.attr._ios_constraint[platform_common.ConstraintValueInfo]
+    macos_constraint = ctx.attr._macos_constraint[platform_common.ConstraintValueInfo]
+    tvos_constraint = ctx.attr._tvos_constraint[platform_common.ConstraintValueInfo]
+    visionos_constraint = ctx.attr._visionos_constraint[platform_common.ConstraintValueInfo]
+    watchos_constraint = ctx.attr._watchos_constraint[platform_common.ConstraintValueInfo]
+
+    if ctx.target_platform_has_constraint(ios_constraint):
+        return str(apple_common.platform_type.ios)
+    elif ctx.target_platform_has_constraint(macos_constraint):
+        return str(apple_common.platform_type.macos)
+    elif ctx.target_platform_has_constraint(tvos_constraint):
+        return str(apple_common.platform_type.tvos)
+    elif ctx.target_platform_has_constraint(visionos_constraint):
+        return str(apple_common.platform_type.visionos)
+    elif ctx.target_platform_has_constraint(watchos_constraint):
+        return str(apple_common.platform_type.watchos)
+    fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")
+
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
     path_placeholders = struct(
@@ -469,5 +570,8 @@ apple_support = struct(
     ),
     run = _run,
     run_shell = _run_shell,
+    target_arch_from_rule_ctx = _target_arch_from_rule_ctx,
+    target_environment_from_rule_ctx = _target_environment_from_rule_ctx,
+    target_os_from_rule_ctx = _target_os_from_rule_ctx,
     xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL,
 )
