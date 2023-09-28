@@ -305,10 +305,10 @@ def _platform_constraint_attrs():
             default = Label("@platforms//cpu:x86_64"),
         ),
         "_apple_device_constraint": attr.label(
-            default = Label("@build_bazel_apple_support//constraints:device"),
+            default = Label("//constraints:device"),
         ),
         "_apple_simulator_constraint": attr.label(
-            default = Label("@build_bazel_apple_support//constraints:simulator"),
+            default = Label("//constraints:simulator"),
         ),
     }
 
