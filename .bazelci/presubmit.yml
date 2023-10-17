@@ -17,7 +17,7 @@ x_defaults:
 
 tasks:
   macos_latest:
-    name: "Latest Bazel"
+    name: "Current LTS"
     bazel: latest
     <<: *common
     build_flags:
@@ -30,7 +30,7 @@ tasks:
       - "--features=-treat_warnings_as_errors"
 
   macos_latest_bzlmod:
-    name: "Current LTS using bzlmod"
+    name: "Current LTS using Bzlmod"
     bazel: latest
     <<: *common
     build_targets:
@@ -58,7 +58,7 @@ tasks:
     <<: *common
 
   macos_latest_head_deps:
-    name: "Latest Bazel with Head Deps"
+    name: "Current LTS with Head Deps"
     bazel: latest
     shell_commands:
       # Update the WORKSPACE to use head versions of some deps to ensure nothing
@@ -75,12 +75,12 @@ tasks:
       - "--features=-treat_warnings_as_errors"
 
   linux_latest:
-    name: "Current LTS on Linux"
+    name: "Current LTS"
     bazel: latest
     <<: *linux_common
 
   linux_last_green:
-    name: "last_green on Linux"
+    name: "Last Green Bazel"
     bazel: last_green
     <<: *linux_common
 
