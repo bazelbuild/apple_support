@@ -265,6 +265,53 @@ def _action_required_attrs():
         ),
     }
 
+def _platform_constraint_attrs():
+    """Returns a dictionary of all known Apple platform constraints that can be resolved.
+
+    The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
+
+    Returns:
+        A `dict` object containing attributes to be added to rule implementations.
+    """
+    return {
+        "_ios_constraint": attr.label(
+            default = Label("@platforms//os:ios"),
+        ),
+        "_macos_constraint": attr.label(
+            default = Label("@platforms//os:macos"),
+        ),
+        "_tvos_constraint": attr.label(
+            default = Label("@platforms//os:tvos"),
+        ),
+        "_visionos_constraint": attr.label(
+            default = Label("@platforms//os:visionos"),
+        ),
+        "_watchos_constraint": attr.label(
+            default = Label("@platforms//os:watchos"),
+        ),
+        "_arm64_constraint": attr.label(
+            default = Label("@platforms//cpu:arm64"),
+        ),
+        "_arm64e_constraint": attr.label(
+            default = Label("@platforms//cpu:arm64e"),
+        ),
+        "_arm64_32_constraint": attr.label(
+            default = Label("@platforms//cpu:arm64_32"),
+        ),
+        "_armv7k_constraint": attr.label(
+            default = Label("@platforms//cpu:armv7k"),
+        ),
+        "_x86_64_constraint": attr.label(
+            default = Label("@platforms//cpu:x86_64"),
+        ),
+        "_apple_device_constraint": attr.label(
+            default = Label("//constraints:device"),
+        ),
+        "_apple_simulator_constraint": attr.label(
+            default = Label("//constraints:simulator"),
+        ),
+    }
+
 def _run(
         ctx = None,
         xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
@@ -568,6 +615,7 @@ apple_support = struct(
         sdkroot = _sdkroot_path_placeholder,
         xcode = _xcode_path_placeholder,
     ),
+    platform_constraint_attrs = _platform_constraint_attrs,
     run = _run,
     run_shell = _run_shell,
     target_arch_from_rule_ctx = _target_arch_from_rule_ctx,
