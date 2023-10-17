@@ -1,3 +1,4 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load(":platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 
@@ -41,6 +42,12 @@ selects.config_setting_group(
         for cpu, constraints in APPLE_PLATFORMS_CONSTRAINTS.items()
         if "@build_bazel_apple_support//constraints:simulator" in constraints
     ],
+)
+
+bzl_library(
+    name = "platforms",
+    srcs = ["platforms.bzl"],
+    visibility = ["//visibility:public"],
 )
 
 # Consumed by bazel tests.
