@@ -142,14 +142,14 @@ def _apple_support_test_impl(ctx):
         outputs = [run_output],
         executable = test_tool,
         arguments = [run_output.path],
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
     apple_support.run(
         ctx,
         outputs = [run_output_ctx],
         executable = test_tool,
         arguments = [run_output_ctx.path],
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
 
     platform_frameworks = apple_support.path_placeholders.platform_frameworks(
@@ -169,7 +169,7 @@ def _apple_support_test_impl(ctx):
             "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
     apple_support.run(
         ctx,
@@ -182,7 +182,7 @@ def _apple_support_test_impl(ctx):
             "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
 
     action_args = ctx.actions.args()
@@ -209,7 +209,7 @@ def _apple_support_test_impl(ctx):
             action_args,
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args_and_files,
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
     apple_support.run(
         ctx,
@@ -220,7 +220,7 @@ def _apple_support_test_impl(ctx):
             action_args,
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args_and_files,
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
 
     apple_support.run_shell(
@@ -233,7 +233,7 @@ def _apple_support_test_impl(ctx):
             output = run_shell_output.path,
             tool = test_tool.path,
         )],
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
     apple_support.run_shell(
         ctx,
@@ -243,7 +243,7 @@ def _apple_support_test_impl(ctx):
             output = run_shell_output_ctx.path,
             tool = test_tool.path,
         )],
-        toolchain = None,
+        exec_group = "mac_exec_group",
     )
 
     test_files = [
@@ -287,5 +287,10 @@ apple_support_test = rule(
     implementation = _apple_support_test_impl,
     attrs = apple_support.action_required_attrs(),
     fragments = ["apple"],
+    exec_groups = {
+        "mac_exec_group": exec_group(
+            exec_compatible_with = ["@platforms//os:macos"],
+        ),
+    },
     test = True,
 )
