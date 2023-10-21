@@ -22,7 +22,7 @@ project.
 
 ## Toolchain setup
 
-The Apple CC toolchain in by this repository provides toolchains for
+The Apple CC toolchain in this repository provides toolchains for
 building for Apple platforms besides macOS. Since Bazel 7 this toolchain
 is required when targeting those platforms but the toolchain also
 supports Bazel 6.
