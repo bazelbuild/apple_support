@@ -9,7 +9,7 @@ x_defaults:
       - "//..."
 
 tasks:
-# FOO bar
+# FOO bar s
   macos_latest:
     name: "Latest Bazel"
     bazel: latest
