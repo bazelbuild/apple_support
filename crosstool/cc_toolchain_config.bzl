@@ -2295,6 +2295,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-Xlinker",
                             "%{linkmap_exec_path}",
                         ],
+                        expand_if_available = "linkmap_exec_path",
                     ),
                 ],
             ),
