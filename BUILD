@@ -23,6 +23,8 @@ filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = [
+        "BUILD",
+        "LICENSE",
         "WORKSPACE",
         "//configs:for_bazel_tests",
         "//constraints:for_bazel_tests",

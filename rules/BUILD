@@ -2,13 +2,16 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 licenses(["notice"])
 
+package(
+    default_visibility = ["//visibility:public"],
+)
+
 exports_files(["rules.doc.bzl"])
 
 # Public bzl_library for anything that needs to depend on apple_genrule.bzl.
 bzl_library(
     name = "apple_genrule",
     srcs = ["apple_genrule.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         "//rules/private:apple_genrule",
     ],
@@ -17,13 +20,11 @@ bzl_library(
 bzl_library(
     name = "toolchain_substitution",
     srcs = ["toolchain_substitution.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 bzl_library(
     name = "universal_binary",
     srcs = ["universal_binary.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         "//lib:apple_support",
         "//lib:lipo",
@@ -35,7 +36,6 @@ bzl_library(
 bzl_library(
     name = "rules",
     srcs = ["rules.doc.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":toolchain_substitution",
         ":universal_binary",
