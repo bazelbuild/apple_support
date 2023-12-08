@@ -27,6 +27,8 @@ filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = [
+        "BUILD",
+        "LICENSE",
         "WORKSPACE",
         "//lib:for_bazel_tests",
         "//rules:for_bazel_tests",
