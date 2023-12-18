@@ -135,6 +135,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     elif (ctx.attr.cpu == "watchos_arm64"):
         target_system_name = "arm64-apple-watchos{}-simulator".format(target_os_version)
         is_simulator = True
+    elif (ctx.attr.cpu == "watchos_device_arm64"):
+        target_system_name = "arm64-apple-watchos{}".format(target_os_version)
+    elif (ctx.attr.cpu == "watchos_device_arm64e"):
+        target_system_name = "arm64e-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "darwin_x86_64"):
         target_system_name = "x86_64-apple-macosx{}".format(target_os_version)
     elif (ctx.attr.cpu == "darwin_arm64"):
@@ -168,8 +172,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         abi_version = "local"
 
     arch = ctx.attr.cpu.split("_", 1)[-1]
-    if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "visionos_sim_arm64", "watchos_arm64"]:
+    if ctx.attr.cpu in ["ios_sim_arm64", "tvos_sim_arm64", "visionos_sim_arm64", "watchos_arm64", "watchos_device_arm64"]:
         arch = "arm64"
+    elif ctx.attr.cpu in ["watchos_device_arm64e"]:
+        arch = "arm64e"
 
     all_link_actions = [
         ACTION_NAMES.cpp_link_executable,
@@ -740,6 +746,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "ios_sim_arm64" or
         ctx.attr.cpu == "ios_x86_64" or
         ctx.attr.cpu == "watchos_arm64_32" or
+        ctx.attr.cpu == "watchos_device_arm64" or
+        ctx.attr.cpu == "watchos_device_arm64e" or
         ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
@@ -1487,6 +1495,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "visionos_arm64" or
         ctx.attr.cpu == "visionos_sim_arm64" or
         ctx.attr.cpu == "watchos_arm64_32" or
+        ctx.attr.cpu == "watchos_device_arm64" or
+        ctx.attr.cpu == "watchos_device_arm64e" or
         ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
