@@ -27,8 +27,27 @@ building for Apple platforms besides macOS. Since Bazel 7 this toolchain
 is required when targeting those platforms but the toolchain also
 supports Bazel 6.
 
-To use the Apple CC toolchain, pull this repository into your build and
-add this to your `.bazelrc`:
+NOTE: This toolchain requires a full Xcode installation, not just the
+Xcode Command Line Tools. If you only need to build for macOS and don't
+want to require a full Xcode installation in your build, use the builtin
+Unix toolchain provided by Bazel.
+
+### Bazel 7+ Setup
+
+For Bazel 7+ the only setup that is required is to have `apple_support`
+in your `MODULE.bazel` (even if you're not referencing it directly) or
+`WORKSPACE`, which you can copy from [the releases
+page](https://github.com/bazelbuild/apple_support/releases) into your
+project.
+
+If you also depend on `rules_cc`, `apple_support` must come _above_
+`rules_cc` in your `MODULE.bazel` or `WORKSPACE` file because Bazel
+selects toolchains based on which is registered first.
+
+### Bazel 6 Setup
+
+For Bazel 6, pull this repository into your build and add this to your
+`.bazelrc`:
 
 ```bzl
 build --enable_platform_specific_config
@@ -41,36 +60,14 @@ This ensures that all rules provided by [`rules_apple`][rules_apple], as
 well as other rules like `cc_binary`, all use the toolchain provided by
 this repository when building on macOS.
 
-NOTE: This toolchain requires a full Xcode installation, not just the
-Xcode Command Line Tools. If you only need to build for macOS and don't
-want to require a full Xcode installation in your build, use the builtin
-Unix toolchain provided by Bazel.
-
-### bzlmod
-
-If you're using bzlmod with the `--crosstool_top` configurations you
-must expose the `local_config_apple_cc` repository to your project by
-putting this in your `MODULE.bazel`:
+If you're using bzlmod with Bazel 6 and the `--crosstool_top`
+configurations you must expose the `local_config_apple_cc` repository to
+your project by putting this in your `MODULE.bazel`:
 
 ```bzl
 apple_cc_configure = use_extension("@build_bazel_apple_support//crosstool:setup.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc")
 ```
-
-### Incompatible toolchain resolution
-
-Bazel 7.x enabled a new discovery method for CC toolchains. With this
-new method you no longer need to pass any `--*crosstool_top` flags.
-Instead you just need to depend on `apple_support` and bazel
-automatically picks the right toolchain based on what you're building.
-If you have any issues with this you can temporarily disable it with
-`--incompatible_enable_cc_toolchain_resolution=false`. If you do please
-file an issue here.
-
-NOTE: If you're using bzlmod and depend on both `apple_support` and
-`rules_cc` in your `MODULE.bazel`, `apple_support`'s `bazel_dep` must
-come _before_ `rules_cc` in order to take precedence over the default CC
-toolchains.
 
 ## Toolchain configuration
 
