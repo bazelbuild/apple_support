@@ -492,9 +492,10 @@ def _run_shell(
     # TODO(b/77637734) remove "workaround" once the bazel issue is resolved.
     # Bazel doesn't always get the shell right for a single string `commands`;
     # so work around that case by faking it as a list of strings that forces
-    # the shell correctly.
+    # the shell correctly. Skip all this if there are arguments as hopefully
+    # that will work, if it doesn't see the mentioned bug.
     command = kwargs.get("command")
-    if command and types.is_string(command):
+    if command and types.is_string(command) and not kwargs.get("arguments", []):
         processed_args = dict(kwargs)
         processed_args["command"] = ["/bin/sh", "-c", command]
         kwargs = processed_args
