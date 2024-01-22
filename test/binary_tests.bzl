@@ -54,16 +54,6 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
-        name = "{}_visionos_x86_64_simulator_test".format(name),
-        tags = [name],
-        build_type = "simulator",
-        cpus = {"visionos_cpus": "x86_64"},
-        expected_platform_type = "visionos",
-        verifier_script = "//test/shell:verify_binary.sh",
-        target_under_test = "//test/test_data:visionos_binary",
-    )
-
-    apple_verification_test(
         name = "{}_unused_symbol_is_kept_by_default".format(name),
         build_type = "simulator",
         cpus = {"ios_multi_cpus": "x86_64"},
