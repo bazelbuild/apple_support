@@ -16,6 +16,17 @@ x_defaults:
       - "//test/test_data:multi_arch_cc_binary"
 
 tasks:
+  macos_6:
+    name: "6.x LTS"
+    bazel: 6.x
+    <<: *common
+    build_flags:
+      # Bazel 6.x has dependencies that produce warnings now
+      - "--features=-treat_warnings_as_errors"
+    test_flags:
+      # Bazel 6.x has dependencies that produce warnings now
+      - "--features=-treat_warnings_as_errors"
+
   macos_latest:
     name: "Current LTS"
     bazel: latest
