@@ -99,8 +99,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         target_system_name = "arm64e-apple-macosx{}".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_x86_64"):
         target_system_name = "x86_64-apple-tvos{}-simulator".format(target_os_version)
-    elif (ctx.attr.cpu == "visionos_x86_64"):
-        target_system_name = "x86_64-apple-xros{}-simulator".format(target_os_version)
     elif (ctx.attr.cpu == "watchos_x86_64"):
         target_system_name = "x86_64-apple-watchos{}-simulator".format(target_os_version)
     else:
@@ -734,7 +732,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         )
     elif (
         ctx.attr.cpu == "visionos_arm64" or
-        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "visionos_sim_arm64"
     ):
         apply_default_compiler_flags_feature = feature(
@@ -900,7 +897,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "tvos_x86_64" or
         ctx.attr.cpu == "tvos_sim_arm64" or
         ctx.attr.cpu == "visionos_sim_arm64" or
-        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_simulator_compiler_flags_feature = feature(
@@ -1443,7 +1439,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "tvos_x86_64" or
         ctx.attr.cpu == "tvos_sim_arm64" or
         ctx.attr.cpu == "visionos_arm64" or
-        ctx.attr.cpu == "visionos_x86_64" or
         ctx.attr.cpu == "visionos_sim_arm64" or
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_armv7k" or

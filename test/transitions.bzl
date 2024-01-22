@@ -68,7 +68,7 @@ def _cpu_string(*, environment_arch, platform_type, settings = {}):
         visionos_cpus = settings["//command_line_option:visionos_cpus"]
         if visionos_cpus:
             return "visionos_{}".format(visionos_cpus[0])
-        return "visionos_x86_64"
+        return "visionos_sim_arm64"
 
     fail("ERROR: Unknown platform type: {}".format(platform_type))
 
