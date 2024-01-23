@@ -31,37 +31,6 @@ tasks:
     name: "Current LTS"
     bazel: latest
     <<: *common
-    build_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-
-  macos_latest_bzlmod:
-    name: "Current LTS using Bzlmod"
-    bazel: latest
-    <<: *common
-    build_targets:
-      - "//..."
-      - "--"
-      - "-//doc/..."
-    test_targets:
-      - "//..."
-      - "--"
-      - "-//doc/..."
-    build_flags:
-      - "--enable_bzlmod"
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      - "--enable_bzlmod"
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
 
   macos_last_green:
     name: "Last Green Bazel"
@@ -76,14 +45,6 @@ tasks:
       # has landed on them breaking this project.
       - .bazelci/update_workspace_to_deps_heads.sh
     <<: *common
-    build_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
-    test_flags:
-      # Bazel 6.x has dependencies that produce warnings now
-      # TODO: Remove once latest is Bazel 7+
-      - "--features=-treat_warnings_as_errors"
 
   linux_latest:
     name: "Current LTS"
