@@ -45,12 +45,6 @@ _DYNAMIC_LINK_ACTIONS = [
     _OBJCPP_EXECUTABLE_ACTION_NAME,
 ]
 
-def _sdk_framework_dir(platform_type, sdk_version):
-    if platform_type == apple_common.platform_type.ios and sdk_version.compare_to(apple_common.dotted_version("9.0")) < 0:
-        return "__BAZEL_XCODE_SDKROOT__/Developer/Library/Frameworks"
-
-    return "__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks"
-
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
@@ -1238,7 +1232,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         flags = [
                             "-isysroot",
                             "__BAZEL_XCODE_SDKROOT__",
-                            "-F{}".format(_sdk_framework_dir(platform_type, sdk_version)),
+                            "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
                             "-F{}".format(apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple)),
                         ],
                     ),
