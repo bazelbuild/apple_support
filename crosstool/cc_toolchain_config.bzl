@@ -30,6 +30,7 @@ load(
     "variable_with_value",
     "with_feature_set",
 )
+load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
 
 # TODO: Remove when we drop bazel 6.x support
@@ -43,6 +44,42 @@ _DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.objc_executable,
     _OBJCPP_EXECUTABLE_ACTION_NAME,
 ]
+
+def _sdk_version_for_platform(xcode_config, platform_type):
+    if platform_type == apple_common.platform_type.ios:
+        return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
+    elif platform_type == apple_common.platform_type.tvos:
+        return xcode_config.sdk_version_for_platform(apple_common.platform.tvos_device)
+    elif platform_type == getattr(apple_common.platform_type, "visionos", None):
+        return xcode_config.sdk_version_for_platform(apple_common.platform.visionos_device)
+    elif platform_type == apple_common.platform_type.watchos:
+        return xcode_config.sdk_version_for_platform(apple_common.platform.watchos_device)
+    elif platform_type == apple_common.platform_type.macos:
+        return xcode_config.sdk_version_for_platform(apple_common.platform.macos)
+    else:
+        fail("Unhandled platform type: {}".format(platform_type))
+
+def _sdk_name(platform_type, is_simulator):
+    if platform_type == apple_common.platform_type.ios and is_simulator:
+        return "iPhoneSimulator"
+    elif platform_type == apple_common.platform_type.ios:
+        return "iPhoneOS"
+    elif platform_type == getattr(apple_common.platform_type, "visionos", None) and is_simulator:
+        return "XRSimulator"
+    elif platform_type == getattr(apple_common.platform_type, "visionos", None):
+        return "XROS"
+    elif platform_type == apple_common.platform_type.watchos and is_simulator:
+        return "WatchSimulator"
+    elif platform_type == apple_common.platform_type.watchos:
+        return "WatchOS"
+    elif platform_type == apple_common.platform_type.tvos and is_simulator:
+        return "AppleTVSimulator"
+    elif platform_type == apple_common.platform_type.tvos:
+        return "AppleTVOS"
+    elif platform_type == apple_common.platform_type.macos:
+        return "MacOSX"
+    else:
+        fail("Unhandled platform type: {}".format(platform_type))
 
 def _impl(ctx):
     if ctx.attr.cpu.startswith("darwin"):
@@ -68,7 +105,9 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     xcode_execution_requirements = xcode_config.execution_info().keys()
     target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
+    sdk_version = _sdk_version_for_platform(xcode_config, platform_type)
 
+    is_simulator = False
     if (ctx.attr.cpu == "ios_arm64"):
         target_system_name = "arm64-apple-ios{}".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_arm64"):
@@ -83,14 +122,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         target_system_name = "armv7k-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "ios_x86_64"):
         target_system_name = "x86_64-apple-ios{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "ios_sim_arm64"):
         target_system_name = "arm64-apple-ios{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "tvos_sim_arm64"):
         target_system_name = "arm64-apple-tvos{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "visionos_sim_arm64"):
         target_system_name = "arm64-apple-xros{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "watchos_arm64"):
         target_system_name = "arm64-apple-watchos{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "darwin_x86_64"):
         target_system_name = "x86_64-apple-macosx{}".format(target_os_version)
     elif (ctx.attr.cpu == "darwin_arm64"):
@@ -99,8 +143,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         target_system_name = "arm64e-apple-macosx{}".format(target_os_version)
     elif (ctx.attr.cpu == "tvos_x86_64"):
         target_system_name = "x86_64-apple-tvos{}-simulator".format(target_os_version)
+        is_simulator = True
     elif (ctx.attr.cpu == "watchos_x86_64"):
         target_system_name = "x86_64-apple-watchos{}-simulator".format(target_os_version)
+        is_simulator = True
     else:
         fail("""\
 Unknown CPU: {cpu}. Please update 'apple_support' to the latest version. If \
@@ -457,7 +503,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-arch_only",
                             arch,
                             "-syslibroot",
-                            "%{sdk_dir}",
+                            "__BAZEL_XCODE_SDKROOT__",
                             "-o",
                             "%{output_execpath}",
                         ],
@@ -632,7 +678,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-arch_only",
                             arch,
                             "-syslibroot",
-                            "%{sdk_dir}",
+                            "__BAZEL_XCODE_SDKROOT__",
                             "-o",
                             "%{fully_linked_archive_path}",
                         ],
@@ -892,13 +938,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    if (ctx.attr.cpu == "ios_x86_64" or
-        ctx.attr.cpu == "ios_sim_arm64" or
-        ctx.attr.cpu == "tvos_x86_64" or
-        ctx.attr.cpu == "tvos_sim_arm64" or
-        ctx.attr.cpu == "visionos_sim_arm64" or
-        ctx.attr.cpu == "watchos_x86_64" or
-        ctx.attr.cpu == "watchos_arm64"):
+    if is_simulator:
         apply_simulator_compiler_flags_feature = feature(
             name = "apply_simulator_compiler_flags",
             flag_sets = [
@@ -1191,9 +1231,9 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     flag_group(
                         flags = [
                             "-isysroot",
-                            "%{sdk_dir}",
-                            "-F%{sdk_framework_dir}",
-                            "-F%{platform_developer_framework_dir}",
+                            "__BAZEL_XCODE_SDKROOT__",
+                            "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
+                            "-F{}".format(apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple)),
                         ],
                     ),
                 ],
@@ -1412,15 +1452,16 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 env_entries = [
                     env_entry(
                         key = "XCODE_VERSION_OVERRIDE",
-                        value = "%{xcode_version_override_value}",
+                        value = str(xcode_config.xcode_version()),
                     ),
+                    # TODO: Remove once we drop bazel 7.x support
                     env_entry(
                         key = "APPLE_SDK_VERSION_OVERRIDE",
-                        value = "%{apple_sdk_version_override_value}",
+                        value = str(sdk_version),
                     ),
                     env_entry(
                         key = "APPLE_SDK_PLATFORM",
-                        value = "%{apple_sdk_platform_value}",
+                        value = _sdk_name(platform_type, is_simulator),
                     ),
                     env_entry(
                         key = "ZERO_AR_DATE",
@@ -2629,5 +2670,8 @@ cc_toolchain_config = rule(
     },
     provides = [CcToolchainConfigInfo],
     executable = True,
-    fragments = ["cpp"],
+    fragments = [
+        "apple",
+        "cpp",
+    ],
 )
