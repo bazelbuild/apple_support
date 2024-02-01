@@ -93,20 +93,11 @@ starlark_apple_binary(
     deps = [":objc_lib_with_unused_symbol"],
 )
 
-config_setting(
-    name = "supports_visionos",
-    values = {"define": "supports_visionos=1"},
-)
-
 starlark_apple_binary(
     name = "visionos_binary",
     minimum_os_version = "1.0",
     platform_type = "visionos",
     tags = TARGETS_UNDER_TEST_TAGS,
-    target_compatible_with = select({
-        ":supports_visionos": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
     deps = [":objc_main"],
 )
 
