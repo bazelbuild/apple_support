@@ -9,7 +9,7 @@ APPLE_PLATFORMS_CONSTRAINTS = {
     ],
     "darwin_arm64e": [
         "@platforms//os:macos",
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:arm64e",
         "@build_bazel_apple_support//constraints:apple",
         "@build_bazel_apple_support//constraints:device",
     ],
