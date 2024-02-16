@@ -79,6 +79,6 @@ starlark_apple_binary = rule(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
         ),
     },
-    fragments = ["apple", "objc", "cpp"],
+    fragments = ["apple", "objc", "cpp", "j2objc"],
     implementation = _starlark_apple_binary_impl,
 )
