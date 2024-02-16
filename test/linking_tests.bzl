@@ -7,6 +7,21 @@ load(
 
 default_test = make_action_command_line_test_rule()
 
+opt_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+    },
+)
+
+dead_strip_requested_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+        "//command_line_option:features": [
+            "dead_strip",
+        ],
+    },
+)
+
 disable_objc_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:features": [
@@ -22,6 +37,11 @@ dsym_test = make_action_command_line_test_rule(
 )
 
 def linking_test_suite(name):
+    """Tests for linking behavior.
+
+    Args:
+        name: The name to be included in test names and tags.
+    """
     default_test(
         name = "{}_default_apple_link_test".format(name),
         tags = [name],
@@ -35,6 +55,37 @@ def linking_test_suite(name):
         not_expected_argv = [
             "-g",
             "DSYM_HINT_LINKED_BINARY",
+            "-dead_strip",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    opt_test(
+        name = "{}_opt_link_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-dead_strip",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    dead_strip_requested_test(
+        name = "{}_dead_strip_requested_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-dead_strip",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
