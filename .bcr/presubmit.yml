@@ -1,5 +1,5 @@
 matrix:
-  platform: ["centos7", "debian10", "macos", "ubuntu2004", "windows"]
+  platform: ["macos_arm64", "ubuntu2004"]
   bazel: ["6.x", "7.x", "rolling"]
 
 tasks:
