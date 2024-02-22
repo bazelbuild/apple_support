@@ -115,6 +115,26 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
+        name = "{}_watchos_device_arm64_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"watchos_cpus": "device_arm64"},
+        expected_platform_type = "watchos",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:watch_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_watchos_device_arm64e_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"watchos_cpus": "device_arm64e"},
+        expected_platform_type = "watchos",
+        verifier_script = "//test/shell:verify_binary.sh",
+        target_under_test = "//test/test_data:watch_binary",
+    )
+
+    apple_verification_test(
         name = "{}_watchos_simulator_test".format(name),
         tags = [name],
         build_type = "device",

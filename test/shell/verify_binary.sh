@@ -28,6 +28,7 @@ fi
 lipo_output=$(lipo -info "$binary")
 expected_cpus=${CPU//,/ }
 expected_cpus=${expected_cpus//sim_/}
+expected_cpus=${expected_cpus//device_/}
 if ! echo "$lipo_output" | grep -q "$expected_cpus"; then
   echo "error: binary $binary does not contain CPU $CPU, got: '$lipo_output"
   exit 1

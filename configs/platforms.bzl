@@ -79,6 +79,18 @@ APPLE_PLATFORMS_CONSTRAINTS = {
         "@build_bazel_apple_support//constraints:apple",
         "@build_bazel_apple_support//constraints:simulator",
     ],
+    "watchos_device_arm64": [
+        "@platforms//os:watchos",
+        "@platforms//cpu:arm64",
+        "@build_bazel_apple_support//constraints:apple",
+        "@build_bazel_apple_support//constraints:device",
+    ],
+    "watchos_device_arm64e": [
+        "@platforms//os:watchos",
+        "@platforms//cpu:arm64e",
+        "@build_bazel_apple_support//constraints:apple",
+        "@build_bazel_apple_support//constraints:device",
+    ],
     "watchos_arm64_32": [
         "@platforms//os:watchos",
         "@platforms//cpu:arm64_32",
@@ -115,5 +127,7 @@ CPU_TO_DEFAULT_PLATFORM_NAME = {
     "watchos_arm64": "watchos_arm64",
     "watchos_arm64_32": "watchos_arm64_32",
     "watchos_armv7k": "watchos_armv7k",
+    "watchos_device_arm64": "watchos_device_arm64",
+    "watchos_device_arm64e": "watchos_device_arm64e",
     "watchos_x86_64": "watchos_x86_64",
 }
