@@ -2652,7 +2652,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             target_system_name = target_system_name,
             target_cpu = ctx.attr.cpu,
             target_libc = target_libc,
-            compiler = ctx.attr.compiler,
+            compiler = "clang",
             abi_version = abi_version,
             abi_libc_version = abi_libc_version,
             tool_paths = [tool_path(name = name, path = path) for (name, path) in tool_paths.items()],
@@ -2669,7 +2669,6 @@ cc_toolchain_config = rule(
     implementation = _impl,
     attrs = {
         "cpu": attr.string(mandatory = True),
-        "compiler": attr.string(),
         "cxx_builtin_include_directories": attr.string_list(),
         "tool_paths_overrides": attr.string_dict(),
         "extra_env": attr.string_dict(),
