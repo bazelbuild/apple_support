@@ -28,6 +28,7 @@
 #include <spawn.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <array>
@@ -55,6 +56,14 @@ constexpr char kAddASTPathPrefix[] = "-Wl,-add_ast_path,";
 const char *Basename(const char *filepath) {
   const char *base = strrchr(filepath, '/');
   return base ? (base + 1) : filepath;
+}
+
+// Returns the dir name of the given filepath. For example, given 
+// /foo/bar/baz.txt, returns '/foo/bar'.
+const std::string Dirname(const char *filepath) { 
+  std::string path = std::string(filepath);
+  std::string dirname = path.substr(0, path.find_last_of('/'));
+  return dirname;
 }
 
 // Unescape and unquote an argument read from a line of a response file.
@@ -260,14 +269,16 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, std::string toolchain_path,
-                     std::function<void(const std::string &)> consumer);
+                     std::string &dsym_path, std::string &original_indexstore_path, 
+                     std::string &global_indexstore_path, std::string &output_file_path,
+                     std::string toolchain_path, std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
                          bool relative_ast_path, std::string &linked_binary,
-                         std::string &dsym_path, std::string toolchain_path,
-                         std::function<void(const std::string &)> consumer) {
+                         std::string &dsym_path, std::string &original_indexstore_path, 
+                         std::string &global_indexstore_path, std::string &output_file_path,
+                         std::string toolchain_path, std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
   // Ignore non-file args such as '@loader_path/...'
@@ -280,7 +291,8 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    relative_ast_path, linked_binary, dsym_path,
+                    relative_ast_path, linked_binary, dsym_path, 
+                    original_indexstore_path, global_indexstore_path, output_file_path,
                     toolchain_path, consumer);
   }
 
@@ -336,12 +348,14 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, std::string toolchain_path,
-                     std::function<void(const std::string &)> consumer) {
+                     std::string &dsym_path, std::string &original_indexstore_path, 
+                     std::string &global_indexstore_path, std::string &output_file_path,
+                     std::string toolchain_path, std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
     if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
                             relative_ast_path, linked_binary, dsym_path,
+                            original_indexstore_path, global_indexstore_path, output_file_path,
                             toolchain_path, consumer)) {
       return;
     }
@@ -374,10 +388,30 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
     }
   }
 
+  size_t extension_position = arg.find_last_of(".");
+  
+  // global_indexstore_path should be non-empty when global indexstore feature is enabled. 
+  // If enabled, replace --index-store-path flag value with global indexstore path and save the 
+  // original indexstore path for copying back later.
+  if (!global_indexstore_path.empty()) { 
+    if (extension_position != std::string::npos && arg.substr(extension_position) == ".indexstore") {
+      original_indexstore_path = cwd + "/" + arg;
+      new_arg = global_indexstore_path;
+    }
+    if (extension_position != std::string::npos && arg.substr(extension_position) == ".o") {
+      output_file_path = cwd + "/" + arg;
+    }
+  }
+
   consumer(new_arg);
 }
 
 }  // namespace
+
+inline bool path_exists(const std::string& path) {
+  struct stat buffer;   
+  return (stat (path.c_str(), &buffer) == 0); 
+}
 
 int main(int argc, char *argv[]) {
   std::string tool_name;
@@ -403,8 +437,23 @@ int main(int argc, char *argv[]) {
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
   std::string linked_binary, dsym_path;
+  // variables for indexstore binaries and outputs
+  std::string original_indexstore_path, global_indexstore_path, output_file_path, index_import_path; 
 
   const std::string cwd = GetCurrentDirectory();
+
+  // check if global indexstore feature is used. If true, use global indexstore for all compile actions 
+  // passing --index-store-path flag and copy indexstore data corresponding to the action output file to 
+  // action specific value of --index-store-path flag. This change is modeled after a rules_swift change 
+  // (https://github.com/bazelbuild/rules_swift/pull/567)
+  bool use_global_indexstore = getenv("GLOBAL_INDEXSTORE") != nullptr;
+  global_indexstore_path = "";
+  index_import_path = "";
+  if (use_global_indexstore) {
+    global_indexstore_path = cwd + "/" + "bazel-out" + "/" + "_global_index_store";
+    index_import_path = cwd + "/" + Dirname(argv[0]) + "/" + "index-import";
+  }
+  
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
   std::vector<std::string> processed_args = {};
 
@@ -416,7 +465,8 @@ int main(int argc, char *argv[]) {
     std::string arg(argv[i]);
 
     ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
-                    linked_binary, dsym_path, toolchain_path, consumer);
+                    linked_binary, dsym_path, original_indexstore_path,
+                    global_indexstore_path, output_file_path, toolchain_path, consumer);
   }
 
   // Special mode that only prints the command. Used for testing.
@@ -430,6 +480,7 @@ int main(int argc, char *argv[]) {
   auto response_file = WriteResponseFile(processed_args);
   invocation_args.push_back("@" + response_file->GetPath());
 
+  bool copy_indexstore = use_global_indexstore;
   // Check to see if we should postprocess with dsymutil.
   bool postprocess = false;
   if ((!linked_binary.empty()) || (!dsym_path.empty())) {
@@ -453,11 +504,25 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  if (!postprocess) {
+  if (!postprocess && !copy_indexstore) {
     return 0;
   }
 
-  std::vector<std::string> dsymutil_args = {"/usr/bin/xcrun",
+  if (copy_indexstore) { 
+    auto file_prefix_map = "--file-prefix-map=" + cwd + "=.";
+    std::vector<std::string> index_import_args = {index_import_path, 
+                                            file_prefix_map,
+                                            "-import-output-file",
+                                            output_file_path,
+                                            global_indexstore_path,
+                                            original_indexstore_path};
+    if (!RunSubProcess(index_import_args)) {
+      return 1;
+    }
+  }
+
+  if (postprocess) {
+    std::vector<std::string> dsymutil_args = {"/usr/bin/xcrun",
                                             "dsymutil",
                                             linked_binary,
                                             "-o",
