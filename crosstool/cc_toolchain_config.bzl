@@ -1059,11 +1059,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ),
                 ],
             ),
-            flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
-                flag_groups = [flag_group(flags = ["-dead_strip"])],
-                with_features = [with_feature_set(features = ["opt"])],
-            ),
         ],
     )
 
@@ -2077,6 +2072,18 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    dead_strip_opt_feature = feature(
+        name = "dead_strip_opt",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [flag_group(flags = ["-dead_strip"])],
+                with_features = [with_feature_set(features = ["opt"])],
+            ),
+        ],
+    )
+
     oso_prefix_feature = feature(
         name = "oso_prefix_is_pwd",
         enabled = True,
@@ -2582,6 +2589,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         default_link_flags_feature,
         no_deduplicate_feature,
         dead_strip_feature,
+        dead_strip_opt_feature,
         apply_implicit_frameworks_feature,
         link_cocoa_feature,
         apply_simulator_compiler_flags_feature,
