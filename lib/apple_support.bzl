@@ -391,16 +391,19 @@ def _run(
         return
 
     # Since a label/name isn't passed in, use the first output to derive a name
-    # that will hopefully be unique. For added attempt at safety, name the file
-    # based on the content, so any dup actions might still merge.
-    base = kwargs.get("outputs")[0].short_path.replace("/", "_")
+    # that will hopefully be unique.
+    output0 = kwargs.get("outputs")[0]
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
         script = _XCODE_PROCESSOR__ARGS
         suffix = "args"
     else:
         script = _XCODE_PROCESSOR__ARGS_AND_FILES
         suffix = "args_and_files"
-    processor_script = actions.declare_file("{}_processor_script_{}.sh".format(base, suffix))
+    processor_script = actions.declare_file("{}_{}_processor_script_{}.sh".format(
+        output0.basename,
+        hash(output0.short_path),
+        suffix,
+    ))
     actions.write(processor_script, script, is_executable = True)
 
     processed_kwargs = _kwargs_for_apple_platform(
