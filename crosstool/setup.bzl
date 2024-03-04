@@ -3,6 +3,7 @@
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
+_OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 
 def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     """Generate BUILD file with 'toolchain' targets for the local host C++ toolchain.
@@ -12,9 +13,12 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     """
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
+    old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
 
-    if should_disable:
-        repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
+    if should_disable or old_should_disable:
+        repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(
+            _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
+        ))
     elif repository_ctx.os.name.startswith("mac os"):
         repository_ctx.symlink(
             repository_ctx.path(Label("@build_bazel_apple_support//crosstool:BUILD.toolchains")),
@@ -24,7 +28,10 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled because you're not running on macOS")
 
 _apple_cc_autoconf_toolchains = repository_rule(
-    environ = [_DISABLE_ENV_VAR],
+    environ = [
+        _DISABLE_ENV_VAR,
+        _OLD_DISABLE_ENV_VAR,
+    ],
     implementation = _apple_cc_autoconf_toolchains_impl,
     configure = True,
 )
@@ -32,9 +39,12 @@ _apple_cc_autoconf_toolchains = repository_rule(
 def _apple_cc_autoconf_impl(repository_ctx):
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
+    old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
 
-    if should_disable:
-        repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(_DISABLE_ENV_VAR))
+    if should_disable or old_should_disable:
+        repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(
+            _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
+        ))
     elif repository_ctx.os.name.startswith("mac os"):
         success, error = configure_osx_toolchain(repository_ctx)
         if not success:
@@ -45,6 +55,7 @@ def _apple_cc_autoconf_impl(repository_ctx):
 _apple_cc_autoconf = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
+        _OLD_DISABLE_ENV_VAR,
         "BAZEL_ALLOW_NON_APPLICATIONS_XCODE",  # Signals to configure_osx_toolchain that some Xcodes may live outside of /Applications and we need to probe further when detecting/configuring them.
         "DEVELOPER_DIR",  # Used for making sure we use the right Xcode for compiling toolchain binaries
         "GCOV",  # TODO: Remove this
