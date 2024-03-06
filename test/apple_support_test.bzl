@@ -28,8 +28,8 @@ set -eu
 
 OUTPUT_FILE="$1" ; shift
 
-echo "XCODE_PATH_ENV=$DEVELOPER_DIR" > "$OUTPUT_FILE"
-echo "SDKROOT_PATH_ENV=$SDKROOT" >> "$OUTPUT_FILE"
+echo "XCODE_PATH_ENV=$(realpath $DEVELOPER_DIR)" > "$OUTPUT_FILE"
+echo "SDKROOT_PATH_ENV=$(realpath $SDKROOT)" >> "$OUTPUT_FILE"
 
 for arg in "$@"; do
     if [[ "$arg" == @* ]]; then
@@ -86,8 +86,8 @@ function assert_not_contains() {{
     exit 1
 }}
 
-XCODE_PATH_ENV="$DEVELOPER_DIR"
-SDKROOT_PATH_ENV="$SDKROOT"
+XCODE_PATH_ENV=$(realpath "$DEVELOPER_DIR")
+SDKROOT_PATH_ENV=$(realpath "$SDKROOT")
 
 for file in "${{FILES[@]}}"; do
     assert_contains_line "$file" "XCODE_PATH_ENV=$XCODE_PATH_ENV"
