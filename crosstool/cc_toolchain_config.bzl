@@ -1042,6 +1042,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         requires = [feature_set(features = ["coverage"])],
     )
 
+    gcc_quoting_for_param_files_feature = feature(
+        name = "gcc_quoting_for_param_files",
+        enabled = True,
+    )
+
     default_link_flags_feature = feature(
         name = "default_link_flags",
         enabled = True,
@@ -2578,6 +2583,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         no_objc_arc_feature,
         apple_env_feature,
         relative_ast_path_feature,
+        gcc_quoting_for_param_files_feature,
         user_link_flags_feature,
         default_link_flags_feature,
         no_deduplicate_feature,
