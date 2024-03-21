@@ -79,6 +79,9 @@ cc_toolchain_suite(
     cc_toolchain_config(
         name = arch,
         cpu = arch,
+        features = [
+%{features}
+        ],
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
