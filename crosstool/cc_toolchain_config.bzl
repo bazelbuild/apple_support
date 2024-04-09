@@ -31,7 +31,6 @@ load(
     "with_feature_set",
 )
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
-load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
 
 # TODO: Remove when we drop bazel 6.x support
 _OBJC_ARCHIVE_ACTION_NAME = "objc-archive"
@@ -2504,7 +2503,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # these warnings.
     no_warn_duplicate_libraries_feature = feature(
         name = "no_warn_duplicate_libraries",
-        enabled = xcode_support.is_xcode_at_least_version(xcode_config, "15.0.0"),
+        enabled = "no_warn_duplicate_libraries" in ctx.features,
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,

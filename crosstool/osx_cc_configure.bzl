@@ -49,6 +49,19 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 
     return include_dirs
 
+def _succeeds(repository_ctx, *args):
+    env = repository_ctx.os.environ
+    result = repository_ctx.execute([
+        "env",
+        "-i",
+        "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
+        "xcrun",
+        "--sdk",
+        "macosx",
+    ] + list(args))
+
+    return result.return_code == 0
+
 def _compile_cc_file(repository_ctx, src_name, out_name):
     env = repository_ctx.os.environ
     xcrun_result = repository_ctx.execute([
@@ -175,6 +188,10 @@ def configure_osx_toolchain(repository_ctx):
             gcov_path = repository_ctx.which(gcov_path)
         tool_paths["gcov"] = gcov_path
 
+    features = []
+    if _succeeds(repository_ctx, "ld", "-no_warn_duplicate_libraries", "-v"):
+        features.append("no_warn_duplicate_libraries")
+
     escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains)
     escaped_cxx_include_directories = []
     for path in escaped_include_paths:
@@ -186,6 +203,7 @@ def configure_osx_toolchain(repository_ctx):
         build_template,
         {
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
+            "%{features}": "\n".join(['"{}"'.format(x) for x in features]),
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),
