@@ -9,25 +9,26 @@ package(
 bzl_library(
     name = "available_xcodes",
     srcs = ["available_xcodes.bzl"],
-    visibility = ["//visibility:private"],
+)
+
+bzl_library(
+    name = "providers",
+    srcs = ["providers.bzl"],
 )
 
 bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
-    visibility = ["//visibility:private"],
 )
 
 bzl_library(
     name = "xcode_config_alias",
     srcs = ["xcode_config_alias.bzl"],
-    visibility = ["//visibility:private"],
 )
 
 bzl_library(
     name = "xcode_version",
     srcs = ["xcode_version.bzl"],
-    visibility = ["//visibility:private"],
 )
 
 # Consumed by bazel tests.
