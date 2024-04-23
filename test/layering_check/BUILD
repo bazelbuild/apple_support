@@ -1,3 +1,5 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+
 package(features = ["layering_check"])
 
 cc_library(
@@ -31,4 +33,42 @@ cc_test(
         ":a",
         ":b",
     ],
+)
+
+objc_library(
+    name = "bad_layering_check_objc",
+    srcs = ["c.m"],
+    tags = ["manual"],
+    deps = [":b"],
+)
+
+build_test(
+    name = "bad_layering_check_objc_test",
+    targets = [":bad_layering_check_objc"],
+)
+
+objc_library(
+    name = "disabled_bad_layering_check_objc",
+    srcs = ["c.m"],
+    features = ["-layering_check"],
+    deps = [":b"],
+)
+
+build_test(
+    name = "disabled_bad_layering_check_objc_test",
+    targets = [":disabled_bad_layering_check_objc"],
+)
+
+objc_library(
+    name = "good_layering_check_objc",
+    srcs = ["c.m"],
+    deps = [
+        ":a",
+        ":b",
+    ],
+)
+
+build_test(
+    name = "good_layering_check_objc_test",
+    targets = [":good_layering_check_objc"],
 )
