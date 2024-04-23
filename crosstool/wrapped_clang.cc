@@ -386,11 +386,11 @@ void AddLayeringCheckVFS(const std::string vfs_overlay_file,
       << modulemap
       << R"EOF(","name":"vfs.modulemap","type":"file"}],"name":")EOF"
       << developer_dir
-      << R"EOF(/Platforms","type":"directory"}],"use-external-names":false,"version":0})EOF"
+      << R"EOF(","type":"directory"}],"use-external-names":false,"version":0})EOF"
       << std::endl;
   consumer("-ivfsoverlay" + vfs_overlay_file);
   consumer("-Xclang");
-  consumer("-fmodule-map-file=" + developer_dir + "/Platforms/vfs.modulemap");
+  consumer("-fmodule-map-file=" + developer_dir + "/vfs.modulemap");
 }
 
 }  // namespace
