@@ -377,6 +377,22 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   consumer(new_arg);
 }
 
+void AddLayeringCheckVFS(const std::string vfs_overlay_file,
+                         const char *modulemap, const std::string developer_dir,
+                         std::function<void(const std::string &)> consumer) {
+  std::ofstream vfs_overlay_file_stream(vfs_overlay_file);
+  vfs_overlay_file_stream
+      << R"EOF({"case-sensitive":true,"overlay-relative":false,"roots":[{"contents":[{"external-contents":")EOF"
+      << modulemap
+      << R"EOF(","name":"vfs.modulemap","type":"file"}],"name":")EOF"
+      << developer_dir
+      << R"EOF(/Platforms","type":"directory"}],"use-external-names":false,"version":0})EOF"
+      << std::endl;
+  consumer("-ivfsoverlay" + vfs_overlay_file);
+  consumer("-Xclang");
+  consumer("-fmodule-map-file=" + developer_dir + "/Platforms/vfs.modulemap");
+}
+
 }  // namespace
 
 int main(int argc, char *argv[]) {
@@ -417,6 +433,14 @@ int main(int argc, char *argv[]) {
 
     ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
                     linked_binary, dsym_path, toolchain_path, consumer);
+  }
+
+  char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
+  std::unique_ptr<TempFile> vfs_overlay_file;
+  if (modulemap != nullptr) {
+    vfs_overlay_file = TempFile::Create("modules-vfs-overlay.XXXXXX");
+    AddLayeringCheckVFS(vfs_overlay_file->GetPath(), modulemap, developer_dir,
+                        consumer);
   }
 
   // Special mode that only prints the command. Used for testing.

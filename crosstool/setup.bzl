@@ -57,6 +57,7 @@ _apple_cc_autoconf = repository_rule(
         _DISABLE_ENV_VAR,
         _OLD_DISABLE_ENV_VAR,
         "BAZEL_ALLOW_NON_APPLICATIONS_XCODE",  # Signals to configure_osx_toolchain that some Xcodes may live outside of /Applications and we need to probe further when detecting/configuring them.
+        "APPLE_SUPPORT_LAYERING_CHECK_BETA",
         "DEVELOPER_DIR",  # Used for making sure we use the right Xcode for compiling toolchain binaries
         "GCOV",  # TODO: Remove this
         "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain

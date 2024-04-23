@@ -41,6 +41,13 @@ cc_toolchain_suite(
     toolchains = dict(CC_TOOLCHAINS),
 )
 
+filegroup(
+    name = "modulemap",
+    srcs = [
+%{real_modulemap}
+    ],
+)
+
 [
     filegroup(
         name = "osx_tools_" + arch,
@@ -49,6 +56,7 @@ cc_toolchain_suite(
             ":libtool",
             ":libtool_check_unique",
             ":make_hashed_objlist.py",
+            ":modulemap",
             ":wrapped_clang",
             ":wrapped_clang_pp",
             ":xcrunwrapper.sh",
@@ -71,6 +79,7 @@ cc_toolchain_suite(
         supports_param_files = 1,
         toolchain_config = arch,
         toolchain_identifier = arch,
+        module_map = %{placeholder_modulemap},
     )
     for arch in _APPLE_ARCHS
 ]
@@ -86,6 +95,7 @@ cc_toolchain_suite(
 %{cxx_builtin_include_directories}
         ],
         tool_paths_overrides = {%{tool_paths_overrides}},
+        module_map = ":modulemap",
     )
     for arch in _APPLE_ARCHS
 ]
