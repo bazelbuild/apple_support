@@ -36,6 +36,10 @@ tasks:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *common
+    # TODO: Remove once we test with Bazel 8+
+    test_targets:
+      - "//..."
+      - "//test:xcode_config_test"
 
   linux_latest:
     name: "Current LTS"
