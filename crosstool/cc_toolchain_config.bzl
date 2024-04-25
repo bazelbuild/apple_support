@@ -13,6 +13,7 @@
 # limitations under the License.
 """A C++ toolchain configuration rule for macOS."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
@@ -1039,6 +1040,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         requires = [feature_set(features = ["coverage"])],
+    )
+
+    gcc_quoting_for_param_files_feature = feature(
+        name = "gcc_quoting_for_param_files",
+        enabled = bazel_features.cc.fixed_dsym_path_quoting,
     )
 
     default_link_flags_feature = feature(
@@ -2577,6 +2583,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         no_objc_arc_feature,
         apple_env_feature,
         relative_ast_path_feature,
+        gcc_quoting_for_param_files_feature,
         user_link_flags_feature,
         default_link_flags_feature,
         no_deduplicate_feature,
