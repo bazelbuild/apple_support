@@ -2604,6 +2604,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "darwin_arm64" or
         ctx.attr.cpu == "darwin_arm64e"):
         features.append(feature(name = "dynamic_linking_mode"))
+        features.append(feature(name = "supports_dynamic_linker"))
 
     # macOS artifact name patterns differ from the defaults only for dynamic
     # libraries.
