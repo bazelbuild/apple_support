@@ -42,6 +42,7 @@ bzl_library(
         "//lib:xcode_support",
         "//xcode:available_xcodes",
         "//xcode:xcode_config",
+        "//xcode:xcode_config_alias",
         "//xcode:xcode_version",
         "@bazel_skylib//lib:unittest",
     ],
