@@ -14,6 +14,8 @@
 
 """Common Starlark helpers used by apple_support tests."""
 
+load("@bazel_skylib//lib:unittest.bzl", "analysistest")
+
 visibility(["//test/..."])
 
 # Common tags used for all test fixtures to ensure that they don't build unless
@@ -21,6 +23,26 @@ visibility(["//test/..."])
 FIXTURE_TAGS = [
     "manual",
 ]
+
+def find_action(env, mnemonic):
+    """Finds the first action with the given mnemonic in the target under test.
+
+    This generates an analysis test failure if no action was found.
+
+    Args:
+        env: The analysis test environment.
+        mnemonic: The mnemonic to find.
+
+    Returns:
+        The first action matching the mnemonic, or `None` if none was found.
+    """
+    actions = analysistest.target_actions(env)
+    for action in actions:
+        if action.mnemonic == mnemonic:
+            return action
+
+    analysistest.fail(env, "No '{}' action found".format(mnemonic))
+    return None
 
 def make_unique_namer(*, prefix, index):
     """Returns a function used to generate unique names in a package.
