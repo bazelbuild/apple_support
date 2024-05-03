@@ -207,13 +207,13 @@ def configure_osx_toolchain(repository_ctx):
     _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
     repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
 
-    real_modulemap = None
+    layering_check_modulemap = None
     if repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1":
-        real_modulemap = "real.modulemap"
-        _generate_system_modulemap(repository_ctx, generate_modulemap_path, real_modulemap)
+        layering_check_modulemap = "layering_check.modulemap"
+        _generate_system_modulemap(repository_ctx, generate_modulemap_path, layering_check_modulemap)
         repository_ctx.file(
             "module.modulemap",
-            "// Placeholder to satisfy API requirements. See apple_support for real modulemap",
+            "// Placeholder to satisfy API requirements. See apple_support for usage",
         )
 
     tool_paths = {}
@@ -239,8 +239,8 @@ def configure_osx_toolchain(repository_ctx):
         {
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{features}": "\n".join(['"{}"'.format(x) for x in features]),
-            "%{placeholder_modulemap}": "\":module.modulemap\"" if real_modulemap else "None",
-            "%{real_modulemap}": "\":{}\",".format(real_modulemap) if real_modulemap else "",
+            "%{layering_check_modulemap}": "\":{}\",".format(layering_check_modulemap) if layering_check_modulemap else "",
+            "%{placeholder_modulemap}": "\":module.modulemap\"" if layering_check_modulemap else "None",
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),

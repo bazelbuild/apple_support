@@ -44,7 +44,7 @@ cc_toolchain_suite(
 filegroup(
     name = "modulemap",
     srcs = [
-%{real_modulemap}
+%{layering_check_modulemap}
     ],
 )
 
