@@ -239,11 +239,11 @@ def configure_osx_toolchain(repository_ctx):
         {
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{features}": "\n".join(['"{}"'.format(x) for x in features]),
+            "%{placeholder_modulemap}": "\":module.modulemap\"" if real_modulemap else "None",
+            "%{real_modulemap}": "\":{}\",".format(real_modulemap) if real_modulemap else "",
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),
-            "%{real_modulemap}": "\":{}\",".format(real_modulemap) if real_modulemap else "",
-            "%{placeholder_modulemap}": "\":module.modulemap\"" if real_modulemap else "None",
         },
     )
 
