@@ -62,6 +62,29 @@ def _succeeds(repository_ctx, *args):
 
     return result.return_code == 0
 
+def _generate_system_modulemap(repository_ctx, script, output):
+    env = repository_ctx.os.environ
+    result = repository_ctx.execute([
+        "env",
+        "-i",
+        "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
+        script,
+    ])
+
+    if result.return_code != 0:
+        error_msg = (
+            "return code {code}, stderr: {err}, stdout: {out}"
+        ).format(
+            code = result.return_code,
+            err = result.stderr,
+            out = result.stdout,
+        )
+        fail(output + " failed to generate. Please file an issue at " +
+             "https://github.com/bazelbuild/apple_support/issues with the following:\n" +
+             error_msg)
+
+    repository_ctx.file(output, result.stdout)
+
 def _compile_cc_file(repository_ctx, src_name, out_name):
     env = repository_ctx.os.environ
     xcrun_result = repository_ctx.execute([
@@ -149,6 +172,9 @@ def configure_osx_toolchain(repository_ctx):
     wrapped_clang_src_path = str(repository_ctx.path(
         Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
     ))
+    generate_modulemap_path = str(repository_ctx.path(
+        Label("@build_bazel_apple_support//crosstool:generate-modulemap.sh"),
+    ))
 
     xcode_toolchains = []
     xcodeloc_err = ""
@@ -181,6 +207,15 @@ def configure_osx_toolchain(repository_ctx):
     _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
     repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
 
+    layering_check_modulemap = None
+    if repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1":
+        layering_check_modulemap = "layering_check.modulemap"
+        _generate_system_modulemap(repository_ctx, generate_modulemap_path, layering_check_modulemap)
+        repository_ctx.file(
+            "module.modulemap",
+            "// Placeholder to satisfy API requirements. See apple_support for usage",
+        )
+
     tool_paths = {}
     gcov_path = repository_ctx.os.environ.get("GCOV")
     if gcov_path != None:
@@ -204,6 +239,8 @@ def configure_osx_toolchain(repository_ctx):
         {
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{features}": "\n".join(['"{}"'.format(x) for x in features]),
+            "%{layering_check_modulemap}": "\":{}\",".format(layering_check_modulemap) if layering_check_modulemap else "",
+            "%{placeholder_modulemap}": "\":module.modulemap\"" if layering_check_modulemap else "None",
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),

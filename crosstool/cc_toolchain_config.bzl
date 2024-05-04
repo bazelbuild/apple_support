@@ -2524,6 +2524,65 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    modulemaps = ctx.attr.module_map.files.to_list()
+    if modulemaps:
+        if len(modulemaps) != 1:
+            fail("internal error: expected 1 modulemap got:", modulemaps)
+        layering_check_feature = feature(
+            name = "layering_check",
+            flag_sets = [
+                flag_set(
+                    actions = [
+                        ACTION_NAMES.c_compile,
+                        ACTION_NAMES.cpp_compile,
+                        ACTION_NAMES.cpp_header_parsing,
+                        ACTION_NAMES.cpp_module_compile,
+                        ACTION_NAMES.objc_compile,
+                        ACTION_NAMES.objcpp_compile,
+                    ],
+                    flag_groups = [
+                        flag_group(
+                            flags = [
+                                "-fmodules-strict-decluse",
+                                "-Wprivate-header",
+                                "-Xclang",
+                                "-fmodule-name=%{module_name}",
+                                "-Xclang",
+                                "-fmodule-map-file=%{module_map_file}",
+                            ],
+                        ),
+                        flag_group(
+                            iterate_over = "dependent_module_map_files",
+                            flags = [
+                                "-Xclang",
+                                "-fmodule-map-file=%{dependent_module_map_files}",
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+            env_sets = [
+                env_set(
+                    actions = [
+                        ACTION_NAMES.c_compile,
+                        ACTION_NAMES.cpp_compile,
+                        ACTION_NAMES.cpp_header_parsing,
+                        ACTION_NAMES.cpp_module_compile,
+                        ACTION_NAMES.objc_compile,
+                        ACTION_NAMES.objcpp_compile,
+                    ],
+                    env_entries = [
+                        env_entry(
+                            key = "APPLE_SUPPORT_MODULEMAP",
+                            value = modulemaps[0].path,
+                        ),
+                    ],
+                ),
+            ],
+        )
+    else:
+        layering_check_feature = feature(name = "layering_check")
+
     features = [
         # Marker features
         feature(name = "archive_param_file"),
@@ -2605,6 +2664,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         default_sanitizer_flags_feature,
         treat_warnings_as_errors_feature,
         no_warn_duplicate_libraries_feature,
+        layering_check_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
@@ -2678,6 +2738,7 @@ cc_toolchain_config = rule(
         "cxx_builtin_include_directories": attr.string_list(),
         "tool_paths_overrides": attr.string_dict(),
         "extra_env": attr.string_dict(),
+        "module_map": attr.label(),
         "_xcode_config": attr.label(default = configuration_field(
             fragment = "apple",
             name = "xcode_config_label",
