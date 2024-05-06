@@ -31,6 +31,10 @@ load(
     "@build_bazel_apple_support//xcode:xcode_version.bzl",
     "xcode_version",
 )
+load(
+    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")
@@ -38,7 +42,7 @@ visibility("private")
 # ------------------------------------------------------------------------------
 
 def _version_retriever_impl(ctx):
-    xcode_properties = ctx.attr.dep[apple_common.XcodeProperties]
+    xcode_properties = ctx.attr.dep[XcodeVersionPropertiesInfo]
     version = xcode_properties.xcode_version
     return [config_common.FeatureFlagInfo(value = version)]
 
