@@ -19,6 +19,10 @@ load("//xcode:available_xcodes.bzl", "available_xcodes")
 load("//xcode:xcode_config.bzl", "xcode_config")
 load("//xcode:xcode_config_alias.bzl", "xcode_config_alias")
 load("//xcode:xcode_version.bzl", "xcode_version")
+load(
+    "//xcode/private:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")
@@ -26,7 +30,7 @@ visibility("private")
 # ------------------------------------------------------------------------------
 
 def _version_retriever_impl(ctx):
-    xcode_properties = ctx.attr.dep[apple_common.XcodeProperties]
+    xcode_properties = ctx.attr.dep[XcodeVersionPropertiesInfo]
     version = xcode_properties.xcode_version
     return [config_common.FeatureFlagInfo(value = version)]
 
@@ -264,6 +268,8 @@ def _accepts_flag_for_mutually_available(namer):
     _accepts_flag_for_mutually_available_test(
         name = "accepts_flag_for_mutually_available",
         target_under_test = "accepts_flag_for_mutually_available__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["accepts_flag_for_mutually_available"]
 
@@ -308,6 +314,8 @@ def _prefers_flag_over_mutually_available(namer):
     _prefers_flag_over_mutually_available_test(
         name = "prefers_flag_over_mutually_available",
         target_under_test = "prefers_flag_over_mutually_available__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["prefers_flag_over_mutually_available"]
 
@@ -352,6 +360,8 @@ def _warn_with_explicit_local_only_version(namer):
     _warn_with_explicit_local_only_version_test(
         name = "warn_with_explicit_local_only_version",
         target_under_test = "warn_with_explicit_local_only_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["warn_with_explicit_local_only_version"]
 
@@ -400,6 +410,8 @@ def _prefer_local_default_if_no_mutual_no_flag_different_main_version(namer):
     _prefer_local_default_if_no_mutual_no_flag_different_main_version_test(
         name = "prefer_local_default_if_no_mutual_no_flag_different_main_version",
         target_under_test = "prefer_local_default_if_no_mutual_no_flag_different_main_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["prefer_local_default_if_no_mutual_no_flag_different_main_version"]
 
@@ -447,6 +459,8 @@ def _prefer_local_default_if_no_mutual_no_flag_different_build_alias(namer):
     _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test(
         name = "prefer_local_default_if_no_mutual_no_flag_different_build_alias",
         target_under_test = "prefer_local_default_if_no_mutual_no_flag_different_build_alias__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["prefer_local_default_if_no_mutual_no_flag_different_build_alias"]
 
@@ -494,6 +508,8 @@ def _prefer_local_default_if_no_mutual_no_flag_different_full_version(namer):
     _prefer_local_default_if_no_mutual_no_flag_different_full_version_test(
         name = "prefer_local_default_if_no_mutual_no_flag_different_full_version",
         target_under_test = "prefer_local_default_if_no_mutual_no_flag_different_full_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["prefer_local_default_if_no_mutual_no_flag_different_full_version"]
 
@@ -545,6 +561,8 @@ def _choose_newest_mutual_xcode(namer):
     _choose_newest_mutual_xcode_test(
         name = "choose_newest_mutual_xcode",
         target_under_test = "choose_newest_mutual_xcode__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["choose_newest_mutual_xcode"]
 
@@ -816,18 +834,26 @@ def _config_alias_config_setting(namer):
     _config_alias_config_setting_no_flag_test(
         name = "config_alias_config_setting_no_flag",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _config_alias_config_setting_6_4_test(
         name = "config_alias_config_setting_6_4",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _config_alias_config_setting_6_test(
         name = "config_alias_config_setting_6",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _config_alias_config_setting_12_test(
         name = "config_alias_config_setting_12",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return [
         "config_alias_config_setting_no_flag",
@@ -960,10 +986,14 @@ def _default_version_config_setting(namer):
     _default_version_config_setting_no_flag_test(
         name = "default_version_config_setting_no_flag",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _default_version_config_setting_6_4_test(
         name = "default_version_config_setting_6_4",
         target_under_test = namer("gen"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return [
         "default_version_config_setting_no_flag",
@@ -1013,6 +1043,8 @@ def _valid_version(namer):
     _valid_version_test(
         name = "valid_version",
         target_under_test = "valid_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["valid_version"]
 
@@ -1053,6 +1085,8 @@ def _valid_alias_dotted_version(namer):
     _valid_alias_dotted_version_test(
         name = "valid_alias_dotted_version",
         target_under_test = "valid_alias_dotted_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["valid_alias_dotted_version"]
 
@@ -1093,6 +1127,8 @@ def _valid_alias_nonnumerical(namer):
     _valid_alias_nonnumerical_test(
         name = "valid_alias_nonnumerical",
         target_under_test = "valid_alias_nonnumerical__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["valid_alias_nonnumerical"]
 
@@ -1176,6 +1212,8 @@ def _requires_default(namer):
     _requires_default_test(
         name = "requires_default",
         target_under_test = "requires_default__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["requires_default"]
 
@@ -1210,6 +1248,8 @@ def _duplicate_aliases_defined_version(namer):
     _duplicate_aliases_defined_version_test(
         name = "duplicate_aliases_defined_version",
         target_under_test = "duplicate_aliases_defined_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["duplicate_aliases_defined_version"]
 
@@ -1248,6 +1288,8 @@ def _duplicate_aliases_within_available_xcodes(namer):
     _duplicate_aliases_within_available_xcodes_test(
         name = "duplicate_aliases_within_available_xcodes",
         target_under_test = "duplicate_aliases_within_available_xcodes__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["duplicate_aliases_within_available_xcodes"]
 
@@ -1282,6 +1324,8 @@ def _version_aliased_to_itself(namer):
     _version_aliased_to_itself_test(
         name = "version_aliased_to_itself",
         target_under_test = "version_aliased_to_itself__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["version_aliased_to_itself"]
 
@@ -1322,6 +1366,8 @@ def _duplicate_version_numbers(namer):
     _duplicate_version_numbers_test(
         name = "duplicate_version_numbers",
         target_under_test = "duplicate_version_numbers__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["duplicate_version_numbers"]
 
@@ -1358,6 +1404,8 @@ def _version_conflicts_with_alias(namer):
     _version_conflicts_with_alias_test(
         name = "version_conflicts_with_alias",
         target_under_test = "version_conflicts_with_alias__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["version_conflicts_with_alias"]
 
@@ -1415,6 +1463,8 @@ def _default_ios_sdk_version(namer):
     _default_ios_sdk_version_test(
         name = "default_ios_sdk_version",
         target_under_test = "default_ios_sdk_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["default_ios_sdk_version"]
 
@@ -1482,6 +1532,8 @@ def _default_sdk_versions(namer):
     _default_sdk_versions_test(
         name = "default_sdk_versions",
         target_under_test = "default_sdk_versions__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["default_sdk_versions"]
 
@@ -1553,6 +1605,8 @@ def _default_sdk_versions_selected_xcode(namer):
     _default_sdk_versions_selected_xcode_test(
         name = "default_sdk_versions_selected_xcode",
         target_under_test = "default_sdk_versions_selected_xcode__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["default_sdk_versions_selected_xcode"]
 
@@ -1625,6 +1679,8 @@ def _override_default_sdk_versions(namer):
     _override_default_sdk_versions_test(
         name = "override_default_sdk_versions",
         target_under_test = "override_default_sdk_versions__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["override_default_sdk_versions"]
 
@@ -1682,6 +1738,8 @@ def _default_without_version(namer):
     _default_without_version_test(
         name = "default_without_version",
         target_under_test = "default_without_version__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["default_without_version"]
 
@@ -1731,6 +1789,8 @@ def _version_does_not_contain_default(namer):
     _version_does_not_contain_default_test(
         name = "version_does_not_contain_default",
         target_under_test = "version_does_not_contain_default__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["version_does_not_contain_default"]
 
@@ -1786,10 +1846,14 @@ def _configuration_field_for_rule(namer):
     _configuration_field_for_rule_1_test(
         name = "configuration_field_for_rule_1",
         target_under_test = namer("provider_grabber"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _configuration_field_for_rule_2_test(
         name = "configuration_field_for_rule_2",
         target_under_test = namer("provider_grabber"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return [
         "configuration_field_for_rule_1",
@@ -1876,10 +1940,14 @@ def _configuration_field_for_aspect(namer):
     _configuration_field_for_aspect_1_test(
         name = "configuration_field_for_aspect_1",
         target_under_test = namer("provider_grabber"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     _configuration_field_for_aspect_2_test(
         name = "configuration_field_for_aspect_2",
         target_under_test = namer("provider_grabber"),
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return [
         "configuration_field_for_aspect_1",
@@ -1939,6 +2007,8 @@ def _explicit_xcodes_mode_no_flag(namer):
     _explicit_xcodes_mode_no_flag_test(
         name = "explicit_xcodes_mode_no_flag",
         target_under_test = "explicit_xcodes_mode_no_flag__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["explicit_xcodes_mode_no_flag"]
 
@@ -1976,6 +2046,8 @@ def _explicit_xcodes_mode_with_flag(namer):
     _explicit_xcodes_mode_with_flag_test(
         name = "explicit_xcodes_mode_with_flag",
         target_under_test = "explicit_xcodes_mode_with_flag__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["explicit_xcodes_mode_with_flag"]
 
@@ -2017,6 +2089,8 @@ def _available_xcodes_mode_no_flag(namer):
     _available_xcodes_mode_no_flag_test(
         name = "available_xcodes_mode_no_flag",
         target_under_test = "available_xcodes_mode_no_flag__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["available_xcodes_mode_no_flag"]
 
@@ -2056,6 +2130,8 @@ def _available_xcodes_mode_different_alias(namer):
     _available_xcodes_mode_different_alias_test(
         name = "available_xcodes_mode_different_alias",
         target_under_test = "available_xcodes_mode_different_alias__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["available_xcodes_mode_different_alias"]
 
@@ -2093,6 +2169,8 @@ def _available_xcodes_mode_different_alias_fully_specified(namer):
     _available_xcodes_mode_different_alias_fully_specified_test(
         name = "available_xcodes_mode_different_alias_fully_specified",
         target_under_test = "available_xcodes_mode_different_alias_fully_specified__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["available_xcodes_mode_different_alias_fully_specified"]
 
@@ -2135,6 +2213,8 @@ def _available_xcodes_mode_with_flag(namer):
     _available_xcodes_mode_with_flag_test(
         name = "available_xcodes_mode_with_flag",
         target_under_test = "available_xcodes_mode_with_flag__foo",
+        # TODO: Remove once we test with Bazel 8+
+        tags = ["manual"],
     )
     return ["available_xcodes_mode_with_flag"]
 
