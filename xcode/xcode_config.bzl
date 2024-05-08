@@ -23,7 +23,7 @@ load(
 
 visibility("public")
 
-unavailable_xcode_message = "'bazel fetch --configure' (Bzlmod) or 'bazel sync --configure' (WORKSPACE)"
+UNAVAILABLE_XCODE_MESSAGE = "'bazel fetch --configure' (Bzlmod) or 'bazel sync --configure' (WORKSPACE)"
 
 def _xcode_config_impl(ctx):
     apple_fragment = ctx.fragments.apple
@@ -54,6 +54,7 @@ def _xcode_config_impl(ctx):
         remote_versions,
     ):
         xcode_version_properties, availability = _resolve_xcode_from_local_and_remote(
+            ctx.actions,
             local_versions,
             remote_versions,
             apple_fragment.xcode_version_flag,
@@ -208,6 +209,7 @@ def _aliases_to_xcode_version(versions):
     return version_map
 
 def _resolve_xcode_from_local_and_remote(
+        actions,
         local_versions,
         remote_versions,
         xcode_version_flag,
@@ -256,32 +258,29 @@ def _resolve_xcode_from_local_and_remote(
                 )
 
         elif local_version_from_flag:
-            error = (
-                " --xcode_version={} specified, but it is not available remotely. Actions " +
-                "requiring Xcode will be run locally, which could make your build slower."
-            ).format(
-                xcode_version_flag,
-            )
-            if (mutually_available_versions):
-                error += " Consider using one of [{}].".format(
-                    ", ".join([version for version in mutually_available_versions]),
+            if mutually_available_versions:
+                _warn(
+                    actions,
+                    "explicit_version_not_available_remotely_consider_mutual",
+                    version = xcode_version_flag,
+                    mutual_versions = [version for version in mutually_available_versions],
                 )
-
-            # buildifier: disable=print
-            print(error)
+            else:
+                _warn(
+                    actions,
+                    "explicit_version_not_available_remotely",
+                    version = xcode_version_flag,
+                )
             return local_version_from_flag.xcode_version_properties, "LOCAL"
 
         elif remote_version_from_flag:
-            # buildifier: disable=print
-            print(("--xcode_version={version} specified, but it is not available locally. " +
-                   "Your build will fail if any actions require a local Xcode. " +
-                   "If you believe you have '{version}' installed, try running {command}," +
-                   "and then re-run your command. Locally available versions: {local_versions}. ")
-                .format(
+            _warn(
+                actions,
+                "version_not_available_locally",
                 version = xcode_version_flag,
-                command = unavailable_xcode_message,
+                command = UNAVAILABLE_XCODE_MESSAGE,
                 local_versions = ", ".join([version for version in local_alias_to_version_map.keys()]),
-            ))
+            )
             availability = "REMOTE"
 
             return remote_version_from_flag.xcode_version_properties, availability
@@ -293,7 +292,7 @@ def _resolve_xcode_from_local_and_remote(
                  " you believe you have '{0}' installed, try running {1}, and then" +
                  " re-run your command.").format(
                     xcode_version_flag,
-                    unavailable_xcode_message,
+                    UNAVAILABLE_XCODE_MESSAGE,
                     ", ".join([version.xcode_version_properties.xcode_version for version in local_versions]),
                     ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions]),
                 ),
@@ -305,12 +304,11 @@ def _resolve_xcode_from_local_and_remote(
 
     # If there aren't any mutually available versions, select the local default.
     if not mutually_available_versions:
-        # buildifier: disable=print
-        print(
-            ("Using a local Xcode version, '{}', since there are no" +
-             " remotely available Xcodes on this machine. Consider downloading one of the" +
-             " remotely available Xcode versions ({}) in order to get the best build" +
-             " performance.").format(local_default_version.xcode_version_properties.xcode_version, ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions])),
+        _warn(
+            actions,
+            "local_default_not_available_remotely",
+            local_version = local_default_version.xcode_version_properties.xcode_version,
+            remote_versions = ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions]),
         )
         local_version = local_default_version
         availability = "LOCAL"
@@ -385,3 +383,57 @@ def _resolve_explicitly_defined_version(
 
 def _dotted_version_or_default(field, default):
     return apple_common.dotted_version(field) or default
+
+_WARNINGS = {
+    "version_not_available_locally": """\
+--xcode_version={version} specified, but it is not available locally. \
+Your build will fail if any actions require a local Xcode. \
+If you believe you have '{version}' installed, try running {command}, \
+and then re-run your command. Locally available versions: {local_versions}.
+""",
+    "local_default_not_available_remotely": """\
+Using a local Xcode version, '{local_version}', since there are no \
+remotely available Xcodes on this machine. Consider downloading one of the \
+remotely available Xcode versions ({remote_versions}) in order to get the best \
+build performance.
+""",
+    "explicit_version_not_available_remotely": """\
+--xcode_version={version} specified, but it is not available remotely. Actions \
+requiring Xcode will be run locally, which could make your build slower.
+""",
+    "explicit_version_not_available_remotely_consider_mutual": """\
+--xcode_version={version} specified, but it is not available remotely. Actions \
+requiring Xcode will be run locally, which could make your build slower. \
+Consider using one of [{mutual_versions}].
+""",
+}
+
+def _warn(actions, msg_id, **kwargs):
+    """Print a warning and also record it as a testable dummy action.
+
+    Starlark doesn't support testing the output of the `print()` function, so
+    this function also registers a dummy action with a specifically formatted
+    mnemonic that can be read in the test using the `assert_warning` helper.
+
+    Args:
+        actions: The object used to register actions.
+        msg_id: A string identifying the warning as a key in the `_WARNINGS`
+            dictionary.
+        **kwargs: Formatting arguments for the message string.
+    """
+
+    # buildifier: disable=print
+    print(_WARNINGS[msg_id].format(**kwargs))
+
+    mnemonic = "Warning:{}".format(msg_id)
+    if kwargs:
+        # Sort the format arguments by key so that they're deterministically
+        # ordered for tests.
+        sorted_values = []
+        for key in sorted(kwargs.keys()):
+            sorted_values.append("{}={}".format(key, str(kwargs[key])))
+        mnemonic += ":{}".format(";".join(sorted_values))
+
+    actions.do_nothing(
+        mnemonic = mnemonic,
+    )

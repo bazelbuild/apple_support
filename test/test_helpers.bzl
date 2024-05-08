@@ -26,6 +26,47 @@ FIXTURE_TAGS = [
     "manual",
 ]
 
+def assert_warning(env, msg_id, data = None):
+    """Asserts that a warning was printed.
+
+    The logic in this helper is specifically meant to handle warnings printed by
+    `xcode_config.bzl`, because we want to preserve the behavior of the original
+    rules and their tests.
+
+    Args:
+        env: The analysis test environment.
+        msg_id: The fixed identifier of the warning message.
+        data: The semicolon-delimited, sorted by key, `key=value` string
+            representation of the format arguments for the message, if any.
+    """
+    expected = "Warning:{}".format(msg_id)
+    if data:
+        expected += ":{}".format(data)
+
+    found_warnings = []
+
+    actions = analysistest.target_actions(env)
+    for action in actions:
+        mnemonic = action.mnemonic
+        if mnemonic == expected:
+            return
+        if mnemonic.startswith("Warning:"):
+            found_warnings.append(mnemonic)
+
+    found_warnings_msg = ""
+    if found_warnings:
+        found_warnings_msg = "; the following warnings were emitted:\n{}".format(
+            "\n".join(found_warnings),
+        )
+
+    analysistest.fail(
+        env,
+        "Expected warning '{}' was not emitted{}".format(
+            expected,
+            found_warnings_msg,
+        ),
+    )
+
 def find_action(env, mnemonic):
     """Finds the first action with the given mnemonic in the target under test.
 
