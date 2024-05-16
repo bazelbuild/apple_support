@@ -1,6 +1,5 @@
 """Configure the Apple CC toolchain"""
 
-load("@bazel_skylib//lib:modules.bzl", "modules")
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
@@ -28,7 +27,7 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     else:
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled because you're not running on macOS")
 
-_apple_cc_autoconf_toolchains = repository_rule(
+apple_cc_autoconf_toolchains = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
         _OLD_DISABLE_ENV_VAR,
@@ -53,7 +52,7 @@ def _apple_cc_autoconf_impl(repository_ctx):
     else:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled because you're not on macOS")
 
-_apple_cc_autoconf = repository_rule(
+apple_cc_autoconf = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
         _OLD_DISABLE_ENV_VAR,
@@ -71,15 +70,9 @@ _apple_cc_autoconf = repository_rule(
 
 # buildifier: disable=unnamed-macro
 def apple_cc_configure():
-    _apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
-    _apple_cc_autoconf(name = "local_config_apple_cc")
+    apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
+    apple_cc_autoconf(name = "local_config_apple_cc")
     native.register_toolchains(
         # Use register_toolchain's target pattern expansion to register all toolchains in the package.
         "@local_config_apple_cc_toolchains//:all",
     )
-
-def _apple_cc_configure_extension_impl():
-    _apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
-    _apple_cc_autoconf(name = "local_config_apple_cc")
-
-apple_cc_configure_extension = modules.as_extension(_apple_cc_configure_extension_impl)

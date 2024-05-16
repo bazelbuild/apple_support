@@ -17,7 +17,7 @@ bazel_dep(
     repo_name = "io_bazel_stardoc",
 )
 
-apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_extension")
+apple_cc_configure = use_extension("//crosstool:apple_cc_configure_extension.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
