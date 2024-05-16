@@ -1,5 +1,6 @@
 """Configure the Apple CC toolchain"""
 
+load("@bazel_skylib//lib:modules.bzl", "modules")
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
@@ -77,8 +78,8 @@ def apple_cc_configure():
         "@local_config_apple_cc_toolchains//:all",
     )
 
-def _apple_cc_configure_extension_impl(_):
+def _apple_cc_configure_extension_impl():
     _apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
     _apple_cc_autoconf(name = "local_config_apple_cc")
 
-apple_cc_configure_extension = module_extension(implementation = _apple_cc_configure_extension_impl)
+apple_cc_configure_extension = modules.as_extension(_apple_cc_configure_extension_impl)
