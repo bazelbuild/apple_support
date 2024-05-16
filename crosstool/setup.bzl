@@ -1,6 +1,6 @@
 """Configure the Apple CC toolchain"""
 
-load(":setup_internal.bzl", "apple_cc_autoconf", "apple_cc_autoconf_toolchains")
+load("//crosstool/internal:setup.bzl", "apple_cc_autoconf", "apple_cc_autoconf_toolchains")
 
 # buildifier: disable=unnamed-macro
 def apple_cc_configure():

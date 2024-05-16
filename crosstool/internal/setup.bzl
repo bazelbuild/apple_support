@@ -2,8 +2,6 @@
 
 load("//crosstool:osx_cc_configure.bzl", "configure_osx_toolchain")
 
-visibility("private")
-
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 
