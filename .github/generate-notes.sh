@@ -37,5 +37,9 @@ load(
 )
 
 apple_support_dependencies()
+
+load("@bazel_features//:deps.bzl", "bazel_features_deps")
+
+bazel_features_deps()
 \`\`\`
 EOF
