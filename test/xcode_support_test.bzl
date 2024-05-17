@@ -13,14 +13,8 @@
 # limitations under the License.
 """Definition of a test rule to test xcode_support."""
 
-load(
-    "//lib:apple_support.bzl",
-    "apple_support",
-)
-load(
-    "//lib:xcode_support.bzl",
-    "xcode_support",
-)
+load("//lib:apple_support.bzl", "apple_support")
+load("//lib:xcode_support.bzl", "xcode_support")
 
 # Template for the test script used to validate that the action outputs contain the expected
 # values.

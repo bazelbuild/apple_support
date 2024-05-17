@@ -15,14 +15,8 @@
 """Tests for the `available_xcodes` rule."""
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest")
-load(
-    "@build_bazel_apple_support//xcode:available_xcodes.bzl",
-    "available_xcodes",
-)
-load(
-    "@build_bazel_apple_support//xcode:xcode_version.bzl",
-    "xcode_version",
-)
+load("//xcode:available_xcodes.bzl", "available_xcodes")
+load("//xcode:xcode_version.bzl", "xcode_version")
 load(":test_helpers.bzl", "FIXTURE_TAGS", "make_all_tests")
 
 visibility("private")

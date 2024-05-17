@@ -15,10 +15,7 @@
 """Tests for the `xcode_version` rule."""
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
-load(
-    "@build_bazel_apple_support//xcode:xcode_version.bzl",
-    "xcode_version",
-)
+load("//xcode:xcode_version.bzl", "xcode_version")
 load(":test_helpers.bzl", "FIXTURE_TAGS", "make_all_tests")
 
 visibility("private")

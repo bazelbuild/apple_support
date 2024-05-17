@@ -4,8 +4,8 @@ filegroup(
     name = "for_bazel_tests",
     testonly = True,
     srcs = [
+        "//:for_bazel_tests",
         "//test:for_bazel_tests",
-        "@build_bazel_apple_support//:for_bazel_tests",
     ],
 )
 
