@@ -15,18 +15,9 @@
 """Tests for the `xcode_config` rule."""
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
-load(
-    "@build_bazel_apple_support//xcode:available_xcodes.bzl",
-    "available_xcodes",
-)
-load(
-    "@build_bazel_apple_support//xcode:xcode_config.bzl",
-    "xcode_config",
-)
-load(
-    "@build_bazel_apple_support//xcode:xcode_version.bzl",
-    "xcode_version",
-)
+load("//xcode:available_xcodes.bzl", "available_xcodes")
+load("//xcode:xcode_config.bzl", "xcode_config")
+load("//xcode:xcode_version.bzl", "xcode_version")
 load(":test_helpers.bzl", "FIXTURE_TAGS", "make_all_tests")
 
 visibility("private")
@@ -233,7 +224,9 @@ _accepts_flag_for_mutually_available_test = analysistest.make(
     _accepts_flag_for_mutually_available_test_impl,
     config_settings = {
         "//command_line_option:xcode_version": "8.4",
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:accepts_flag_for_mutually_available__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:accepts_flag_for_mutually_available__foo",
+        )),
     },
 )
 
@@ -276,7 +269,9 @@ _prefers_flag_over_mutually_available_test = analysistest.make(
     _prefers_flag_over_mutually_available_test_impl,
     config_settings = {
         "//command_line_option:xcode_version": "5.1.2",
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefers_flag_over_mutually_available__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:prefers_flag_over_mutually_available__foo",
+        )),
     },
 )
 
@@ -322,7 +317,9 @@ _warn_with_explicit_local_only_version_test = analysistest.make(
     _warn_with_explicit_local_only_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version": "8.4",
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:warn_with_explicit_local_only_version__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:warn_with_explicit_local_only_version__foo",
+        )),
     },
 )
 
@@ -367,7 +364,9 @@ def _prefer_local_default_if_no_mutual_no_flag_different_main_version_test_impl(
 _prefer_local_default_if_no_mutual_no_flag_different_main_version_test = analysistest.make(
     _prefer_local_default_if_no_mutual_no_flag_different_main_version_test_impl,
     config_settings = {
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_main_version__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:prefer_local_default_if_no_mutual_no_flag_different_main_version__foo",
+        )),
     },
 )
 
@@ -412,7 +411,9 @@ def _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test_impl(c
 _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test = analysistest.make(
     _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test_impl,
     config_settings = {
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_build_alias__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:prefer_local_default_if_no_mutual_no_flag_different_build_alias__foo",
+        )),
     },
 )
 
@@ -457,7 +458,9 @@ def _prefer_local_default_if_no_mutual_no_flag_different_full_version_test_impl(
 _prefer_local_default_if_no_mutual_no_flag_different_full_version_test = analysistest.make(
     _prefer_local_default_if_no_mutual_no_flag_different_full_version_test_impl,
     config_settings = {
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_full_version__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:prefer_local_default_if_no_mutual_no_flag_different_full_version__foo",
+        )),
     },
 )
 
@@ -505,7 +508,9 @@ def _choose_newest_mutual_xcode_test_impl(ctx):
 _choose_newest_mutual_xcode_test = analysistest.make(
     _choose_newest_mutual_xcode_test_impl,
     config_settings = {
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:choose_newest_mutual_xcode__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:choose_newest_mutual_xcode__foo",
+        )),
     },
 )
 
@@ -541,7 +546,9 @@ _invalid_xcode_from_mutual_throws_test = analysistest.make(
     _invalid_xcode_from_mutual_throws_test_impl,
     config_settings = {
         "//command_line_option:xcode_version": "6",
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:invalid_xcode_from_mutual_throws__foo",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:invalid_xcode_from_mutual_throws__foo",
+        )),
     },
     expect_failure = True,
 )
