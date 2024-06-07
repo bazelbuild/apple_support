@@ -42,76 +42,92 @@ def linking_test_suite(name):
     Args:
         name: The name to be included in test names and tags.
     """
-    default_test(
-        name = "{}_default_apple_link_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-            "-ObjC",
-        ],
-        not_expected_argv = [
-            "-g",
-            "DSYM_HINT_LINKED_BINARY",
-            "-dead_strip",
-        ],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary",
-    )
+    framework_flags = {
+        "macos": ["-framework", "Foundation"],
+        "ios": ["-framework", "Foundation", "-framework", "UIKit"],
+    }
 
-    opt_test(
-        name = "{}_opt_link_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-            "-ObjC",
-            "-dead_strip",
-        ],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary",
-    )
+    for platform in ["macos", "ios"]:
+        for apply_implicit_frameworks in [True, False]:
+            framework_flags_case = framework_flags[platform] if apply_implicit_frameworks else []  # type: list[string]
+            framework_flags_case_inverse = framework_flags[platform] if not apply_implicit_frameworks else []  # type: list[string
 
-    dead_strip_requested_test(
-        name = "{}_dead_strip_requested_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-            "-ObjC",
-            "-dead_strip",
-        ],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary",
-    )
+            apply_implicit_frameworks_name = "" if apply_implicit_frameworks else "_without_implicit_frameworks"
+            case_name = "{}_{}{}".format(name, platform, apply_implicit_frameworks_name)
+            target_under_test = "//test/test_data:{}{}_binary".format(platform, apply_implicit_frameworks_name)
 
-    disable_objc_test(
-        name = "{}_disable_objc_apple_link_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-        ],
-        not_expected_argv = ["-ObjC"],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary",
-    )
+            default_test(
+                name = "{}_default_apple_link_test".format(case_name),
+                tags = [name],
+                expected_argv = [
+                    "-Xlinker",
+                    "-objc_abi_version",
+                    "-Xlinker",
+                    "2",
+                    "-ObjC",
+                ] + framework_flags_case,
+                not_expected_argv = [
+                    "-g",
+                    "DSYM_HINT_LINKED_BINARY",
+                    "-dead_strip",
+                ] + framework_flags_case_inverse,
+                mnemonic = "ObjcLink",
+                target_under_test = target_under_test,
+            )
 
-    dsym_test(
-        name = "{}_generate_dsym_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-g",
-            "DSYM_HINT_LINKED_BINARY",
-        ],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary",
-    )
+            opt_test(
+                name = "{}_opt_link_test".format(case_name),
+                tags = [name],
+                expected_argv = [
+                    "-Xlinker",
+                    "-objc_abi_version",
+                    "-Xlinker",
+                    "2",
+                    "-ObjC",
+                    "-dead_strip",
+                ] + framework_flags_case,
+                not_expected_argv = framework_flags_case_inverse,
+                mnemonic = "ObjcLink",
+                target_under_test = target_under_test,
+            )
+
+            dead_strip_requested_test(
+                name = "{}_dead_strip_requested_test".format(case_name),
+                tags = [name],
+                expected_argv = [
+                    "-Xlinker",
+                    "-objc_abi_version",
+                    "-Xlinker",
+                    "2",
+                    "-ObjC",
+                    "-dead_strip",
+                ] + framework_flags_case,
+                not_expected_argv = framework_flags_case_inverse,
+                mnemonic = "ObjcLink",
+                target_under_test = target_under_test,
+            )
+
+            disable_objc_test(
+                name = "{}_disable_objc_apple_link_test".format(case_name),
+                tags = [name],
+                expected_argv = [
+                    "-Xlinker",
+                    "-objc_abi_version",
+                    "-Xlinker",
+                    "2",
+                ] + framework_flags_case,
+                not_expected_argv = ["-ObjC"] + framework_flags_case_inverse,
+                mnemonic = "ObjcLink",
+                target_under_test = target_under_test,
+            )
+
+            dsym_test(
+                name = "{}_generate_dsym_test".format(case_name),
+                tags = [name],
+                expected_argv = [
+                    "-g",
+                    "DSYM_HINT_LINKED_BINARY",
+                ],
+                mnemonic = "ObjcLink",
+                target_under_test = target_under_test,
+            )

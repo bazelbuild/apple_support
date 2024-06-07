@@ -39,6 +39,15 @@ starlark_apple_binary(
 )
 
 starlark_apple_binary(
+    name = "macos_without_implicit_frameworks_binary",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":cc_main"],
+    features = ["-apply_implicit_frameworks"],
+)
+
+starlark_apple_binary(
     name = "macos_binary_with_spaces",
     minimum_os_version = "13.0",
     platform_type = "macos",
@@ -129,4 +138,13 @@ starlark_apple_binary(
     platform_type = "ios",
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":ios_main"],
+)
+
+starlark_apple_binary(
+    name = "ios_without_implicit_frameworks_binary",
+    minimum_os_version = "15.0",
+    platform_type = "ios",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":ios_main"],
+    features = ["-apply_implicit_frameworks"],
 )
