@@ -313,7 +313,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "framework_paths",
             "strip_debug_symbols",
             "apple_env",
-            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -336,7 +335,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -571,7 +569,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "framework_paths",
             "strip_debug_symbols",
             "apple_env",
-            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -593,7 +590,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -661,7 +657,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "linker_param_file",
             "apple_env",
             "sysroot",
-            "apply_implicit_frameworks",
         ],
         tools = [
             tool(
@@ -1533,6 +1528,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "watchos_arm64"):
         apply_implicit_frameworks_feature = feature(
             name = "apply_implicit_frameworks",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = _DYNAMIC_LINK_ACTIONS,
@@ -1549,6 +1545,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
           ctx.attr.cpu == "darwin_arm64e"):
         apply_implicit_frameworks_feature = feature(
             name = "apply_implicit_frameworks",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = _DYNAMIC_LINK_ACTIONS,
@@ -1558,7 +1555,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ],
         )
     else:
-        apply_implicit_frameworks_feature = None
+        apply_implicit_frameworks_feature = feature(name = "apply_implicit_frameworks")
 
     random_seed_feature = feature(
         name = "random_seed",

@@ -30,6 +30,14 @@ disable_objc_test = make_action_command_line_test_rule(
     },
 )
 
+disable_implicit_frameworks_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": [
+            "-apply_implicit_frameworks",
+        ],
+    },
+)
+
 dsym_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:apple_generate_dsym": True,
@@ -43,7 +51,7 @@ def linking_test_suite(name):
         name: The name to be included in test names and tags.
     """
     default_test(
-        name = "{}_default_apple_link_test".format(name),
+        name = "{}_default_apple_macos_link_test".format(name),
         tags = [name],
         expected_argv = [
             "-Xlinker",
@@ -51,6 +59,8 @@ def linking_test_suite(name):
             "-Xlinker",
             "2",
             "-ObjC",
+            "-framework",
+            "Foundation",
         ],
         not_expected_argv = [
             "-g",
@@ -59,6 +69,28 @@ def linking_test_suite(name):
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
+    )
+    default_test(
+        name = "{}_default_apple_ios_link_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
+        ],
+        not_expected_argv = [
+            "-g",
+            "DSYM_HINT_LINKED_BINARY",
+            "-dead_strip",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:ios_binary",
     )
 
     opt_test(
@@ -99,10 +131,50 @@ def linking_test_suite(name):
             "-objc_abi_version",
             "-Xlinker",
             "2",
+            "-framework",
+            "Foundation",
         ],
         not_expected_argv = ["-ObjC"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
+    )
+
+    disable_implicit_frameworks_test(
+        name = "{}_disable_implicit_frameworks_apple_macos_link_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+        ],
+        not_expected_argv = [
+            "-framework",
+            "Foundation",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    disable_implicit_frameworks_test(
+        name = "{}_disable_implicit_frameworks_apple_ios_link_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+        ],
+        not_expected_argv = [
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:ios_binary",
     )
 
     dsym_test(
