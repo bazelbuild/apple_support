@@ -477,6 +477,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  const char *header_parsing_output = getenv("HEADER_PARSING_OUTPUT");
+  if (header_parsing_output != nullptr) {
+    std::ofstream output(header_parsing_output);
+    output.close();
+  }
+
   if (!postprocess) {
     return 0;
   }
