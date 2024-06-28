@@ -14,11 +14,100 @@
 
 """Implementation of the `xcode_version` build rule."""
 
+load(
+    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+    "XcodeVersionRuleInfo",
+)
+
 visibility("public")
 
-def xcode_version(name, **kwargs):
-    # TODO: b/311385128 - Migrate the native implementation here.
-    native.xcode_version(
-        name = name,
-        **kwargs
+def _xcode_version_impl(ctx):
+    xcode_version_properties = XcodeVersionPropertiesInfo(
+        xcode_version = ctx.attr.version,
+        default_ios_sdk_version = ctx.attr.default_ios_sdk_version,
+        default_visionos_sdk_version = ctx.attr.default_visionos_sdk_version,
+        default_watchos_sdk_version = ctx.attr.default_watchos_sdk_version,
+        default_tvos_sdk_version = ctx.attr.default_tvos_sdk_version,
+        default_macos_sdk_version = ctx.attr.default_macos_sdk_version,
     )
+    return [
+        xcode_version_properties,
+        XcodeVersionRuleInfo(
+            label = ctx.label,
+            xcode_version_properties = xcode_version_properties,
+            aliases = ctx.attr.aliases,
+        ),
+        DefaultInfo(runfiles = ctx.runfiles()),
+    ]
+
+xcode_version = rule(
+    attrs = {
+        "aliases": attr.string_list(
+            doc = """\
+Accepted aliases for this version of Xcode. If the value of the
+`--xcode_version` build flag matches any of the given alias strings, this Xcode
+version will be used.
+""",
+            allow_empty = True,
+            mandatory = False,
+        ),
+        "default_ios_sdk_version": attr.string(
+            default = "8.4",
+            doc = """\
+The iOS SDK version that is used by default when this version of Xcode is being
+used. The `--ios_sdk_version` build flag will override the value specified here.
+
+NOTE: The `--ios_sdk_version` flag is deprecated and not recommended for use.
+""",
+            mandatory = False,
+        ),
+        "default_macos_sdk_version": attr.string(
+            default = "10.11",
+            doc = """\
+The macOS SDK version that is used by default when this version of Xcode is
+being used. The `--macos_sdk_version` build flag will override the value
+specified here.
+
+NOTE: The `--macos_sdk_version` flag is deprecated and not recommended for use.
+""",
+            mandatory = False,
+        ),
+        "default_tvos_sdk_version": attr.string(
+            default = "9.0",
+            doc = """\
+The tvOS SDK version that is used by default when this version of Xcode is being
+used. The `--tvos_sdk_version` build flag will override the value specified
+here.
+
+NOTE: The `--tvos_sdk_version` flag is deprecated and not recommended for use.
+""",
+            mandatory = False,
+        ),
+        "default_visionos_sdk_version": attr.string(
+            default = "1.0",
+            doc = """\
+The visionOS SDK version that is used by default when this version of Xcode is
+being used.
+""",
+            mandatory = False,
+        ),
+        "default_watchos_sdk_version": attr.string(
+            default = "2.0",
+            doc = """\
+The watchOS SDK version that is used by default when this version of Xcode is
+being used. The `--watchos_sdk_version` build flag will override the value
+specified here.
+
+NOTE: The `--watchos_sdk_version` flag is deprecated and not recommended for
+use.
+""",
+            mandatory = False,
+        ),
+        "version": attr.string(
+            doc = "The official version number for this version of Xcode.",
+            mandatory = True,
+        ),
+    },
+    implementation = _xcode_version_impl,
+)
