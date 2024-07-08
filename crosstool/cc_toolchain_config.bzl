@@ -2640,7 +2640,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     features = [
         # Marker features
-        feature(name = "archive_param_file"),
+        feature(name = "archive_param_file", enabled = True),
         feature(name = "compile_all_modules"),
         feature(name = "coverage"),
         feature(name = "dbg"),
