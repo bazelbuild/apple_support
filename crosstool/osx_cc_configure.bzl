@@ -190,7 +190,9 @@ def configure_osx_toolchain(repository_ctx):
     # cc_wrapper.sh script. The wrapped_clang binary is already hardcoded
     # into the Objective-C crosstool actions, anyway, so this ensures that
     # the C++ actions behave consistently.
-    cc_path = '"$(/usr/bin/dirname "$0")"/wrapped_clang'
+
+    # FIXME
+    cc_path = 'bazel-out/aarch64-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/wrapped_clang'
     repository_ctx.template(
         "cc_wrapper.sh",
         osx_cc_wrapper,
@@ -203,9 +205,11 @@ def configure_osx_toolchain(repository_ctx):
     repository_ctx.symlink(libtool, "libtool")
     repository_ctx.symlink(make_hashed_objlist, "make_hashed_objlist.py")
     repository_ctx.symlink(cc_toolchain_config, "cc_toolchain_config.bzl")
-    _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
-    _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
-    repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
+    # _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
+    # _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
+    # repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
+    repository_ctx.symlink(libtool_check_unique_src_path, "libtool_check_unique.cc")
+    repository_ctx.symlink(wrapped_clang_src_path, "wrapped_clang.cc")
 
     layering_check_modulemap = None
     if repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1":

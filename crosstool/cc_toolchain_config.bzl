@@ -249,7 +249,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -282,7 +282,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -348,7 +348,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -410,7 +410,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -433,7 +433,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang_pp",
+                tool = ctx.file.wrapped_clang_pp,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -473,7 +473,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang_pp",
+                tool = ctx.file.wrapped_clang_pp,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -495,7 +495,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -518,7 +518,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -604,7 +604,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -647,7 +647,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -670,7 +670,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                path = "wrapped_clang",
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -2640,7 +2640,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     features = [
         # Marker features
-        feature(name = "archive_param_file", enabled = True),
+        feature(name = "archive_param_file"),
         feature(name = "compile_all_modules"),
         feature(name = "coverage"),
         feature(name = "dbg"),
@@ -2794,9 +2794,23 @@ cc_toolchain_config = rule(
     attrs = {
         "cpu": attr.string(mandatory = True),
         "cxx_builtin_include_directories": attr.string_list(),
-        "tool_paths_overrides": attr.string_dict(),
         "extra_env": attr.string_dict(),
+        "libtool_check_unique": attr.label(
+            allow_single_file = True,
+            mandatory = True,
+        ),
         "module_map": attr.label(),
+        "tool_paths_overrides": attr.string_dict(),
+        "wrapped_clang": attr.label(
+            cfg = "exec",
+            allow_single_file = True,
+            mandatory = True,
+        ),
+        "wrapped_clang_pp": attr.label(
+            cfg = "exec",
+            allow_single_file = True,
+            mandatory = True,
+        ),
         "_xcode_config": attr.label(default = configuration_field(
             fragment = "apple",
             name = "xcode_config_label",

@@ -26,6 +26,98 @@ cc_library(
     name = "malloc",
 )
 
+# TODO: Extract to macro?
+genrule(
+    name = "exec_wrapped_clang",
+    srcs = ["wrapped_clang.cc"],
+    outs = ["wrapped_clang"],
+    cmd = """
+env -i \
+  DEVELOPER_DIR=$$DEVELOPER_DIR \
+  xcrun \
+    --sdk macosx \
+    clang \
+      -mmacosx-version-min=10.15 \
+      -std=c++17 \
+      -lc++ \
+      -arch arm64 \
+      -arch x86_64 \
+      -Wl,-no_adhoc_codesign \
+      -Wl,-no_uuid \
+      -O3 \
+      -o $@ \
+      $(SRCS)
+
+env -i \
+  codesign \
+    --identifier $@ \
+    --force \
+    --sign - \
+    $@
+""",
+)
+
+## TODO: Symlink somehow
+genrule(
+    name = "exec_wrapped_clang_pp",
+    srcs = ["wrapped_clang.cc"],
+    outs = ["wrapped_clang_pp"],
+    cmd = """
+env -i \
+  DEVELOPER_DIR=$$DEVELOPER_DIR \
+  xcrun \
+    --sdk macosx \
+    clang \
+      -mmacosx-version-min=10.15 \
+      -std=c++17 \
+      -lc++ \
+      -arch arm64 \
+      -arch x86_64 \
+      -Wl,-no_adhoc_codesign \
+      -Wl,-no_uuid \
+      -O3 \
+      -o $@ \
+      $(SRCS)
+
+env -i \
+  codesign \
+    --identifier $@ \
+    --force \
+    --sign - \
+    $@
+""",
+)
+
+genrule(
+    name = "exec_libtool_check_unique",
+    srcs = ["libtool_check_unique.cc"],
+    outs = ["libtool_check_unique"],
+    cmd = """
+env -i \
+  DEVELOPER_DIR=$$DEVELOPER_DIR \
+  xcrun \
+    --sdk macosx \
+    clang \
+      -mmacosx-version-min=10.15 \
+      -std=c++17 \
+      -lc++ \
+      -arch arm64 \
+      -arch x86_64 \
+      -Wl,-no_adhoc_codesign \
+      -Wl,-no_uuid \
+      -O3 \
+      -o $@ \
+      $(SRCS)
+
+env -i \
+  codesign \
+    --identifier $@ \
+    --force \
+    --sign - \
+    $@
+""",
+)
+
 filegroup(
     name = "empty",
     srcs = [],
@@ -54,11 +146,11 @@ filegroup(
         srcs = [
             ":cc_wrapper",
             ":libtool",
-            ":libtool_check_unique",
+            ":exec_libtool_check_unique",
             ":make_hashed_objlist.py",
             ":modulemap",
-            ":wrapped_clang",
-            ":wrapped_clang_pp",
+            ":exec_wrapped_clang",
+            ":exec_wrapped_clang_pp",
             ":xcrunwrapper.sh",
         ],
     )
@@ -95,8 +187,11 @@ filegroup(
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
+        libtool_check_unique = ":exec_libtool_check_unique",
         tool_paths_overrides = {%{tool_paths_overrides}},
         module_map = ":modulemap",
+        wrapped_clang = ":exec_wrapped_clang",
+        wrapped_clang_pp = ":exec_wrapped_clang_pp",
     )
     for arch in _APPLE_ARCHS
 ]
