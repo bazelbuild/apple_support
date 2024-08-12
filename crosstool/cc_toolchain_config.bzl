@@ -2077,7 +2077,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-g0",
                             "-O2",
                             "-DNDEBUG",
-                            "-DNS_BLOCK_ASSERTIONS=1",
                         ],
                     ),
                 ],
@@ -2112,6 +2111,31 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.clif_match,
                 ],
                 flag_groups = [flag_group(flags = ["-std=c++14"])],
+            ),
+        ],
+    )
+
+    ns_block_assertions_feature = feature(
+        name = "ns_block_assertions",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.assemble,
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                    ACTION_NAMES.lto_backend,
+                    ACTION_NAMES.clif_match,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [flag_group(flags = ["-DNS_BLOCK_ASSERTIONS=1"])],
+                with_features = [with_feature_set(features = ["opt"])],
             ),
         ],
     )
@@ -2656,6 +2680,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         # Features with more configuration
         link_libcpp_feature,
         default_compile_flags_feature,
+        ns_block_assertions_feature,
         debug_prefix_map_pwd_is_dot_feature,
         remap_xcode_path_feature,
         generate_dsym_file_feature,
