@@ -4,6 +4,7 @@ load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
+load(":compiling_tests.bzl", "compiling_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":universal_binary_test.bzl", "universal_binary_test")
@@ -19,6 +20,8 @@ apple_support_test(name = "apple_support_test")
 available_xcodes_test(name = "available_xcodes_test")
 
 binary_test_suite(name = "binary")
+
+compiling_test_suite(name = "compiling")
 
 linking_test_suite(name = "linking")
 
