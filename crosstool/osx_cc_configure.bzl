@@ -192,7 +192,7 @@ def configure_osx_toolchain(repository_ctx):
     # the C++ actions behave consistently.
 
     # FIXME
-    cc_path = 'bazel-out/aarch64-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/wrapped_clang'
+    cc_path = 'bazel-out/k8-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/wrapped_clang'
     repository_ctx.template(
         "cc_wrapper.sh",
         osx_cc_wrapper,

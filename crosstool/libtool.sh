@@ -42,10 +42,10 @@ function invoke_libtool() {
 }
 
 # FIXME: Pass in the path
-if [ ! -f bazel-out/aarch64-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/libtool_check_unique ] ; then
+if [ ! -f bazel-out/k8-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/libtool_check_unique ] ; then
   echo "libtool_check_unique not found. Please file an issue at github.com/bazelbuild/bazel"
   exit 1
-elif bazel-out/aarch64-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/libtool_check_unique "$@"; then
+elif bazel-out/k8-opt-exec-ST-19a43f16ea6c/bin/external/apple_support~~apple_cc_configure_extension~local_config_apple_cc/libtool_check_unique "$@"; then
   # If there are no duplicate .o basenames,
   # libtool can be invoked with the original arguments.
   invoke_libtool "$@"
