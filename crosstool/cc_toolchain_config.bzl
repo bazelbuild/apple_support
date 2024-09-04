@@ -2439,7 +2439,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "-Wl,-install_name,@rpath/%{runtime_solib_name}",
+                            "-Xlinker",
+                            "-install_name",
+                            "-Xlinker",
+                            "@rpath/%{runtime_solib_name}",
                         ],
                         expand_if_available = "runtime_solib_name",
                     ),
