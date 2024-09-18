@@ -129,16 +129,6 @@ done
 "$TOOLNAME" "${ARGS[@]}"
 """
 
-def _validate_ctx_xor_platform_requirements(*, ctx, actions, apple_fragment, xcode_config):
-    """Raises an error if there is overlap in platform requirements or if they are insufficent."""
-
-    if ctx != None and any([actions, xcode_config, apple_fragment]):
-        fail("Can't specific ctx along with actions, xcode_config, apple_fragment.")
-    if ctx == None and not all([actions, xcode_config, apple_fragment]):
-        fail("Must specify all of actions, xcode_config, and apple_fragment.")
-    if ctx != None:
-        _validate_ctx_attribute_present(ctx, "_xcode_config")
-
 def _platform_frameworks_path_placeholder(*, apple_fragment):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
@@ -215,29 +205,6 @@ def _kwargs_for_apple_platform(
     processed_args["execution_requirements"] = merged_execution_requirements
     return processed_args
 
-def _validate_ctx_attribute_present(ctx, attribute_name):
-    """Validates that the given attribute is present for the rule, failing otherwise."""
-    if not hasattr(ctx.attr, attribute_name):
-        fail("\n".join([
-            "",
-            "ERROR: This rule requires the '{}' attribute to be present. ".format(attribute_name),
-            "To add this attribute, modify your rule definition like this:",
-            "",
-            "load(\"@bazel_skylib//lib:dicts.bzl\", \"dicts\")",
-            "load(",
-            "    \"@build_bazel_apple_support//lib:apple_support.bzl\",",
-            "    \"apple_support\",",
-            ")",
-            "",
-            "your_rule_name = rule(",
-            "    attrs = dicts.add(apple_support.action_required_attrs(), {",
-            "        # other attributes",
-            "    }),",
-            "    # other rule arguments",
-            ")",
-            "",
-        ]))
-
 def _action_required_attrs():
     """Returns a dictionary with required attributes for registering actions on Apple platforms.
 
@@ -313,12 +280,11 @@ def _platform_constraint_attrs():
     }
 
 def _run(
-        ctx = None,
-        xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
         *,
-        actions = None,
-        xcode_config = None,
-        apple_fragment = None,
+        actions,
+        xcode_config,
+        apple_fragment,
+        xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
         **kwargs):
     """Registers an action to run on an Apple machine.
 
@@ -358,30 +324,13 @@ def _run(
          path argument beginning with `@`) will be replaced.
 
     Args:
-        ctx: The context of the rule registering the action. Deprecated.
-        xcode_path_resolve_level: The level of Xcode path replacement required for the action.
-        actions: The actions provider from ctx.actions. Required if ctx is not given.
+        actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-            Required if ctx is not given.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Required if ctx is not given.
+        xcode_path_resolve_level: The level of Xcode path replacement required for the action.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
-    _validate_ctx_xor_platform_requirements(
-        ctx = ctx,
-        actions = actions,
-        apple_fragment = apple_fragment,
-        xcode_config = xcode_config,
-    )
-
-    if not actions:
-        actions = ctx.actions
-    if not xcode_config:
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    if not apple_fragment:
-        apple_fragment = ctx.fragments.apple
-
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.none:
         actions.run(**_kwargs_for_apple_platform(
             xcode_config = xcode_config,
@@ -459,11 +408,10 @@ def _run(
     )
 
 def _run_shell(
-        ctx = None,
         *,
-        actions = None,
-        xcode_config = None,
-        apple_fragment = None,
+        actions,
+        xcode_config,
+        apple_fragment,
         **kwargs):
     """Registers a shell action to run on an Apple machine.
 
@@ -481,28 +429,12 @@ def _run_shell(
     please use `run` instead.
 
     Args:
-        ctx: The context of the rule registering the action. Deprecated.
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-            Required if ctx is not given.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Required if ctx is not given.
         **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.
     """
-    _validate_ctx_xor_platform_requirements(
-        ctx = ctx,
-        actions = actions,
-        apple_fragment = apple_fragment,
-        xcode_config = xcode_config,
-    )
-
-    if not actions:
-        actions = ctx.actions
-    if not xcode_config:
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    if not apple_fragment:
-        apple_fragment = ctx.fragments.apple
 
     actions.run_shell(**_kwargs_for_apple_platform(
         xcode_config = xcode_config,
