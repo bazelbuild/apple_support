@@ -2788,7 +2788,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             tool_paths = [tool_path(name = name, path = path) for (name, path) in tool_paths.items()],
             make_variables = make_variables,
             builtin_sysroot = None,
-            cc_target_os = "apple",
         ),
         DefaultInfo(
             executable = out,
