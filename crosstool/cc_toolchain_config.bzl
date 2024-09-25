@@ -851,28 +851,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ),
                 ],
             ),
-            flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
-                        flags = ["%{runtime_root_flags}"],
-                        iterate_over = "runtime_root_flags",
-                        expand_if_available = "runtime_root_flags",
-                    ),
-                ],
-            ),
-            flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
-                        flags = ["%{runtime_root_entries}"],
-                        iterate_over = "runtime_root_entries",
-                        expand_if_available = "runtime_root_entries",
-                    ),
-                ],
-            ),
         ],
     )
 
