@@ -18,6 +18,12 @@ cc_binary(
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
+cc_binary(
+    name = "cc_test_binary_no_sandbox",
+    srcs = ["main.cc"],
+    tags = TARGETS_UNDER_TEST_TAGS + ["no-sandbox"],
+)
+
 cc_library(
     name = "cc_main",
     srcs = ["main.cc"],

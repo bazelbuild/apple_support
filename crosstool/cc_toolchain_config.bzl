@@ -2145,7 +2145,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
-                flag_groups = [flag_group(flags = ["-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/"])],
+                flag_groups = [flag_group(flags = ["-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT_NO_SANDBOX__/"])],
             ),
         ],
     )

@@ -1,4 +1,7 @@
-exports_files(["verify_binary.sh"])
+exports_files([
+    "verify_binary.sh",
+    "verify_relative_oso.sh",
+])
 
 filegroup(
     name = "for_bazel_tests",
