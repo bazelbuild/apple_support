@@ -23,6 +23,28 @@ def binary_test_suite(name):
     )
 
     apple_verification_test(
+        name = "{}_relative_oso_test".format(name),
+        tags = [name],
+        build_type = "device",
+        compilation_mode = "dbg",
+        cpus = {"macos_cpus": "arm64"},
+        expected_platform_type = "macos",
+        verifier_script = "//test/shell:verify_relative_oso.sh",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    apple_verification_test(
+        name = "{}_relative_oso_test_no_sandbox".format(name),
+        tags = [name],
+        build_type = "device",
+        compilation_mode = "dbg",
+        cpus = {"macos_cpus": "arm64"},
+        expected_platform_type = "macos",
+        verifier_script = "//test/shell:verify_relative_oso.sh",
+        target_under_test = "//test/test_data:cc_test_binary_no_sandbox",
+    )
+
+    apple_verification_test(
         name = "{}_macos_arm64e_binary_test".format(name),
         tags = [name],
         build_type = "device",
