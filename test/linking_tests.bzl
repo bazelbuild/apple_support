@@ -53,6 +53,15 @@ opt_osize_enabled_test = make_action_command_line_test_rule(
     },
 )
 
+disable_opt_osize_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+        "//command_line_option:features": [
+            "-link_osize_opt",
+        ],
+    },
+)
+
 def linking_test_suite(name):
     """Tests for linking behavior.
 
@@ -144,6 +153,20 @@ def linking_test_suite(name):
             "-Xlinker",
             "-Os",
         ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    disable_opt_osize_test(
+        name = "{}_disable_opt_osize_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+        ],
+        not_expected_argv = ["-Os"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
