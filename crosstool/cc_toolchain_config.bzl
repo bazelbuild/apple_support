@@ -1124,6 +1124,27 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    link_osize_opt_feature = feature(
+        name = "link_osize_opt",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-Xlinker",
+                            "-Os",
+                        ],
+                    ),
+                ],
+                with_features = [
+                    with_feature_set(features = ["opt"]),
+                ],
+            ),
+        ],
+    )
+
     output_execpath_flags_feature = feature(
         name = "output_execpath_flags",
         flag_sets = [
@@ -2708,6 +2729,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         user_link_flags_feature,
         default_link_flags_feature,
         no_deduplicate_feature,
+        link_osize_opt_feature,
         dead_strip_feature,
         apply_implicit_frameworks_feature,
         link_cocoa_feature,
