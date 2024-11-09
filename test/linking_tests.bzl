@@ -146,11 +146,6 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-            "-ObjC",
-            "-Xlinker",
             "-Os",
         ],
         mnemonic = "ObjcLink",
@@ -160,12 +155,6 @@ def linking_test_suite(name):
     disable_opt_osize_test(
         name = "{}_disable_opt_osize_test".format(name),
         tags = [name],
-        expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
-        ],
         not_expected_argv = ["-Os"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
