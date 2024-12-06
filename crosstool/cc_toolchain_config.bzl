@@ -33,16 +33,11 @@ load(
 )
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 
-# TODO: Remove when we drop bazel 6.x support
-_OBJC_ARCHIVE_ACTION_NAME = "objc-archive"
-_OBJCPP_EXECUTABLE_ACTION_NAME = "objc++-executable"
-
 _DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_dynamic_library,
     ACTION_NAMES.cpp_link_executable,
     ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ACTION_NAMES.objc_executable,
-    _OBJCPP_EXECUTABLE_ACTION_NAME,
 ]
 
 def _sdk_version_for_platform(xcode_config, platform_type):
@@ -291,63 +286,9 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = [ACTION_NAMES.objc_executable, _OBJCPP_EXECUTABLE_ACTION_NAME],
+                actions = [ACTION_NAMES.objc_executable],
                 flag_groups = [flag_group(flags = ["-ObjC"])],
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
-            ),
-        ],
-    )
-
-    objcpp_executable_action = action_config(
-        action_name = _OBJCPP_EXECUTABLE_ACTION_NAME,
-        flag_sets = [
-            flag_set(
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-Xlinker",
-                            "-objc_abi_version",
-                            "-Xlinker",
-                            "2",
-                        ],
-                    ),
-                ],
-                with_features = [with_feature_set(not_features = ["kernel_extension"])],
-            ),
-            flag_set(
-                flag_groups = [
-                    flag_group(flags = ["-target", target_system_name]),
-                    flag_group(
-                        flags = ["-l%{library_names}"],
-                        iterate_over = "library_names",
-                    ),
-                    flag_group(flags = ["-filelist", "%{filelist}"]),
-                    flag_group(flags = ["-o", "%{linked_binary}"]),
-                    flag_group(
-                        flags = ["-force_load", "%{force_load_exec_paths}"],
-                        iterate_over = "force_load_exec_paths",
-                    ),
-                    flag_group(
-                        flags = ["%{dep_linkopts}"],
-                        iterate_over = "dep_linkopts",
-                    ),
-                    flag_group(
-                        flags = ["-Wl,%{attr_linkopts}"],
-                        iterate_over = "attr_linkopts",
-                    ),
-                ],
-            ),
-        ],
-        implies = [
-            "include_system_dirs",
-            "framework_paths",
-            "strip_debug_symbols",
-            "apple_env",
-        ],
-        tools = [
-            tool(
-                tool = ctx.file.wrapped_clang,
-                execution_requirements = xcode_execution_requirements,
             ),
         ],
     )
@@ -517,38 +458,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
-                execution_requirements = xcode_execution_requirements,
-            ),
-        ],
-    )
-
-    objc_archive_action = action_config(
-        action_name = _OBJC_ARCHIVE_ACTION_NAME,
-        flag_sets = [
-            flag_set(
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-D",
-                            "-no_warning_for_no_symbols",
-                            "-static",
-                            "-filelist",
-                            "%{obj_list_path}",
-                            "-arch_only",
-                            arch,
-                            "-syslibroot",
-                            "__BAZEL_XCODE_SDKROOT__",
-                            "-o",
-                            "%{output_execpath}",
-                        ],
-                    ),
-                ],
-            ),
-        ],
-        implies = ["apple_env"],
-        tools = [
-            tool(
-                tool = ctx.file.libtool,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -755,9 +664,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         objcpp_compile_action,
         assemble_action,
         preprocess_assemble_action,
-        objc_archive_action,
         objc_executable_action,
-        objcpp_executable_action,
         cpp_link_executable_action,
         cpp_link_dynamic_library_action,
         cpp_link_nodeps_dynamic_library_action,
@@ -1178,10 +1085,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = [
-                    "objc-executable",
-                    _OBJCPP_EXECUTABLE_ACTION_NAME,
-                ],
+                actions = ["objc-executable"],
                 flag_groups = [
                     flag_group(
                         flags = ["-F%{framework_paths}"],
@@ -1270,7 +1174,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                     "objc-executable",
-                    _OBJCPP_EXECUTABLE_ACTION_NAME,
                     ACTION_NAMES.assemble,
                     ACTION_NAMES.preprocess_assemble,
                 ],
@@ -1504,7 +1407,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    _OBJC_ARCHIVE_ACTION_NAME,
                     "objc-fully-link",
                     ACTION_NAMES.cpp_link_static_library,
                     ACTION_NAMES.linkstamp_compile,
@@ -1714,9 +1616,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "objc-compile",
             "objc++-compile",
             "objc-fully-link",
-            _OBJC_ARCHIVE_ACTION_NAME,
             "objc-executable",
-            _OBJCPP_EXECUTABLE_ACTION_NAME,
             "assemble",
             "preprocess-assemble",
             "c-compile",
@@ -1765,7 +1665,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS + [
                     ACTION_NAMES.cpp_link_static_library,
-                    _OBJC_ARCHIVE_ACTION_NAME,
                     ACTION_NAMES.objc_fully_link,
                 ],
                 flag_groups = [
@@ -2156,12 +2055,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                     "objc-executable",
-                    _OBJCPP_EXECUTABLE_ACTION_NAME,
                 ],
                 flag_groups = [flag_group(flags = ["-g"])],
             ),
             flag_set(
-                actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
+                actions = ["objc-executable"],
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -2181,7 +2079,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             name = "kernel_extension",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
+                    actions = ["objc-executable"],
                     flag_groups = [
                         flag_group(
                             flags = [
@@ -2335,7 +2233,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             name = "link_cocoa",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable", _OBJCPP_EXECUTABLE_ACTION_NAME],
+                    actions = ["objc-executable"],
                     flag_groups = [flag_group(flags = ["-framework", "Cocoa"])],
                 ),
             ],
