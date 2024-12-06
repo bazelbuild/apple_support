@@ -1,5 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_library")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
