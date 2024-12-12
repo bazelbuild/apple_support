@@ -12,7 +12,6 @@ On this page:
 ## apple_genrule
 
 <pre>
-
 apple_genrule(<a href="#apple_genrule-name">name</a>, <a href="#apple_genrule-srcs">srcs</a>, <a href="#apple_genrule-outs">outs</a>, <a href="#apple_genrule-cmd">cmd</a>, <a href="#apple_genrule-executable">executable</a>, <a href="#apple_genrule-message">message</a>, <a href="#apple_genrule-no_sandbox">no_sandbox</a>, <a href="#apple_genrule-tools">tools</a>)
 </pre>
 
@@ -84,7 +83,6 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
 ## toolchain_substitution
 
 <pre>
-
 toolchain_substitution(<a href="#toolchain_substitution-name">name</a>, <a href="#toolchain_substitution-src">src</a>, <a href="#toolchain_substitution-var_name">var_name</a>)
 </pre>
 
@@ -125,7 +123,6 @@ ios_application(
 ## universal_binary
 
 <pre>
-
 universal_binary(<a href="#universal_binary-name">name</a>, <a href="#universal_binary-binary">binary</a>)
 </pre>
 

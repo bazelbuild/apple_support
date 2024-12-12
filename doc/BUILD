@@ -46,7 +46,7 @@ write_file(
         name = "fix_stardoc_" + file,
         srcs = [file + ".md_pre"],
         outs = [file + ".md_"],
-        cmd = "sed '/rules.doc.bzl/d' $(SRCS) > $(OUTS)",
+        cmd = "sed '/rules.doc.bzl/,+1d' $(SRCS) > $(OUTS)",
     )
     for file in _DOC_SRCS.keys()
 ]
