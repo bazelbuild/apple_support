@@ -28,7 +28,7 @@ write_file(
 [
     stardoc(
         name = file + "_doc",
-        out = file + ".md_",
+        out = file + ".md_pre",
         header_template = file + "_header.vm",
         input = "//rules:rules.doc.bzl",
         symbol_names = symbols,
@@ -39,6 +39,16 @@ write_file(
         file,
         symbols,
     ] in _DOC_SRCS.items()
+]
+
+[
+    genrule(
+        name = "fix_stardoc_" + file,
+        srcs = [file + ".md_pre"],
+        outs = [file + ".md_"],
+        cmd = "sed '/rules.doc.bzl/d' $(SRCS) > $(OUTS)",
+    )
+    for file in _DOC_SRCS.keys()
 ]
 
 [
