@@ -66,10 +66,17 @@ def _subtract_linking_contexts(owner, linking_contexts, avoid_dep_linking_contex
         owner = owner,
     )
 
-def link_multi_arch_binary(
-        *,
-        ctx,
-        stamp = -1):
+def link_multi_arch_binary(*, ctx, stamp = -1):
+    """Copied from rules_apple.
+
+    Args:
+        ctx: rule ctx
+        stamp: See upstream docs
+
+    Returns:
+        struct of linking info
+    """
+
     # TODO: Delete when we drop bazel 7.x
     legacy_linking_function = getattr(apple_common, "link_multi_arch_binary", None)
     if legacy_linking_function:
@@ -197,6 +204,15 @@ def link_multi_arch_binary(
     )
 
 def link_multi_arch_static_library(ctx):
+    """Copied from rules_apple.
+
+    Args:
+        ctx: rule ctx
+
+    Returns:
+        struct of linking info
+    """
+
     # TODO: Delete when we drop bazel 7.x
     legacy_linking_function = getattr(apple_common, "link_multi_arch_static_library", None)
     if legacy_linking_function:
