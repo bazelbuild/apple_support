@@ -1,6 +1,7 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 _DOC_SRCS = {
     "rules": [
@@ -27,7 +28,7 @@ write_file(
 [
     stardoc(
         name = file + "_doc",
-        out = file + ".md_",
+        out = file + ".md_pre",
         header_template = file + "_header.vm",
         input = "//rules:rules.doc.bzl",
         symbol_names = symbols,
@@ -38,6 +39,16 @@ write_file(
         file,
         symbols,
     ] in _DOC_SRCS.items()
+]
+
+[
+    genrule(
+        name = "fix_stardoc_" + file,
+        srcs = [file + ".md_pre"],
+        outs = [file + ".md_"],
+        cmd = "sed '/rules.doc.bzl/,+1d' $(SRCS) > $(OUTS)",
+    )
+    for file in _DOC_SRCS.keys()
 ]
 
 [

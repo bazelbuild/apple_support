@@ -1,9 +1,10 @@
 """Test rule for linking with bazel's builtin Apple logic"""
 
+load("//test:linking_support.bzl", "link_multi_arch_binary")
 load("//test:transitions.bzl", "apple_platform_split_transition")
 
 def _starlark_apple_binary_impl(ctx):
-    link_result = apple_common.link_multi_arch_binary(
+    link_result = link_multi_arch_binary(
         ctx = ctx,
         stamp = ctx.attr.stamp,
     )
@@ -41,7 +42,6 @@ def _starlark_apple_binary_impl(ctx):
     return [
         DefaultInfo(files = depset([processed_binary])),
         OutputGroupInfo(**link_result.output_groups),
-        link_result.debug_outputs_provider,
     ]
 
 # All of the attributes below, except for `stamp`, are required as part of the

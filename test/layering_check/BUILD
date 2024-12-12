@@ -1,4 +1,5 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "objc_library")
 
 package(features = ["layering_check"])
 

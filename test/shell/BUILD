@@ -1,3 +1,6 @@
+load("@rules_shell//shell:sh_library.bzl", "sh_library")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
 exports_files([
     "verify_binary.sh",
     "verify_relative_oso.sh",
