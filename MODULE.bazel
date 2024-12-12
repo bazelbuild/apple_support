@@ -28,8 +28,6 @@ bazel_dep(
 bazel_dep(name = "rules_jvm_external", version = "6.6", dev_dependency = True)
 bazel_dep(name = "protobuf", version = "29.1", dev_dependency = True)
 
-# bazel_dep(name = "rules_java", version = "8.6.2")
-
 # TODO: Remove override when a protobuf release is available that supports
 # Bazel 8
 archive_override(
