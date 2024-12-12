@@ -1,11 +1,12 @@
 """Test rule for static linking with bazel's builtin Apple logic"""
 
+load("//test:linking_support.bzl", "link_multi_arch_static_library")
 load("//test:transitions.bzl", "apple_platform_split_transition")
 
 def _starlark_apple_static_library_impl(ctx):
     if not hasattr(apple_common.platform_type, ctx.attr.platform_type):
         fail('Unsupported platform type \"{}\"'.format(ctx.attr.platform_type))
-    link_result = apple_common.link_multi_arch_static_library(ctx = ctx)
+    link_result = link_multi_arch_static_library(ctx = ctx)
     processed_library = ctx.actions.declare_file(
         "{}_lipo.a".format(ctx.label.name),
     )
