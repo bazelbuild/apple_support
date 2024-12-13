@@ -20,9 +20,11 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
             _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
         ))
     elif repository_ctx.os.name.startswith("mac os"):
-        repository_ctx.symlink(
-            repository_ctx.path(Label("@build_bazel_apple_support//crosstool:BUILD.toolchains")),
+        repository_ctx.file(
             "BUILD",
+            content = repository_ctx.read(
+                Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
+            ),
         )
     else:
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled because you're not running on macOS")

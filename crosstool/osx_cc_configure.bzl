@@ -145,6 +145,9 @@ def _compile_cc_file(repository_ctx, src_name, out_name):
              "https://github.com/bazelbuild/apple_support/issues with the following:\n" +
              error_msg)
 
+def _copy_file(repository_ctx, src, dest):
+    repository_ctx.file(dest, content = repository_ctx.read(src))
+
 def configure_osx_toolchain(repository_ctx):
     """Configure C++ toolchain on macOS.
 
@@ -199,10 +202,10 @@ def configure_osx_toolchain(repository_ctx):
             "%{env}": "",
         },
     )
-    repository_ctx.symlink(xcrunwrapper, "xcrunwrapper.sh")
-    repository_ctx.symlink(libtool, "libtool")
-    repository_ctx.symlink(make_hashed_objlist, "make_hashed_objlist.py")
-    repository_ctx.symlink(cc_toolchain_config, "cc_toolchain_config.bzl")
+    _copy_file(repository_ctx, xcrunwrapper, "xcrunwrapper.sh")
+    _copy_file(repository_ctx, libtool, "libtool")
+    _copy_file(repository_ctx, make_hashed_objlist, "make_hashed_objlist.py")
+    _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
     _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
     _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
     repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
