@@ -1501,6 +1501,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    if xcode_config.xcode_version():
+        apple_env = {
+            "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
+            # TODO: Remove once we drop bazel 7.x support
+            "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
+            "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
+        }
+    else:
+        apple_env = {
+            "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
+            "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        }
+
     apple_env_feature = feature(
         name = "apple_env",
         env_sets = [
@@ -1520,24 +1533,9 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.linkstamp_compile,
                 ],
                 env_entries = [
-                    env_entry(
-                        key = "XCODE_VERSION_OVERRIDE",
-                        value = str(xcode_config.xcode_version()),
-                    ),
-                    # TODO: Remove once we drop bazel 7.x support
-                    env_entry(
-                        key = "APPLE_SDK_VERSION_OVERRIDE",
-                        value = str(sdk_version),
-                    ),
-                    env_entry(
-                        key = "APPLE_SDK_PLATFORM",
-                        value = _sdk_name(platform_type, is_simulator),
-                    ),
-                    env_entry(
-                        key = "ZERO_AR_DATE",
-                        value = "1",
-                    ),
-                ] + [env_entry(key = key, value = value) for key, value in ctx.attr.extra_env.items()],
+                    env_entry(key = key, value = value)
+                    for key, value in (apple_env | ctx.attr.extra_env).items()
+                ],
             ),
         ],
     )
