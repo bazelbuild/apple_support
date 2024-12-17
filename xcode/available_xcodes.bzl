@@ -14,11 +14,45 @@
 
 """Implementation of the `available_xcodes` build rule."""
 
+load(
+    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "AvailableXcodesInfo",
+    "XcodeVersionRuleInfo",
+)
+
 visibility("public")
 
-def available_xcodes(name, **kwargs):
-    # TODO: b/311385128 - Migrate the native implementation here.
-    native.available_xcodes(
-        name = name,
-        **kwargs
-    )
+def _available_xcodes_impl(ctx):
+    available_versions = [
+        target[XcodeVersionRuleInfo]
+        for target in ctx.attr.versions
+    ]
+    default_version = ctx.attr.default[XcodeVersionRuleInfo]
+
+    return [
+        AvailableXcodesInfo(
+            available_versions = available_versions,
+            default_version = default_version,
+        ),
+    ]
+
+available_xcodes = rule(
+    attrs = {
+        "default": attr.label(
+            doc = "The default Xcode version for this platform.",
+            mandatory = True,
+            providers = [[XcodeVersionRuleInfo]],
+        ),
+        "versions": attr.label_list(
+            doc = "The Xcode versions that are available on this platform.",
+            providers = [[XcodeVersionRuleInfo]],
+        ),
+    },
+    doc = """\
+Two targets of this rule can be depended on by an `xcode_config` rule instance
+to indicate the remotely and locally available Xcode versions. This allows
+selection of an official Xcode version from the collectively available Xcodes.
+        """,
+    implementation = _available_xcodes_impl,
+    provides = [AvailableXcodesInfo],
+)
