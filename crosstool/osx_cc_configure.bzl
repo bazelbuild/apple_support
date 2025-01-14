@@ -163,7 +163,7 @@ def configure_osx_toolchain(repository_ctx):
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
-    osx_cc_wrapper = Label("@bazel_tools//tools/cpp:osx_cc_wrapper.sh.tpl")
+    osx_cc_wrapper = Label("@build_bazel_apple_support//crosstool:osx_cc_wrapper.sh.tpl")
     xcrunwrapper = Label("@build_bazel_apple_support//crosstool:xcrunwrapper.sh")
     libtool = Label("@build_bazel_apple_support//crosstool:libtool.sh")
     make_hashed_objlist = Label("@build_bazel_apple_support//crosstool:make_hashed_objlist.py")
