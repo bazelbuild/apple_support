@@ -54,6 +54,9 @@ bzl_library(
 bzl_library(
     name = "xcode_support",
     srcs = ["xcode_support.bzl"],
+    deps = [
+        "//xcode:providers",
+    ],
 )
 
 # Public bzl_library for anything that needs to depend on repositories.bzl.

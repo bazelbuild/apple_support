@@ -14,6 +14,53 @@
 
 """Support functions for working with Xcode configurations."""
 
+load(
+    "@build_bazel_apple_support//xcode:providers.bzl",
+    "XcodeSdkVariantInfo",
+)
+
+visibility("public")
+
+def _get_current_sdk(ctx):
+    """Returns the `XcodeSdkVariantInfo` provider for the current configuration.
+
+    Callers of this function must define the `_xcode_config` attribute in their
+    rule or aspect. This is best done using the
+    `apple_support.action_required_attrs()` helper.
+
+    Args:
+        ctx: The rule or aspect context.
+
+    Returns:
+        The `XcodeSdkVariantInfo` provider for the current configuration.
+    """
+    xcode_config = getattr(ctx.attr, "_xcode_config")
+    if not xcode_config or XcodeSdkVariantInfo not in xcode_config:
+        fail("Failed to read the Xcode configuration from the current " +
+             "context. Does the calling rule or aspect correctly define the " +
+             "`_xcode_config` attribute?")
+    return xcode_config[XcodeSdkVariantInfo]
+
+def _get_current_xcode(ctx):
+    """Returns the `XcodeVersionConfig` provider for the current configuration.
+
+    Callers of this function must define the `_xcode_config` attribute in their
+    rule or aspect. This is best done using the
+    `apple_support.action_required_attrs()` helper.
+
+    Args:
+        ctx: The rule or aspect context.
+
+    Returns:
+        The `XcodeVersionConfig` provider for the current configuration.
+    """
+    xcode_config = getattr(ctx.attr, "_xcode_config")
+    if not xcode_config or apple_common.XcodeVersionConfig not in xcode_config:
+        fail("Failed to read the Xcode configuration from the current " +
+             "context. Does the calling rule or aspect correctly define the " +
+             "`_xcode_config` attribute?")
+    return xcode_config[apple_common.XcodeVersionConfig]
+
 def _is_xcode_at_least_version(xcode_config, version):
     """Returns True if Xcode version is at least a given version.
 
@@ -40,5 +87,7 @@ def _is_xcode_at_least_version(xcode_config, version):
 
 # Define the loadable module that lists the exported symbols in this file.
 xcode_support = struct(
+    get_current_sdk = _get_current_sdk,
+    get_current_xcode = _get_current_xcode,
     is_xcode_at_least_version = _is_xcode_at_least_version,
 )
