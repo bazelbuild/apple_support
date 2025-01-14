@@ -32,7 +32,10 @@ bzl_library(
 bzl_library(
     name = "xcode_version",
     srcs = ["xcode_version.bzl"],
-    deps = ["//xcode/private:providers"],
+    deps = [
+        ":providers",
+        "//xcode/private:providers",
+    ],
 )
 
 # Consumed by bazel tests.

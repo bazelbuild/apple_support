@@ -40,7 +40,8 @@ def _xcode_version_properties_info_init(
         default_macos_sdk_version = "10.11",
         default_tvos_sdk_version = "9.0",
         default_watchos_sdk_version = "2.0",
-        default_visionos_sdk_version = "1.0"):
+        default_visionos_sdk_version = "1.0",
+        sdk_variant_info = None):
     # Ensure that all fields get default values if they weren't specified.
     return {
         "xcode_version": xcode_version,
@@ -49,6 +50,7 @@ def _xcode_version_properties_info_init(
         "default_tvos_sdk_version": default_tvos_sdk_version,
         "default_watchos_sdk_version": default_watchos_sdk_version,
         "default_visionos_sdk_version": default_visionos_sdk_version,
+        "sdk_variant_info": sdk_variant_info,
     }
 
 XcodeVersionPropertiesInfo, _new_xcode_version_properties_info = provider(
@@ -78,6 +80,10 @@ Xcode, or `None` if it is unknown.
         "default_visionos_sdk_version": """\
 A string representing the default visionOS SDK version number for this version
 of Xcode, or `None` if it is unknown.
+""",
+        "sdk_variant_info": """\
+The `XcodeSdkVariantInfo` provider for the SDK in this version of Xcode to
+build with under the current target configuration, or `None` if it is unknown.
 """,
     },
     init = _xcode_version_properties_info_init,
