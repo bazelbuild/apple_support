@@ -109,6 +109,7 @@ function call_install_name() {
         "@loader_path/$2/$3" "${OUTPUT}"
 }
 
+# TODO: Remove when --incompatible_macos_set_install_name is not disable-able
 # Do replacements in the output
 for rpath in ${RPATHS}; do
     for lib in ${LIBS}; do
