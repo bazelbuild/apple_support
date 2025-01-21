@@ -448,7 +448,10 @@ def _run_shell(
         **kwargs
     ))
 
-def _target_arch_from_rule_ctx(ctx):
+def _target_arch_from_rule_ctx(
+        ctx,
+        *,
+        fail_on_missing_constraint = True):
     """Returns a `String` representing the target architecture based on constraints.
 
     The returned `String` will represent a cpu architecture, such as `arm64` or `arm64e`.
@@ -461,10 +464,11 @@ def _target_arch_from_rule_ctx(ctx):
 
     Args:
         ctx: The context of the rule that has Apple platform constraint attributes.
+        fail_on_missing_constraint: Whether to fail if no constraint is found. (default: `True`)
 
     Returns:
         A `String` representing the selected target architecture or cpu type (e.g. `arm64`,
-        `arm64e`).
+        `arm64e`) or `None` if no constraint is found.
     """
     arm64_constraint = ctx.attr._arm64_constraint[platform_common.ConstraintValueInfo]
     arm64e_constraint = ctx.attr._arm64e_constraint[platform_common.ConstraintValueInfo]
@@ -482,9 +486,14 @@ def _target_arch_from_rule_ctx(ctx):
         return "armv7k"
     elif ctx.target_platform_has_constraint(x86_64_constraint):
         return "x86_64"
+    if not fail_on_missing_constraint:
+        return None
     fail("ERROR: A valid Apple cpu constraint could not be found from the resolved toolchain.")
 
-def _target_environment_from_rule_ctx(ctx):
+def _target_environment_from_rule_ctx(
+        ctx,
+        *,
+        fail_on_missing_constraint = True):
     """Returns a `String` representing the target environment based on constraints.
 
     The returned `String` will represent an environment, such as `device` or `simulator`.
@@ -499,9 +508,11 @@ def _target_environment_from_rule_ctx(ctx):
 
     Args:
         ctx: The context of the rule that has Apple platform constraint attributes.
+        fail_on_missing_constraint: Whether to fail if no constraint is found. (default: `True`)
 
     Returns:
-        A `String` representing the selected environment (e.g. `device`, `simulator`).
+        A `String` representing the selected environment (e.g. `device`, `simulator`)  or `None` if
+        no constraint is found.
     """
     device_constraint = ctx.attr._apple_device_constraint[platform_common.ConstraintValueInfo]
     simulator_constraint = ctx.attr._apple_simulator_constraint[platform_common.ConstraintValueInfo]
@@ -510,10 +521,15 @@ def _target_environment_from_rule_ctx(ctx):
         return "device"
     elif ctx.target_platform_has_constraint(simulator_constraint):
         return "simulator"
+    if not fail_on_missing_constraint:
+        return None
     fail("ERROR: A valid Apple environment (device, simulator) constraint could not be found from" +
          " the resolved toolchain.")
 
-def _target_os_from_rule_ctx(ctx):
+def _target_os_from_rule_ctx(
+        ctx,
+        *,
+        fail_on_missing_constraint = True):
     """Returns a `String` representing the target OS based on constraints.
 
     The returned `String` will match an equivalent value from one of the platform definitions in
@@ -527,9 +543,10 @@ def _target_os_from_rule_ctx(ctx):
 
     Args:
         ctx: The context of the rule that has Apple platform constraint attributes.
+        fail_on_missing_constraint: Whether to fail if no constraint is found. (default: `True`)
 
     Returns:
-        A `String` representing the selected Apple OS.
+        A `String` representing the selected Apple OS or `None` if no constraint is found.
     """
     ios_constraint = ctx.attr._ios_constraint[platform_common.ConstraintValueInfo]
     macos_constraint = ctx.attr._macos_constraint[platform_common.ConstraintValueInfo]
@@ -547,6 +564,8 @@ def _target_os_from_rule_ctx(ctx):
         return str(apple_common.platform_type.visionos)
     elif ctx.target_platform_has_constraint(watchos_constraint):
         return str(apple_common.platform_type.watchos)
+    if not fail_on_missing_constraint:
+        return None
     fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")
 
 apple_support = struct(
