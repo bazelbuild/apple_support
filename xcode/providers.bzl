@@ -99,8 +99,7 @@ XcodeSdkVariantInfo = provider(
             """,
         "version": """\
             `apple_common.dotted_version`. The full version string for this SDK,
-            which is of the form `<major>.<minor>.<patch>.<build>` (where the
-            fourth component is the same as the `build_version` attribute).
+            which is of the form `<major>.<minor>.<patch>`.
             """,
     },
 )

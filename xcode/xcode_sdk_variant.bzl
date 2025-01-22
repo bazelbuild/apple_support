@@ -155,8 +155,7 @@ xcode_sdk_variant = rule(
         "version": attr.string(
             doc = """\
                 The full version string for this SDK, which is of the form
-                `<major>.<minor>.<patch>.<build>` (where the fourth component is
-                the same as the `build_version` attribute).
+                `<major>.<minor>.<patch>`.
                 """,
         ),
     },
