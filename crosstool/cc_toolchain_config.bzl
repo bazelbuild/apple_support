@@ -32,6 +32,7 @@ load(
     "with_feature_set",
 )
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 # TODO: Remove when we drop bazel 6.x support
 _OBJC_ARCHIVE_ACTION_NAME = "objc-archive"

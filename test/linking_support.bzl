@@ -1,5 +1,8 @@
 """Linking logic copied from rules_apple"""
 
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+
 TargetTripletInfo = provider(
     "Contains the target triplet (architecture, platform, environment) for a given configuration.",
     fields = {
