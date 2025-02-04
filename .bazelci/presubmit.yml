@@ -60,4 +60,4 @@ tasks:
     bazel: last_green
     <<: *linux_common
 
-buildifier: latest
+buildifier: "7.3.1"
