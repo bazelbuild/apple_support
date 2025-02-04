@@ -19,15 +19,13 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(
             _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
         ))
-    elif repository_ctx.os.name.startswith("mac os"):
+    else:
         repository_ctx.file(
             "BUILD",
             content = repository_ctx.read(
                 Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
             ),
         )
-    else:
-        repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled because you're not running on macOS")
 
 _apple_cc_autoconf_toolchains = repository_rule(
     environ = [
@@ -47,12 +45,10 @@ def _apple_cc_autoconf_impl(repository_ctx):
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(
             _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
         ))
-    elif repository_ctx.os.name.startswith("mac os"):
+    else:
         success, error = configure_osx_toolchain(repository_ctx)
         if not success:
             fail("Failed to configure Apple CC toolchain, if you only have the command line tools installed and not Xcode, you cannot use this toolchain. You should either remove it or temporarily set '{}=1' in the environment: {}".format(_DISABLE_ENV_VAR, error))
-    else:
-        repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled because you're not on macOS")
 
 _apple_cc_autoconf = repository_rule(
     environ = [
