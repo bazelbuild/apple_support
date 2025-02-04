@@ -23,28 +23,21 @@
 
 set -eu
 
-# A trick to allow invoking this script in multiple contexts.
-if [ -z ${MY_LOCATION+x} ]; then
-  if [ -d "$0.runfiles/" ]; then
-    MY_LOCATION="$0.runfiles/bazel_tools/tools/objc"
-  else
-    MY_LOCATION="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  fi
-fi
-
+readonly xcrunwrapper="%{xcrunwrapper}"
 function invoke_libtool() {
   # Just invoke libtool via xcrunwrapper
-  "${MY_LOCATION}/xcrunwrapper.sh" libtool "$@" \
+  "$xcrunwrapper" libtool "$@" \
   2> >(grep -v "the table of contents is empty (no object file members in the"`
               `" library define global symbols)$" >&2)
   # ^ Filtering a warning that's unlikely to indicate a real issue
   # ...and not silencable via a flag.
 }
 
-if [ ! -f "${MY_LOCATION}"/libtool_check_unique ] ; then
-  echo "libtool_check_unique not found. Please file an issue at github.com/bazelbuild/bazel"
+readonly libtool_check_unique="%{libtool_check_unique}"
+if [ ! -f "$libtool_check_unique" ] ; then
+  echo >&2 "libtool_check_unique ($libtool_check_unique) not found. Please file an issue at https://github.com/bazelbuild/apple_support/issues"
   exit 1
-elif "${MY_LOCATION}"/libtool_check_unique "$@"; then
+elif "$libtool_check_unique" "$@"; then
   # If there are no duplicate .o basenames,
   # libtool can be invoked with the original arguments.
   invoke_libtool "$@"
@@ -78,6 +71,7 @@ ARGS=()
 handle_filelist=0
 keep_next=0
 
+readonly make_hashed_objlist="%{make_hashed_objlist}"
 function parse_option() {
   local -r ARG="$1"
   if [[ "$handle_filelist" == "1" ]]; then
@@ -85,7 +79,7 @@ function parse_option() {
     HASHED_FILELIST="${ARG%.objlist}_hashes.objlist"
     rm -f "${HASHED_FILELIST}"
     # Use python helper script for fast md5 calculation of many strings.
-    "$python_executable" "${MY_LOCATION}/make_hashed_objlist.py" \
+    "$python_executable" "$make_hashed_objlist" \
       "${ARG}" "${HASHED_FILELIST}" "${TEMPDIR}"
     ARGS+=("${HASHED_FILELIST}")
   elif [[ "$keep_next" == "1" ]]; then

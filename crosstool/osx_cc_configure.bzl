@@ -85,66 +85,6 @@ def _generate_system_modulemap(repository_ctx, script, output):
 
     repository_ctx.file(output, result.stdout)
 
-def _compile_cc_file(repository_ctx, src_name, out_name):
-    env = repository_ctx.os.environ
-    xcrun_result = repository_ctx.execute([
-        "env",
-        "-i",
-        "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
-        "xcrun",
-        "--sdk",
-        "macosx",
-        "clang",
-        "-mmacosx-version-min=10.15",
-        "-std=c++17",
-        "-lc++",
-        "-arch",
-        "arm64",
-        "-arch",
-        "x86_64",
-        "-Wl,-no_adhoc_codesign",
-        "-Wl,-no_uuid",
-        "-O3",
-        "-o",
-        out_name,
-        src_name,
-    ])
-
-    if xcrun_result.return_code != 0:
-        error_msg = (
-            "return code {code}, stderr: {err}, stdout: {out}"
-        ).format(
-            code = xcrun_result.return_code,
-            err = xcrun_result.stderr,
-            out = xcrun_result.stdout,
-        )
-        fail(out_name + " failed to generate. Please file an issue at " +
-             "https://github.com/bazelbuild/apple_support/issues with the following:\n" +
-             error_msg)
-
-    xcrun_result = repository_ctx.execute([
-        "env",
-        "-i",
-        "codesign",
-        "--identifier",  # Required to be reproducible across archs
-        out_name,
-        "--force",
-        "--sign",
-        "-",
-        out_name,
-    ])
-    if xcrun_result.return_code != 0:
-        error_msg = (
-            "codesign return code {code}, stderr: {err}, stdout: {out}"
-        ).format(
-            code = xcrun_result.return_code,
-            err = xcrun_result.stderr,
-            out = xcrun_result.stdout,
-        )
-        fail(out_name + " failed to generate. Please file an issue at " +
-             "https://github.com/bazelbuild/apple_support/issues with the following:\n" +
-             error_msg)
-
 def _copy_file(repository_ctx, src, dest):
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
@@ -163,11 +103,12 @@ def configure_osx_toolchain(repository_ctx):
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
-    osx_cc_wrapper = Label("@build_bazel_apple_support//crosstool:osx_cc_wrapper.sh.tpl")
+    cc_wrapper_template = Label("@build_bazel_apple_support//crosstool:osx_cc_wrapper.sh.tpl")
     xcrunwrapper = Label("@build_bazel_apple_support//crosstool:xcrunwrapper.sh")
-    libtool = Label("@build_bazel_apple_support//crosstool:libtool.sh")
+    libtool_template = Label("@build_bazel_apple_support//crosstool:libtool.sh.tpl")
     make_hashed_objlist = Label("@build_bazel_apple_support//crosstool:make_hashed_objlist.py")
     cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
+    universal_exec_tool = Label("@build_bazel_apple_support//crosstool:universal_exec_tool.bzl")
     build_template = Label("@build_bazel_apple_support//crosstool:BUILD.tpl")
     libtool_check_unique_src_path = str(repository_ctx.path(
         Label("@build_bazel_apple_support//crosstool:libtool_check_unique.cc"),
@@ -193,22 +134,14 @@ def configure_osx_toolchain(repository_ctx):
     # cc_wrapper.sh script. The wrapped_clang binary is already hardcoded
     # into the Objective-C crosstool actions, anyway, so this ensures that
     # the C++ actions behave consistently.
-    cc_path = '"$(/usr/bin/dirname "$0")"/wrapped_clang'
-    repository_ctx.template(
-        "cc_wrapper.sh",
-        osx_cc_wrapper,
-        {
-            "%{cc}": escape_string(cc_path),
-            "%{env}": "",
-        },
-    )
+    _copy_file(repository_ctx, cc_wrapper_template, "cc_wrapper.sh.tpl")
     _copy_file(repository_ctx, xcrunwrapper, "xcrunwrapper.sh")
-    _copy_file(repository_ctx, libtool, "libtool")
+    _copy_file(repository_ctx, libtool_template, "libtool.sh.tpl")
     _copy_file(repository_ctx, make_hashed_objlist, "make_hashed_objlist.py")
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
-    _compile_cc_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique")
-    _compile_cc_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang")
-    repository_ctx.symlink("wrapped_clang", "wrapped_clang_pp")
+    _copy_file(repository_ctx, universal_exec_tool, "universal_exec_tool.bzl")
+    _copy_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique.cc")
+    _copy_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang.cc")
 
     layering_check_modulemap = None
     if repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1":

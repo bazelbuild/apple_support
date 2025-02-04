@@ -2,6 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+load(":universal_exec_tool.bzl", "force_exec", "universal_exec_tool")
 
 _APPLE_ARCHS = APPLE_PLATFORMS_CONSTRAINTS.keys()
 
@@ -26,14 +27,73 @@ cc_library(
     name = "malloc",
 )
 
-filegroup(
-    name = "empty",
-    srcs = [],
+universal_exec_tool(
+    name = "exec_wrapped_clang",
+    srcs = ["wrapped_clang.cc"],
+    out = "wrapped_clang",
+)
+
+universal_exec_tool(
+    name = "exec_wrapped_clang_pp",
+    srcs = ["wrapped_clang.cc"],
+    out = "wrapped_clang_pp",
+)
+
+universal_exec_tool(
+    name = "exec_libtool_check_unique",
+    srcs = ["libtool_check_unique.cc"],
+    out = "libtool_check_unique",
+)
+
+genrule(
+    name = "exec_cc_wrapper.target_config",
+    srcs = [
+        "cc_wrapper.sh.tpl",
+        ":exec_wrapped_clang",
+    ],
+    outs = ["cc_wrapper.sh"],
+    cmd = """
+sed \
+  -e 's|%{cc}|$(location //:exec_wrapped_clang)|' \
+  $(location //:cc_wrapper.sh.tpl) \
+  > $@
+chmod +x $@
+""",
+)
+
+force_exec(
+    name = "exec_cc_wrapper",
+    target = ":exec_cc_wrapper.target_config",
+)
+
+genrule(
+    name = "libtool.target_config",
+    srcs = [
+        "libtool.sh.tpl",
+        "make_hashed_objlist.py",
+        "xcrunwrapper.sh",
+        ":exec_libtool_check_unique",
+    ],
+    outs = ["libtool"],
+    cmd = """
+sed \
+  -e 's|%{libtool_check_unique}|$(location //:exec_libtool_check_unique)|' \
+  -e 's|%{make_hashed_objlist}|$(location //:make_hashed_objlist.py)|' \
+  -e 's|%{xcrunwrapper}|$(location //:xcrunwrapper.sh)|' \
+  $(location //:libtool.sh.tpl) \
+  > $@
+chmod +x $@
+""",
+)
+
+force_exec(
+    name = "exec_libtool",
+    target = ":libtool.target_config",
 )
 
 filegroup(
-    name = "cc_wrapper",
-    srcs = ["cc_wrapper.sh"],
+    name = "empty",
+    srcs = [],
 )
 
 cc_toolchain_suite(
@@ -51,13 +111,13 @@ filegroup(
 filegroup(
     name = "tools",
     srcs = [
-        ":cc_wrapper",
-        ":libtool",
-        ":libtool_check_unique",
+        ":exec_cc_wrapper",
+        ":exec_libtool",
+        ":exec_libtool_check_unique",
         ":make_hashed_objlist.py",
         ":modulemap",
-        ":wrapped_clang",
-        ":wrapped_clang_pp",
+        ":exec_wrapped_clang",
+        ":exec_wrapped_clang_pp",
         ":xcrunwrapper.sh",
     ],
 )
@@ -89,11 +149,15 @@ filegroup(
         features = [
 %{features}
         ],
+        cc_wrapper = ":exec_cc_wrapper",
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
+        libtool = ":exec_libtool",
         tool_paths_overrides = {%{tool_paths_overrides}},
         module_map = ":modulemap",
+        wrapped_clang = ":exec_wrapped_clang",
+        wrapped_clang_pp = ":exec_wrapped_clang_pp",
     )
     for arch in _APPLE_ARCHS
 ]
