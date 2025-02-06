@@ -15,7 +15,7 @@
 """Definitions for handling Bazel repositories used by apple_support."""
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//crosstool:setup.bzl", "apple_cc_configure")
+load("//crosstool:setup_internal.bzl", "apple_cc_autoconf", "apple_cc_autoconf_toolchains")
 
 def _maybe(repo_rule, name, **kwargs):
     """Executes the given repository rule if it hasn't been executed already.
@@ -27,6 +27,15 @@ def _maybe(repo_rule, name, **kwargs):
     """
     if not native.existing_rule(name):
         repo_rule(name = name, **kwargs)
+
+# buildifier: disable=unnamed-macro
+def _apple_cc_configure():
+    apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
+    apple_cc_autoconf(name = "local_config_apple_cc")
+    native.register_toolchains(
+        # Use register_toolchain's target pattern expansion to register all toolchains in the package.
+        "@local_config_apple_cc_toolchains//:all",
+    )
 
 # buildifier: disable=unnamed-macro
 def apple_support_dependencies():
@@ -72,4 +81,4 @@ def apple_support_dependencies():
         url = "https://github.com/bazelbuild/rules_cc/releases/download/0.0.8/rules_cc-0.0.8.tar.gz",
     )
 
-    apple_cc_configure()
+    _apple_cc_configure()
