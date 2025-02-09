@@ -2576,7 +2576,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
                 flag_groups = [flag_group(flags = ["-w"])],
             ),
-        ]
+        ],
     )
 
     treat_warnings_as_errors_feature = feature(
