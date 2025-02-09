@@ -2564,6 +2564,21 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    suppress_warnings_feature = feature(
+        name = "suppress_warnings",
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [flag_group(flags = ["-w"])],
+            ),
+        ]
+    )
+
     treat_warnings_as_errors_feature = feature(
         name = "treat_warnings_as_errors",
         flag_sets = [
@@ -2744,6 +2759,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         tsan_feature,
         ubsan_feature,
         default_sanitizer_flags_feature,
+        suppress_warnings_feature,
         treat_warnings_as_errors_feature,
         no_warn_duplicate_libraries_feature,
         layering_check_feature,
