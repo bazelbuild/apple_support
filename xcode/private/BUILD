@@ -61,7 +61,7 @@ config_setting(
 )
 
 config_setting(
-    name = "is_macos",
+    name = "is_macosx",
     constraint_values = [
         "@platforms//os:macos",
     ],
