@@ -1,4 +1,8 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(
+    "//xcode:xcode_sdk_variant.bzl",
+    "xcode_sdk_variant",
+)
 
 licenses(["notice"])
 
@@ -101,6 +105,14 @@ config_setting(
         "@platforms//os:visionos",
         "//constraints:simulator",
     ],
+    visibility = [":xcode_sdk_variant_config_setting_users"],
+)
+
+# An empty SDK that is used as the default entry in `select` expressions so that
+# non-configured queries/builds don't fail during analysis just because they
+# touched the Xcode targets.
+xcode_sdk_variant(
+    name = "empty_sdk",
     visibility = [":xcode_sdk_variant_config_setting_users"],
 )
 
