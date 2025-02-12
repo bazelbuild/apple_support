@@ -2691,6 +2691,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "only_doth_headers_in_module_maps"),
         feature(name = "opt"),
         feature(name = "parse_headers"),
+        feature(name = "no_dotd_file"),
 
         # Features with more configuration
         link_libcpp_feature,
