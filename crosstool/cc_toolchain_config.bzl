@@ -2803,8 +2803,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     tool_paths.update(ctx.attr.tool_paths_overrides)
 
-    out = ctx.actions.declare_file(ctx.label.name)
-    ctx.actions.write(out, "Fake executable")
     return [
         cc_common.create_cc_toolchain_config_info(
             ctx = ctx,
@@ -2823,9 +2821,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             tool_paths = [tool_path(name = name, path = path) for (name, path) in tool_paths.items()],
             make_variables = make_variables,
             builtin_sysroot = None,
-        ),
-        DefaultInfo(
-            executable = out,
         ),
     ]
 
@@ -2859,7 +2854,6 @@ cc_toolchain_config = rule(
         )),
     },
     provides = [CcToolchainConfigInfo],
-    executable = True,
     fragments = [
         "apple",
         "cpp",
