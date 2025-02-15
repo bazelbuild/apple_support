@@ -91,9 +91,7 @@ def _impl(ctx):
     elif ctx.attr.cpu.startswith("watchos"):
         platform_type = apple_common.platform_type.watchos
     elif ctx.attr.cpu.startswith("visionos"):
-        # TODO: Remove when we drop bazel 5.x support, falling back to iOS
-        # doesn't hurt since you can't build for visionOS in this case anyways
-        platform_type = getattr(apple_common.platform_type, "visionos", None) or apple_common.platform_type.ios
+        platform_type = apple_common.platform_type.visionos
     else:
         fail("""\
 Unknown CPU: {cpu}. Please update 'apple_support' to the latest version. If \
