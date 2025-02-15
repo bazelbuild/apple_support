@@ -189,8 +189,6 @@ def _mutual_and_default_xcodes_fails(namer):
     _mutual_and_default_xcodes_fails_test(
         name = "mutual_and_default_xcodes_fails",
         target_under_test = namer("foo"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["mutual_and_default_xcodes_fails"]
 
@@ -592,8 +590,6 @@ def _invalid_xcode_from_mutual_throws(namer):
     _invalid_xcode_from_mutual_throws_test(
         name = "invalid_xcode_from_mutual_throws",
         target_under_test = "invalid_xcode_from_mutual_throws__foo",
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["invalid_xcode_from_mutual_throws"]
 
@@ -624,8 +620,6 @@ def _apple_common_xcode_version_config_constructor_fails_on_bad_input(namer):
     _apple_common_xcode_version_config_constructor_fails_on_bad_input_test(
         name = "apple_common_xcode_version_config_constructor_fails_on_bad_input",
         target_under_test = namer("test"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["apple_common_xcode_version_config_constructor_fails_on_bad_input"]
 
@@ -675,8 +669,6 @@ def _apple_common_xcode_version_config_constructor(namer):
     _apple_common_xcode_version_config_constructor_test(
         name = "apple_common_xcode_version_config_constructor",
         target_under_test = namer("test"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["apple_common_xcode_version_config_constructor"]
 
@@ -1134,8 +1126,6 @@ def _invalid_xcode_specified(namer):
     _invalid_xcode_specified_test(
         name = "invalid_xcode_specified",
         target_under_test = "invalid_xcode_specified__foo",
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["invalid_xcode_specified"]
 
@@ -2281,8 +2271,6 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
         ],
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
 
     # TODO: b/311385128 - The following tests from `XcodeConfigTest.java`
