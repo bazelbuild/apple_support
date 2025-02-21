@@ -23,7 +23,15 @@
 
 set -eu
 
-readonly xcrunwrapper="%{xcrunwrapper}"
+parent_dir="$(cd "${BASH_SOURCE%/*}" && pwd)"
+readonly libtool_check_unique_relative="%{libtool_check_unique}"
+
+# `libtool_check_unique`` is generated and placed next to this script, so we can
+# use it's parent directory, which is relative to the execution root, to find
+# the absolute path to the execution root
+readonly execution_root="${parent_dir%/"${libtool_check_unique_relative%/*}"}"
+
+readonly xcrunwrapper="$execution_root/%{xcrunwrapper}"
 function invoke_libtool() {
   # Just invoke libtool via xcrunwrapper
   "$xcrunwrapper" libtool "$@" \
@@ -33,7 +41,7 @@ function invoke_libtool() {
   # ...and not silencable via a flag.
 }
 
-readonly libtool_check_unique="%{libtool_check_unique}"
+readonly libtool_check_unique="$execution_root/$libtool_check_unique_relative"
 if [ ! -f "$libtool_check_unique" ] ; then
   echo >&2 "libtool_check_unique ($libtool_check_unique) not found. Please file an issue at https://github.com/bazelbuild/apple_support/issues"
   exit 1
@@ -71,7 +79,7 @@ ARGS=()
 handle_filelist=0
 keep_next=0
 
-readonly make_hashed_objlist="%{make_hashed_objlist}"
+readonly make_hashed_objlist="$execution_root/%{make_hashed_objlist}"
 function parse_option() {
   local -r ARG="$1"
   if [[ "$handle_filelist" == "1" ]]; then
