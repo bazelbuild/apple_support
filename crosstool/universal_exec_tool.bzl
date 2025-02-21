@@ -38,18 +38,9 @@ env -i \
     -lc++ \
     -arch arm64 \
     -arch x86_64 \
-    -Wl,-no_adhoc_codesign \
-    -Wl,-no_uuid \
     -O3 \
     -o $@ \
     $(SRCS)
-
-env -i \
-  codesign \
-    --identifier $@ \
-    --force \
-    --sign - \
-    $@
 """,
     )
 
