@@ -447,7 +447,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-target",
                             target_system_name,
                             "-stdlib=libc++",
-                            "-std=gnu++14",
+                            "-std=gnu++17",
                         ],
                     ),
                 ],
@@ -2084,7 +2084,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.lto_backend,
                     ACTION_NAMES.clif_match,
                 ],
-                flag_groups = [flag_group(flags = ["-std=c++14"])],
+                flag_groups = [flag_group(flags = ["-std=c++17"])],
             ),
         ],
     )
