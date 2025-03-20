@@ -88,6 +88,26 @@ def _generate_system_modulemap(repository_ctx, script, output):
 def _copy_file(repository_ctx, src, dest):
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
+def _get_tool_path(repository_ctx, tool_name, path_env_var):
+    tool_path = repository_ctx.os.environ.get(path_env_var)
+    if tool_path != None:
+        if not tool_path.startswith("/"):
+            tool_path = repository_ctx.which(tool_path)
+        return tool_path
+    else:
+        env = repository_ctx.os.environ
+        result = repository_ctx.execute([
+            "env",
+            "-i",
+            "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
+            "xcrun",
+            "--find",
+            tool_name,
+        ])
+        if result.return_code != 0:
+            return None
+        return result.stdout.strip()
+
 def configure_osx_toolchain(repository_ctx):
     """Configure C++ toolchain on macOS.
 
@@ -153,11 +173,9 @@ def configure_osx_toolchain(repository_ctx):
         )
 
     tool_paths = {}
-    gcov_path = repository_ctx.os.environ.get("GCOV")
-    if gcov_path != None:
-        if not gcov_path.startswith("/"):
-            gcov_path = repository_ctx.which(gcov_path)
-        tool_paths["gcov"] = gcov_path
+    tool_paths["gcov"] = _get_tool_path(repository_ctx, "llvm-profdata", "GCOV")
+    tool_paths["llvm-cov"] = _get_tool_path(repository_ctx, "llvm-cov", "BAZEL_LLVM_COV")
+    tool_paths["llvm-profdata"] = _get_tool_path(repository_ctx, "llvm-profdata", "BAZEL_LLVM_PROFDATA")
 
     features = []
     if _succeeds(repository_ctx, "ld", "-no_warn_duplicate_libraries", "-v"):
