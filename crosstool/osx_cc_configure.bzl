@@ -104,15 +104,10 @@ def configure_osx_toolchain(repository_ctx):
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
     cc_wrapper_template = Label("@build_bazel_apple_support//crosstool:osx_cc_wrapper.sh.tpl")
-    xcrunwrapper = Label("@build_bazel_apple_support//crosstool:xcrunwrapper.sh")
-    libtool_template = Label("@build_bazel_apple_support//crosstool:libtool.sh.tpl")
-    make_hashed_objlist = Label("@build_bazel_apple_support//crosstool:make_hashed_objlist.py")
+    libtool = Label("@build_bazel_apple_support//crosstool:libtool.cc")
     cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
     universal_exec_tool = Label("@build_bazel_apple_support//crosstool:universal_exec_tool.bzl")
     build_template = Label("@build_bazel_apple_support//crosstool:BUILD.tpl")
-    libtool_check_unique_src_path = str(repository_ctx.path(
-        Label("@build_bazel_apple_support//crosstool:libtool_check_unique.cc"),
-    ))
     wrapped_clang_src_path = str(repository_ctx.path(
         Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
     ))
@@ -135,12 +130,9 @@ def configure_osx_toolchain(repository_ctx):
     # into the Objective-C crosstool actions, anyway, so this ensures that
     # the C++ actions behave consistently.
     _copy_file(repository_ctx, cc_wrapper_template, "cc_wrapper.sh.tpl")
-    _copy_file(repository_ctx, xcrunwrapper, "xcrunwrapper.sh")
-    _copy_file(repository_ctx, libtool_template, "libtool.sh.tpl")
-    _copy_file(repository_ctx, make_hashed_objlist, "make_hashed_objlist.py")
+    _copy_file(repository_ctx, libtool, "libtool.cc")
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
     _copy_file(repository_ctx, universal_exec_tool, "universal_exec_tool.bzl")
-    _copy_file(repository_ctx, libtool_check_unique_src_path, "libtool_check_unique.cc")
     _copy_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang.cc")
 
     layering_check_modulemap = None

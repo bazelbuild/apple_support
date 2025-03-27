@@ -40,9 +40,9 @@ universal_exec_tool(
 )
 
 universal_exec_tool(
-    name = "exec_libtool_check_unique",
-    srcs = ["libtool_check_unique.cc"],
-    out = "libtool_check_unique",
+    name = "exec_libtool",
+    srcs = ["libtool.cc"],
+    out = "libtool",
 )
 
 genrule(
@@ -66,30 +66,6 @@ force_exec(
     target = ":exec_cc_wrapper.target_config",
 )
 
-genrule(
-    name = "libtool.target_config",
-    srcs = [
-        "libtool.sh.tpl",
-        "make_hashed_objlist.py",
-        "xcrunwrapper.sh",
-        ":exec_libtool_check_unique",
-    ],
-    outs = ["libtool"],
-    cmd = """
-sed \
-  -e 's|%{libtool_check_unique}|$(location //:exec_libtool_check_unique)|' \
-  -e 's|%{make_hashed_objlist}|$(location //:make_hashed_objlist.py)|' \
-  -e 's|%{xcrunwrapper}|$(location //:xcrunwrapper.sh)|' \
-  $(location //:libtool.sh.tpl) \
-  > $@
-chmod +x $@
-""",
-)
-
-force_exec(
-    name = "exec_libtool",
-    target = ":libtool.target_config",
-)
 
 filegroup(
     name = "empty",
@@ -113,12 +89,9 @@ filegroup(
     srcs = [
         ":exec_cc_wrapper",
         ":exec_libtool",
-        ":exec_libtool_check_unique",
-        ":make_hashed_objlist.py",
-        ":modulemap",
         ":exec_wrapped_clang",
         ":exec_wrapped_clang_pp",
-        ":xcrunwrapper.sh",
+        ":modulemap",
     ],
 )
 
