@@ -141,6 +141,7 @@ starlark_apple_binary(
 cc_library(
     name = "duplicate_object_lib",
     srcs = [
+        "cc_lib.cc",
         "duplicate.cc",
         "nested/duplicate.cc",
     ],
