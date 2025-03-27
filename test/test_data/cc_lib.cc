@@ -1,3 +1,1 @@
-int cc_function() {
-  return 2;
-}
+int cc_function() { return 2; }

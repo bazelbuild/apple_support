@@ -16,17 +16,10 @@
 
 #include <iostream>
 
-
 #if defined(__x86_64__)
-void function_for_x86_64() {
-  std::cout << "Compiled for x86_64" << std::endl;
-}
+void function_for_x86_64() { std::cout << "Compiled for x86_64" << std::endl; }
 #elif defined(__aarch64__)
-void function_for_arch64() {
-  std::cout << "Compiled for arm64" << std::endl;
-}
+void function_for_arch64() { std::cout << "Compiled for arm64" << std::endl; }
 #endif
 
-int main(int argc, char** argv) {
-  return 0;
-}
+int main(int argc, char** argv) { return 0; }

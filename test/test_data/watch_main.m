@@ -4,6 +4,4 @@
 @interface TestInterfaceMain : NSObject <WKExtensionDelegate>
 @end
 
-int main() {
-  return 0;
-}
+int main() { return 0; }
