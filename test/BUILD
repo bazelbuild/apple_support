@@ -147,4 +147,5 @@ cc_test(
 
 cc_toolchain_forwarder(
     name = "default_cc_toolchain_forwarder",
+    visibility = [":__subpackages__"],
 )
