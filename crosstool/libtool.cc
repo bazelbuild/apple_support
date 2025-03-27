@@ -41,7 +41,7 @@ class TempDirectory {
 
     char *temp_dir = mkdtemp(path.get());
     if (temp_dir == nullptr) {
-      std::cerr << "failed to create temporary directory" << std::endl;
+      std::cerr << "error: failed to create temporary directory" << std::endl;
       exit(EXIT_FAILURE);
     }
 
@@ -69,7 +69,7 @@ class TempDirectory {
 std::string getMandatoryEnvVar(const std::string &var_name) {
   char *env_value = getenv(var_name.c_str());
   if (env_value == nullptr) {
-    std::cerr << "Error: " << var_name << " not set.\n";
+    std::cerr << "error: " << var_name << " not set.\n";
     exit(EXIT_FAILURE);
   }
   return env_value;
@@ -99,15 +99,52 @@ std::vector<const char *> ConvertToCArgs(const std::vector<std::string> &args) {
 // Spawns a subprocess for given arguments args. The first argument is used
 // for the executable path.
 bool runSubProcess(const std::vector<std::string> &args) {
+  int pipefd[2];  // File descriptors for the pipe
+  if (pipe(pipefd) == -1) {
+    perror("pipe failed");
+    return false;
+  }
+
   std::vector<const char *> exec_argv = ConvertToCArgs(args);
   pid_t pid;
-  int status = posix_spawn(&pid, args[0].c_str(), nullptr, nullptr,
+  posix_spawn_file_actions_t actions;
+  posix_spawn_file_actions_init(&actions);
+
+  // Redirect child's stdout to the write end of the pipe
+  posix_spawn_file_actions_adddup2(&actions, pipefd[1], STDERR_FILENO);
+  posix_spawn_file_actions_addclose(&actions,
+                                    pipefd[0]);  // Close unused read end
+
+  int status = posix_spawn(&pid, args[0].c_str(), &actions, nullptr,
                            const_cast<char **>(exec_argv.data()), environ);
   if (status == 0) {
     int wait_status;
     do {
       wait_status = waitpid(pid, &status, 0);
     } while ((wait_status == -1) && (errno == EINTR));
+
+    posix_spawn_file_actions_destroy(&actions);
+    close(pipefd[1]);  // Close write end in the parent
+
+    char buffer[256];
+    ssize_t count;
+    std::ostringstream oss;
+    while ((count = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) {
+      buffer[count] = '\0';
+      oss << buffer;
+    }
+
+    std::stringstream ss(oss.str());
+    std::string line;
+    while (std::getline(ss, line)) {
+      if (line.find("(no object file members in the library define global "
+                    "symbols)") == std::string::npos) {
+        std::cerr << line << "\n";
+      }
+    }
+
+    close(pipefd[0]);  // Close read end
+
     if (wait_status < 0) {
       std::cerr << "Error waiting on child process '" << args[0] << "'. "
                 << strerror(errno) << "\n";
@@ -166,7 +203,6 @@ void processArgs(const std::vector<std::string> args,
                  std::function<void(const std::string &)> files_consumer) {
   for (auto it = args.begin(); it != args.end(); ++it) {
     const std::string arg = *it;
-    std::cerr << "testing arg " << arg << "\n";
     if (arg == "-filelist") {
       ++it;
       std::ifstream list(*it);
@@ -179,7 +215,6 @@ void processArgs(const std::vector<std::string> args,
 
       std::vector<std::string> params_file_args = {};
       for (std::string line; std::getline(params_file, line);) {
-        std::cerr << "got from params: " << line << "\n";
         params_file_args.push_back(line);
       }
       processArgs(params_file_args, flags_consumer, files_consumer);
@@ -218,20 +253,16 @@ void createSymlinks(std::filesystem::path temp_directory,
     std::hash<std::string> hasher;
     hasher(file);
 
-    // TODO: hash of file
     std::string new_basename = path.stem();
     new_basename.append("_");
     new_basename.append(hash(file));
     new_basename.append(".o");
     auto link = temp_directory / new_basename;
-    std::cerr << "symlinking: " << file << " -> " << link << "\n";
 
     std::filesystem::create_symlink(std::filesystem::absolute(path), link);
 
     files_consumer(link);
   }
-
-  std::cerr << "ok wut: " << temp_directory << "\n";
 }
 
 int main(int argc, const char *argv[]) {
@@ -277,7 +308,6 @@ int main(int argc, const char *argv[]) {
       "@" + response_file.u8string(),
   };
 
-  // TODO: filter output
   if (!runSubProcess(invocation_args)) {
     return EXIT_FAILURE;
   }
