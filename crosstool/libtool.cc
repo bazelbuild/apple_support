@@ -54,7 +54,7 @@ class TempDirectory {
   TempDirectory(TempDirectory &&) = default;
   TempDirectory &operator=(TempDirectory &&) = default;
 
-  ~TempDirectory() { std::filesystem::remove_all(path_.c_str()); }
+  // ~TempDirectory() { std::filesystem::remove_all(path_.c_str()); }
 
   std::filesystem::path GetPath() const { return path_; }
 
@@ -300,7 +300,7 @@ int main(int argc, const char *argv[]) {
   for (const auto &arg : processed_args) {
     response_file_stream << '"';
     for (auto ch : arg) {
-      if (ch == '"' || ch == '\\') {
+      if (ch == '"') {
         response_file_stream << '\\';
       }
       response_file_stream << ch;
@@ -315,6 +315,7 @@ int main(int argc, const char *argv[]) {
       "@" + response_file.u8string(),
   };
 
+  std::cerr << response_file << "\n";
   if (!runSubProcess(invocation_args)) {
     return EXIT_FAILURE;
   }
