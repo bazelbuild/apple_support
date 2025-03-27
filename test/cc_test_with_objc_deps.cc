@@ -8,7 +8,8 @@ int main() {
     printf("SUCCESS: from_objc_library() = %d\n", from_objc_library());
     return EXIT_SUCCESS;
   } else {
-    printf("FAILED: from_objc_library() = %d, expected 10\n", from_objc_library());
+    printf("FAILED: from_objc_library() = %d, expected 10\n",
+           from_objc_library());
     return EXIT_FAILURE;
   }
 }

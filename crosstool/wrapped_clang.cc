@@ -298,17 +298,18 @@ std::string GetCurrentDirectory() {
 }
 
 std::string exec(std::string cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) {
-      std::cerr << "Error: failed to open pipe to '" << cmd << "'" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-      result += buffer.data();
-    }
-    return result;
+  std::array<char, 128> buffer;
+  std::string result;
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"),
+                                                pclose);
+  if (!pipe) {
+    std::cerr << "Error: failed to open pipe to '" << cmd << "'" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    result += buffer.data();
+  }
+  return result;
 }
 
 std::string GetToolchainPath(const std::string &toolchain_id) {
@@ -318,15 +319,16 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
   if (output.empty()) {
     std::cerr << "Error: TOOLCHAINS was set to '" << toolchain_id
-      << "' but no toolchain with that ID was found" << std::endl;
+              << "' but no toolchain with that ID was found" << std::endl;
     exit(EXIT_FAILURE);
   } else if (output.find("XcodeDefault.xctoolchain") != std::string::npos) {
     // NOTE: Ideally xcrun would fail if the toolchain we asked for didn't exist
     // but it falls back to the DEVELOPER_DIR instead, so we have to check the
     // output ourselves.
     std::cerr << "Error: TOOLCHAINS was set to '" << toolchain_id
-      << "' but the default toolchain was found, that likely means a matching "
-      << "toolchain isn't installed" << std::endl;
+              << "' but the default toolchain was found, that likely means a "
+                 "matching "
+              << "toolchain isn't installed" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -363,7 +365,8 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
   if (!toolchain_path.empty()) {
-    FindAndReplace("__BAZEL_CUSTOM_XCODE_TOOLCHAIN_PATH__", toolchain_path, &new_arg);
+    FindAndReplace("__BAZEL_CUSTOM_XCODE_TOOLCHAIN_PATH__", toolchain_path,
+                   &new_arg);
   }
 
   // Make the `add_ast_path` options used to embed Swift module references

@@ -1,3 +1,3 @@
 extern "C" {
-  int from_objc_library();
+int from_objc_library();
 }

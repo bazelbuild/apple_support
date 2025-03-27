@@ -1,3 +1,1 @@
-int objc_function() {
-    return 1;
-}
+int objc_function() { return 1; }
