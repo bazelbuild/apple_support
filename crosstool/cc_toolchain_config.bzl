@@ -309,7 +309,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                tool = ctx.file.cc_wrapper,
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -532,7 +532,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                tool = ctx.file.cc_wrapper,
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -599,7 +599,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         tools = [
             tool(
-                tool = ctx.file.cc_wrapper,
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -2678,7 +2678,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         "ar": ctx.file.libtool.path,
         "cpp": "/usr/bin/cpp",
         "dwp": "/usr/bin/dwp",
-        "gcc": ctx.file.cc_wrapper.path,
+        "gcc": ctx.file.wrapped_clang.path,
         "gcov": "/usr/bin/gcov",
         "ld": "/usr/bin/ld",
         "nm": "/usr/bin/nm",
@@ -2714,10 +2714,6 @@ cc_toolchain_config = rule(
     implementation = _impl,
     attrs = {
         "cpu": attr.string(mandatory = True),
-        "cc_wrapper": attr.label(
-            allow_single_file = True,
-            mandatory = True,
-        ),
         "cxx_builtin_include_directories": attr.string_list(),
         "extra_env": attr.string_dict(),
         "libtool": attr.label(
