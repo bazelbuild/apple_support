@@ -185,3 +185,12 @@ def binary_test_suite(name):
         verifier_script = "//test/shell:verify_binary.sh",
         target_under_test = "//test/test_data:ios_binary",
     )
+
+    apple_verification_test(
+        name = "{}_archive_duplicate_object_names_test".format(name),
+        tags = [name],
+        build_type = "device",
+        cpus = {"macos_cpus": "arm64"},
+        verifier_script = "//test/shell:verify_object_hashes.sh",
+        target_under_test = "//test/test_data:duplicate_object_lib",
+    )
