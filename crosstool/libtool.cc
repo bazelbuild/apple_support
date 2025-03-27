@@ -298,7 +298,14 @@ int main(int argc, const char *argv[]) {
   auto response_file = temp_directory->GetPath() / "bazel_libtool.params";
   std::ofstream response_file_stream(response_file);
   for (const auto &arg : processed_args) {
-    response_file_stream << arg << "\n";
+    response_file_stream << '"';
+    for (auto ch : arg) {
+      if (ch == '"' || ch == '\\') {
+        response_file_stream << '\\';
+      }
+      response_file_stream << ch;
+    }
+    response_file_stream << "\"\n";
   }
   response_file_stream.close();
 
