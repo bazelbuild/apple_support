@@ -137,3 +137,12 @@ starlark_apple_binary(
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":ios_main"],
 )
+
+cc_library(
+    name = "duplicate_object_lib",
+    srcs = [
+        "duplicate.cc",
+        "nested/duplicate.cc",
+    ],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
