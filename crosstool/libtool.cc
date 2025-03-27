@@ -315,7 +315,6 @@ int main(int argc, const char *argv[]) {
       "@" + response_file.u8string(),
   };
 
-  std::cerr << response_file << "\n";
   if (!runSubProcess(invocation_args)) {
     return EXIT_FAILURE;
   }
