@@ -4,7 +4,6 @@ x_defaults:
   # it doesn't know about; so that is used to avoid repeating common subparts.
   common: &common
     platform: macos_arm64
-    xcode_version: "15.2"
     build_targets:
       - "//..."
     test_targets:
@@ -35,7 +34,6 @@ tasks:
   macos_latest_shell_scripts:
     name: "Current layering_check and header parsing"
     platform: macos_arm64
-    xcode_version: "15.2"
     bazel: latest
     shell_commands:
       - test/shell/layering_check_test.sh
