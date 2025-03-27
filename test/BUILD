@@ -6,6 +6,7 @@ load("//rules:apple_genrule.bzl", "apple_genrule")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
+load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
@@ -142,4 +143,8 @@ cc_test(
     name = "cc_test_with_objc_deps",
     srcs = ["cc_test_with_objc_deps.cc"],
     deps = [":objc_lib"],
+)
+
+cc_toolchain_forwarder(
+    name = "default_cc_toolchain_forwarder",
 )

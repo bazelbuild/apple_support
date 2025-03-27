@@ -6,7 +6,10 @@ load("//test:transitions.bzl", "apple_platform_split_transition")
 def _starlark_apple_static_library_impl(ctx):
     if not hasattr(apple_common.platform_type, ctx.attr.platform_type):
         fail('Unsupported platform type \"{}\"'.format(ctx.attr.platform_type))
-    link_result = link_multi_arch_static_library(ctx = ctx)
+    link_result = link_multi_arch_static_library(
+        ctx = ctx,
+        cc_toolchains = ctx.split_attr._cc_toolchain_forwarder,
+    )
     processed_library = ctx.actions.declare_file(
         "{}_lipo.a".format(ctx.label.name),
     )
@@ -83,6 +86,10 @@ starlark_apple_static_library = rule(
         "linkopts": attr.string_list(),
         "platform_type": attr.string(mandatory = True),
         "minimum_os_version": attr.string(mandatory = True),
+        "_cc_toolchain_forwarder": attr.label(
+            cfg = apple_platform_split_transition,
+            default = "//test:default_cc_toolchain_forwarder",
+        ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
         ),
