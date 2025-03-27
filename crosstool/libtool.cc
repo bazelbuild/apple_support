@@ -54,7 +54,7 @@ class TempDirectory {
   TempDirectory(TempDirectory &&) = default;
   TempDirectory &operator=(TempDirectory &&) = default;
 
-  // ~TempDirectory() { std::filesystem::remove_all(path_.c_str()); }
+  ~TempDirectory() { std::filesystem::remove_all(path_.c_str()); }
 
   std::filesystem::path GetPath() const { return path_; }
 
