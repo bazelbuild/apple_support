@@ -1,4 +1,5 @@
 build --enable_platform_specific_config
+build --test_output=errors
 
 build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
 build:macos --crosstool_top=@local_config_apple_cc//:toolchain
