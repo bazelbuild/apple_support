@@ -7,6 +7,12 @@ exports_files(glob(
     ["**"],
 ))
 
+# TODO: Remove when we drop bazel 6.x
+filegroup(
+    name = "xcrunwrapper",
+    srcs = [":xcrunwrapper.sh"],
+)
+
 cc_binary(
     name = "wrapped_clang",
     testonly = True,
