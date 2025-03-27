@@ -1,24 +1,6 @@
 """Linking logic copied from rules_apple"""
 
-TargetTripletInfo = provider(
-    "Contains the target triplet (architecture, platform, environment) for a given configuration.",
-    fields = {
-        "architecture": "string, the CPU as returned by AppleConfiguration.getSingleArchitecture()",
-        "platform": "apple_platform.PLATFORM_TYPE string as returned by apple_platform.get_target_platform()",
-        "environment": "string ('device', 'simulator' or 'macabi) as returned by apple_platform.get_target_environment",
-    },
-)
-
-def _get_target_triplet(config):
-    """Returns the target triplet (architecture, platform, environment) for a given configuration."""
-    cpu_platform = apple_common.apple_platform.for_target_cpu(apple_common.get_cpu(config))
-    apple_config = apple_common.get_apple_config(config)
-
-    return TargetTripletInfo(
-        architecture = apple_config.single_arch_cpu,
-        platform = apple_common.apple_platform.get_target_platform(cpu_platform),
-        environment = apple_common.apple_platform.get_target_environment(cpu_platform),
-    )
+load(":cc_toolchain_forwarder.bzl", "TestApplePlatformInfo")
 
 def _build_avoid_library_set(avoid_dep_linking_contexts):
     avoid_library_set = dict()
@@ -29,15 +11,6 @@ def _build_avoid_library_set(avoid_dep_linking_contexts):
                 if library_artifact:
                     avoid_library_set[library_artifact.short_path] = True
     return avoid_library_set
-
-def _get_split_target_triplet(ctx):
-    result = dict()
-    ctads = apple_common.get_split_prerequisites(ctx)
-    for split_transition_key, config in ctads.items():
-        if split_transition_key == None:
-            fail("unexpected empty key in split transition")
-        result[split_transition_key] = _get_target_triplet(config)
-    return result
 
 def _subtract_linking_contexts(owner, linking_contexts, avoid_dep_linking_contexts):
     libraries = []
@@ -66,11 +39,12 @@ def _subtract_linking_contexts(owner, linking_contexts, avoid_dep_linking_contex
         owner = owner,
     )
 
-def link_multi_arch_binary(*, ctx, stamp = -1):
+def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
     """Copied from rules_apple.
 
     Args:
         ctx: rule ctx
+        cc_toolchains: split toolchain attr
         stamp: See upstream docs
 
     Returns:
@@ -82,16 +56,14 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
     if legacy_linking_function:
         return legacy_linking_function(ctx = ctx, stamp = stamp)
 
-    split_target_triplets = _get_split_target_triplet(ctx)
     split_build_configs = apple_common.get_split_build_configs(ctx)
     split_deps = ctx.split_attr.deps
-    child_configs_and_toolchains = ctx.split_attr._child_configuration_dummy
 
-    if split_deps and split_deps.keys() != child_configs_and_toolchains.keys():
+    if split_deps and split_deps.keys() != cc_toolchains.keys():
         fail(("Split transition keys are different between 'deps' [%s] and " +
-              "'_child_configuration_dummy' [%s]") % (
+              "'_cc_toolchain_forwarder' [%s]") % (
             split_deps.keys(),
-            child_configs_and_toolchains.keys(),
+            cc_toolchains.keys(),
         ))
 
     outputs = []
@@ -106,10 +78,10 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
     ]
     attr_linkopts = [token for opt in attr_linkopts for token in ctx.tokenize(opt)]
 
-    for split_transition_key, child_toolchain in child_configs_and_toolchains.items():
+    for split_transition_key, child_toolchain in cc_toolchains.items():
         cc_toolchain = child_toolchain[cc_common.CcToolchainInfo]
         deps = split_deps.get(split_transition_key, [])
-        target_triplet = split_target_triplets.get(split_transition_key)
+        platform_info = child_toolchain[TestApplePlatformInfo]
 
         common_variables = apple_common.compilation_support.build_common_variables(
             ctx = ctx,
@@ -151,7 +123,7 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
             )
             extensions["dsym_path"] = dsym_binary.path  # dsym symbol file
             additional_outputs.append(dsym_binary)
-            legacy_debug_outputs.setdefault(target_triplet.architecture, {})["dsym_binary"] = dsym_binary
+            legacy_debug_outputs.setdefault(platform_info.target_arch, {})["dsym_binary"] = dsym_binary
 
         linkmap = None
         if ctx.fragments.cpp.objc_generate_linkmap:
@@ -161,7 +133,7 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
             )
             extensions["linkmap_exec_path"] = linkmap.path  # linkmap file
             additional_outputs.append(linkmap)
-            legacy_debug_outputs.setdefault(target_triplet.architecture, {})["linkmap"] = linkmap
+            legacy_debug_outputs.setdefault(platform_info.target_arch, {})["linkmap"] = linkmap
 
         name = ctx.label.name + "_bin"
         executable = apple_common.compilation_support.register_configuration_specific_link_actions(
@@ -180,9 +152,9 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
 
         output = {
             "binary": executable,
-            "platform": target_triplet.platform,
-            "architecture": target_triplet.architecture,
-            "environment": target_triplet.environment,
+            "platform": platform_info.target_os,
+            "architecture": platform_info.target_arch,
+            "environment": platform_info.target_environment,
             "dsym_binary": dsym_binary,
             "linkmap": linkmap,
         }
@@ -203,11 +175,12 @@ def link_multi_arch_binary(*, ctx, stamp = -1):
         outputs = outputs,
     )
 
-def link_multi_arch_static_library(ctx):
+def link_multi_arch_static_library(*, ctx, cc_toolchains):
     """Copied from rules_apple.
 
     Args:
         ctx: rule ctx
+        cc_toolchains: split toolchain attr
 
     Returns:
         struct of linking info
@@ -218,15 +191,12 @@ def link_multi_arch_static_library(ctx):
     if legacy_linking_function:
         return legacy_linking_function(ctx = ctx)
 
-    split_target_triplets = _get_split_target_triplet(ctx)
-
     split_deps = ctx.split_attr.deps
     split_avoid_deps = ctx.split_attr.avoid_deps
-    child_configs_and_toolchains = ctx.split_attr._child_configuration_dummy
 
     outputs = []
 
-    for split_transition_key, child_toolchain in child_configs_and_toolchains.items():
+    for split_transition_key, child_toolchain in cc_toolchains.items():
         cc_toolchain = child_toolchain[cc_common.CcToolchainInfo]
         common_variables = apple_common.compilation_support.build_common_variables(
             ctx = ctx,
@@ -264,11 +234,10 @@ def link_multi_arch_static_library(ctx):
             "library": linking_outputs.library_to_link.static_library,
         }
 
-        if split_target_triplets != None:
-            target_triplet = split_target_triplets.get(split_transition_key)
-            output["platform"] = target_triplet.platform
-            output["architecture"] = target_triplet.architecture
-            output["environment"] = target_triplet.environment
+        platform_info = child_toolchain[TestApplePlatformInfo]
+        output["platform"] = platform_info.target_os
+        output["architecture"] = platform_info.target_arch
+        output["environment"] = platform_info.target_environment
 
         outputs.append(struct(**output))
 
