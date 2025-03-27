@@ -6,6 +6,7 @@ load("//test:transitions.bzl", "apple_platform_split_transition")
 def _starlark_apple_binary_impl(ctx):
     link_result = link_multi_arch_binary(
         ctx = ctx,
+        cc_toolchains = ctx.split_attr._cc_toolchain_forwarder,
         stamp = ctx.attr.stamp,
     )
     processed_binary = ctx.actions.declare_file(
@@ -50,6 +51,7 @@ def _starlark_apple_binary_impl(ctx):
 # from implied attributes to function arguments, they can be removed.
 starlark_apple_binary = rule(
     attrs = {
+        # TODO: Remove when we drop 8.x
         "_child_configuration_dummy": attr.label(
             cfg = apple_platform_split_transition,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
@@ -75,6 +77,10 @@ starlark_apple_binary = rule(
         "minimum_os_version": attr.string(mandatory = True),
         "platform_type": attr.string(mandatory = True),
         "stamp": attr.int(default = -1, values = [-1, 0, 1]),
+        "_cc_toolchain_forwarder": attr.label(
+            cfg = apple_platform_split_transition,
+            default = "//test:default_cc_toolchain_forwarder",
+        ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
         ),
