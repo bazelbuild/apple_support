@@ -51,6 +51,7 @@ def _starlark_apple_binary_impl(ctx):
 # from implied attributes to function arguments, they can be removed.
 starlark_apple_binary = rule(
     attrs = {
+        # TODO: Remove when we drop 8.x
         "_child_configuration_dummy": attr.label(
             cfg = apple_platform_split_transition,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),

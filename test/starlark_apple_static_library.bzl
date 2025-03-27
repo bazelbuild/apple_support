@@ -58,6 +58,7 @@ def _starlark_apple_static_library_impl(ctx):
 starlark_apple_static_library = rule(
     _starlark_apple_static_library_impl,
     attrs = {
+        # TODO: Remove when we drop 8.x
         "_child_configuration_dummy": attr.label(
             cfg = apple_platform_split_transition,
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
