@@ -1,5 +1,5 @@
 load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
-load(":universal_exec_tool.bzl", "force_exec", "universal_exec_tool")
+load(":universal_exec_tool.bzl", "universal_exec_tool")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -32,18 +32,6 @@ universal_exec_tool(
     name = "exec_libtool",
     srcs = ["libtool.cc"],
     out = "libtool",
-)
-
-genrule(
-    name = "exec_cc_wrapper.target_config",
-    srcs = ["osx_cc_wrapper.sh.tpl"],
-    outs = ["cc_wrapper.sh"],
-    cmd = "cp $(SRCS) $(OUTS)",  # Make sure this script is always beside wrapped_clang
-)
-
-force_exec(
-    name = "exec_cc_wrapper",
-    target = ":exec_cc_wrapper.target_config",
 )
 
 # TODO: Remove when we drop bazel 6.x

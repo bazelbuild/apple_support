@@ -2311,7 +2311,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     set_install_name = feature(
         name = "set_install_name",
-        enabled = getattr(ctx.fragments.cpp, "do_not_use_macos_set_install_name", True),
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
