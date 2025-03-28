@@ -2,7 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
-load(":universal_exec_tool.bzl", "force_exec", "universal_exec_tool")
 
 _APPLE_ARCHS = APPLE_PLATFORMS_CONSTRAINTS.keys()
 
@@ -27,46 +26,6 @@ cc_library(
     name = "malloc",
 )
 
-universal_exec_tool(
-    name = "exec_wrapped_clang",
-    srcs = ["wrapped_clang.cc"],
-    out = "wrapped_clang",
-)
-
-universal_exec_tool(
-    name = "exec_wrapped_clang_pp",
-    srcs = ["wrapped_clang.cc"],
-    out = "wrapped_clang_pp",
-)
-
-universal_exec_tool(
-    name = "exec_libtool",
-    srcs = ["libtool.cc"],
-    out = "libtool",
-)
-
-genrule(
-    name = "exec_cc_wrapper.target_config",
-    srcs = [
-        "cc_wrapper.sh.tpl",
-        ":exec_wrapped_clang",
-    ],
-    outs = ["cc_wrapper.sh"],
-    cmd = """
-sed \
-  -e 's|%{cc}|$(location //:exec_wrapped_clang)|' \
-  $(location //:cc_wrapper.sh.tpl) \
-  > $@
-chmod +x $@
-""",
-)
-
-force_exec(
-    name = "exec_cc_wrapper",
-    target = ":exec_cc_wrapper.target_config",
-)
-
-
 filegroup(
     name = "empty",
     srcs = [],
@@ -87,10 +46,10 @@ filegroup(
 filegroup(
     name = "tools",
     srcs = [
-        ":exec_cc_wrapper",
-        ":exec_libtool",
-        ":exec_wrapped_clang",
-        ":exec_wrapped_clang_pp",
+        "@build_bazel_apple_support//crosstool:exec_cc_wrapper",
+        "@build_bazel_apple_support//crosstool:exec_libtool",
+        "@build_bazel_apple_support//crosstool:exec_wrapped_clang",
+        "@build_bazel_apple_support//crosstool:exec_wrapped_clang_pp",
         ":modulemap",
     ],
 )
@@ -122,15 +81,15 @@ filegroup(
         features = [
 %{features}
         ],
-        cc_wrapper = ":exec_cc_wrapper",
+        cc_wrapper = "@build_bazel_apple_support//crosstool:exec_cc_wrapper",
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
-        libtool = ":exec_libtool",
+        libtool = "@build_bazel_apple_support//crosstool:exec_libtool",
         tool_paths_overrides = {%{tool_paths_overrides}},
         module_map = ":modulemap",
-        wrapped_clang = ":exec_wrapped_clang",
-        wrapped_clang_pp = ":exec_wrapped_clang_pp",
+        wrapped_clang = "@build_bazel_apple_support//crosstool:exec_wrapped_clang",
+        wrapped_clang_pp = "@build_bazel_apple_support//crosstool:exec_wrapped_clang_pp",
     )
     for arch in _APPLE_ARCHS
 ]

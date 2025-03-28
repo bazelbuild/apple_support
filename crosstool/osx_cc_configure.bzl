@@ -80,14 +80,8 @@ def configure_osx_toolchain(repository_ctx):
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
-    cc_wrapper_template = Label("@build_bazel_apple_support//crosstool:osx_cc_wrapper.sh.tpl")
-    libtool = Label("@build_bazel_apple_support//crosstool:libtool.cc")
     cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
-    universal_exec_tool = Label("@build_bazel_apple_support//crosstool:universal_exec_tool.bzl")
     build_template = Label("@build_bazel_apple_support//crosstool:BUILD.tpl")
-    wrapped_clang_src_path = str(repository_ctx.path(
-        Label("@build_bazel_apple_support//crosstool:wrapped_clang.cc"),
-    ))
 
     xcode_toolchains = []
     xcodeloc_err = ""
@@ -97,17 +91,7 @@ def configure_osx_toolchain(repository_ctx):
         if not xcode_toolchains:
             return False, xcodeloc_err
 
-    # For Xcode toolchains, there's no reason to use anything other than
-    # wrapped_clang, so that we still get the Bazel Xcode placeholder
-    # substitution and other behavior for actions that invoke this
-    # cc_wrapper.sh script. The wrapped_clang binary is already hardcoded
-    # into the Objective-C crosstool actions, anyway, so this ensures that
-    # the C++ actions behave consistently.
-    _copy_file(repository_ctx, cc_wrapper_template, "cc_wrapper.sh.tpl")
-    _copy_file(repository_ctx, libtool, "libtool.cc")
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
-    _copy_file(repository_ctx, universal_exec_tool, "universal_exec_tool.bzl")
-    _copy_file(repository_ctx, wrapped_clang_src_path, "wrapped_clang.cc")
 
     enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
 
