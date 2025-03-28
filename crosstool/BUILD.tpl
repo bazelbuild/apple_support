@@ -46,7 +46,6 @@ filegroup(
 filegroup(
     name = "tools",
     srcs = [
-        "@build_bazel_apple_support//crosstool:exec_cc_wrapper",
         "@build_bazel_apple_support//crosstool:exec_libtool",
         "@build_bazel_apple_support//crosstool:exec_wrapped_clang",
         "@build_bazel_apple_support//crosstool:exec_wrapped_clang_pp",
@@ -81,7 +80,6 @@ filegroup(
         features = [
 %{features}
         ],
-        cc_wrapper = "@build_bazel_apple_support//crosstool:exec_cc_wrapper",
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
