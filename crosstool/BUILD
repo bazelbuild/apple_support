@@ -1,3 +1,4 @@
+load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -28,4 +29,12 @@ filegroup(
     testonly = True,
     srcs = glob(["**"]),
     visibility = ["//:__pkg__"],
+)
+
+apple_genrule(
+    name = "generate_layering_check_modulemap",
+    outs = ["layering_check.modulemap"],
+    cmd = "$(location generate-modulemap.sh) > $(OUTS)",
+    tags = ["manual"],
+    tools = ["generate-modulemap.sh"],
 )
