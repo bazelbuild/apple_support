@@ -23,10 +23,6 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
-# This is a proxy for being on bazel 7.x which has
-# --incompatible_merge_fixed_and_default_shell_env enabled by default
-_USE_DEFAULT_SHELL_ENV = not hasattr(apple_common, "apple_crosstool_transition")
-
 _XCODE_PROCESSOR__ARGS = r"""#!/bin/bash
 
 set -eu
@@ -184,7 +180,7 @@ def _kwargs_for_apple_platform(
         merged_env.update(original_env)
 
     if "use_default_shell_env" not in processed_args:
-        processed_args["use_default_shell_env"] = _USE_DEFAULT_SHELL_ENV
+        processed_args["use_default_shell_env"] = True
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding these values.

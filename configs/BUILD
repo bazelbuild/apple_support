@@ -9,7 +9,7 @@ selects.config_setting_group(
     match_any = [
         cpu
         for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
-    ] + ["darwin"],
+    ],
 )
 
 [
@@ -20,19 +20,13 @@ selects.config_setting_group(
     for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
 ]
 
-# TODO: Remove all references to 'darwin' as a CPU once we no longer support bazel 6.x
-config_setting(
-    name = "darwin",
-    values = {"cpu": "darwin"},
-)
-
 selects.config_setting_group(
     name = "any_device",
     match_any = [
         cpu
         for cpu, constraints in APPLE_PLATFORMS_CONSTRAINTS.items()
         if "@build_bazel_apple_support//constraints:device" in constraints
-    ] + ["darwin"],
+    ],
 )
 
 selects.config_setting_group(
