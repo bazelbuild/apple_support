@@ -26,6 +26,11 @@ tasks:
       # Bazel 6.x has dependencies that produce warnings now
       - "--features=-treat_warnings_as_errors"
 
+  macos_7:
+    name: "7.x LTS"
+    bazel: 7.x
+    <<: *common
+
   macos_latest:
     name: "Current LTS"
     bazel: latest
