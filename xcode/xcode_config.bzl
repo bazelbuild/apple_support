@@ -14,6 +14,7 @@
 
 """Implementation of the `xcode_config` build rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
@@ -26,6 +27,10 @@ visibility("public")
 unavailable_xcode_message = "'bazel fetch --configure' (Bzlmod) or 'bazel sync --configure' (WORKSPACE)"
 
 def _xcode_config_impl(ctx):
+    # TODO: remove when we test with Bazel 8+
+    if not bazel_features.apple.xcode_config_migrated:
+        fail("This rule is not available on the current Bazel version")
+
     apple_fragment = ctx.fragments.apple
     cpp_fragment = ctx.fragments.cpp
 

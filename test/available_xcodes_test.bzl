@@ -14,6 +14,7 @@
 
 """Tests for the `available_xcodes` rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
 load("//xcode:xcode_version.bzl", "xcode_version")
@@ -80,5 +81,5 @@ def available_xcodes_test(name):
         name = name,
         tests = [
             _read_version_from_providers,
-        ],
+        ] if bazel_features.apple.xcode_config_migrated else [],  # TODO: Remove once we test with Bazel 8+
     )

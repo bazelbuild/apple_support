@@ -14,6 +14,7 @@
 
 """Implementation of the `xcode_version` build rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "XcodeVersionPropertiesInfo",
@@ -23,6 +24,10 @@ load(
 visibility("public")
 
 def _xcode_version_impl(ctx):
+    # TODO: remove when we test with Bazel 8+
+    if not bazel_features.apple.xcode_config_migrated:
+        fail("This rule is not available on the current Bazel version")
+
     xcode_version_properties = XcodeVersionPropertiesInfo(
         xcode_version = ctx.attr.version,
         default_ios_sdk_version = ctx.attr.default_ios_sdk_version,

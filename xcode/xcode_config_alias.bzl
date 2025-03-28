@@ -23,6 +23,7 @@ contain exactly one instance of this rule under `@bazel_tools//tools/osx` and
 people who want to get data this rule provides should depend on that one.
 """
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "XcodeVersionPropertiesInfo",
@@ -31,6 +32,10 @@ load(
 visibility("public")
 
 def _xcode_config_alias_impl(ctx):
+    # TODO: remove when we test with Bazel 8+
+    if not bazel_features.apple.xcode_config_migrated:
+        fail("This rule is not available on the current Bazel version")
+
     xcode_config = ctx.attr._xcode_config
     return [
         xcode_config[XcodeVersionPropertiesInfo],

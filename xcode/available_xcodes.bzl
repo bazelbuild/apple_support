@@ -14,6 +14,7 @@
 
 """Implementation of the `available_xcodes` build rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
@@ -23,6 +24,10 @@ load(
 visibility("public")
 
 def _available_xcodes_impl(ctx):
+    # TODO: drop when requiring Bazel 8+
+    if not bazel_features.apple.xcode_config_migrated:
+        fail("This rule is not available on the current Bazel version")
+
     available_versions = [
         target[XcodeVersionRuleInfo]
         for target in ctx.attr.versions
