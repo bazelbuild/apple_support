@@ -2396,6 +2396,16 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         ],
                         expand_if_available = "linkmap_exec_path",
                     ),
+                    flag_group(
+                        flags = [
+                            "-Xlinker",
+                            "-map",
+                            "-Xlinker",
+                            "%{output_execpath}.map",
+                        ],
+                        expand_if_available = "output_execpath",
+                        expand_if_not_available = "linkmap_exec_path",
+                    ),
                 ],
             ),
         ],
