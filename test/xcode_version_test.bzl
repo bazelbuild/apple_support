@@ -14,8 +14,13 @@
 
 """Tests for the `xcode_version` rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:xcode_version.bzl", "xcode_version")
+load(
+    "//xcode/private:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "make_all_tests")
 
 visibility("private")
@@ -44,7 +49,7 @@ def _read_version_from_provider_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_properties = target_under_test[apple_common.XcodeProperties]
+    xcode_properties = target_under_test[XcodeVersionPropertiesInfo]
 
     asserts.equals(env, "8", xcode_properties.xcode_version)
     asserts.equals(env, "9.0", xcode_properties.default_ios_sdk_version)
@@ -66,5 +71,5 @@ def xcode_version_test(name):
         name = name,
         tests = [
             _read_version_from_providers,
-        ],
+        ] if bazel_features.apple.xcode_config_migrated else [],  # TODO: Remove once we test with Bazel 8+
     )

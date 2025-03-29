@@ -59,9 +59,9 @@ def apple_support_dependencies():
     _maybe(
         http_archive,
         name = "bazel_features",
-        sha256 = "95fb3cfd11466b4cad6565e3647a76f89886d875556a4b827c021525cb2482bb",
-        strip_prefix = "bazel_features-1.10.0",
-        url = "https://github.com/bazel-contrib/bazel_features/releases/download/v1.10.0/bazel_features-v1.10.0.tar.gz",
+        sha256 = "2da0aaccbd725ad61f4e35d6d75ed421bf73ec1de167458b00ffecef3cd78f6d",
+        strip_prefix = "bazel_features-1.27.0",
+        url = "https://github.com/bazel-contrib/bazel_features/releases/download/v1.27.0/bazel_features-v1.27.0.tar.gz",
     )
 
     _maybe(
