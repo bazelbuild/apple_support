@@ -122,6 +122,15 @@ filegroup(
     ],
 )
 
+filegroup(
+    name = "tools_coverage",
+    srcs = [
+        ":gcov.sh",
+        ":llvm-profdata.sh",
+        ":llvm-cov.sh",
+    ],
+)
+
 [
     cc_toolchain(
         name = "cc-compiler-" + arch,
@@ -129,6 +138,7 @@ filegroup(
         ar_files = ":tools",
         as_files = ":tools",
         compiler_files = ":tools",
+        coverage_files = ":tools_coverage",
         dwp_files = ":empty",
         linker_files = ":tools",
         objcopy_files = ":empty",
