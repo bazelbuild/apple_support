@@ -14,11 +14,16 @@
 
 """Tests for the `xcode_config` rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
 load("//xcode:xcode_config.bzl", "xcode_config")
 load("//xcode:xcode_config_alias.bzl", "xcode_config_alias")
 load("//xcode:xcode_version.bzl", "xcode_version")
+load(
+    "//xcode/private:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")
@@ -26,7 +31,7 @@ visibility("private")
 # ------------------------------------------------------------------------------
 
 def _version_retriever_impl(ctx):
-    xcode_properties = ctx.attr.dep[apple_common.XcodeProperties]
+    xcode_properties = ctx.attr.dep[XcodeVersionPropertiesInfo]
     version = xcode_properties.xcode_version
     return [config_common.FeatureFlagInfo(value = version)]
 
@@ -130,8 +135,6 @@ def _mutual_and_explicit_xcodes_fails(namer):
     _mutual_and_explicit_xcodes_fails_test(
         name = "mutual_and_explicit_xcodes_fails",
         target_under_test = namer("foo"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["mutual_and_explicit_xcodes_fails"]
 
@@ -189,8 +192,6 @@ def _mutual_and_default_xcodes_fails(namer):
     _mutual_and_default_xcodes_fails_test(
         name = "mutual_and_default_xcodes_fails",
         target_under_test = namer("foo"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["mutual_and_default_xcodes_fails"]
 
@@ -592,8 +593,6 @@ def _invalid_xcode_from_mutual_throws(namer):
     _invalid_xcode_from_mutual_throws_test(
         name = "invalid_xcode_from_mutual_throws",
         target_under_test = "invalid_xcode_from_mutual_throws__foo",
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["invalid_xcode_from_mutual_throws"]
 
@@ -624,8 +623,6 @@ def _apple_common_xcode_version_config_constructor_fails_on_bad_input(namer):
     _apple_common_xcode_version_config_constructor_fails_on_bad_input_test(
         name = "apple_common_xcode_version_config_constructor_fails_on_bad_input",
         target_under_test = namer("test"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["apple_common_xcode_version_config_constructor_fails_on_bad_input"]
 
@@ -675,8 +672,6 @@ def _apple_common_xcode_version_config_constructor(namer):
     _apple_common_xcode_version_config_constructor_test(
         name = "apple_common_xcode_version_config_constructor",
         target_under_test = namer("test"),
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["apple_common_xcode_version_config_constructor"]
 
@@ -1134,8 +1129,6 @@ def _invalid_xcode_specified(namer):
     _invalid_xcode_specified_test(
         name = "invalid_xcode_specified",
         target_under_test = "invalid_xcode_specified__foo",
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
     )
     return ["invalid_xcode_specified"]
 
@@ -2280,9 +2273,7 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias,
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
-        ],
-        # TODO: Remove once we test with Bazel 8+
-        tags = ["manual"],
+        ] if bazel_features.apple.xcode_config_migrated else [],
     )
 
     # TODO: b/311385128 - The following tests from `XcodeConfigTest.java`
