@@ -65,8 +65,11 @@ for i in "$@"; do
     fi
 done
 
-# Call the C++ compiler
-%{cc} "$@"
+# wrapped_clang uses the path it's called as to relativize paths, so we cannot
+# call it using an absolute path
+script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+relative_script_path=${script_path##*"$(pwd)"/}
+"$relative_script_path"/wrapped_clang "$@"
 
 # Generate an empty file if header processing succeeded.
 if [[ "${OUTPUT}" == *.h.processed ]]; then

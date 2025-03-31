@@ -36,18 +36,9 @@ universal_exec_tool(
 
 genrule(
     name = "exec_cc_wrapper.target_config",
-    srcs = [
-        "osx_cc_wrapper.sh.tpl",
-        ":exec_wrapped_clang",
-    ],
+    srcs = ["osx_cc_wrapper.sh.tpl"],
     outs = ["cc_wrapper.sh"],
-    cmd = """
-sed \
-  -e 's|%{cc}|$(location :exec_wrapped_clang)|' \
-  $(location :osx_cc_wrapper.sh.tpl) \
-  > $@
-chmod +x $@
-""",
+    cmd = "cp $(SRCS) $(OUTS)",  # Make sure this script is always beside wrapped_clang
 )
 
 force_exec(
