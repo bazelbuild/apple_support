@@ -69,12 +69,6 @@ starlark_apple_static_library = rule(
                 name = "xcode_config_label",
             ),
         ),
-        # TODO: Remove when we drop bazel 6.x
-        "_xcrunwrapper": attr.label(
-            executable = True,
-            cfg = "exec",
-            default = Label("//crosstool:xcrunwrapper"),
-        ),
         "additional_linker_inputs": attr.label_list(
             allow_files = True,
         ),
