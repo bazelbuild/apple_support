@@ -17,7 +17,7 @@ x_defaults:
 tasks:
   macos_7_lowest:
     name: "7.0 LTS"
-    bazel: 7.0
+    bazel: "7.0"
     <<: *common
 
   macos_7:
