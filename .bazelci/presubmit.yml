@@ -15,6 +15,11 @@ x_defaults:
       - "//test/test_data:multi_arch_cc_binary"
 
 tasks:
+  macos_7_lowest:
+    name: "7.0 LTS"
+    bazel: 7.0
+    <<: *common
+
   macos_7:
     name: "7.x LTS"
     bazel: 7.x
