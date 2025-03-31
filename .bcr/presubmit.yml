@@ -1,5 +1,5 @@
 matrix:
-  bazel: ["7.x", "rolling"]
+  bazel: ["7.x", "8.x", "rolling"]
 
 tasks:
   verify_targets:
@@ -13,7 +13,7 @@ bcr_test_module:
   module_path: "."
 
   matrix:
-    bazel: ["7.x", "rolling"]
+    bazel: ["7.x", "8.x", "rolling"]
 
   tasks:
     run_tests:
