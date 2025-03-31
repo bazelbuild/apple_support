@@ -46,12 +46,6 @@ force_exec(
     target = ":exec_cc_wrapper.target_config",
 )
 
-# TODO: Remove when we drop bazel 6.x
-filegroup(
-    name = "xcrunwrapper",
-    srcs = [":xcrunwrapper.sh"],
-)
-
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",

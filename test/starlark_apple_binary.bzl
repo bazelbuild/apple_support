@@ -62,12 +62,6 @@ starlark_apple_binary = rule(
                 name = "xcode_config_label",
             ),
         ),
-        # TODO: Remove when we drop bazel 6.x
-        "_xcrunwrapper": attr.label(
-            cfg = "exec",
-            default = Label("//crosstool:xcrunwrapper"),
-            executable = True,
-        ),
         "binary_type": attr.string(default = "executable"),
         "bundle_loader": attr.label(),
         "deps": attr.label_list(
