@@ -67,7 +67,7 @@ done
 
 # wrapped_clang uses the path it's called as to relativize paths, so we cannot
 # call it using an absolute path
-script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_path="$(cd "$(/usr/bin/dirname "${BASH_SOURCE[0]}")" && pwd)"
 relative_script_path=${script_path##*"$(pwd)"/}
 "$relative_script_path"/wrapped_clang "$@"
 
