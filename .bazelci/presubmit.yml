@@ -21,11 +21,17 @@ tasks:
     name: "7.x lowest supported"
     bazel: "7.1.0"
     <<: *common
+    test_targets:
+      - "//..."
+      - "-//test:linking_generate_cpp_dsym_test"
 
   macos_7:
     name: "7.x LTS"
     bazel: 7.x
     <<: *common
+    test_targets:
+      - "//..."
+      - "-//test:linking_generate_cpp_dsym_test"
 
   macos_latest:
     name: "Current LTS"
