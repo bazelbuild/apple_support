@@ -15,9 +15,9 @@ selects.config_setting_group(
 [
     config_setting(
         name = cpu,
-        values = {"cpu": cpu},
+        constraint_values = constraints,
     )
-    for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
+    for cpu, constraints in APPLE_PLATFORMS_CONSTRAINTS.items()
 ]
 
 selects.config_setting_group(
