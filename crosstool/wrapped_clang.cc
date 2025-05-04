@@ -259,14 +259,12 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     const std::string nosandbox_root, bool relative_ast_path,
-                     std::string &linked_binary, std::string &dsym_path,
-                     std::string toolchain_path,
+                     bool relative_ast_path, std::string &linked_binary,
+                     std::string &dsym_path, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
-                         const std::string nosandbox_root,
                          bool relative_ast_path, std::string &linked_binary,
                          std::string &dsym_path, std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
@@ -282,7 +280,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    nosandbox_root, relative_ast_path, linked_binary, dsym_path,
+                    relative_ast_path, linked_binary, dsym_path,
                     toolchain_path, consumer);
   }
 
@@ -339,13 +337,12 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     const std::string nosandbox_root, bool relative_ast_path,
-                     std::string &linked_binary, std::string &dsym_path,
-                     std::string toolchain_path,
+                     bool relative_ast_path, std::string &linked_binary,
+                     std::string &dsym_path, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, nosandbox_root,
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
                             relative_ast_path, linked_binary, dsym_path,
                             toolchain_path, consumer)) {
       return;
@@ -360,8 +357,6 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
-  FindAndReplace("__BAZEL_EXECUTION_ROOT_NO_SANDBOX__", nosandbox_root,
-                 &new_arg);
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
   if (!toolchain_path.empty()) {
@@ -432,19 +427,6 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
   std::vector<std::string> processed_args = {};
 
-  auto wrapper_path = std::filesystem::path(argv[0]);
-  auto nosandbox_root = GetCurrentDirectory();
-  if (std::filesystem::is_symlink(wrapper_path)) {
-    auto resolved_wrapper = std::filesystem::read_symlink(wrapper_path);
-    int components_to_remove =
-        std::distance(wrapper_path.begin(), wrapper_path.end());
-    for (int i = 0; i < components_to_remove; i++) {
-      resolved_wrapper = resolved_wrapper.parent_path();
-    }
-
-    nosandbox_root = resolved_wrapper.string();
-  }
-
   bool relative_ast_path = getenv("RELATIVE_AST_PATH") != nullptr;
   auto consumer = [&](const std::string &arg) {
     processed_args.push_back(arg);
@@ -452,9 +434,8 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, nosandbox_root,
-                    relative_ast_path, linked_binary, dsym_path, toolchain_path,
-                    consumer);
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
+                    linked_binary, dsym_path, toolchain_path, consumer);
   }
 
   char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
