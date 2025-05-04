@@ -24,7 +24,10 @@ def binary_test_suite(name):
 
     apple_verification_test(
         name = "{}_relative_oso_test".format(name),
-        tags = [name],
+        tags = [
+            name,
+            "skipci",  # TODO: Enable once CI has Xcode 16.3
+        ],
         build_type = "device",
         compilation_mode = "dbg",
         cpus = {"macos_cpus": "arm64"},

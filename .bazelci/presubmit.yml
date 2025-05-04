@@ -8,6 +8,8 @@ x_defaults:
       - "//..."
     test_targets:
       - "//..."
+    test_flags:
+      - "--test_tag_filters=-skipci"
 
   linux_common: &linux_common
     platform: ubuntu2004
