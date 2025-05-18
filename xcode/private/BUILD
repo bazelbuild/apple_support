@@ -19,8 +19,8 @@ bzl_library(
 package_group(
     name = "xcode_sdk_variant_config_setting_users",
     packages = [
-        "@bazel_tools//tools/osx",
-        "@bazel_tools//tools/osx/xcode_config",
+        "//tools/osx",
+        "//tools/osx/xcode_config",
     ],
 )
 
