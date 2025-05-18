@@ -16,6 +16,10 @@
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load(
+    "@build_bazel_apple_support//xcode:providers.bzl",
+    "XcodeSdkVariantInfo",
+)
+load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "XcodeVersionPropertiesInfo",
     "XcodeVersionRuleInfo",
@@ -28,6 +32,14 @@ def _xcode_version_impl(ctx):
     if not bazel_features.apple.xcode_config_migrated:
         fail("This rule is not available on the current Bazel version")
 
+    if ctx.attr.sdk:
+        sdk_variant_info = ctx.attr.sdk[XcodeSdkVariantInfo]
+    else:
+        # We intentionally don't fail here if no SDK is present. Instead, we do
+        # this inside `xcode_config` once we've resolved the specific Xcode that
+        # we're using in the build.
+        sdk_variant_info = None
+
     xcode_version_properties = XcodeVersionPropertiesInfo(
         xcode_version = ctx.attr.version,
         default_ios_sdk_version = ctx.attr.default_ios_sdk_version,
@@ -35,6 +47,7 @@ def _xcode_version_impl(ctx):
         default_watchos_sdk_version = ctx.attr.default_watchos_sdk_version,
         default_tvos_sdk_version = ctx.attr.default_tvos_sdk_version,
         default_macos_sdk_version = ctx.attr.default_macos_sdk_version,
+        sdk_variant_info = sdk_variant_info,
     )
     return [
         xcode_version_properties,
@@ -108,6 +121,17 @@ NOTE: The `--watchos_sdk_version` flag is deprecated and not recommended for
 use.
 """,
             mandatory = False,
+        ),
+        "sdk": attr.label(
+            doc = """\
+The `xcode_sdk_variant` target that represents the SDK in this version of Xcode
+to build with under the current target configuration. This attribute will
+typically be assigned via a `select({...})` expression that selects the
+appropriate `xcode_sdk_variant` target based on the target configuration's
+operating system and environment constraints.
+""",
+            mandatory = False,
+            providers = [[XcodeSdkVariantInfo]],
         ),
         "version": attr.string(
             doc = "The official version number for this version of Xcode.",
