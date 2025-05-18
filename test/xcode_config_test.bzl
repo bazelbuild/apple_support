@@ -18,7 +18,6 @@ load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
 load("//xcode:xcode_config.bzl", "xcode_config")
-load("//xcode:xcode_config_alias.bzl", "xcode_config_alias")
 load("//xcode:xcode_version.bzl", "xcode_version")
 load(
     "//xcode/private:providers.bzl",
@@ -31,13 +30,20 @@ visibility("private")
 # ------------------------------------------------------------------------------
 
 def _version_retriever_impl(ctx):
-    xcode_properties = ctx.attr.dep[XcodeVersionPropertiesInfo]
+    xcode_properties = ctx.attr._xcode_dep[XcodeVersionPropertiesInfo]
     version = xcode_properties.xcode_version
     return [config_common.FeatureFlagInfo(value = version)]
 
 version_retriever = rule(
     implementation = _version_retriever_impl,
-    attrs = {"dep": attr.label()},
+    attrs = {
+        "_xcode_dep": attr.label(
+            default = configuration_field(
+                fragment = "apple",
+                name = "xcode_config_label",
+            ),
+        ),
+    },
 )
 
 def _provider_grabber_impl(ctx):
@@ -739,7 +745,6 @@ _apple_common_xcode_version_config_constructor_test = analysistest.make(
 def _config_alias_config_setting(namer):
     version_retriever(
         name = namer("flag_propagator"),
-        dep = namer(":alias"),
         tags = FIXTURE_TAGS,
     )
 
@@ -751,11 +756,6 @@ def _config_alias_config_setting(namer):
             namer(":version64"),
             namer(":version12"),
         ],
-        tags = FIXTURE_TAGS,
-    )
-
-    xcode_config_alias(
-        name = namer("alias"),
         tags = FIXTURE_TAGS,
     )
 
@@ -890,12 +890,6 @@ _config_alias_config_setting_12_test = analysistest.make(
 def _default_version_config_setting(namer):
     version_retriever(
         name = namer("flag_propagator"),
-        dep = namer(":alias"),
-        tags = FIXTURE_TAGS,
-    )
-
-    xcode_config_alias(
-        name = namer("alias"),
         tags = FIXTURE_TAGS,
     )
 
