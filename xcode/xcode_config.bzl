@@ -111,11 +111,19 @@ def _xcode_config_impl(ctx):
         xcode_version_flag = apple_fragment.xcode_version_flag,
         include_xcode_execution_info = apple_fragment.include_xcode_exec_requirements,
     )
-    return [
+
+    providers = [
         DefaultInfo(runfiles = ctx.runfiles()),
         xcode_versions,
         xcode_version_properties,
     ]
+
+    # TODO: b/367688113 - Once we've migrated all clients to generate and use
+    # the new `xcode_sdk_variant` rules, fail if this field is not set.
+    if xcode_version_properties.sdk_variant_info:
+        providers.append(xcode_version_properties.sdk_variant_info)
+
+    return providers
 
 xcode_config = rule(
     attrs = {
