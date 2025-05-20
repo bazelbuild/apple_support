@@ -24,12 +24,6 @@ bzl_library(
 )
 
 bzl_library(
-    name = "xcode_config_alias",
-    srcs = ["xcode_config_alias.bzl"],
-    deps = ["//xcode/private:providers"],
-)
-
-bzl_library(
     name = "xcode_version",
     srcs = ["xcode_version.bzl"],
     deps = [
