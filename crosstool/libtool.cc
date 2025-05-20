@@ -117,22 +117,22 @@ bool runSubProcess(const std::vector<std::string> &args) {
 
   int status = posix_spawn(&pid, args[0].c_str(), &actions, nullptr,
                            const_cast<char **>(exec_argv.data()), environ);
+  close(pipefd[1]);  // Close write end in the parent
   if (status == 0) {
-    int wait_status;
-    do {
-      wait_status = waitpid(pid, &status, 0);
-    } while ((wait_status == -1) && (errno == EINTR));
-
     posix_spawn_file_actions_destroy(&actions);
-    close(pipefd[1]);  // Close write end in the parent
-
+    int wait_status;
     char buffer[256];
+
+    // Drain stderr pipe first, once closed we'll check waitpid
     ssize_t count;
     std::ostringstream oss;
     while ((count = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) {
-      buffer[count] = '\0';
-      oss << buffer;
+      oss.write(buffer, count);
     }
+
+    do {
+      wait_status = waitpid(pid, &status, 0);
+    } while ((wait_status == -1) && (errno == EINTR));
 
     std::stringstream ss(oss.str());
     std::string line;
