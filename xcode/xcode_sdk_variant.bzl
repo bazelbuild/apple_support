@@ -22,6 +22,11 @@ load(
 visibility("public")
 
 def _xcode_sdk_variant_impl(ctx):
+    def dotted_version_or_none(str):
+        if not str:
+            return None
+        return apple_common.dotted_version(str)
+
     return [
         XcodeSdkVariantInfo(
             archs = ctx.attr.archs,
@@ -31,22 +36,22 @@ def _xcode_sdk_variant_impl(ctx):
             llvm_triple_environment = ctx.attr.llvm_triple_environment,
             llvm_triple_os = ctx.attr.llvm_triple_os,
             llvm_triple_vendor = ctx.attr.llvm_triple_vendor,
-            maximum_supported_os_version = apple_common.dotted_version(
+            maximum_supported_os_version = dotted_version_or_none(
                 ctx.attr.maximum_supported_os_version,
             ),
-            minimum_supported_os_version = apple_common.dotted_version(
+            minimum_supported_os_version = dotted_version_or_none(
                 ctx.attr.minimum_supported_os_version,
             ),
-            minimum_swift_concurrency_in_os_version = apple_common.dotted_version(
+            minimum_swift_concurrency_in_os_version = dotted_version_or_none(
                 ctx.attr.minimum_swift_concurrency_in_os_version,
             ),
-            minimum_swift_in_os_version = apple_common.dotted_version(
+            minimum_swift_in_os_version = dotted_version_or_none(
                 ctx.attr.minimum_swift_in_os_version,
             ),
             platform_directory_name = ctx.attr.platform_directory_name,
             platform_name = ctx.attr.platform_name,
             resources_platform_name = ctx.attr.resources_platform_name,
-            version = apple_common.dotted_version(ctx.attr.version),
+            version = dotted_version_or_none(ctx.attr.version),
         ),
     ]
 

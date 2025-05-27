@@ -23,6 +23,13 @@ XcodeSdkVariantInfo = provider(
     doc = """\
         Contains information about a specific SDK that is included in a version
         of Xcode.
+
+        The fields in this provider will be `None` if the build is configured
+        for a non-existent SDK (for example, visionOS using a version of Xcode
+        that did not support it) or for a target platform that does not use
+        Xcode (such as Linux). This allows for a graceful fallback rather than
+        an early analysis time failure if the SDK targets are reached while in
+        such a configuration in the build graph.
         """,
     fields = {
         "archs": """\
