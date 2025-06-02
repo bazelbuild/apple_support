@@ -15,15 +15,15 @@
 """Implementation for macOS universal binary rule."""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("@bazel_skylib//lib:shell.bzl", "shell")
 load("//lib:apple_support.bzl", "apple_support")
 load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
 
 def _universal_binary_impl(ctx):
-    inputs = [
-        binary.files.to_list()[0]
-        for binary in ctx.split_attr.binary.values()
-    ]
+    inputs = []
+    for binary in ctx.split_attr.binary.values():
+        inputs += binary.files.to_list()
 
     if not inputs:
         fail("Target (%s) `binary` label ('%s') does not provide any " +
@@ -31,7 +31,32 @@ def _universal_binary_impl(ctx):
 
     output = ctx.actions.declare_file(ctx.label.name)
 
-    if len(inputs) > 1:
+    lipo_toolchain = ctx.toolchains["//toolchain/lipo:toolchain_type"]
+
+    if len(inputs) > 1 and lipo_toolchain:
+        lipo_tool = lipo_toolchain.info.lipo
+
+        cmd = [
+            "mkdir -p {} &&".format(shell.quote(output.dirname)),
+            lipo_tool.path,
+            "-create",
+        ]
+        cmd.extend([
+            shell.quote(file.path)
+            for file in inputs
+        ])
+        cmd.extend([
+            "-output",
+            shell.quote(output.path),
+        ])
+
+        ctx.actions.run_shell(
+            command = " ".join(cmd),
+            mnemonic = "AppleLipo",
+            inputs = inputs + [lipo_tool],
+            outputs = [output],
+        )
+    elif len(inputs) > 1:
         lipo.create(
             actions = ctx.actions,
             apple_fragment = ctx.fragments.apple,
@@ -84,4 +109,7 @@ binary.
     executable = True,
     fragments = ["apple"],
     implementation = _universal_binary_impl,
+    toolchains = [
+        config_common.toolchain_type("//toolchain/lipo:toolchain_type", mandatory = False),
+    ],
 )
