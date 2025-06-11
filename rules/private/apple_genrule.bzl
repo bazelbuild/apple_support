@@ -49,8 +49,8 @@ def _apple_genrule_impl(ctx):
             attr = "executable",
         )
 
-    resolved_srcs = depset(transitive = [dep.files for dep in ctx.attr.srcs])
-    label_dict = {dep.label: dep.files.to_list() for dep in ctx.attr.srcs}
+    resolved_srcs = depset(transitive = [dep[DefaultInfo].files for dep in ctx.attr.srcs])
+    label_dict = {dep.label: dep[DefaultInfo].files.to_list() for dep in ctx.attr.srcs}
 
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
 

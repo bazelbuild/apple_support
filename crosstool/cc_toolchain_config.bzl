@@ -2503,7 +2503,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    modulemaps = ctx.attr.module_map.files.to_list()
+    modulemaps = ctx.attr.module_map[DefaultInfo].files.to_list()
     if modulemaps:
         if len(modulemaps) != 1:
             fail("internal error: expected 1 modulemap got:", modulemaps)
