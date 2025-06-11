@@ -70,7 +70,7 @@ _transition = transition(
 )
 
 def _apple_verification_test_impl(ctx):
-    binary = ctx.attr.target_under_test[0].files.to_list()[0]
+    binary = ctx.attr.target_under_test[0][DefaultInfo].files.to_list()[0]
     output_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.expand_template(
         template = ctx.file.verifier_script,
