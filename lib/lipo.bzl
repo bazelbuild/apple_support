@@ -100,7 +100,8 @@ def _extract_or_thin(
             environment.
     """
     if not input_file and not input_shell_expression:
-        fail("lipo.extract_or_thin needs a fat binary in `input_file` or `input_shell_expression`.")
+        fail("""\
+lipo.extract_or_thin needs a universal binary in `input_file` or `input_shell_expression`.""")
     if input_file and input_shell_expression:
         fail("""
 lipo.extract_or_thin cannot use `input_file` along with `input_shell_expression` simultaneously.
