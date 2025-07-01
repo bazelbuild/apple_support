@@ -176,6 +176,12 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ]
 
+    lto_index_actions = [
+        ACTION_NAMES.lto_index_for_executable,
+        ACTION_NAMES.lto_index_for_dynamic_library,
+        ACTION_NAMES.lto_index_for_nodeps_dynamic_library,
+    ]
+
     strip_action = action_config(
         action_name = ACTION_NAMES.strip,
         flag_sets = [
@@ -987,6 +993,14 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "default_link_flags",
         enabled = True,
         flag_sets = [
+            flag_set(
+                actions = all_link_actions + lto_index_actions,
+                flag_groups = ([
+                    flag_group(
+                        flags = ctx.attr.link_flags,
+                    ),
+                ] if ctx.attr.link_flags else []),
+            ),
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
@@ -1974,6 +1988,14 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 with_features = [with_feature_set(features = ["dbg"])],
             ),
             flag_set(
+                actions = [ACTION_NAMES.c_compile],
+                flag_groups = ([
+                    flag_group(
+                        flags = ctx.attr.conly_flags,
+                    ),
+                ] if ctx.attr.conly_flags else []),
+            ),
+            flag_set(
                 actions = [
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_compile,
@@ -1983,7 +2005,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.lto_backend,
                     ACTION_NAMES.clif_match,
                 ],
-                flag_groups = [flag_group(flags = ["-std=c++17"])],
+                flag_groups = ([
+                    flag_group(
+                        flags = ctx.attr.cxx_flags,
+                    ),
+                ] if ctx.attr.cxx_flags else []),
             ),
         ],
     )
@@ -2725,6 +2751,9 @@ cc_toolchain_config = rule(
             mandatory = True,
         ),
         "module_map": attr.label(),
+        "cxx_flags": attr.string_list(),
+        "conly_flags": attr.string_list(),
+        "link_flags": attr.string_list(),
         "tool_paths_overrides": attr.string_dict(),
         "wrapped_clang": attr.label(
             allow_single_file = True,
