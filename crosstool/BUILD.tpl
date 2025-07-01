@@ -87,6 +87,7 @@ filegroup(
         ],
         libtool = "@build_bazel_apple_support//crosstool:exec_libtool",
         tool_paths_overrides = {%{tool_paths_overrides}},
+        c_flags = [%{c_flags}],
         conly_flags = [%{conly_flags}],
         cxx_flags = [%{cxx_flags}],
         link_flags = [%{link_flags}],
