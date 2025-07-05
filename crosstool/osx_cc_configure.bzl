@@ -65,6 +65,26 @@ def _succeeds(repository_ctx, *args):
 def _copy_file(repository_ctx, src, dest):
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
+def _get_tool_wrapper(repository_ctx, wrapper_script_name, tool_name, path_env_var):
+    cov_tool_wrapper_template = Label("@build_bazel_apple_support//crosstool:cov_tool_wrapper.sh.tpl")
+
+    command = "xcrun --run " + tool_name
+
+    override_path = repository_ctx.os.environ.get(path_env_var)
+    if override_path:
+        if not override_path.startswith("/"):
+            override_path = repository_ctx.which(override_path)
+        command = '"{}"'.format(override_path)
+
+    repository_ctx.template(
+        wrapper_script_name,
+        cov_tool_wrapper_template,
+        {
+            "%{command}": command,
+        },
+    )
+    return wrapper_script_name
+
 def configure_osx_toolchain(repository_ctx):
     """Configure C++ toolchain on macOS.
 
@@ -96,11 +116,9 @@ def configure_osx_toolchain(repository_ctx):
     enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
 
     tool_paths = {}
-    gcov_path = repository_ctx.os.environ.get("GCOV")
-    if gcov_path != None:
-        if not gcov_path.startswith("/"):
-            gcov_path = repository_ctx.which(gcov_path)
-        tool_paths["gcov"] = gcov_path
+    tool_paths["gcov"] = _get_tool_wrapper(repository_ctx, "gcov.sh", "llvm-profdata", "GCOV")
+    tool_paths["llvm-cov"] = _get_tool_wrapper(repository_ctx, "llvm-cov.sh", "llvm-cov", "BAZEL_LLVM_COV")
+    tool_paths["llvm-profdata"] = _get_tool_wrapper(repository_ctx, "llvm-profdata.sh", "llvm-profdata", "BAZEL_LLVM_PROFDATA")
 
     features = []
     if _succeeds(repository_ctx, "ld", "-no_warn_duplicate_libraries", "-v"):
