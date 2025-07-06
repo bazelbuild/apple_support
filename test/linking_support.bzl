@@ -36,7 +36,6 @@ def _subtract_linking_contexts(owner, linking_contexts, avoid_dep_linking_contex
     )
     return cc_common.create_linking_context(
         linker_inputs = depset([linker_input]),
-        owner = owner,
     )
 
 def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
