@@ -1,5 +1,7 @@
 """Linking logic copied from rules_apple"""
 
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 load(":cc_toolchain_forwarder.bzl", "TestApplePlatformInfo")
 
 def _build_avoid_library_set(avoid_dep_linking_contexts):
