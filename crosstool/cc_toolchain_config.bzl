@@ -32,6 +32,7 @@ load(
     "with_feature_set",
 )
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 _DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_dynamic_library,
