@@ -63,6 +63,10 @@ apple_cc_autoconf = repository_rule(
         "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain
         "USER",  # Used to allow paths for custom toolchains to be used by C* compiles
         "XCODE_VERSION",  # Force re-computing the toolchain by including the current Xcode version info in an env var
+        "BAZEL_COPTS",
+        "BAZEL_CONLYOPTS",
+        "BAZEL_CXXOPTS",
+        "BAZEL_LINKOPTS",
     ],
     implementation = _apple_cc_autoconf_impl,
     configure = True,
