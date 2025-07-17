@@ -31,6 +31,9 @@ tasks:
     name: "Current LTS"
     bazel: latest
     <<: *common
+    test_targets:
+      - "//..."
+      - "//test:linking_generate_cpp_dsym_test"
 
   macos_latest_shell_scripts:
     name: "Current layering_check and header parsing"
@@ -44,6 +47,9 @@ tasks:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *common
+    test_targets:
+      - "//..."
+      - "//test:linking_generate_cpp_dsym_test"
 
   linux_latest:
     name: "Current LTS"
