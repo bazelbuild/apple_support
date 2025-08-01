@@ -868,7 +868,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
-                        flags = ["-Wl,-S"],
+                        flags = ["STRIP_DEBUG_SYMBOLS"],
                         expand_if_available = "strip_debug_symbols",
                     ),
                 ],
@@ -2062,13 +2062,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [flag_group(flags = ["-g"])],
             ),
             flag_set(
-                actions = ["objc-executable"],
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "DSYM_HINT_LINKED_BINARY=%{linked_binary}",
+                            "DSYM_HINT_LINKED_BINARY=%{output_execpath}",
                             "DSYM_HINT_DSYM_PATH=%{dsym_path}",
                         ],
+                        # We need to check this for backwards compatibility with bazel 7
+                        expand_if_available = "dsym_path",
                     ),
                 ],
             ),

@@ -260,13 +260,15 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, std::string toolchain_path,
+                     std::string &dsym_path, bool &strip_debug_symbols,
+                     std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
                          bool relative_ast_path, std::string &linked_binary,
-                         std::string &dsym_path, std::string toolchain_path,
+                         std::string &dsym_path, bool &strip_debug_symbols,
+                         std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -281,7 +283,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
                     relative_ast_path, linked_binary, dsym_path,
-                    toolchain_path, consumer);
+                    strip_debug_symbols, toolchain_path, consumer);
   }
 
   return true;
@@ -338,13 +340,14 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, std::string toolchain_path,
+                     std::string &dsym_path, bool &strip_debug_symbols,
+                     std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
     if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
                             relative_ast_path, linked_binary, dsym_path,
-                            toolchain_path, consumer)) {
+                            strip_debug_symbols, toolchain_path, consumer)) {
       return;
     }
   }
@@ -353,6 +356,10 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
     return;
   }
   if (SetArgIfFlagPresent(arg, "DSYM_HINT_DSYM_PATH", &dsym_path)) {
+    return;
+  }
+  if (arg == "STRIP_DEBUG_SYMBOLS") {
+    strip_debug_symbols = true;
     return;
   }
 
@@ -422,6 +429,7 @@ int main(int argc, char *argv[]) {
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
   std::string linked_binary, dsym_path;
+  bool strip_debug_symbols = false;
 
   const std::string cwd = GetCurrentDirectory();
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
@@ -435,7 +443,8 @@ int main(int argc, char *argv[]) {
     std::string arg(argv[i]);
 
     ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
-                    linked_binary, dsym_path, toolchain_path, consumer);
+                    linked_binary, dsym_path, strip_debug_symbols,
+                    toolchain_path, consumer);
   }
 
   char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
@@ -490,15 +499,31 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  std::vector<std::string> dsymutil_args = {"/usr/bin/xcrun",
-                                            "dsymutil",
-                                            linked_binary,
-                                            "-o",
-                                            dsym_path,
-                                            "--flat",
-                                            "--no-swiftmodule-timestamp"};
+  const std::string bundle_suffix = ".dSYM";
+  bool is_bundle = dsym_path.rfind(bundle_suffix) ==
+                   dsym_path.length() - bundle_suffix.length();
+
+  std::vector<std::string> dsymutil_args = {
+      "/usr/bin/xcrun", "dsymutil",
+      linked_binary,    "-o",
+      dsym_path,        "--no-swiftmodule-timestamp"};
+  if (!is_bundle) {
+    // We should generate a .dSYM bundle only when a path is passed to a .dSYM
+    // directory for backwards compatibility
+    dsymutil_args.push_back("--flat");
+  }
   if (!RunSubProcess(dsymutil_args)) {
     return 1;
+  }
+
+  // When stripping is requested, we should still strip the binary
+  // before returning
+  if (strip_debug_symbols) {
+    std::vector<std::string> strip_args = {"/usr/bin/xcrun", "strip", "-S",
+                                           linked_binary};
+    if (!RunSubProcess(strip_args)) {
+      return 2;
+    }
   }
 
   return 0;
