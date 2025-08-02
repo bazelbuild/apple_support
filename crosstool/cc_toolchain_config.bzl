@@ -1023,6 +1023,31 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    lto_object_path_feature = feature(
+        name = "lto_object_path",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-Xlinker",
+                            "-object_path_lto",
+                            "-Xlinker",
+                            "%{output_execpath}.lto.o",
+                        ],
+                        expand_if_available = "output_execpath",
+                    ),
+                ],
+                with_features = [
+                    with_feature_set(features = ["full_lto"]),
+                    with_feature_set(features = ["thin_lto"]),
+                ],
+            ),
+        ],
+    )
+
     no_deduplicate_feature = feature(
         name = "no_deduplicate",
         enabled = True,
@@ -2610,6 +2635,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "opt"),
         feature(name = "parse_headers"),
         feature(name = "no_dotd_file"),
+        feature(name = "full_lto"),
+        feature(name = "thin_lto"),
 
         # Features with more configuration
         link_libcpp_feature,
@@ -2647,6 +2674,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         fdo_optimize_feature,
         autofdo_feature,
         lipo_feature,
+        lto_object_path_feature,
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
         coverage_prefix_map_feature,
