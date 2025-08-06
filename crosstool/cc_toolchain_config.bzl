@@ -1023,6 +1023,38 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    # We need to pass -object_path_lto in order to get debug symbols when building with LTO.
+    # In a perfect world, we would only pass it when the thin_lto or full_lto features are enabled.
+    # However, when these features are enabled, bazel will follow the linking steps expected by
+    # the traditional llvm tools, which doesn't work on Apple platforms.
+    # On MacOS, passing -flto (or -flto=thin) to the compiler is mostly enough for the linker to
+    # do the right thing. The only thing left is to tell ld64 to keep the intermediate .o file,
+    # so dsymutil can find it.
+    # We're doing that here by passing -object_path_lto to every linking action. If LTO is disabled,
+    # it will be a no-op for the linker. But if it is enabled, it will allow dsymutil to find the
+    # symbols and put it in the .dSYM folder. Luckily for us, both ld64 and dsymutil run in the same
+    # action, so the fact that it's not declared as an output is not a problem.
+    lto_object_path_feature = feature(
+        name = "lto_object_path",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-Xlinker",
+                            "-object_path_lto",
+                            "-Xlinker",
+                            "%{output_execpath}.lto.o",
+                        ],
+                        expand_if_available = "output_execpath",
+                    ),
+                ],
+            ),
+        ],
+    )
+
     no_deduplicate_feature = feature(
         name = "no_deduplicate",
         enabled = True,
@@ -2662,6 +2694,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         fdo_optimize_feature,
         autofdo_feature,
         lipo_feature,
+        lto_object_path_feature,
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
         coverage_prefix_map_feature,
