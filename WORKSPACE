@@ -29,3 +29,8 @@ load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_
 rules_shell_dependencies()
 
 rules_shell_toolchains()
+
+# buildifier: disable=bzl-visibility
+load("//tools/http_dmg/private/tests:http_dmg_test_deps.bzl", "http_dmg_test_deps")
+
+http_dmg_test_deps()
