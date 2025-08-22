@@ -15,6 +15,13 @@ x_defaults:
     platform: ubuntu2004
     build_targets:
       - "//test/test_data:multi_arch_cc_binary"
+    test_targets:
+      - "//tools/http_dmg/..."
+
+  windows_common: &windows_common
+    platform: windows
+    test_targets:
+      - "//tools/http_dmg/..."
 
 tasks:
   macos_7_lowest:
@@ -60,5 +67,10 @@ tasks:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *linux_common
+
+  windows_latest:
+    name: "Current LTS"
+    bazel: latest
+    <<: *windows_common
 
 buildifier: 8.2.1

@@ -20,3 +20,10 @@ register_toolchains("@local_config_apple_cc_toolchains//:all")
 
 bazel_dep(name = "rules_shell", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
+
+dmg_arc_test_deps = use_extension("//tools/http_dmg/private/tests:http_dmg_test_extensions.bzl", "http_dmg_test", dev_dependency = True)
+use_repo(
+    dmg_arc_test_deps,
+    "http_dmg_test_firefox",
+    "http_dmg_test_firefox_strip_prefix",
+)
