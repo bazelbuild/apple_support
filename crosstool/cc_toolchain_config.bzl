@@ -2291,13 +2291,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     flag_group(
                         flags = ctx.attr.c_flags,
                     ),
-                ] if ctx.attr.c_flags else []) + [
-                    flag_group(
-                        flags = ["%{user_compile_flags}"],
-                        iterate_over = "user_compile_flags",
-                        expand_if_available = "user_compile_flags",
-                    ),
-                ],
+                ] if ctx.attr.c_flags else []),
             ),
             flag_set(
                 actions = [ACTION_NAMES.c_compile],
@@ -2322,6 +2316,27 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         flags = ctx.attr.cxx_flags,
                     ),
                 ] if ctx.attr.cxx_flags else []),
+            ),
+            flag_set(
+                actions = [
+                    ACTION_NAMES.assemble,
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.cpp_module_codegen,
+                    ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = ["%{user_compile_flags}"],
+                        iterate_over = "user_compile_flags",
+                        expand_if_available = "user_compile_flags",
+                    ),
+                ],
             ),
         ],
     )
