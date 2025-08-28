@@ -93,9 +93,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
         "//command_line_option:apple_split_cpu": environment_arch if environment_arch else "",
         "//command_line_option:compiler": None,
         "//command_line_option:cpu": cpu,
-        "//command_line_option:crosstool_top": (
-            settings["//command_line_option:apple_crosstool_top"]
-        ),
         "//command_line_option:fission": [],
         "//command_line_option:grte_top": None,
         "//command_line_option:platforms": (
@@ -126,7 +123,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
     return output_dictionary
 
 _apple_platform_transition_inputs = [
-    "//command_line_option:apple_crosstool_top",
     "//command_line_option:apple_platforms",
     "//command_line_option:cpu",
     "//command_line_option:incompatible_enable_apple_toolchain_resolution",
@@ -146,7 +142,6 @@ _apple_rule_base_transition_outputs = [
     "//command_line_option:apple_split_cpu",
     "//command_line_option:compiler",
     "//command_line_option:cpu",
-    "//command_line_option:crosstool_top",
     "//command_line_option:fission",
     "//command_line_option:grte_top",
     "//command_line_option:ios_minimum_os",
