@@ -28,6 +28,7 @@ cc_binary(
 cc_library(
     name = "cc_main",
     srcs = ["main.cc"],
+    copts = ["-std=c++20"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 

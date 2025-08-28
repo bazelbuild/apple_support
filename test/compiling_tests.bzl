@@ -33,6 +33,7 @@ def compiling_test_suite(name):
         tags = [name],
         expected_argv = [
             "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=.",
+            "-std=c++17 -std=c++20",
         ],
         not_expected_argv = [
             "-DNS_BLOCK_ASSERTIONS=1",
