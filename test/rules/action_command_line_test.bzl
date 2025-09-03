@@ -14,6 +14,7 @@
 
 """Rules for testing the contents of action command lines."""
 
+load("@bazel_features//private:util.bzl", bazel_version_ge = "ge")
 load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "unittest")
 
@@ -102,6 +103,32 @@ def _action_command_line_test_impl(ctx):
                 ),
             )
 
+    # Bazel 7 and 8 omit the toolchain environment of link actions from action.env.
+    if mnemonic in ["CppLink", "ObjcLink"] and not bazel_version_ge("9.0.0"):
+        return analysistest.end(env)
+
+    for expected_key in ctx.attr.expected_env_keys:
+        if expected_key not in action.env:
+            unittest.fail(
+                env,
+                "{}expected env to contain key '{}', but it did not: {}".format(
+                    message_prefix,
+                    expected_key,
+                    action.env,
+                ),
+            )
+
+    for not_expected_key in ctx.attr.not_expected_env_keys:
+        if not_expected_key in action.env:
+            unittest.fail(
+                env,
+                "{}expected env to not contain key '{}', but it did: {}".format(
+                    message_prefix,
+                    not_expected_key,
+                    action.env,
+                ),
+            )
+
     return analysistest.end(env)
 
 def make_action_command_line_test_rule(config_settings = {}):
@@ -132,6 +159,20 @@ space-delimited string.
 A list of strings representing substrings expected not to appear in the action
 command line, after concatenating all command line arguments into a single
 space-delimited string.
+""",
+            ),
+            "expected_env_keys": attr.string_list(
+                mandatory = False,
+                doc = """\
+A list of strings representing environment variable keys expected to be set
+in the action environment.
+""",
+            ),
+            "not_expected_env_keys": attr.string_list(
+                mandatory = False,
+                doc = """\
+A list of strings representing environment variable keys expected not to be
+set in the action environment.
 """,
             ),
             "mnemonic": attr.string(

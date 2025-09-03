@@ -1565,7 +1565,29 @@
     },
     {
       "enabled": true,
-      "env_sets": [],
+      "env_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": "dsym_path",
+              "key": "DSYM_HINT_DSYM_PATH",
+              "type_name": "env_entry",
+              "value": "%{dsym_path}"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
       "flag_sets": [
         {
           "actions": [
@@ -1585,34 +1607,6 @@
               "flag_groups": [],
               "flags": [
                 "-g"
-              ],
-              "iterate_over": null,
-              "type_name": "flag_group"
-            }
-          ],
-          "type_name": "flag_set",
-          "with_features": []
-        },
-        {
-          "actions": [
-            "c++-link-dynamic-library",
-            "c++-link-executable",
-            "c++-link-nodeps-dynamic-library",
-            "lto-index-for-dynamic-library",
-            "lto-index-for-executable",
-            "lto-index-for-nodeps-dynamic-library",
-            "objc-executable"
-          ],
-          "flag_groups": [
-            {
-              "expand_if_available": "dsym_path",
-              "expand_if_equal": null,
-              "expand_if_false": null,
-              "expand_if_not_available": null,
-              "expand_if_true": null,
-              "flag_groups": [],
-              "flags": [
-                "DSYM_HINT_DSYM_PATH=%{dsym_path}"
               ],
               "iterate_over": null,
               "type_name": "flag_group"

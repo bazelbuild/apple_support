@@ -665,16 +665,17 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     strip_debug_symbols_feature = feature(
         name = "__strip_debug_symbols",
         enabled = True,
-        flag_sets = [
-            flag_set(
+        env_sets = [
+            env_set(
                 actions = [
                     ACTION_NAMES.cpp_link_dynamic_library,
                     ACTION_NAMES.cpp_link_executable,
                     ACTION_NAMES.objc_executable,
                 ],
-                flag_groups = [
-                    flag_group(
-                        flags = ["STRIP_DEBUG_SYMBOLS"],
+                env_entries = [
+                    env_entry(
+                        key = "STRIP_DEBUG_SYMBOLS",
+                        value = "true",
                         expand_if_available = "strip_debug_symbols",
                     ),
                 ],
@@ -1721,14 +1722,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
                 flag_groups = [flag_group(flags = ["-g"])],
             ),
-            flag_set(
+        ],
+        env_sets = [
+            env_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "DSYM_HINT_DSYM_PATH=%{dsym_path}",
-                        ],
-                        # We need to check this for backwards compatibility with bazel 7
+                env_entries = [
+                    env_entry(
+                        key = "DSYM_HINT_DSYM_PATH",
+                        value = "%{dsym_path}",
+                        # Bazel 7 does not provide dsym_path on C++ link actions.
                         expand_if_available = "dsym_path",
                     ),
                 ],

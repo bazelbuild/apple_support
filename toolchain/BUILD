@@ -402,7 +402,7 @@ cc_args(
 cc_args(
     name = "generate_dsym_link_flags",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["DSYM_HINT_DSYM_PATH={dsym_path}"],
+    env = {"DSYM_HINT_DSYM_PATH": "{dsym_path}"},
     format = {"dsym_path": "@rules_cc//cc/toolchains/variables:dsym_path"},
     requires_not_none = "@rules_cc//cc/toolchains/variables:dsym_path",
 )
@@ -506,7 +506,7 @@ negatable_feature(
 negatable_feature(
     name = "strip_debug_symbols",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["STRIP_DEBUG_SYMBOLS"],
+    env = {"STRIP_DEBUG_SYMBOLS": "true"},
     overrides = "@rules_cc//cc/toolchains/features/legacy:strip_debug_symbols",
     requires_not_none = "@rules_cc//cc/toolchains/variables:strip_debug_symbols",
 )
