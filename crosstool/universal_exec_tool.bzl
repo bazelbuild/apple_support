@@ -39,6 +39,7 @@ env -i \
     -arch arm64 \
     -arch x86_64 \
     -O3 \
+    -g \
     -o $@ \
     $(SRCS)
 """,

@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// wrapped_clang.cc: Pass args to 'xcrun clang' and zip dsym files.
+// wrapped_clang.cc: Pass args to 'xcrun clang' and optionally produce dSYM
+// files.
 //
-// wrapped_clang passes its args to clang, but also supports a separate set of
-// invocations to generate dSYM files.  If "DSYM_HINT" flags are passed in, they
-// are used to construct that separate set of invocations (instead of being
-// passed to clang).
-// The following "DSYM_HINT" flags control dsym generation.  If any one if these
-// are passed in, then they all must be passed in.
-// "LINKED_BINARY": Workspace-relative path to binary output of the link action.
-// "DSYM_HINT_DSYM_PATH": Workspace-relative path to dSYM dwarf file.
 
 #include <libgen.h>
 #include <spawn.h>
@@ -256,14 +249,12 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
+                      std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
-                         std::string &linked_binary, std::string &dsym_path,
-                         bool &strip_debug_symbols, std::string toolchain_path,
+                         std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -277,7 +268,6 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    linked_binary, dsym_path, strip_debug_symbols,
                     toolchain_path, consumer);
   }
 
@@ -360,27 +350,15 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
+                     std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, linked_binary,
-                            dsym_path, strip_debug_symbols, toolchain_path,
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
+                             toolchain_path,
                             consumer)) {
       return;
     }
-  }
-
-  if (SetArgIfFlagPresent(arg, "LINKED_BINARY", &linked_binary)) {
-    return;
-  }
-  if (SetArgIfFlagPresent(arg, "DSYM_HINT_DSYM_PATH", &dsym_path)) {
-    return;
-  }
-  if (arg == "STRIP_DEBUG_SYMBOLS") {
-    strip_debug_symbols = true;
-    return;
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
@@ -436,8 +414,6 @@ int main(int argc, char *argv[]) {
 
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
-  std::string linked_binary, dsym_path;
-  bool strip_debug_symbols = false;
 
   const std::string cwd = GetCurrentDirectory();
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
@@ -449,8 +425,8 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, linked_binary, dsym_path,
-                    strip_debug_symbols, toolchain_path, consumer);
+    ProcessArgument(arg, developer_dir, sdk_root, cwd,
+                    toolchain_path, consumer);
   }
 
   char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
@@ -515,7 +491,8 @@ int main(int argc, char *argv[]) {
 
   // When stripping is requested, we should still strip the binary
   // before returning
-  if (strip_debug_symbols) {
+  const char *strip_debug_symbols = getenv("STRIP_DEBUG_SYMBOLS");
+  if (strip_debug_symbols != nullptr) {
     std::vector<std::string> strip_args = {"/usr/bin/xcrun", "strip", "-S",
                                            linked_binary};
     if (!RunSubProcess(strip_args)) {
