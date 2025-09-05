@@ -2566,9 +2566,14 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # As of Xcode 15, linker warnings are emitted if duplicate `-l` options are
     # present. Until such linkopts can be deduped by bazel itself, we disable
     # these warnings.
+    is_15_or_above = False
+    if xcode_config.xcode_version():
+        is_15_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
     no_warn_duplicate_libraries_feature = feature(
         name = "no_warn_duplicate_libraries",
-        enabled = "no_warn_duplicate_libraries" in ctx.features,
+        enabled = "no_warn_duplicate_libraries" in ctx.features or
+                  (is_15_or_above and
+                   "no_warn_duplicate_libraries" not in ctx.disabled_features),
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
