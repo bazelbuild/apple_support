@@ -2,7 +2,7 @@
 
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
-load(":cc_toolchain_forwarder.bzl", "TestApplePlatformInfo")
+load(":cc_toolchain_forwarder.bzl", "CcWrapperInfo", "TestApplePlatformInfo")
 
 def _build_avoid_library_set(avoid_dep_linking_contexts):
     avoid_library_set = dict()
@@ -80,7 +80,7 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
     attr_linkopts = [token for opt in attr_linkopts for token in ctx.tokenize(opt)]
 
     for split_transition_key, child_toolchain in cc_toolchains.items():
-        cc_toolchain = child_toolchain[cc_common.CcToolchainInfo]
+        cc_toolchain = child_toolchain[CcWrapperInfo].provider
         deps = split_deps.get(split_transition_key, [])
         platform_info = child_toolchain[TestApplePlatformInfo]
 
@@ -198,7 +198,7 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
     outputs = []
 
     for split_transition_key, child_toolchain in cc_toolchains.items():
-        cc_toolchain = child_toolchain[cc_common.CcToolchainInfo]
+        cc_toolchain = child_toolchain[CcWrapperInfo].provider
         common_variables = apple_common.compilation_support.build_common_variables(
             ctx = ctx,
             toolchain = cc_toolchain,
