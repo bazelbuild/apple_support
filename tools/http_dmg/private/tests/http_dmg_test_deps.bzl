@@ -35,7 +35,28 @@ def http_dmg_test_deps():
         ),
     )
 
+    http_dmg(
+        name = "http_dmg_test_krita",
+        urls = ["https://download.kde.org/Attic/krita/5.2.6/krita-5.2.6-release.dmg"],
+        integrity = "sha256-DVgCTYuccgEk+1b0d7c5mV/3haqzCVz7IBdYbYQfO/Y=",
+        build_file_content = _BUILD_FILE_CONTENT.format(
+            file = "krita.app/Contents/Info.plist",
+        ),
+    )
+
+    http_dmg(
+        name = "http_dmg_test_krita_strip_prefix",
+        urls = ["https://download.kde.org/Attic/krita/5.2.6/krita-5.2.6-release.dmg"],
+        integrity = "sha256-DVgCTYuccgEk+1b0d7c5mV/3haqzCVz7IBdYbYQfO/Y=",
+        strip_prefix = "krita.app",
+        build_file_content = _BUILD_FILE_CONTENT.format(
+            file = "Contents/Info.plist",
+        ),
+    )
+
     return [
         "http_dmg_test_firefox",
         "http_dmg_test_firefox_strip_prefix",
+        "http_dmg_test_krita",
+        "http_dmg_test_krita_strip_prefix",
     ]

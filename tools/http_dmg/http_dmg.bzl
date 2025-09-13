@@ -165,7 +165,7 @@ def _extract_7z(
     out_dir = repository_ctx.path(output)
     temp_out_dir = repository_ctx.path("{}/_7z_out".format(out_dir))
 
-    command = [z7_bin, "x", archive, "-snld", "-o{}".format(temp_out_dir), "-y"]
+    command = [z7_bin, "x", archive, "-snld20", "-o{}".format(temp_out_dir), "-y"]
     result = repository_ctx.execute(command)
     if result.return_code != 0:
         fail("7z command failed with exit code {}\n{}\n\nstdout:\n{}\nstderr:\n{}".format(
