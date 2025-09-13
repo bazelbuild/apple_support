@@ -33,6 +33,14 @@ TestApplePlatformInfo = provider(
     },
 )
 
+# TODO: Remove once last_green builds without this workaround
+CcWrapperInfo = provider(
+    doc = "Workaround rules_cc transition issues",
+    fields = {
+        "provider": "The C++ toolchain provider.",
+    },
+)
+
 def _target_os_from_rule_ctx(ctx):
     """Returns a `String` representing the selected Apple OS."""
     ios_constraint = ctx.attr._ios_constraint[platform_common.ConstraintValueInfo]
@@ -83,7 +91,7 @@ def _target_environment_from_rule_ctx(ctx):
 
 def _cc_toolchain_forwarder_impl(ctx):
     return [
-        find_cpp_toolchain(ctx),
+        CcWrapperInfo(provider = find_cpp_toolchain(ctx)),
         TestApplePlatformInfo(
             target_os = _target_os_from_rule_ctx(ctx),
             target_arch = _target_arch_from_rule_ctx(ctx),
