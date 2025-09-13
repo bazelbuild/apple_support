@@ -2,7 +2,7 @@
 
 load("//tools/http_dmg:http_dmg.bzl", "http_dmg")
 
-_FIREFOX_BUILD_FILE = """\
+_BUILD_FILE_CONTENT = """\
 alias(
     name = "info_plist",
     actual = "{file}",
@@ -11,12 +11,16 @@ alias(
 """
 
 def http_dmg_test_deps():
-    """Download test dependencies for the `http_dmg` repository rule"""
+    """Download test dependencies for the `http_dmg` repository rule
+
+    Returns:
+        the names of instantiated repositories.
+    """
     http_dmg(
         name = "http_dmg_test_firefox",
         urls = ["https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg"],
         integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
-        build_file_content = _FIREFOX_BUILD_FILE.format(
+        build_file_content = _BUILD_FILE_CONTENT.format(
             file = "Firefox.app/Contents/Info.plist",
         ),
     )
@@ -26,7 +30,7 @@ def http_dmg_test_deps():
         urls = ["https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg"],
         integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
         strip_prefix = "Firefox.app",
-        build_file_content = _FIREFOX_BUILD_FILE.format(
+        build_file_content = _BUILD_FILE_CONTENT.format(
             file = "Contents/Info.plist",
         ),
     )
