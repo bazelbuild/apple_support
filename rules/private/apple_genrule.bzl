@@ -54,7 +54,7 @@ def _apple_genrule_impl(ctx):
 
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
 
-    resolved_inputs, argv, runfiles_manifests = ctx.resolve_command(
+    resolved_inputs, argv, _runfiles_manifests = ctx.resolve_command(
         command = ctx.attr.cmd,
         attribute = "cmd",
         expand_locations = True,
@@ -86,7 +86,6 @@ def _apple_genrule_impl(ctx):
         env = ctx.configuration.default_shell_env,
         progress_message = "%s %s" % (message, ctx.label),
         mnemonic = "Genrule",
-        input_manifests = runfiles_manifests,
         **extra_args
     )
 
@@ -193,6 +192,5 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
       syntax (i.e. using `$$`). Example: ```cmd = "xcrun --sdkroot $$SDKROOT clang...```
 """,
     exec_compatible_with = ["@platforms//os:macos"],
-    output_to_genfiles = True,
     fragments = ["apple"],
 )
