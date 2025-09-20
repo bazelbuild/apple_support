@@ -80,13 +80,52 @@ def _host_arch(repository_ctx):
 
     fail("Unknown host OS: {}".format(repository_ctx.os.name))
 
-_DMG_IGNORE_SUFFIXES = (
-    ":com.apple.application-instance",
-    "[]",
-    "[HFS+ Private Data]",
-    ".DS_Store",
-    ".background.tif",
-)
+_DMG_IGNORES_PATTERNS = {
+    "name": (
+        "Applications",
+    ),
+    "prefix": (
+        ".DS_Store",
+        ".background",
+        ".VolumeIcon",
+    ),
+    "suffix": (
+        "[]",
+        "[HFS+ Private Data]",
+        ".fseventsd",
+    ),
+}
+
+def _7z_readdir(path, is_dmg):
+    """Read the contents of a directory, ignoring certain patterns for dmg archives.
+
+    Args:
+        path (Path): The directory Path object
+        is_dmg (bool): Whether or not the directory is from a `.dmg` archive.
+
+    Returns:
+        list: A list of Path.
+    """
+    if not is_dmg:
+        return path.readdir()
+
+    entries = []
+
+    for item in path.readdir():
+        if item.basename.endswith(_DMG_IGNORES_PATTERNS["suffix"]):
+            continue
+        if item.basename.startswith(_DMG_IGNORES_PATTERNS["prefix"]):
+            continue
+        if item.basename in _DMG_IGNORES_PATTERNS["name"]:
+            continue
+
+        # 7zip will write attributes using `:` delimiters.
+        if ":" in item.basename:
+            continue
+
+        entries.append(item)
+
+    return entries
 
 def _move(repository_ctx, src, dst):
     if not hasattr(repository_ctx, "rename"):
@@ -126,7 +165,7 @@ def _extract_7z(
     out_dir = repository_ctx.path(output)
     temp_out_dir = repository_ctx.path("{}/_7z_out".format(out_dir))
 
-    command = [z7_bin, "x", archive, "-o{}".format(temp_out_dir), "-y"]
+    command = [z7_bin, "x", archive, "-snld20", "-o{}".format(temp_out_dir), "-y"]
     result = repository_ctx.execute(command)
     if result.return_code != 0:
         fail("7z command failed with exit code {}\n{}\n\nstdout:\n{}\nstderr:\n{}".format(
@@ -140,21 +179,22 @@ def _extract_7z(
 
     target_dir = temp_out_dir
     if is_dmg:
-        target_dir = temp_out_dir.readdir()[0]
+        entries = temp_out_dir.readdir()
+        if len(entries) == 1 and entries[0].is_dir:
+            target_dir = entries[0]
 
     # Check to see if any prefixes can be stripped
     if strip_prefix:
-        target_dir = target_dir.get_child(strip_prefix)
-        if not target_dir.exists:
+        stripped_dir = target_dir.get_child(strip_prefix)
+        if not stripped_dir.exists:
             fail("Prefix \"{}\" was given, but not found in the archive. Here are possible prefixes for this archive: {}".format(
                 strip_prefix,
-                out_dir.readdir(),
+                [p.basename for p in _7z_readdir(target_dir, is_dmg)],
             ))
+        target_dir = stripped_dir
 
     # Move the extracted contents to the root of the directory, leaving known bad files.
-    for item in target_dir.readdir():
-        if is_dmg and item.basename.endswith(_DMG_IGNORE_SUFFIXES):
-            continue
+    for item in _7z_readdir(target_dir, is_dmg):
         _move(repository_ctx, item, repository_ctx.path("{}/{}".format(output, item.basename)))
 
     repository_ctx.delete(temp_out_dir)
