@@ -258,7 +258,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         implies = [
             "compiler_input_flags",
             "compiler_output_flags",
-            "objc_actions",
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
@@ -1597,23 +1596,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    objc_actions_feature = feature(
-        name = "objc_actions",
-        implies = [
-            ACTION_NAMES.assemble,
-            ACTION_NAMES.c_compile,
-            ACTION_NAMES.cpp_compile,
-            ACTION_NAMES.cpp_link_dynamic_library,
-            ACTION_NAMES.cpp_link_executable,
-            ACTION_NAMES.cpp_link_static_library,
-            ACTION_NAMES.objc_compile,
-            ACTION_NAMES.objc_executable,
-            ACTION_NAMES.objc_fully_link,
-            ACTION_NAMES.objcpp_compile,
-            ACTION_NAMES.preprocess_assemble,
-        ],
-    )
-
     unfiltered_compile_flags_feature = feature(
         name = "unfiltered_compile_flags",
         flag_sets = [
@@ -2545,7 +2527,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         generate_dsym_file_feature,
         generate_linkmap_feature,
         oso_prefix_feature,
-        objc_actions_feature,
         strip_debug_symbols_feature,
         shared_flag_feature,
         kernel_extension_feature,
