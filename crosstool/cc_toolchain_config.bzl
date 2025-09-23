@@ -220,7 +220,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
             "header_parsing_env",
         ],
         flag_sets = [
@@ -358,7 +357,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
         ],
         tools = [
             tool(
@@ -381,7 +379,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
         ],
         tools = [
             tool(
@@ -443,7 +440,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
         ],
         tools = [
             tool(
@@ -466,7 +462,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
         ],
         tools = [
             tool(
@@ -586,7 +581,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "unfiltered_compile_flags",
             "compiler_input_flags",
             "compiler_output_flags",
-            "unfiltered_cxx_flags",
         ],
         tools = [
             tool(
@@ -760,25 +754,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         flags = ["-fobjc-arc"],
                         expand_if_available = "objc_arc",
                     ),
-                ],
-            ),
-        ],
-    )
-
-    unfiltered_cxx_flags_feature = feature(
-        name = "unfiltered_cxx_flags",
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                ],
-                flag_groups = [
-                    flag_group(flags = ["-no-canonical-prefixes"]),
                 ],
             ),
         ],
@@ -2590,7 +2565,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         apply_implicit_frameworks_feature,
         link_cocoa_feature,
         apply_simulator_compiler_flags_feature,
-        unfiltered_cxx_flags_feature,
         user_compile_flags_feature,
         unfiltered_compile_flags_feature,
         linker_param_file_feature,
