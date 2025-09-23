@@ -321,6 +321,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         implies = [
             "archiver_flags",
             "linker_param_file",
+            "input_param_flags",
             "apple_env",
         ],
         tools = [
