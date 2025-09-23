@@ -14,7 +14,6 @@
 """A C++ toolchain configuration rule for macOS."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
-load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
     "action_config",
@@ -32,6 +31,7 @@ load(
     "with_feature_set",
 )
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 _DYNAMIC_LINK_ACTIONS = [
@@ -218,7 +218,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
             "header_parsing_env",
         ],
@@ -255,7 +254,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "compiler_input_flags",
             "compiler_output_flags",
             "apply_default_compiler_flags",
             "apply_default_warnings",
@@ -354,7 +352,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -376,7 +373,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -404,7 +400,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "compiler_input_flags",
             "compiler_output_flags",
             "apply_default_compiler_flags",
             "apply_default_warnings",
@@ -437,7 +432,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -459,7 +453,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -556,7 +549,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -578,7 +570,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "sysroot",
             "unfiltered_compile_flags",
-            "compiler_input_flags",
             "compiler_output_flags",
         ],
         tools = [
@@ -760,19 +751,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     compiler_input_flags_feature = feature(
         name = "compiler_input_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.linkstamp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.objc_compile,
-                    ACTION_NAMES.objcpp_compile,
-                ],
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions,
                 flag_groups = [
                     flag_group(
                         flags = ["-c", "%{source_file}"],
