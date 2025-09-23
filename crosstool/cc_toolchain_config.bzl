@@ -1250,17 +1250,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                           [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [
                     flag_group(
-                        flags = ["%{linker_input_params}"],
-                        iterate_over = "linker_input_params",
-                        expand_if_available = "linker_input_params",
-                    ),
-                ],
-            ),
-            flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
                         iterate_over = "libraries_to_link",
                         flag_groups = [
                             flag_group(
