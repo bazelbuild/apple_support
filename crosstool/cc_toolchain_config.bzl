@@ -34,7 +34,6 @@ load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
-_COMPILE_ACTIONS = ACTION_NAME_GROUPS.all_cc_compile_actions
 _DYNAMIC_LINK_ACTIONS = ACTION_NAME_GROUPS.cc_link_executable_actions + ACTION_NAME_GROUPS.dynamic_library_link_actions
 _CPP_DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_executable,
@@ -917,7 +916,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = _COMPILE_ACTIONS + _DYNAMIC_LINK_ACTIONS,
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions + _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
