@@ -319,7 +319,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_static_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_static_library,
         implies = [
-            "runtime_root_flags",
             "archiver_flags",
             "input_param_flags",
             "linker_param_file",
@@ -735,8 +734,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "runtime_root_flags",
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
+                actions = all_link_actions,
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -1224,8 +1222,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "input_param_flags",
         flag_sets = [
             flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
+                actions = all_link_actions,
                 flag_groups = [
                     flag_group(
                         flags = ["-L%{library_search_directories}"],
@@ -1235,24 +1232,12 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
+                actions = all_link_actions,
                 flag_groups = [
                     flag_group(
                         flags = ["-Wl,-force_load,%{whole_archive_linker_params}"],
                         iterate_over = "whole_archive_linker_params",
                         expand_if_available = "whole_archive_linker_params",
-                    ),
-                ],
-            ),
-            flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
-                        flags = ["%{linker_input_params}"],
-                        iterate_over = "linker_input_params",
-                        expand_if_available = "linker_input_params",
                     ),
                 ],
             ),
