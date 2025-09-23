@@ -1397,26 +1397,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     else:
         apply_implicit_frameworks_feature = feature(name = "apply_implicit_frameworks")
 
-    random_seed_feature = feature(
-        name = "random_seed",
-        enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_compile,
-                ],
-                flag_groups = [
-                    flag_group(
-                        flags = ["-frandom-seed=%{output_file}"],
-                        expand_if_available = "output_file",
-                    ),
-                ],
-            ),
-        ],
-    )
-
     llvm_coverage_map_format_feature = feature(
         name = "llvm_coverage_map_format",
         flag_sets = [
@@ -2459,7 +2439,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         per_object_debug_info_feature,
         preprocessor_defines_feature,
         framework_paths_feature,
-        random_seed_feature,
         fdo_instrument_feature,
         fdo_optimize_feature,
         autofdo_feature,
