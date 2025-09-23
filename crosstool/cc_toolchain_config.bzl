@@ -1257,17 +1257,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                           [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [
                     flag_group(
-                        flags = ["%{libopts}"],
-                        iterate_over = "libopts",
-                        expand_if_available = "libopts",
-                    ),
-                ],
-            ),
-            flag_set(
-                actions = all_link_actions +
-                          [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
                         flags = ["-Wl,-force_load,%{whole_archive_linker_params}"],
                         iterate_over = "whole_archive_linker_params",
                         expand_if_available = "whole_archive_linker_params",
