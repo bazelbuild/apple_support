@@ -763,7 +763,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.preprocess_assemble,
                 ],
                 flag_groups = [
-                    flag_group(flags = ["-no-canonical-prefixes", "-pthread"]),
+                    flag_group(flags = ["-no-canonical-prefixes"]),
                 ],
             ),
         ],
