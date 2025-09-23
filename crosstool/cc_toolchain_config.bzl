@@ -465,7 +465,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     objc_executable_action = action_config(
-        action_name = "objc-executable",
+        action_name = ACTION_NAMES.objc_executable,
         flag_sets = [
             flag_set(
                 flag_groups = [
@@ -607,7 +607,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     objc_fully_link_action = action_config(
-        action_name = "objc-fully-link",
+        action_name = ACTION_NAMES.objc_fully_link,
         flag_sets = [
             flag_set(
                 flag_groups = [
@@ -649,7 +649,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     objcopy_embed_data_action = action_config(
-        action_name = "objcopy_embed_data",
+        action_name = ACTION_NAMES.objcopy_embed_data,
         enabled = True,
         tools = [tool(path = "/usr/bin/objcopy")],
     )
