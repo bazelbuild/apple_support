@@ -26,10 +26,8 @@ The Apple CC toolchain in this repository provides toolchains for
 building for Apple platforms besides macOS. Since Bazel 7 this toolchain
 is required when targeting those platforms.
 
-NOTE: This toolchain requires a full Xcode installation, not just the
-Xcode Command Line Tools. If you only need to build for macOS and don't
-want to require a full Xcode installation in your build, use the builtin
-Unix toolchain provided by Bazel.
+The toolchain supports using a full Xcode installation or the Xcode
+Command Line Tools.
 
 ### Bazel 7+ Setup
 
