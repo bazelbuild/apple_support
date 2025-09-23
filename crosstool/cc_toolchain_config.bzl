@@ -34,10 +34,10 @@ load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
-_DYNAMIC_LINK_ACTIONS = [
-    ACTION_NAMES.cpp_link_dynamic_library,
+_DYNAMIC_LINK_ACTIONS = ACTION_NAME_GROUPS.cc_link_executable_actions + ACTION_NAME_GROUPS.dynamic_library_link_actions
+_CPP_DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_executable,
-    ACTION_NAMES.objc_executable,
+    ACTION_NAMES.cpp_link_dynamic_library,
 ]
 
 def _sdk_version_for_platform(xcode_config, platform_type):
@@ -169,11 +169,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         arch = "arm64"
     elif ctx.attr.cpu in ["watchos_device_arm64e"]:
         arch = "arm64e"
-
-    all_link_actions = [
-        ACTION_NAMES.cpp_link_executable,
-        ACTION_NAMES.cpp_link_dynamic_library,
-    ]
 
     strip_action = action_config(
         action_name = ACTION_NAMES.strip,
@@ -708,7 +703,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "runtime_root_flags",
         flag_sets = [
             flag_set(
-                actions = all_link_actions,
+                actions = _CPP_DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -854,7 +849,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = all_link_actions,
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = ([
                     flag_group(
                         flags = ctx.attr.link_flags,
@@ -1006,7 +1001,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "output_execpath_flags",
         flag_sets = [
             flag_set(
-                actions = all_link_actions,
+                actions = _CPP_DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-o", "%{output_execpath}"],
@@ -1166,7 +1161,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "input_param_flags",
         flag_sets = [
             flag_set(
-                actions = all_link_actions,
+                actions = _CPP_DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-L%{library_search_directories}"],
@@ -1176,7 +1171,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = all_link_actions,
+                actions = _CPP_DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-Wl,-force_load,%{whole_archive_linker_params}"],
@@ -1186,7 +1181,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = all_link_actions +
+                actions = _CPP_DYNAMIC_LINK_ACTIONS +
                           [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [
                     flag_group(
@@ -1710,7 +1705,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "linkstamps",
         flag_sets = [
             flag_set(
-                actions = all_link_actions,
+                actions = _CPP_DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["%{linkstamp_paths}"],
