@@ -177,12 +177,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ]
 
-    lto_index_actions = [
-        ACTION_NAMES.lto_index_for_executable,
-        ACTION_NAMES.lto_index_for_dynamic_library,
-        ACTION_NAMES.lto_index_for_nodeps_dynamic_library,
-    ]
-
     strip_action = action_config(
         action_name = ACTION_NAMES.strip,
         flag_sets = [
@@ -821,7 +815,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -846,7 +839,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -926,7 +918,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = all_link_actions + lto_index_actions,
+                actions = all_link_actions,
                 flag_groups = ([
                     flag_group(
                         flags = ctx.attr.link_flags,
@@ -950,7 +942,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_module_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    ACTION_NAMES.clif_match,
                 ],
                 flag_groups = [
                     flag_group(
@@ -1099,7 +1090,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 actions = [
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.cpp_module_compile,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.preprocess_assemble,
@@ -1163,7 +1153,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1399,7 +1388,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 actions = [
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.assemble,
                     ACTION_NAMES.preprocess_assemble,
                 ],
@@ -1520,7 +1508,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 actions = [
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.cpp_module_compile,
                 ],
                 flag_groups = [
@@ -1614,7 +1601,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_link_dynamic_library,
                     ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                     ACTION_NAMES.linkstamp_compile,
-                    ACTION_NAMES.clif_match,
                 ],
                 flag_groups = [
                     flag_group(
@@ -1686,7 +1672,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.linkstamp_compile,
                 ],
                 flag_groups = [
@@ -1818,7 +1803,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
@@ -1840,7 +1824,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
@@ -1880,7 +1863,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
                     ACTION_NAMES.linkstamp_compile,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1915,9 +1897,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1939,9 +1918,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1967,9 +1943,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1985,9 +1958,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -2011,9 +1981,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -2036,9 +2003,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -2289,7 +2253,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
@@ -2314,9 +2277,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
                 ],
                 flag_groups = ([
                     flag_group(
@@ -2332,7 +2292,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
