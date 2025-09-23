@@ -242,11 +242,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     objc_compile_action = action_config(
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
-        flag_sets = [
-            flag_set(
-                flag_groups = [flag_group(flags = ["-target", target_system_name])],
-            ),
-        ],
         implies = [
             "compiler_output_flags",
             "apply_default_compiler_flags",
@@ -380,8 +375,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "-target",
-                            target_system_name,
                             "-stdlib=libc++",
                             "-std=gnu++17",
                         ],
@@ -468,7 +461,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
             flag_set(
                 flag_groups = [
-                    flag_group(flags = ["-target", target_system_name]),
                     flag_group(
                         flags = ["-l%{library_names}"],
                         iterate_over = "library_names",
@@ -908,22 +900,32 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = bazel_features.cc.fixed_dsym_path_quoting,
     )
 
-    default_link_flags_feature = feature(
-        name = "default_link_flags",
+    default_required_flags = feature(
+        name = "default_required_flags",
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions + _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = [
                             "-no-canonical-prefixes",
                             "-target",
                             target_system_name,
-                            "-fobjc-link-runtime",
                         ],
                     ),
                 ],
+            ),
+        ],
+    )
+
+    default_link_flags_feature = feature(
+        name = "default_link_flags",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [flag_group(flags = ["-fobjc-link-runtime"])],
             ),
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
@@ -1526,13 +1528,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "-no-canonical-prefixes",
                             "-Wno-builtin-macro-redefined",
                             "-D__DATE__=\"redacted\"",
                             "-D__TIMESTAMP__=\"redacted\"",
                             "-D__TIME__=\"redacted\"",
-                            "-target",
-                            target_system_name,
                         ],
                     ),
                 ],
@@ -2478,6 +2477,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         relative_ast_path_feature,
         gcc_quoting_for_param_files_feature,
         user_link_flags_feature,
+        default_required_flags,
         default_link_flags_feature,
         no_deduplicate_feature,
         dead_strip_feature,
