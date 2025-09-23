@@ -648,12 +648,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    objcopy_embed_data_action = action_config(
-        action_name = ACTION_NAMES.objcopy_embed_data,
-        enabled = True,
-        tools = [tool(path = "/usr/bin/objcopy")],
-    )
-
     action_configs = [
         strip_action,
         c_compile_action,
@@ -671,7 +665,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         cpp_link_nodeps_dynamic_library_action,
         cpp_link_static_library_action,
         objc_fully_link_action,
-        objcopy_embed_data_action,
     ]
 
     if (ctx.attr.cpu == "ios_arm64" or
@@ -2001,17 +1994,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    objcopy_embed_flags_feature = feature(
-        name = "objcopy_embed_flags",
-        enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = ["objcopy_embed_data"],
-                flag_groups = [flag_group(flags = ["-I", "binary"])],
-            ),
-        ],
-    )
-
     dead_strip_feature = feature(
         name = "dead_strip",
         flag_sets = [
@@ -2667,7 +2649,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         linker_param_file_feature,
         compiler_input_flags_feature,
         compiler_output_flags_feature,
-        objcopy_embed_flags_feature,
         set_install_name,
         asan_feature,
         tsan_feature,
@@ -2711,7 +2692,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         "gcov": "/usr/bin/gcov",
         "ld": "/usr/bin/ld",
         "nm": "/usr/bin/nm",
-        "objcopy": "/usr/bin/objcopy",
         "objdump": "/usr/bin/objdump",
         "strip": "/usr/bin/strip",
     }
