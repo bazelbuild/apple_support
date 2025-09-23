@@ -320,8 +320,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_static_library,
         implies = [
             "archiver_flags",
-            "linker_param_file",
             "input_param_flags",
+            "linker_param_file",
             "apple_env",
         ],
         tools = [
