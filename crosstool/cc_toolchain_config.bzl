@@ -37,7 +37,6 @@ load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 _DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_dynamic_library,
     ACTION_NAMES.cpp_link_executable,
-    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ACTION_NAMES.objc_executable,
 ]
 
@@ -174,7 +173,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     all_link_actions = [
         ACTION_NAMES.cpp_link_executable,
         ACTION_NAMES.cpp_link_dynamic_library,
-        ACTION_NAMES.cpp_link_nodeps_dynamic_library,
     ]
 
     strip_action = action_config(
@@ -583,28 +581,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    cpp_link_nodeps_dynamic_library_action = action_config(
-        action_name = ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-        implies = [
-            "has_configured_linker_path",
-            "shared_flag",
-            "linkstamps",
-            "output_execpath_flags",
-            "runtime_root_flags",
-            "input_param_flags",
-            "strip_debug_symbols",
-            "linker_param_file",
-            "apple_env",
-            "sysroot",
-        ],
-        tools = [
-            tool(
-                tool = ctx.file.cc_wrapper,
-                execution_requirements = xcode_execution_requirements,
-            ),
-        ],
-    )
-
     objc_fully_link_action = action_config(
         action_name = ACTION_NAMES.objc_fully_link,
         flag_sets = [
@@ -661,7 +637,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         objc_executable_action,
         cpp_link_executable_action,
         cpp_link_dynamic_library_action,
-        cpp_link_nodeps_dynamic_library_action,
         cpp_link_static_library_action,
         objc_fully_link_action,
     ]
@@ -865,7 +840,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = [
                     ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                 ],
                 flag_groups = [flag_group(flags = ["-shared"])],
             ),
@@ -966,7 +940,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = [
                     ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                     ACTION_NAMES.cpp_link_executable,
                 ],
                 flag_groups = [flag_group(flags = ["--coverage"])],
@@ -1566,7 +1539,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_link_executable,
                     ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                     ACTION_NAMES.linkstamp_compile,
                 ],
                 flag_groups = [
@@ -1618,7 +1590,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ACTION_NAMES.cpp_compile,
             ACTION_NAMES.cpp_link_dynamic_library,
             ACTION_NAMES.cpp_link_executable,
-            ACTION_NAMES.cpp_link_nodeps_dynamic_library,
             ACTION_NAMES.cpp_link_static_library,
             ACTION_NAMES.objc_compile,
             ACTION_NAMES.objc_executable,
@@ -2166,7 +2137,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.c_compile,
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                     ACTION_NAMES.cpp_link_executable,
                 ],
                 flag_groups = [
@@ -2311,7 +2281,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = [
                     ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                 ],
                 flag_groups = [
                     flag_group(
