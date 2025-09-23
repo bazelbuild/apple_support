@@ -1290,26 +1290,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    per_object_debug_info_feature = feature(
-        name = "per_object_debug_info",
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                ],
-                flag_groups = [
-                    flag_group(
-                        flags = ["-gsplit-dwarf", "-g"],
-                        expand_if_available = "per_object_debug_info_file",
-                    ),
-                ],
-            ),
-        ],
-    )
-
     lipo_feature = feature(
         name = "lipo",
         flag_sets = [
@@ -2410,7 +2390,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         dependency_file_feature,
         serialized_diagnostics_file_feature,
         pic_feature,
-        per_object_debug_info_feature,
         preprocessor_defines_feature,
         framework_paths_feature,
         fdo_instrument_feature,
