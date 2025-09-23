@@ -317,10 +317,25 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_static_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_static_library,
         implies = [
-            "archiver_flags",
             "input_param_flags",
             "linker_param_file",
             "apple_env",
+        ],
+        flag_sets = [
+            flag_set(
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-D",
+                            "-no_warning_for_no_symbols",
+                            "-static",
+                            "-o",
+                            "%{output_execpath}",
+                        ],
+                        expand_if_available = "output_execpath",
+                    ),
+                ],
+            ),
         ],
         tools = [
             tool(
@@ -1663,27 +1678,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    archiver_flags_feature = feature(
-        name = "archiver_flags",
-        flag_sets = [
-            flag_set(
-                actions = [ACTION_NAMES.cpp_link_static_library],
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-D",
-                            "-no_warning_for_no_symbols",
-                            "-static",
-                            "-o",
-                            "%{output_execpath}",
-                        ],
-                        expand_if_available = "output_execpath",
-                    ),
-                ],
-            ),
-        ],
-    )
-
     fdo_optimize_feature = feature(
         name = "fdo_optimize",
         flag_sets = [
@@ -2557,7 +2551,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         kernel_extension_feature,
         linkstamps_feature,
         output_execpath_flags_feature,
-        archiver_flags_feature,
         runtime_root_flags_feature,
         input_param_flags_feature,
         objc_link_flag_feature,
