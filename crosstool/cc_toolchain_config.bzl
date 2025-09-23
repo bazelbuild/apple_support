@@ -216,7 +216,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
             "header_parsing_env",
@@ -264,7 +263,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
         ],
@@ -300,7 +298,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "strip_debug_symbols",
             "linker_param_file",
             "apple_env",
-            "sysroot",
         ],
         tools = [
             tool(
@@ -350,7 +347,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -371,7 +367,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -410,7 +405,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
         ],
@@ -430,7 +424,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -451,7 +444,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -528,7 +520,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "strip_debug_symbols",
             "linker_param_file",
             "apple_env",
-            "sysroot",
         ],
         tools = [
             tool(
@@ -547,7 +538,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -568,7 +558,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "apple_env",
             "user_compile_flags",
-            "sysroot",
             "unfiltered_compile_flags",
             "compiler_output_flags",
         ],
@@ -1489,33 +1478,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     flag_group(
                         flags = ["-Wl,-pie"],
                         expand_if_available = "force_pic",
-                    ),
-                ],
-            ),
-        ],
-    )
-
-    sysroot_feature = feature(
-        name = "sysroot",
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.objc_compile,
-                    ACTION_NAMES.objcpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_link_executable,
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.linkstamp_compile,
-                ],
-                flag_groups = [
-                    flag_group(
-                        flags = ["--sysroot=%{sysroot}"],
-                        expand_if_available = "sysroot",
                     ),
                 ],
             ),
@@ -2497,7 +2459,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         apply_default_warnings_feature,
         includes_feature,
         include_paths_feature,
-        sysroot_feature,
         dependency_file_feature,
         serialized_diagnostics_file_feature,
         pic_feature,
