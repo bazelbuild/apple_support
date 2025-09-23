@@ -1122,7 +1122,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = ["objc-executable"],
+                actions = [ACTION_NAMES.objc_executable],
                 flag_groups = [
                     flag_group(
                         flags = ["-F%{framework_paths}"],
@@ -1209,7 +1209,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    "objc-executable",
+                    ACTION_NAMES.objc_executable,
                     ACTION_NAMES.assemble,
                     ACTION_NAMES.preprocess_assemble,
                 ],
@@ -1442,7 +1442,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.preprocess_assemble,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    "objc-fully-link",
+                    ACTION_NAMES.objc_fully_link,
                     ACTION_NAMES.cpp_link_static_library,
                     ACTION_NAMES.linkstamp_compile,
                 ],
@@ -1646,18 +1646,18 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     objc_actions_feature = feature(
         name = "objc_actions",
         implies = [
-            "objc-compile",
-            "objc++-compile",
-            "objc-fully-link",
-            "objc-executable",
-            "assemble",
-            "preprocess-assemble",
-            "c-compile",
-            "c++-compile",
-            "c++-link-static-library",
-            "c++-link-dynamic-library",
-            "c++-link-nodeps-dynamic-library",
-            "c++-link-executable",
+            ACTION_NAMES.assemble,
+            ACTION_NAMES.c_compile,
+            ACTION_NAMES.cpp_compile,
+            ACTION_NAMES.cpp_link_dynamic_library,
+            ACTION_NAMES.cpp_link_executable,
+            ACTION_NAMES.cpp_link_nodeps_dynamic_library,
+            ACTION_NAMES.cpp_link_static_library,
+            ACTION_NAMES.objc_compile,
+            ACTION_NAMES.objc_executable,
+            ACTION_NAMES.objc_fully_link,
+            ACTION_NAMES.objcpp_compile,
+            ACTION_NAMES.preprocess_assemble,
         ],
     )
 
@@ -2053,7 +2053,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.cpp_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
-                    "objc-executable",
+                    ACTION_NAMES.objc_executable,
                 ],
                 flag_groups = [flag_group(flags = ["-g"])],
             ),
@@ -2080,7 +2080,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             name = "kernel_extension",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable"],
+                    actions = [ACTION_NAMES.objc_executable],
                     flag_groups = [
                         flag_group(
                             flags = [
@@ -2234,7 +2234,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             name = "link_cocoa",
             flag_sets = [
                 flag_set(
-                    actions = ["objc-executable"],
+                    actions = [ACTION_NAMES.objc_executable],
                     flag_groups = [flag_group(flags = ["-framework", "Cocoa"])],
                 ),
             ],
