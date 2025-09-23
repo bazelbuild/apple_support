@@ -35,6 +35,10 @@ load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 _DYNAMIC_LINK_ACTIONS = ACTION_NAME_GROUPS.cc_link_executable_actions + ACTION_NAME_GROUPS.dynamic_library_link_actions
+_STATIC_LINK_ACTIONS = [
+    ACTION_NAMES.objc_fully_link,
+    ACTION_NAMES.cpp_link_static_library,
+]
 _CPP_DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_executable,
     ACTION_NAMES.cpp_link_dynamic_library,
@@ -209,7 +213,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -251,7 +254,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
@@ -287,7 +289,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "input_param_flags",
             "strip_debug_symbols",
             "linker_param_file",
-            "apple_env",
         ],
         tools = [
             tool(
@@ -302,7 +303,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         implies = [
             "input_param_flags",
             "linker_param_file",
-            "apple_env",
         ],
         flag_sets = [
             flag_set(
@@ -335,7 +335,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -355,7 +354,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -391,7 +389,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
@@ -410,7 +407,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "objc_arc",
             "no_objc_arc",
             "include_system_dirs",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -430,7 +426,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -486,7 +481,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "framework_paths",
             "strip_debug_symbols",
-            "apple_env",
         ],
         tools = [
             tool(
@@ -506,7 +500,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "force_pic_flags",
             "strip_debug_symbols",
             "linker_param_file",
-            "apple_env",
         ],
         tools = [
             tool(
@@ -523,7 +516,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -543,7 +535,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
-            "apple_env",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -589,7 +580,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
         ],
-        implies = ["apple_env"],
         tools = [
             tool(
                 tool = ctx.file.libtool,
@@ -900,6 +890,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = bazel_features.cc.fixed_dsym_path_quoting,
     )
 
+    if xcode_config.xcode_version():
+        apple_env = {
+            "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
+            # TODO: Remove once we drop bazel 7.x support
+            "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
+            "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
+        }
+    else:
+        apple_env = {
+            "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
+            "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        }
+
     default_required_flags = feature(
         name = "default_required_flags",
         enabled = True,
@@ -914,6 +917,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             target_system_name,
                         ],
                     ),
+                ],
+            ),
+        ],
+        env_sets = [
+            env_set(
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions + _DYNAMIC_LINK_ACTIONS + _STATIC_LINK_ACTIONS,
+                env_entries = [
+                    env_entry(key = key, value = value)
+                    for key, value in (apple_env | ctx.attr.extra_env).items()
                 ],
             ),
         ],
@@ -1310,44 +1322,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             feature_set(features = ["autofdo"]),
             feature_set(features = ["fdo_optimize"]),
             feature_set(features = ["fdo_instrument"]),
-        ],
-    )
-
-    if xcode_config.xcode_version():
-        apple_env = {
-            "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
-            # TODO: Remove once we drop bazel 7.x support
-            "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
-            "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
-        }
-    else:
-        apple_env = {
-            "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
-            "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-        }
-
-    apple_env_feature = feature(
-        name = "apple_env",
-        env_sets = [
-            env_set(
-                actions = _DYNAMIC_LINK_ACTIONS + [
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.objc_compile,
-                    ACTION_NAMES.objcpp_compile,
-                    ACTION_NAMES.objc_fully_link,
-                    ACTION_NAMES.cpp_link_static_library,
-                    ACTION_NAMES.linkstamp_compile,
-                ],
-                env_entries = [
-                    env_entry(key = key, value = value)
-                    for key, value in (apple_env | ctx.attr.extra_env).items()
-                ],
-            ),
         ],
     )
 
@@ -2473,7 +2447,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         headerpad_feature,
         objc_arc_feature,
         no_objc_arc_feature,
-        apple_env_feature,
         relative_ast_path_feature,
         gcc_quoting_for_param_files_feature,
         user_link_flags_feature,
