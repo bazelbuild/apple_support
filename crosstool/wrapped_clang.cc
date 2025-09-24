@@ -48,8 +48,6 @@ extern char **environ;
 
 namespace {
 
-constexpr char kAddASTPathPrefix[] = "-Wl,-add_ast_path,";
-
 // Returns the base name of the given filepath. For example, given
 // /foo/bar/baz.txt, returns 'baz.txt'.
 const char *Basename(const char *filepath) {
@@ -259,16 +257,14 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, bool &strip_debug_symbols,
-                     std::string toolchain_path,
+                     std::string &linked_binary, std::string &dsym_path,
+                     bool &strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
-                         bool relative_ast_path, std::string &linked_binary,
-                         std::string &dsym_path, bool &strip_debug_symbols,
-                         std::string toolchain_path,
+                         std::string &linked_binary, std::string &dsym_path,
+                         bool &strip_debug_symbols, std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -282,8 +278,8 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    relative_ast_path, linked_binary, dsym_path,
-                    strip_debug_symbols, toolchain_path, consumer);
+                    linked_binary, dsym_path, strip_debug_symbols,
+                    toolchain_path, consumer);
   }
 
   return true;
@@ -339,15 +335,14 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     bool relative_ast_path, std::string &linked_binary,
-                     std::string &dsym_path, bool &strip_debug_symbols,
-                     std::string toolchain_path,
+                     std::string &linked_binary, std::string &dsym_path,
+                     bool &strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
-                            relative_ast_path, linked_binary, dsym_path,
-                            strip_debug_symbols, toolchain_path, consumer)) {
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, linked_binary,
+                            dsym_path, strip_debug_symbols, toolchain_path,
+                            consumer)) {
       return;
     }
   }
@@ -369,19 +364,6 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   if (!toolchain_path.empty()) {
     FindAndReplace("__BAZEL_CUSTOM_XCODE_TOOLCHAIN_PATH__", toolchain_path,
                    &new_arg);
-  }
-
-  // Make the `add_ast_path` options used to embed Swift module references
-  // absolute to enable Swift debugging without dSYMs: see
-  // https://forums.swift.org/t/improving-swift-lldb-support-for-path-remappings/22694
-  if (!relative_ast_path &&
-      StripPrefixStringIfPresent(&new_arg, kAddASTPathPrefix)) {
-    // Only modify relative paths.
-    if (!StartsWith(arg, "/")) {
-      new_arg = std::string(kAddASTPathPrefix) + cwd + "/" + new_arg;
-    } else {
-      new_arg = std::string(kAddASTPathPrefix) + new_arg;
-    }
   }
 
   consumer(new_arg);
@@ -435,16 +417,14 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
   std::vector<std::string> processed_args = {};
 
-  bool relative_ast_path = getenv("RELATIVE_AST_PATH") != nullptr;
   auto consumer = [&](const std::string &arg) {
     processed_args.push_back(arg);
   };
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, relative_ast_path,
-                    linked_binary, dsym_path, strip_debug_symbols,
-                    toolchain_path, consumer);
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, linked_binary, dsym_path,
+                    strip_debug_symbols, toolchain_path, consumer);
   }
 
   char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
