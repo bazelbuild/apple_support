@@ -1488,22 +1488,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    relative_ast_path_feature = feature(
-        name = "relative_ast_path",
-        enabled = True,
-        env_sets = [
-            env_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
-                env_entries = [
-                    env_entry(
-                        key = "RELATIVE_AST_PATH",
-                        value = "true",
-                    ),
-                ],
-            ),
-        ],
-    )
-
     fdo_optimize_feature = feature(
         name = "fdo_optimize",
         flag_sets = [
@@ -2402,7 +2386,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         headerpad_feature,
         objc_arc_feature,
         no_objc_arc_feature,
-        relative_ast_path_feature,
         gcc_quoting_for_param_files_feature,
         user_link_flags_feature,
         default_required_flags,
