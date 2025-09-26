@@ -305,7 +305,7 @@ def _http_dmg_impl(repository_ctx):
 
     build_file_content = repository_ctx.attr.build_file_content
     if repository_ctx.attr.build_file:
-        repository_ctx.read(repository_ctx.path(repository_ctx.attr.build_file))
+        build_file_content = repository_ctx.read(repository_ctx.path(repository_ctx.attr.build_file))
     repository_ctx.file("BUILD.bazel", content = build_file_content)
     repository_ctx.file("WORKSPACE.bazel", content = """workspace(name = "{}")""".format(repository_ctx.name))
 
