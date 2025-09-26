@@ -1,0 +1,5 @@
+alias(
+    name = "info_plist",
+    actual = "Firefox.app/Contents/Info.plist",
+    visibility = ["//visibility:public"],
+)
