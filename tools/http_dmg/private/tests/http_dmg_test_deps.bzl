@@ -20,9 +20,8 @@ def http_dmg_test_deps():
         name = "http_dmg_test_firefox",
         urls = ["https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg"],
         integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
-        build_file_content = _BUILD_FILE_CONTENT.format(
-            file = "Firefox.app/Contents/Info.plist",
-        ),
+        # Explicitly test `build_file`.
+        build_file = Label("//tools/http_dmg/private/tests:BUILD.firefox.bazel"),
     )
 
     http_dmg(
