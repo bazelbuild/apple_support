@@ -29,7 +29,7 @@ def universal_exec_tool(*, name, out, srcs):
         outs = [out],
         cmd = """
 env -i \
-  DEVELOPER_DIR=$${DEVELOPER_DIR:-} \
+  DEVELOPER_DIR="$${DEVELOPER_DIR:-}" \
   xcrun \
     --sdk macosx \
     clang \
