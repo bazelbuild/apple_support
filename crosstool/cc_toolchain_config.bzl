@@ -896,11 +896,13 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             # TODO: Remove once we drop bazel 7.x support
             "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
             "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
+            "ZERO_AR_DATE": "1",
         }
     else:
         apple_env = {
             "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
             "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+            "ZERO_AR_DATE": "1",
         }
 
     default_required_flags = feature(
