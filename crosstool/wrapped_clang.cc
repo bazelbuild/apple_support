@@ -20,8 +20,6 @@
 // passed to clang).
 // The following "DSYM_HINT" flags control dsym generation.  If any one if these
 // are passed in, then they all must be passed in.
-// "DSYM_HINT_LINKED_BINARY": Workspace-relative path to binary output of the
-//    link action generating the dsym file.
 // "DSYM_HINT_DSYM_PATH": Workspace-relative path to dSYM dwarf file.
 
 #include <libgen.h>
@@ -257,14 +255,14 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
+                     std::string &dsym_path, bool &strip_debug_symbols,
+                     std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
-                         std::string &linked_binary, std::string &dsym_path,
-                         bool &strip_debug_symbols, std::string toolchain_path,
+                         std::string &dsym_path, bool &strip_debug_symbols,
+                         std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -278,8 +276,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    linked_binary, dsym_path, strip_debug_symbols,
-                    toolchain_path, consumer);
+                    dsym_path, strip_debug_symbols, toolchain_path, consumer);
   }
 
   return true;
@@ -335,21 +332,17 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
+                     std::string &dsym_path, bool &strip_debug_symbols,
+                     std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, linked_binary,
-                            dsym_path, strip_debug_symbols, toolchain_path,
-                            consumer)) {
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, dsym_path,
+                            strip_debug_symbols, toolchain_path, consumer)) {
       return;
     }
   }
 
-  if (SetArgIfFlagPresent(arg, "DSYM_HINT_LINKED_BINARY", &linked_binary)) {
-    return;
-  }
   if (SetArgIfFlagPresent(arg, "DSYM_HINT_DSYM_PATH", &dsym_path)) {
     return;
   }
@@ -410,7 +403,7 @@ int main(int argc, char *argv[]) {
 
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
-  std::string linked_binary, dsym_path;
+  std::string dsym_path;
   bool strip_debug_symbols = false;
 
   const std::string cwd = GetCurrentDirectory();
@@ -423,7 +416,7 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, linked_binary, dsym_path,
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, dsym_path,
                     strip_debug_symbols, toolchain_path, consumer);
   }
 
@@ -446,25 +439,6 @@ int main(int argc, char *argv[]) {
   auto response_file = WriteResponseFile(processed_args);
   invocation_args.push_back("@" + response_file->GetPath());
 
-  // Check to see if we should postprocess with dsymutil.
-  bool postprocess = false;
-  if ((!linked_binary.empty()) || (!dsym_path.empty())) {
-    if ((linked_binary.empty()) || (dsym_path.empty())) {
-      const char *missing_dsym_flag;
-      if (linked_binary.empty()) {
-        missing_dsym_flag = "DSYM_HINT_LINKED_BINARY";
-      } else {
-        missing_dsym_flag = "DSYM_HINT_DSYM_PATH";
-      }
-      std::cerr << "Error in clang wrapper: If any dsym "
-                   "hint is defined, then "
-                << missing_dsym_flag << " must be defined\n";
-      return 1;
-    } else {
-      postprocess = true;
-    }
-  }
-
   if (!RunSubProcess(invocation_args)) {
     return 1;
   }
@@ -475,25 +449,29 @@ int main(int argc, char *argv[]) {
     output.close();
   }
 
-  if (!postprocess) {
+  bool generate_dsym = !dsym_path.empty();
+  if (!generate_dsym && !strip_debug_symbols) {
     return 0;
   }
 
-  const std::string bundle_suffix = ".dSYM";
-  bool is_bundle = dsym_path.rfind(bundle_suffix) ==
-                   dsym_path.length() - bundle_suffix.length();
+  std::string linked_binary = GetMandatoryEnvVar("WRAPPED_CLANG_OUTPUT_BINARY");
+  if (generate_dsym) {
+    const std::string bundle_suffix = ".dSYM";
+    bool is_bundle = dsym_path.rfind(bundle_suffix) ==
+                     dsym_path.length() - bundle_suffix.length();
 
-  std::vector<std::string> dsymutil_args = {
-      "/usr/bin/xcrun", "dsymutil",
-      linked_binary,    "-o",
-      dsym_path,        "--no-swiftmodule-timestamp"};
-  if (!is_bundle) {
-    // We should generate a .dSYM bundle only when a path is passed to a .dSYM
-    // directory for backwards compatibility
-    dsymutil_args.push_back("--flat");
-  }
-  if (!RunSubProcess(dsymutil_args)) {
-    return 1;
+    std::vector<std::string> dsymutil_args = {
+        "/usr/bin/xcrun", "dsymutil",
+        linked_binary,    "-o",
+        dsym_path,        "--no-swiftmodule-timestamp"};
+    if (!is_bundle) {
+      // We should generate a .dSYM bundle only when a path is passed to a .dSYM
+      // directory for backwards compatibility
+      dsymutil_args.push_back("--flat");
+    }
+    if (!RunSubProcess(dsymutil_args)) {
+      return 1;
+    }
   }
 
   // When stripping is requested, we should still strip the binary

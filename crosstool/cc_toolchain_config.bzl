@@ -461,7 +461,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         iterate_over = "library_names",
                     ),
                     flag_group(flags = ["-filelist", "%{filelist}"]),
-                    flag_group(flags = ["-o", "%{linked_binary}"]),
                     flag_group(
                         flags = ["-force_load", "%{force_load_exec_paths}"],
                         iterate_over = "force_load_exec_paths",
@@ -481,6 +480,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "framework_paths",
             "strip_debug_symbols",
+            "output_execpath_flags",
         ],
         tools = [
             tool(
@@ -1004,11 +1004,22 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "output_execpath_flags",
         flag_sets = [
             flag_set(
-                actions = _CPP_DYNAMIC_LINK_ACTIONS,
+                actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["-o", "%{output_execpath}"],
                         expand_if_available = "output_execpath",
+                    ),
+                ],
+            ),
+        ],
+        env_sets = [
+            env_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                env_entries = [
+                    env_entry(
+                        key = "WRAPPED_CLANG_OUTPUT_BINARY",
+                        value = "%{output_execpath}",
                     ),
                 ],
             ),
@@ -1793,7 +1804,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "DSYM_HINT_LINKED_BINARY=%{output_execpath}",
                             "DSYM_HINT_DSYM_PATH=%{dsym_path}",
                         ],
                         # We need to check this for backwards compatibility with bazel 7
