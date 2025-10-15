@@ -10,9 +10,9 @@ if [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "device" ]]; then
 elif [[ "$PLATFORM_TYPE" == "ios" && "$BUILD_TYPE" == "simulator" ]]; then
   expected_platform="IOSSIMULATOR"
 elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "device" ]]; then
-  expected_platform="XROS"
+  expected_platform="VISIONOS"
 elif [[ "$PLATFORM_TYPE" == "visionos" && "$BUILD_TYPE" == "simulator" ]]; then
-  expected_platform="XROSSIMULATOR"
+  expected_platform="VISIONOSSIMULATOR"
 elif [[ "$PLATFORM_TYPE" == "watchos" && "$BUILD_TYPE" == "device" ]]; then
   expected_platform="WATCHOS"
 elif [[ "$PLATFORM_TYPE" == "watchos" && "$BUILD_TYPE" == "simulator" ]]; then
