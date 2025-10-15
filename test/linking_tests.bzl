@@ -64,7 +64,7 @@ def linking_test_suite(name):
         ],
         not_expected_argv = [
             "-g",
-            "DSYM_HINT_LINKED_BINARY",
+            "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
         ],
         mnemonic = "ObjcLink",
@@ -86,7 +86,7 @@ def linking_test_suite(name):
         ],
         not_expected_argv = [
             "-g",
-            "DSYM_HINT_LINKED_BINARY",
+            "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
         ],
         mnemonic = "ObjcLink",
@@ -182,7 +182,7 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-g",
-            "DSYM_HINT_LINKED_BINARY",
+            "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
@@ -192,7 +192,6 @@ def linking_test_suite(name):
         name = "{}_generate_cpp_dsym_test".format(name),
         tags = [name],
         expected_argv = [
-            "DSYM_HINT_LINKED_BINARY",
             "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "CppLink",
