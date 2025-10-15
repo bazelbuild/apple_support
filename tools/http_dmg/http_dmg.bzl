@@ -273,10 +273,19 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
             "extras",
         ))
 
-        if _urls_have_suffix(extras.urls, (".7z", ".msi", ".exe")):
+        if _urls_have_suffix(extras.urls, ".exe"):
+            urls_suffix = "exe"
+        elif _urls_have_suffix(extras.urls, ".msi"):
+            urls_suffix = "msi"
+        elif _urls_have_suffix(extras.urls, ".7z"):
+            urls_suffix = "7z"
+        else:
+            urls_suffix = None
+
+        if urls_suffix:
             extras_archive = repository_ctx.path("{}/{}".format(
                 zip_dir,
-                "extras.{}".format(url_suffix),
+                "extras.{}".format(urls_suffix),
             ))
             repository_ctx.download(
                 url = extras.urls,
