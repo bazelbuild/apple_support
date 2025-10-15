@@ -7,43 +7,61 @@ load(
 
 def _zip7_data(
         *,
-        url,
+        urls,
         integrity,
         bin_path = None):
     return struct(
-        url = url,
+        urls = urls,
         integrity = integrity,
         bin_path = bin_path,
     )
 
 _7ZIP_SOURCES = {
     "linux_arm64": _zip7_data(
-        url = "https://www.7-zip.org/a/7z2501-linux-arm64.tar.xz",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7z2501-linux-arm64.tar.xz",
+            "https://www.7-zip.org/a/7z2501-linux-arm64.tar.xz",
+        ],
         integrity = "sha256-OcUUDwLORDZZkwPFmhSfZUyxu8R83BBalCEg10euBA0=",
         bin_path = "7zz",
     ),
     "linux_x86_64": _zip7_data(
-        url = "https://www.7-zip.org/a/7z2501-linux-x64.tar.xz",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7z2501-linux-x64.tar.xz",
+            "https://www.7-zip.org/a/7z2501-linux-x64.tar.xz",
+        ],
         integrity = "sha256-TKO3xvL2eGa5JiKBi1gjPccDZ74vNrSY6wveqqRLU/Q=",
         bin_path = "7zz",
     ),
     "macos_arm64": _zip7_data(
-        url = "https://www.7-zip.org/a/7z2501-mac.tar.xz",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7z2501-mac.tar.xz",
+            "https://www.7-zip.org/a/7z2501-mac.tar.xz",
+        ],
         integrity = "sha256-Jqp1vCYrsQvwgFYXuVVpwwNcLFkKmffbVcfpYHsmheA=",
         bin_path = "7zz",
     ),
     "macos_x86_64": _zip7_data(
-        url = "https://www.7-zip.org/a/7z2501-mac.tar.xz",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7z2501-mac.tar.xz",
+            "https://www.7-zip.org/a/7z2501-mac.tar.xz",
+        ],
         integrity = "sha256-Jqp1vCYrsQvwgFYXuVVpwwNcLFkKmffbVcfpYHsmheA=",
         bin_path = "7zz",
     ),
     "windows_i686": _zip7_data(
-        url = "https://www.7-zip.org/a/7zr.exe",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7zr.exe",
+            "https://www.7-zip.org/a/7zr.exe",
+        ],
         integrity = "sha256-J8vj1YBK0J6Qu8qpFtoNXDsL6UYtDg+2y1S+XtkDCHU=",
         bin_path = "7zr.exe",
     ),
     "windows_x86_64": _zip7_data(
-        url = "https://www.7-zip.org/a/7zr.exe",
+        urls = [
+            "https://mirror.bazel.build/www.7-zip.org/a/7zr.exe",
+            "https://www.7-zip.org/a/7zr.exe",
+        ],
         integrity = "sha256-J8vj1YBK0J6Qu8qpFtoNXDsL6UYtDg+2y1S+XtkDCHU=",
         bin_path = "7zr.exe",
     ),
@@ -51,12 +69,18 @@ _7ZIP_SOURCES = {
 
 _7ZIP_EXTRAS = {
     "windows_i686": _zip7_data(
-        url = "https://7-zip.org/a/7z2501-x64.exe",
+        urls = [
+            "https://mirror.bazel.build/7-zip.org/a/7z2501.exe",
+            "https://7-zip.org/a/7z2501-x64.exe",
+        ],
         integrity = "sha256-eK+iocdzyvPPft9i+FfSqKXaVfsP/12kFgdMDSiytV8=",
         bin_path = "7z.exe",
     ),
     "windows_x86_64": _zip7_data(
-        url = "https://7-zip.org/a/7z2501.exe",
+        urls = [
+            "https://mirror.bazel.build/7-zip.org/a/7z2501-x64.exe",
+            "https://7-zip.org/a/7z2501.exe",
+        ],
         integrity = "sha256-uWgx7sWSg4TwVD1rV8H4ApUqDyZo5mKILAp4WitS+zs=",
         bin_path = "7z.exe",
     ),
@@ -199,6 +223,12 @@ def _extract_7z(
 
     repository_ctx.delete(temp_out_dir)
 
+def _urls_have_suffix(urls, suffix):
+    for url in urls:
+        if url.endswith(suffix):
+            return True
+    return False
+
 def _download_and_extract_7zip_binary(repository_ctx, host_arch):
     """Fetch and extract a 7zip archive
 
@@ -215,14 +245,14 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
     """
     zip_data = _7ZIP_SOURCES[host_arch]
 
-    auth = get_auth(repository_ctx, [zip_data.url])
+    auth = get_auth(repository_ctx, zip_data.urls)
 
     zip_dir = repository_ctx.path("7z")
     zip_exe = repository_ctx.path("{}/{}".format(zip_dir, zip_data.bin_path))
 
-    if zip_data.url.endswith(".exe"):
+    if _urls_have_suffix(zip_data.urls, ".exe"):
         repository_ctx.download(
-            url = zip_data.url,
+            url = zip_data.urls,
             output = zip_exe,
             integrity = zip_data.integrity,
             executable = True,
@@ -230,7 +260,7 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
         )
     else:
         repository_ctx.download_and_extract(
-            url = zip_data.url,
+            url = zip_data.urls,
             integrity = zip_data.integrity,
             output = zip_dir,
             auth = auth,
@@ -242,14 +272,14 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
             zip_dir,
             "extras",
         ))
-        _, _, url_suffix = extras.url.rpartition(".")
-        if url_suffix in ("7z", "msi", "exe"):
+
+        if _urls_have_suffix(extras.urls, (".7z", ".msi", ".exe")):
             extras_archive = repository_ctx.path("{}/{}".format(
                 zip_dir,
                 "extras.{}".format(url_suffix),
             ))
             repository_ctx.download(
-                url = extras.url,
+                url = extras.urls,
                 output = extras_archive,
                 integrity = extras.integrity,
                 auth = auth,
@@ -262,7 +292,7 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
             )
         else:
             repository_ctx.download_and_extract(
-                url = extras.url,
+                url = extras.urls,
                 integrity = extras.integrity,
                 output = extras_output,
                 auth = auth,
@@ -273,7 +303,7 @@ def _download_and_extract_7zip_binary(repository_ctx, host_arch):
             zip_exe = repository_ctx.path("{}/{}".format(extras_output, extras.bin_path))
 
     if not zip_exe.exists:
-        fail("Failed to locate 7z binary from: {}".format(zip_data.url))
+        fail("Failed to locate 7z binary from: {}".format(zip_data.urls))
 
     return zip_dir, zip_exe
 
