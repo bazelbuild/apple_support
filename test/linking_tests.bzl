@@ -61,6 +61,7 @@ def linking_test_suite(name):
             "-ObjC",
             "-framework",
             "Foundation",
+            "LINKED_BINARY",
         ],
         not_expected_argv = [
             "-g",
@@ -83,6 +84,7 @@ def linking_test_suite(name):
             "Foundation",
             "-framework",
             "UIKit",
+            "LINKED_BINARY",
         ],
         not_expected_argv = [
             "-g",
@@ -182,6 +184,7 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-g",
+            "LINKED_BINARY",
             "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "ObjcLink",
@@ -192,6 +195,7 @@ def linking_test_suite(name):
         name = "{}_generate_cpp_dsym_test".format(name),
         tags = [name],
         expected_argv = [
+            "LINKED_BINARY",
             "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "CppLink",
