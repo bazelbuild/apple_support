@@ -461,6 +461,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         iterate_over = "library_names",
                     ),
                     flag_group(flags = ["-filelist", "%{filelist}"]),
+                    flag_group(flags = ["-o", "%{linked_binary}", "LINKED_BINARY=%{linked_binary}"]),
                     flag_group(
                         flags = ["-force_load", "%{force_load_exec_paths}"],
                         iterate_over = "force_load_exec_paths",
@@ -480,7 +481,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "include_system_dirs",
             "framework_paths",
             "strip_debug_symbols",
-            "output_execpath_flags",
         ],
         tools = [
             tool(
@@ -1009,19 +1009,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
-                        flags = ["-o", "%{output_execpath}"],
+                        flags = ["-o", "%{output_execpath}", "LINKED_BINARY=%{output_execpath}"],
                         expand_if_available = "output_execpath",
-                    ),
-                ],
-            ),
-        ],
-        env_sets = [
-            env_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
-                env_entries = [
-                    env_entry(
-                        key = "WRAPPED_CLANG_OUTPUT_BINARY",
-                        value = "%{output_execpath}",
                     ),
                 ],
             ),
