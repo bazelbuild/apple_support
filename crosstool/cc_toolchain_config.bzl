@@ -1452,15 +1452,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "unfiltered_compile_flags",
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.linkstamp_compile,
-                ],
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions,
                 flag_groups = [
                     flag_group(
                         flags = [
