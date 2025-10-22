@@ -1,0 +1,31 @@
+# Publish new releases to Bazel Central Registry.
+# Uses reusable workflow from https://github.com/bazel-contrib/publish-to-bcr
+name: Publish to BCR
+on:
+  # Run the publish workflow after a successful release
+  # Will be triggered from the release.yaml workflow
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+  # In case of problems, let release engineers retry by manually dispatching
+  # the workflow from the GitHub UI
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: git tag being released
+        required: true
+        type: string
+jobs:
+  publish:
+    uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0
+    with:
+      tag_name: ${{ inputs.tag_name }}
+      registry_fork: bazelbuild/bazel-central-registry
+      # We don't have a token that has permission to publish a pr to the bazelbuild GH org
+      open_pull_request: false
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
