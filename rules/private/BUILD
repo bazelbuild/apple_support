@@ -11,7 +11,6 @@ bzl_library(
     ],
     deps = [
         "//lib:apple_support",
-        "@bazel_skylib//lib:dicts",
     ],
 )
 
