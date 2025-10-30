@@ -14,7 +14,6 @@
 
 """Genrule which provides Apple's Xcode environment."""
 
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:apple_support.bzl", "apple_support")
 
 def _compute_make_variables(
@@ -102,7 +101,7 @@ def _apple_genrule_impl(ctx):
 
 apple_genrule = rule(
     implementation = _apple_genrule_impl,
-    attrs = dicts.add(apple_support.action_required_attrs(), {
+    attrs = apple_support.action_required_attrs() | {
         "cmd": attr.string(
             mandatory = True,
             doc = "The command to run. Subject the variable substitution.",
@@ -141,7 +140,7 @@ action is run.
         "no_sandbox": attr.bool(
             doc = "If the sandbox should be disabled when the action is run.",
         ),
-    }),
+    },
     doc = """\
 Genrule which provides Apple specific environment and make variables.
 
