@@ -13,6 +13,15 @@ opt_test = make_action_command_line_test_rule(
     },
 )
 
+opt_dead_strip_disabled_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+        "//command_line_option:features": [
+            "-dead_strip_opt",
+        ],
+    },
+)
+
 dead_strip_requested_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "fastbuild",
@@ -104,6 +113,23 @@ def linking_test_suite(name):
             "-Xlinker",
             "2",
             "-ObjC",
+            "-dead_strip",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    opt_dead_strip_disabled_test(
+        name = "{}_opt_dead_strip_disabled_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+        ],
+        not_expected_argv = [
             "-dead_strip",
         ],
         mnemonic = "ObjcLink",
