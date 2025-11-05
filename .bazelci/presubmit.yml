@@ -55,8 +55,7 @@ tasks:
 
   macos_last_green:
     name: "Last Green Bazel"
-    # TODO: Move back to last_green once dependencies have rules_cc load statements
-    bazel: a0e92f32cbc49408f675202541aef831640c01a6
+    bazel: last_green
     <<: *common
 
   linux_latest:
