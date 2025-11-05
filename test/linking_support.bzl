@@ -546,6 +546,7 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
         deps = split_deps.get(split_transition_key, [])
         platform_info = child_toolchain[TestApplePlatformInfo]
 
+        # TODO: Delete once we drop 8.x
         build_common_variables = apple_common.compilation_support.build_common_variables if hasattr(apple_common, "compilation_support") else compilation_support.build_common_variables
         common_variables = build_common_variables(
             ctx = ctx,
@@ -598,18 +599,35 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
             legacy_debug_outputs.setdefault(platform_info.target_arch, {})["linkmap"] = linkmap
 
         name = ctx.label.name + "_bin"
-        executable = _register_configuration_specific_link_actions(
-            name = name,
-            common_variables = common_variables,
-            cc_linking_context = cc_linking_context,
-            apple_platform_info = platform_info,
-            extra_link_args = [],
-            stamp = stamp,
-            user_variable_extensions = extensions,
-            additional_outputs = additional_outputs,
-            extra_link_inputs = [],
-            attr_linkopts = attr_linkopts,
-        )
+
+        # TODO: Delete once we drop 8.x
+        if hasattr(apple_common, "compilation_support"):
+            executable = apple_common.compilation_support.register_configuration_specific_link_actions(
+                name = name,
+                common_variables = common_variables,
+                cc_linking_context = cc_linking_context,
+                build_config = platform_info.target_build_config,
+                stamp = stamp,
+                user_variable_extensions = extensions,
+                additional_outputs = additional_outputs,
+                deps = deps,
+                attr_linkopts = attr_linkopts,
+                extra_link_args = [],
+                extra_link_inputs = [],
+            )
+        else:
+            executable = _register_configuration_specific_link_actions(
+                name = name,
+                common_variables = common_variables,
+                cc_linking_context = cc_linking_context,
+                apple_platform_info = platform_info,
+                extra_link_args = [],
+                stamp = stamp,
+                user_variable_extensions = extensions,
+                additional_outputs = additional_outputs,
+                extra_link_inputs = [],
+                attr_linkopts = attr_linkopts,
+            )
 
         output = {
             "binary": executable,
@@ -691,7 +709,10 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
 
     for split_transition_key, child_toolchain in cc_toolchains.items():
         cc_toolchain = child_toolchain[CcWrapperInfo].provider
-        common_variables = compilation_support.build_common_variables(
+
+        # TODO: Delete once we drop 8.x
+        build_common_variables = apple_common.compilation_support.build_common_variables if hasattr(apple_common, "compilation_support") else compilation_support.build_common_variables
+        common_variables = build_common_variables(
             ctx = ctx,
             toolchain = cc_toolchain,
             use_pch = True,
@@ -717,7 +738,10 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
             linking_contexts = common_variables.objc_linking_context.cc_linking_contexts,
             avoid_dep_linking_contexts = avoid_cc_linking_contexts,
         )
-        linking_outputs = _register_fully_link_action(
+
+        # TODO: Delete once we drop 8.x
+        register_fully_link = apple_common.compilation_support.register_fully_link_action if hasattr(apple_common, "compilation_support") else _register_fully_link_action
+        linking_outputs = register_fully_link(
             name = name,
             common_variables = common_variables,
             cc_linking_context = cc_linking_context,
