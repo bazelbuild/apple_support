@@ -165,7 +165,6 @@ def _create_deduped_linkopts_list(linker_inputs):
 
 def _emit_builtin_objc_strip_action(ctx):
     return (
-        ctx.fragments.objc.builtin_objc_strip_action and
         ctx.fragments.cpp.objc_enable_binary_stripping() and
         ctx.fragments.cpp.compilation_mode() == "opt"
     )
