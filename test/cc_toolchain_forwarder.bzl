@@ -30,6 +30,9 @@ TestApplePlatformInfo = provider(
         "target_environment": """
 `String` representing the selected target environment (e.g. "device", "simulator").
 """,
+        "target_build_config": """
+The ctx.configuration the target is being built with.
+""",
     },
 )
 
@@ -96,6 +99,7 @@ def _cc_toolchain_forwarder_impl(ctx):
             target_os = _target_os_from_rule_ctx(ctx),
             target_arch = _target_arch_from_rule_ctx(ctx),
             target_environment = _target_environment_from_rule_ctx(ctx),
+            target_build_config = ctx.configuration,
         ),
     ]
 
