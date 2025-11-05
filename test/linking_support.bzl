@@ -547,7 +547,8 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
         deps = split_deps.get(split_transition_key, [])
         platform_info = child_toolchain[TestApplePlatformInfo]
 
-        common_variables = compilation_support.build_common_variables(
+        build_common_variables = apple_common.compilation_support.build_common_variables if hasattr(apple_common, "compilation_support") else compilation_support.build_common_variables
+        common_variables = build_common_variables(
             ctx = ctx,
             toolchain = cc_toolchain,
             deps = deps,
