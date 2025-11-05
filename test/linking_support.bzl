@@ -4,7 +4,7 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 load("@rules_cc//cc/common:objc_info.bzl", "ObjcInfo")
-load("@rules_cc//cc/private/rules_impl:objc_compilation_support.bzl", "compilation_support")
+load("@rules_cc//cc/private/rules_impl:objc_compilation_support.bzl", "compilation_support")  # buildifier: disable=bzl-visibility
 load(":cc_toolchain_forwarder.bzl", "CcWrapperInfo", "TestApplePlatformInfo")
 
 def _build_avoid_library_set(avoid_dep_linking_contexts):
@@ -243,7 +243,7 @@ def _register_binary_strip_action(
     )
     return stripped_binary
 
-def _create_deduped_linkopts_linking_context(owner, cc_linking_context, seen_flags):
+def _create_deduped_linkopts_linking_context(cc_linking_context, seen_flags):
     linker_inputs = []
     for linker_input in cc_linking_context.linker_inputs.to_list():
         (same, new_flags, seen_flags) = _dedup_link_flags(
@@ -279,7 +279,6 @@ def _register_configuration_specific_link_actions_with_cpp_variables(
         stamp,
         user_variable_extensions,
         additional_outputs,
-        deps,
         extra_link_inputs,
         attr_linkopts):
     ctx = common_variables.ctx
@@ -295,7 +294,6 @@ def _register_configuration_specific_link_actions_with_cpp_variables(
         seen_flags,
     )
     (cc_linking_context, _) = _create_deduped_linkopts_linking_context(
-        ctx.label,
         cc_linking_context,
         seen_flags,
     )
@@ -343,7 +341,6 @@ def _register_configuration_specific_link_actions_with_objc_variables(
         stamp,
         user_variable_extensions,
         additional_outputs,
-        deps,
         extra_link_inputs,
         attr_linkopts):
     ctx = common_variables.ctx
@@ -457,7 +454,6 @@ def _register_configuration_specific_link_actions(
         stamp,
         user_variable_extensions,
         additional_outputs,
-        deps,
         extra_link_inputs,
         attr_linkopts):
     ctx = common_variables.ctx
@@ -489,7 +485,6 @@ def _register_configuration_specific_link_actions(
             stamp,
             user_variable_extensions,
             additional_outputs,
-            deps,
             extra_link_inputs,
             attr_linkopts,
         )
@@ -505,7 +500,6 @@ def _register_configuration_specific_link_actions(
             stamp,
             user_variable_extensions,
             additional_outputs,
-            deps,
             extra_link_inputs,
             attr_linkopts,
         )
@@ -613,7 +607,6 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
             stamp = stamp,
             user_variable_extensions = extensions,
             additional_outputs = additional_outputs,
-            deps = deps,
             extra_link_inputs = [],
             attr_linkopts = attr_linkopts,
         )
