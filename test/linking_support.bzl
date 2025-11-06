@@ -7,6 +7,9 @@ load("@rules_cc//cc/common:objc_info.bzl", "ObjcInfo")
 load("@rules_cc//cc/private/rules_impl:objc_compilation_support.bzl", "compilation_support")  # buildifier: disable=bzl-visibility
 load(":cc_toolchain_forwarder.bzl", "CcWrapperInfo", "TestApplePlatformInfo")
 
+# TODO: Delete once we drop 8.x
+_USE_OLD_API = not hasattr(cc_common, "objc_expand_and_tokenize")
+
 def _build_avoid_library_set(avoid_dep_linking_contexts):
     avoid_library_set = dict()
     for linking_context in avoid_dep_linking_contexts:
@@ -546,8 +549,7 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
         deps = split_deps.get(split_transition_key, [])
         platform_info = child_toolchain[TestApplePlatformInfo]
 
-        # TODO: Delete once we drop 8.x
-        build_common_variables = apple_common.compilation_support.build_common_variables if hasattr(apple_common, "compilation_support") else compilation_support.build_common_variables
+        build_common_variables = apple_common.compilation_support.build_common_variables if _USE_OLD_API else compilation_support.build_common_variables
         common_variables = build_common_variables(
             ctx = ctx,
             toolchain = cc_toolchain,
@@ -600,8 +602,7 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
 
         name = ctx.label.name + "_bin"
 
-        # TODO: Delete once we drop 8.x
-        if hasattr(apple_common, "compilation_support"):
+        if _USE_OLD_API:
             executable = apple_common.compilation_support.register_configuration_specific_link_actions(
                 name = name,
                 common_variables = common_variables,
@@ -710,8 +711,7 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
     for split_transition_key, child_toolchain in cc_toolchains.items():
         cc_toolchain = child_toolchain[CcWrapperInfo].provider
 
-        # TODO: Delete once we drop 8.x
-        build_common_variables = apple_common.compilation_support.build_common_variables if hasattr(apple_common, "compilation_support") else compilation_support.build_common_variables
+        build_common_variables = apple_common.compilation_support.build_common_variables if _USE_OLD_API else compilation_support.build_common_variables
         common_variables = build_common_variables(
             ctx = ctx,
             toolchain = cc_toolchain,
@@ -739,8 +739,7 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
             avoid_dep_linking_contexts = avoid_cc_linking_contexts,
         )
 
-        # TODO: Delete once we drop 8.x
-        register_fully_link = apple_common.compilation_support.register_fully_link_action if hasattr(apple_common, "compilation_support") else _register_fully_link_action
+        register_fully_link = apple_common.compilation_support.register_fully_link_action if _USE_OLD_API else _register_fully_link_action
         linking_outputs = register_fully_link(
             name = name,
             common_variables = common_variables,
