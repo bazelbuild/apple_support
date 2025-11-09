@@ -460,6 +460,13 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  // In the case that cc_common is called directly without output_execpath,
+  // we can't easily compute the path to the binary.
+  // In this case there is also no '-o' flag.
+  if (linked_binary.empty()) {
+    return 0;
+  }
+
   if (generate_dsym) {
     const std::string bundle_suffix = ".dSYM";
     bool is_bundle = dsym_path.rfind(bundle_suffix) ==

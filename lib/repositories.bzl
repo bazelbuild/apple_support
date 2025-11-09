@@ -76,9 +76,9 @@ def apple_support_dependencies():
     _maybe(
         http_archive,
         name = "rules_cc",
-        sha256 = "207ea073dd20a705f9e8bc5ac02f5203e9621fc672774bb1a0935aefab7aebfa",
-        strip_prefix = "rules_cc-0.2.8",
-        url = "https://github.com/bazelbuild/rules_cc/releases/download/0.2.8/rules_cc-0.2.8.tar.gz",
+        sha256 = "472ddca8cec1e64ad78e4f0cabbec55936a3baddbe7bef072764ca91504bd523",
+        strip_prefix = "rules_cc-0.2.13",
+        url = "https://github.com/bazelbuild/rules_cc/releases/download/0.2.13/rules_cc-0.2.13.tar.gz",
     )
 
     _apple_cc_configure()
