@@ -110,7 +110,7 @@ bool runSubProcess(const std::vector<std::string> &args) {
   posix_spawn_file_actions_t actions;
   posix_spawn_file_actions_init(&actions);
 
-  // Redirect child's stdout to the write end of the pipe
+  // Redirect child's stderr to the write end of the pipe
   posix_spawn_file_actions_adddup2(&actions, pipefd[1], STDERR_FILENO);
   posix_spawn_file_actions_addclose(&actions,
                                     pipefd[0]);  // Close unused read end
@@ -151,12 +151,18 @@ bool runSubProcess(const std::vector<std::string> &args) {
       return false;
     }
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-      std::cerr << "Error in child process '" << args[0] << "'. "
-                << WEXITSTATUS(status) << "\n";
+      std::cerr << "Child process '" << args[0]
+                << "' terminated with exit code "
+                << WEXITSTATUS(status)
+                << "\nstderr:\n"
+                << oss.str();
       return false;
     } else if (WIFSIGNALED(status)) {
-      std::cerr << "Error in child process '" << args[0] << "'. "
-                << WTERMSIG(status) << "\n";
+      std::cerr << "Child process '" << args[0]
+                << "' terminated with signal "
+                << WTERMSIG(status)
+                << "\nstderr:\n"
+                << oss.str();
       return false;
     }
   } else {
