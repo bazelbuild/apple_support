@@ -11,7 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Definitions for registering actions on Apple platforms."""
+"""# `apple_support` starlark module
+
+A module of helpers for rule authors to aid in writing actions that target
+Apple platforms.
+
+To use these in your Starlark code, simply load the module; for example:
+
+```build
+load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+```
+"""
 
 load("@bazel_skylib//lib:types.bzl", "types")
 
