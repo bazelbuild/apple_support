@@ -12,7 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Support functions for working with Xcode configurations."""
+"""# `xcode_support` Starlark Module
+
+A modules of helpers for rule authors to aid in writing rules that
+need to change what they do based on attributes of the active Xcode.
+
+To use these in your Starlark code, simply load the module; for example:
+
+```build
+load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
+```
+"""
 
 load(
     "@build_bazel_apple_support//xcode:providers.bzl",

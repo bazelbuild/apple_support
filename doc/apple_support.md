@@ -1,35 +1,36 @@
-# `apple_support` Starlark Module
+<!-- Generated with Stardoc, Do Not Edit! -->
 
-<!-- Generated file, do not edit directly. -->
+# `apple_support` starlark module
 
-
-A module of helpers for rule authors to aid in writing actions that
-target Apple platforms.
+A module of helpers for rule authors to aid in writing actions that target
+Apple platforms.
 
 To use these in your Starlark code, simply load the module; for example:
 
 ```build
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 ```
-
-<!-- BEGIN_TOC -->
 On this page:
 
   * [apple_support.action_required_attrs](#apple_support.action_required_attrs)
-  * [apple_support.action_required_env](#apple_support.action_required_env)
-  * [apple_support.action_required_execution_requirements](#apple_support.action_required_execution_requirements)
   * [apple_support.path_placeholders.platform_frameworks](#apple_support.path_placeholders.platform_frameworks)
   * [apple_support.path_placeholders.sdkroot](#apple_support.path_placeholders.sdkroot)
   * [apple_support.path_placeholders.xcode](#apple_support.path_placeholders.xcode)
+  * [apple_support.platform_constraint_attrs](#apple_support.platform_constraint_attrs)
   * [apple_support.run](#apple_support.run)
   * [apple_support.run_shell](#apple_support.run_shell)
-<!-- END_TOC -->
+  * [apple_support.target_arch_from_rule_ctx](#apple_support.target_arch_from_rule_ctx)
+  * [apple_support.target_environment_from_rule_ctx](#apple_support.target_environment_from_rule_ctx)
+  * [apple_support.target_os_from_rule_ctx](#apple_support.target_os_from_rule_ctx)
+  * [apple_support.xcode_path_resolve_level](#apple_support.xcode_path_resolve_level)
 
+<a id="apple_support.action_required_attrs"></a>
 
-<a name="apple_support.action_required_attrs"></a>
 ## apple_support.action_required_attrs
 
-<pre style="white-space: normal">
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
 apple_support.action_required_attrs()
 </pre>
 
@@ -47,155 +48,45 @@ maintainers to use:
 
 The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
 
-<a name="apple_support.action_required_attrs.returns"></a>
-### Returns
+
+
+**RETURNS**
 
 A `dict` object containing attributes to be added to rule implementations.
 
-<a name="apple_support.action_required_env"></a>
-## apple_support.action_required_env
 
-<pre style="white-space: normal">
-apple_support.action_required_env(<a href="#apple_support.action_required_env.ctx">ctx</a>, *,
-<a href="#apple_support.action_required_env.xcode_config">xcode_config</a>,
-<a href="#apple_support.action_required_env.apple_fragment">apple_fragment</a>)
-</pre>
+<a id="apple_support.path_placeholders.platform_frameworks"></a>
 
-Returns a dictionary with the environment variables required for Xcode path resolution.
-
-In most cases, you should _not_ use this API. It exists solely for using it on test rules,
-where the test action registration API is not available in Starlark.
-
-To use these environment variables for a test, your test rule needs to propagate the
-`testing.TestEnvironment` provider, which takes a dictionary with environment variables to set
-during the test execution.
-
-<a name="apple_support.action_required_env.arguments"></a>
-### Arguments
-
-<table class="params-table">
-  <colgroup>
-    <col class="col-param" />
-    <col class="col-description" />
-  </colgroup>
-  <tbody>
-    <tr id="apple_support.action_required_env.ctx">
-      <td><code>ctx</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
-            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
-            provided. Deprecated.</p></td>
-    </tr>
-    <tr id="apple_support.action_required_env.xcode_config">
-      <td><code>xcode_config</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The
-            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
-            aspect's context. Typically from
-            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
-            <code>ctx</code> is not given.</p></td>
-    </tr>
-    <tr id="apple_support.action_required_env.apple_fragment">
-      <td><code>apple_fragment</code></td>
-      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
-            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
-            given.</p></td>
-    </tr>
-  </tbody>
-</table>
-
-<a name="apple_support.action_required_env.returns"></a>
-### Returns
-
-A dictionary with environment variables required for Xcode path resolution.
-
-<a name="apple_support.action_required_execution_requirements"></a>
-## apple_support.action_required_execution_requirements
-
-<pre style="white-space: normal">
-apple_support.action_required_execution_requirements(<a href="#apple_support.action_required_execution_requirements.ctx">ctx</a>, *, <a href="#apple_support.action_required_execution_requirements.xcode_config">xcode_config</a>)
-</pre>
-
-Returns a dictionary with the execution requirements for running actions on Apple platforms.
-
-In most cases, you should _not_ use this API. It exists solely for using it on test rules,
-where the test action registration API is not available in Starlark.
-
-To use these environment variables for a test, your test rule needs to propagate the
-`testing.TestExecution` provider, which takes a dictionary with execution requirements for the
-test action.
-
-<a name="apple_support.action_required_execution_requirements.arguments"></a>
-### Arguments
-
-<table class="params-table">
-  <colgroup>
-    <col class="col-param" />
-    <col class="col-description" />
-  </colgroup>
-  <tbody>
-    <tr id="apple_support.action_required_execution_requirements.ctx">
-      <td><code>ctx</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
-            action. Required if <code>xcode_config</code> is not provided. Deprecated.</p></td>
-    </tr>
-    <tr id="apple_support.action_required_execution_requirements.xcode_config">
-      <td><code>xcode_config</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The
-            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
-            aspect's context. Typically from
-            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
-            <code>ctx</code> is not given.</p></td>
-    </tr>
-  </tbody>
-</table>
-
-<a name="apple_support.action_required_execution_requirements.returns"></a>
-### Returns
-
-A dictionary with execution requirements for running actions on Apple platforms.
-
-
-<a name="apple_support.path_placeholders.platform_frameworks"></a>
 ## apple_support.path_placeholders.platform_frameworks
 
-<pre style="white-space: normal">
-apple_support.path_placeholders.platform_frameworks(<a href="#apple_support.path_placeholders.platform_frameworks.ctx">ctx</a>, *, <a href="#apple_support.path_placeholders.platform_frameworks.apple_fragment">apple_fragment</a>)
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.path_placeholders.platform_frameworks(*, <a href="#apple_support.path_placeholders.platform_frameworks-apple_fragment">apple_fragment</a>)
 </pre>
 
 Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
-<a name="apple_support.path_placeholders.platform_frameworks.arguments"></a>
-### Arguments
+**PARAMETERS**
 
-<table class="params-table">
-  <colgroup>
-    <col class="col-param" />
-    <col class="col-description" />
-  </colgroup>
-  <tbody>
-    <tr id="apple_support.path_placeholders.platform_frameworks.ctx">
-      <td><code>ctx</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
-            action. Required if <code>apple_fragment</code> is not provided. Deprecated.</p></td>
-    </tr>
-    <tr id="apple_support.path_placeholders.platform_frameworks.apple_fragment">
-      <td><code>apple_fragment</code></td>
-      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
-            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
-            given.</p></td>
-    </tr>
-  </tbody>
-</table>
 
-<a name="apple_support.path_placeholders.platform_frameworks.returns"></a>
-### Returns
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.path_placeholders.platform_frameworks-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+
+**RETURNS**
 
 Returns a string with the platform's frameworks directory, anchored to the Xcode path
-placeholder.
+  placeholder.
 
-<a name="apple_support.path_placeholders.sdkroot"></a>
+
+<a id="apple_support.path_placeholders.sdkroot"></a>
+
 ## apple_support.path_placeholders.sdkroot
 
-<pre style="white-space: normal">
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
 apple_support.path_placeholders.sdkroot()
 </pre>
 
@@ -206,15 +97,20 @@ setting the `xcode_path_resolve_level` argument to either the
 `apple_support.xcode_path_resolve_level.args` or
 `apple_support.xcode_path_resolve_level.args_and_files` value.
 
-<a name="apple_support.path_placeholders.sdkroot.returns"></a>
-### Returns
+
+
+**RETURNS**
 
 Returns a placeholder value to be replaced with SDKROOT during action execution.
 
-<a name="apple_support.path_placeholders.xcode"></a>
+
+<a id="apple_support.path_placeholders.xcode"></a>
+
 ## apple_support.path_placeholders.xcode
 
-<pre style="white-space: normal">
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
 apple_support.path_placeholders.xcode()
 </pre>
 
@@ -225,17 +121,42 @@ setting the `xcode_path_resolve_level` argument to either the
 `apple_support.xcode_path_resolve_level.args` or
 `apple_support.xcode_path_resolve_level.args_and_files` value.
 
-<a name="apple_support.path_placeholders.xcode.returns"></a>
-### Returns
+
+
+**RETURNS**
 
 Returns a placeholder value to be replaced with DEVELOPER_DIR during action execution.
 
 
-<a name="apple_support.run"></a>
+<a id="apple_support.platform_constraint_attrs"></a>
+
+## apple_support.platform_constraint_attrs
+
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.platform_constraint_attrs()
+</pre>
+
+Returns a dictionary of all known Apple platform constraints that can be resolved.
+
+The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
+
+
+
+**RETURNS**
+
+A `dict` object containing attributes to be added to rule implementations.
+
+
+<a id="apple_support.run"></a>
+
 ## apple_support.run
 
-<pre style="white-space: normal">
-apple_support.run(<a href="#apple_support.run.ctx">ctx</a>, <a href="#apple_support.run.xcode_path_resolve_level">xcode_path_resolve_level</a>, *, <a href="#apple_support.run.actions">actions</a>, <a href="#apple_support.run.xcode_config">xcode_config</a>, <a href="#apple_support.run.apple_fragment">apple_fragment</a>, <a href="#apple_support.run.xcode_path_wrapper">xcode_path_wrapper</a>, <a href="#apple_support.run.**kwargs">**kwargs</a>)
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.run(*, <a href="#apple_support.run-actions">actions</a>, <a href="#apple_support.run-xcode_config">xcode_config</a>, <a href="#apple_support.run-apple_fragment">apple_fragment</a>, <a href="#apple_support.run-xcode_path_resolve_level">xcode_path_resolve_level</a>, <a href="#apple_support.run-kwargs">**kwargs</a>)
 </pre>
 
 Registers an action to run on an Apple machine.
@@ -275,63 +196,27 @@ If the `xcode_path_resolve_level` value is:
      the arguments strings and instances of the placeholders within response files (i.e. any
      path argument beginning with `@`) will be replaced.
 
-<a name="apple_support.run.arguments"></a>
-### Arguments
 
-<table class="params-table">
-  <colgroup>
-    <col class="col-param" />
-    <col class="col-description" />
-  </colgroup>
-  <tbody>
-    <tr id="apple_support.run.ctx">
-      <td><code>ctx</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
-            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
-            provided. Deprecated.</p></td>
-    </tr>
-    <tr id="apple_support.run.xcode_path_resolve_level">
-      <td><code>xcode_path_resolve_level</code></td>
-      <td><p><code>Optional; default is apple_support.xcode_path_resolve_level.none</code></p>
-      <p>The level of Xcode path replacement required for the action.</p></td>
-    </tr>
-    <tr id="apple_support.run.actions">
-      <td><code>actions</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The actions provider from
-            <code>ctx.actions</code>. Required if <code>ctx</code> is not given.</p></td>
-    </tr>
-    <tr id="apple_support.run.xcode_config">
-      <td><code>xcode_config</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The
-            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
-            aspect's context. Typically from
-            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
-            <code>ctx</code> is not given.</p></td>
-    </tr>
-    <tr id="apple_support.run.apple_fragment">
-      <td><code>apple_fragment</code></td>
-      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
-            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
-            given.</p></td>
-    </tr>
-    <tr id="apple_support.run.xcode_path_wrapper">
-      <td><code>xcode_path_wrapper</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The Xcode path wrapper script. Required
-            if <code>ctx</code> is not given and <code>xcode_path_resolve_level</code> is not
-            <code>apple_support.xcode_path_resolve_level.none</code>.</p></td>
-    </tr>
-    <tr id="apple_support.run.**kwargs">
-      <td><code>**kwargs</code></td>
-      <td><p>See <code>ctx.actions.run</code> for the rest of the available arguments.</p></td>
-    </tr>
-  </tbody>
-</table>
+**PARAMETERS**
 
-<a name="apple_support.run_shell"></a>
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.run-actions"></a>actions |  The actions provider from ctx.actions.   |  none |
+| <a id="apple_support.run-xcode_config"></a>xcode_config |  The xcode_config as found in the current rule or aspect's context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.   |  none |
+| <a id="apple_support.run-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+| <a id="apple_support.run-xcode_path_resolve_level"></a>xcode_path_resolve_level |  The level of Xcode path replacement required for the action.   |  `None` |
+| <a id="apple_support.run-kwargs"></a>kwargs |  See `ctx.actions.run` for the rest of the available arguments.   |  none |
+
+
+<a id="apple_support.run_shell"></a>
+
 ## apple_support.run_shell
 
-<pre style="white-space: normal">
-apple_support.run_shell(<a href="#apple_support.run_shell.ctx">ctx</a>, *, <a href="#apple_support.run_shell.actions">actions</a>, <a href="#apple_support.run_shell.xcode_config">xcode_config</a>, <a href="#apple_support.run_shell.apple_fragment">apple_fragment</a>, <a href="#apple_support.run_shell.**kwargs">**kwargs</a>)
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.run_shell(*, <a href="#apple_support.run_shell-actions">actions</a>, <a href="#apple_support.run_shell-xcode_config">xcode_config</a>, <a href="#apple_support.run_shell-apple_fragment">apple_fragment</a>, <a href="#apple_support.run_shell-kwargs">**kwargs</a>)
 </pre>
 
 Registers a shell action to run on an Apple machine.
@@ -349,47 +234,122 @@ This method registers an action to run on an Apple machine, configuring it to en
 `run_shell` does not support placeholder substitution. To achieve placeholder substitution,
 please use `run` instead.
 
-<a name="apple_support.run_shell.arguments"></a>
-### Arguments
 
-<table class="params-table">
-  <colgroup>
-    <col class="col-param" />
-    <col class="col-description" />
-  </colgroup>
-  <tbody>
-    <tr id="apple_support.run_shell.ctx">
-      <td><code>ctx</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The context of the rule registering the
-            action. Required if <code>xcode_config</code> and <code>apple_fragment</code> are not
-            provided. Deprecated.</p></td>
-    </tr>
-    <tr id="apple_support.run_shell.actions">
-      <td><code>actions</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The actions provider from
-            <code>ctx.actions</code>. Required if <code>ctx</code> is not given.</p></td>
-    </tr>
-    <tr id="apple_support.run_shell.xcode_config">
-      <td><code>xcode_config</code></td>
-      <td><p><code>Optional; default is None</code></p><p>The
-            <code>apple_common.XcodeVersionConfig</code> provider as found in the current rule or
-            aspect's context. Typically from
-            <code>ctx.attr._xcode_config[apple_common.XcodeVersionConfig]</code>. Required if
-            <code>ctx</code> is not given.</p></td>
-    </tr>
-    <tr id="apple_support.run_shell.apple_fragment">
-      <td><code>apple_fragment</code></td>
-      <td><p><code>Optional; default is None</code></p><p>A reference to the apple fragment.
-            Typically from <code>ctx.fragments.apple</code>. Required if <code>ctx</code> is not
-            given.</p></td>
-    </tr>
-    <tr id="apple_support.run_shell.**kwargs">
-      <td><code>**kwargs</code></td>
-      <td><p>See <code>ctx.actions.run_shell</code> for the rest of the available arguments.</p></td>
-    </tr>
-  </tbody>
-</table>
+**PARAMETERS**
 
 
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.run_shell-actions"></a>actions |  The actions provider from ctx.actions.   |  none |
+| <a id="apple_support.run_shell-xcode_config"></a>xcode_config |  The xcode_config as found in the current rule or aspect's context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.   |  none |
+| <a id="apple_support.run_shell-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+| <a id="apple_support.run_shell-kwargs"></a>kwargs |  See `ctx.actions.run_shell` for the rest of the available arguments.   |  none |
+
+
+<a id="apple_support.target_arch_from_rule_ctx"></a>
+
+## apple_support.target_arch_from_rule_ctx
+
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.target_arch_from_rule_ctx(<a href="#apple_support.target_arch_from_rule_ctx-ctx">ctx</a>, *, <a href="#apple_support.target_arch_from_rule_ctx-fail_on_missing_constraint">fail_on_missing_constraint</a>)
+</pre>
+
+Returns a `String` representing the target architecture based on constraints.
+
+The returned `String` will represent a cpu architecture, such as `arm64` or `arm64e`.
+
+In order to use `apple_support.target_arch_from_rule_ctx()`, you'll need to modify your rule
+definition to add the following:
+
+  * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+    This can be done using the `dicts.add()` method from Skylib.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.target_arch_from_rule_ctx-ctx"></a>ctx |  The context of the rule that has Apple platform constraint attributes.   |  none |
+| <a id="apple_support.target_arch_from_rule_ctx-fail_on_missing_constraint"></a>fail_on_missing_constraint |  Whether to fail if no constraint is found. (default: `True`)   |  `True` |
+
+**RETURNS**
+
+A `String` representing the selected target architecture or cpu type (e.g. `arm64`,
+  `arm64e`) or `None` if no constraint is found.
+
+
+<a id="apple_support.target_environment_from_rule_ctx"></a>
+
+## apple_support.target_environment_from_rule_ctx
+
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.target_environment_from_rule_ctx(<a href="#apple_support.target_environment_from_rule_ctx-ctx">ctx</a>, *, <a href="#apple_support.target_environment_from_rule_ctx-fail_on_missing_constraint">fail_on_missing_constraint</a>)
+</pre>
+
+Returns a `String` representing the target environment based on constraints.
+
+The returned `String` will represent an environment, such as `device` or `simulator`.
+
+For consistency with other Apple platforms, `macos` is considered to be a `device`.
+
+In order to use `apple_support.target_environment_from_rule_ctx()`, you'll need to modify your
+rule definition to add the following:
+
+  * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+    This can be done using the `dicts.add()` method from Skylib.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.target_environment_from_rule_ctx-ctx"></a>ctx |  The context of the rule that has Apple platform constraint attributes.   |  none |
+| <a id="apple_support.target_environment_from_rule_ctx-fail_on_missing_constraint"></a>fail_on_missing_constraint |  Whether to fail if no constraint is found. (default: `True`)   |  `True` |
+
+**RETURNS**
+
+A `String` representing the selected environment (e.g. `device`, `simulator`)  or `None` if
+  no constraint is found.
+
+
+<a id="apple_support.target_os_from_rule_ctx"></a>
+
+## apple_support.target_os_from_rule_ctx
+
+<pre>
+load("@apple_support//lib:apple_support.bzl", "apple_support")
+
+apple_support.target_os_from_rule_ctx(<a href="#apple_support.target_os_from_rule_ctx-ctx">ctx</a>, *, <a href="#apple_support.target_os_from_rule_ctx-fail_on_missing_constraint">fail_on_missing_constraint</a>)
+</pre>
+
+Returns a `String` representing the target OS based on constraints.
+
+The returned `String` will match an equivalent value from one of the platform definitions in
+`apple_common.platform_type`, such as `ios` or `macos`.
+
+In order to use `apple_support.target_os_from_rule_ctx()`, you'll need to modify your rule
+definition to add the following:
+
+  * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+    This can be done using the `dicts.add()` method from Skylib.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apple_support.target_os_from_rule_ctx-ctx"></a>ctx |  The context of the rule that has Apple platform constraint attributes.   |  none |
+| <a id="apple_support.target_os_from_rule_ctx-fail_on_missing_constraint"></a>fail_on_missing_constraint |  Whether to fail if no constraint is found. (default: `True`)   |  `True` |
+
+**RETURNS**
+
+A `String` representing the selected Apple OS or `None` if no constraint is found.
 
 
