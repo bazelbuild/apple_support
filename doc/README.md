@@ -48,4 +48,3 @@ targeting Apple Platforms (and Xcode) as well as some Rules directly.
     </tr>
   </tbody>
 </table>
-hi

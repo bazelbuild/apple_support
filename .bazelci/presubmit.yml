@@ -31,6 +31,7 @@ tasks:
     test_targets:
       - "//..."
       - "-//test:linking_generate_cpp_dsym_test"
+      - "-//doc/..."
 
   macos_7:
     name: "7.x LTS"
@@ -39,6 +40,7 @@ tasks:
     test_targets:
       - "//..."
       - "-//test:linking_generate_cpp_dsym_test"
+      - "-//doc/..."
 
   macos_latest:
     name: "Current LTS"
