@@ -209,18 +209,6 @@ function timeout() {
     :
 }
 
-# Usage: testenv_set_up
-# Called prior to set_up. For use by testenv.sh.
-function testenv_set_up() {
-    :
-}
-
-# Usage: testenv_tear_down
-# Called after tear_down. For use by testenv.sh.
-function testenv_tear_down() {
-    :
-}
-
 # Usage: fail <message> [<message> ...]
 # Print failure message with context information, and mark the test as
 # a failure.  The context includes a stacktrace including the longest sequence
@@ -246,7 +234,6 @@ function __run_tear_down_after_failure() {
     __in_tear_down=1
     echo -e "\nTear down:\n" >&2
     tear_down
-    testenv_tear_down
 }
 
 # Usage: warn <message>
@@ -758,12 +745,10 @@ function run_suite() {
             trap __test_terminated_err ERR
           fi
           timestamp >"${TEST_TMPDIR}"/__ts_start
-          testenv_set_up
           set_up
           eval "$TEST_name"
           __in_tear_down=1
           tear_down
-          testenv_tear_down
           timestamp >"${TEST_TMPDIR}"/__ts_end
           test "$TEST_passed" == "true"
         ) 2>&1 | tee "${TEST_TMPDIR}"/__log

@@ -346,7 +346,9 @@ def _http_dmg_impl(repository_ctx):
     if repository_ctx.attr.build_file:
         build_file_content = repository_ctx.read(repository_ctx.path(repository_ctx.attr.build_file))
     repository_ctx.file("BUILD.bazel", content = build_file_content)
-    repository_ctx.file("WORKSPACE.bazel", content = """workspace(name = "{}")""".format(repository_ctx.name))
+
+    # TODO: Delete once we drop 8.x
+    repository_ctx.file("MODULE.bazel", content = """module(name = "{}")""".format(repository_ctx.name))
 
     # Delete dmg remnants
     repository_ctx.delete(dmg)
@@ -445,7 +447,7 @@ in the `build_file`, this field can be used to strip it from all of the
 extracted files.
 
 For example, suppose you are using `foo-lib-latest.zip`, which contains the
-directory `foo-lib-1.2.3/` under which there is a `WORKSPACE` file and are
+directory `foo-lib-1.2.3/` under which there is a `MODULE.bazel` file and are
 `src/`, `lib/`, and `test/` directories that contain the actual code you
 wish to build. Specify `strip_prefix = "foo-lib-1.2.3"` to use the
 `foo-lib-1.2.3` directory as your top-level directory.

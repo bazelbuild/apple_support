@@ -21,7 +21,6 @@ sh_library(
     testonly = True,
     srcs = [
         "integration_test_setup.sh",
-        "testenv.sh",
         "unittest.bash",
         "unittest_utils.sh",
     ],
