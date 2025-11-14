@@ -59,12 +59,6 @@ bzl_library(
     ],
 )
 
-# Public bzl_library for anything that needs to depend on repositories.bzl.
-bzl_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
-)
-
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
