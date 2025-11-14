@@ -16,9 +16,8 @@ repository.
 
 ## Installation
 
-Copy the `MODULE.bazel` or `WORKSPACE` snippets from [the releases
-page](https://github.com/bazelbuild/apple_support/releases) into your
-project.
+Copy the `MODULE.bazel` snippet from [the releases page](https://github.com/bazelbuild/apple_support/releases)
+into your project.
 
 ## Toolchain setup
 
@@ -32,14 +31,13 @@ Command Line Tools.
 ### Bazel 7+ Setup
 
 For Bazel 7+ the only setup that is required is to have `apple_support`
-in your `MODULE.bazel` (even if you're not referencing it directly) or
-`WORKSPACE`, which you can copy from [the releases
-page](https://github.com/bazelbuild/apple_support/releases) into your
-project.
+in your `MODULE.bazel` (even if you're not referencing it directly),
+which you can copy from [the releases page](https://github.com/bazelbuild/apple_support/releases)
+into your project.
 
 If you also depend on `rules_cc`, `apple_support` must come _above_
-`rules_cc` in your `MODULE.bazel` or `WORKSPACE` file because Bazel
-selects toolchains based on which is registered first.
+`rules_cc` in your `MODULE.bazel` file because Bazel selects toolchains
+based on which is registered first.
 
 ## Toolchain configuration
 

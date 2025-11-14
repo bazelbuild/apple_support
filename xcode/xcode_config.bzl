@@ -24,7 +24,7 @@ load(
 
 visibility("public")
 
-unavailable_xcode_message = "'bazel fetch --configure' (Bzlmod) or 'bazel sync --configure' (WORKSPACE)"
+unavailable_xcode_message = "'bazel fetch --configure'"
 
 def _xcode_config_impl(ctx):
     # TODO: remove when we test with Bazel 8+
