@@ -193,6 +193,7 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
       syntax (i.e. using `$$`). Example: ```cmd = "xcrun --sdkroot $$SDKROOT clang...```
 """,
     exec_compatible_with = ["@platforms//os:macos"],
-    output_to_genfiles = True,
+    # To match `genrule`, output to genfiles instead of bin.
+    output_to_genfiles = True,  # buildifier: disable=output-to-genfiles
     fragments = ["apple"],
 )
