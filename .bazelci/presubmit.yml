@@ -47,10 +47,11 @@ tasks:
     bazel: latest
     <<: *common
 
-  macos_rolling:
-    name: "Latest Rolling"
-    bazel: rolling
-    <<: *common
+  # TODO: Re-enable once >10.0.0-pre.20251105.2 is available https://github.com/bazelbuild/bazel/issues/27749
+  # macos_rolling:
+  #   name: "Latest Rolling"
+  #   bazel: rolling
+  #   <<: *common
 
   macos_latest_shell_scripts:
     name: "Current layering_check and header parsing"
