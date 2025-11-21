@@ -42,9 +42,14 @@ tasks:
       - "-//test:linking_generate_cpp_dsym_test"
       - "-//doc/..."
 
+  macos_8:
+    name: "8.x LTS"
+    bazel: 8.x
+    <<: *common
+
   macos_latest:
     name: "Current LTS"
-    bazel: latest
+    bazel: last_rc # TODO: switch back to latest once 9.x is released
     <<: *common
 
   # TODO: Re-enable once >10.0.0-pre.20251105.2 is available https://github.com/bazelbuild/bazel/issues/27749
