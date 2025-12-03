@@ -1413,7 +1413,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # This feature should only be used with non-sandboxed builds inside tools such as
     # Xcode, and enabling it effectively breaks Bazel's ability to rely on the
     # remote cache those builds. It should not be enabled by users of the toolchain.
-    coverage_prefix_map_canonical_feature = feature(
+    coverage_prefix_map_absolute_sources_non_hermetic_private_feature = feature(
         name = "_coverage_prefix_map_absolute_sources_non_hermetic",
         enabled = True,
         flag_sets = [
@@ -2409,7 +2409,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
         coverage_prefix_map_feature,
-        coverage_prefix_map_canonical_feature,
+        coverage_prefix_map_absolute_sources_non_hermetic_private_feature,
         apply_default_compiler_flags_feature,
         include_system_dirs_feature,
         headerpad_feature,
