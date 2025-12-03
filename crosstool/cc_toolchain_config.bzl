@@ -1403,16 +1403,18 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         requires = [feature_set(features = ["coverage"])],
     )
 
+    # A private feature that is used to embed absolute source paths in coverage builds.
+    #
     # If enabled, coverage builds will use a `-coverage-prefix-map` that remaps
     # the current working directory to a canonical location, which permits
     # coverage representation in non-sandboxed builds with tools that expect
     # absolute paths such as Xcode.
     #
-    # This feature should only be used with non-sandboxed builds inside of Xcode,
-    # and enabling it effectively breaks Bazel's ability to rely on the remote cache
-    # those builds.
+    # This feature should only be used with non-sandboxed builds inside tools such as
+    # Xcode, and enabling it effectively breaks Bazel's ability to rely on the
+    # remote cache those builds. It should not be enabled by users of the toolchain.
     coverage_prefix_map_canonical_feature = feature(
-        name = "coverage_prefix_map_canonical_non_hermetic",
+        name = "_coverage_prefix_map_absolute_sources_non_hermetic",
         enabled = True,
         flag_sets = [
             flag_set(
