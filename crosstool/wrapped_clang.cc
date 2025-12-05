@@ -292,6 +292,32 @@ std::string GetCurrentDirectory() {
   return cwd;
 }
 
+std::string GetCanonicalPath(const std::filesystem::path& path) {
+  auto iter_first = std::filesystem::directory_iterator(path);
+  auto iter_last = std::filesystem::directory_iterator();
+
+  // Find the first regular file within the path, to use as a reference point.
+  //
+  // We do this because the Bazel execroot is a normal directory, but inside of
+  // it there are symlinks to our source tree. This approach ensures that we fetch
+  // the true path of a known directory in order to get the actual source root
+  // of the workspace.
+  //
+  // This should only work with sandboxing disabled.
+  auto found = std::find_if(iter_first, iter_last, [](const auto &entry) {
+    return entry.is_regular_file();
+  });
+
+  std::filesystem::path anchor_path;
+  if (found == iter_last) {
+    anchor_path = path;
+  } else {
+    anchor_path = found->path();
+  }
+
+  return std::filesystem::canonical(anchor_path).parent_path();
+}
+
 std::string exec(std::string cmd) {
   std::array<char, 128> buffer;
   std::string result;
@@ -358,6 +384,7 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
+  FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", GetCanonicalPath(cwd), &new_arg);
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
   if (!toolchain_path.empty()) {

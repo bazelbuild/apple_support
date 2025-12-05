@@ -1403,6 +1403,39 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         requires = [feature_set(features = ["coverage"])],
     )
 
+    # A private feature that is used to embed absolute source paths in coverage builds.
+    #
+    # If enabled, coverage builds will use a `-coverage-prefix-map` that remaps
+    # the current working directory to a canonical location, which permits
+    # coverage representation in non-sandboxed builds with tools that expect
+    # absolute paths such as Xcode.
+    #
+    # This feature should only be used with non-sandboxed builds inside tools such as
+    # Xcode, and enabling it effectively breaks Bazel's ability to rely on the
+    # remote cache those builds. It should not be enabled by users of the toolchain.
+    coverage_prefix_map_absolute_sources_non_hermetic_private_feature = feature(
+        name = "_coverage_prefix_map_absolute_sources_non_hermetic",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = ["-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=__BAZEL_EXECUTION_ROOT_CANONICAL__"],
+                    ),
+                ],
+            ),
+        ],
+        requires = [feature_set(features = ["coverage"])],
+    )
+
     force_pic_flags_feature = feature(
         name = "force_pic_flags",
         flag_sets = [
@@ -2376,6 +2409,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
         coverage_prefix_map_feature,
+        coverage_prefix_map_absolute_sources_non_hermetic_private_feature,
         apply_default_compiler_flags_feature,
         include_system_dirs_feature,
         headerpad_feature,
