@@ -1415,7 +1415,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # remote cache those builds. It should not be enabled by users of the toolchain.
     coverage_prefix_map_absolute_sources_non_hermetic_private_feature = feature(
         name = "_coverage_prefix_map_absolute_sources_non_hermetic",
-        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
