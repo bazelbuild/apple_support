@@ -17,13 +17,23 @@
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
-load("//xcode:xcode_config.bzl", "xcode_config")
+load(
+    "//xcode:xcode_config.bzl",
+    "UNAVAILABLE_XCODE_MESSAGE",
+    "xcode_config",
+)
 load("//xcode:xcode_version.bzl", "xcode_version")
 load(
     "//xcode/private:providers.bzl",
     "XcodeVersionPropertiesInfo",
 )  # buildifier: disable=bzl-visibility
-load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
+load(
+    ":test_helpers.bzl",
+    "FIXTURE_TAGS",
+    "assert_warning",
+    "find_action",
+    "make_all_tests",
+)
 
 visibility("private")
 
@@ -330,6 +340,12 @@ def _prefers_flag_over_mutually_available_test_impl(ctx):
     asserts.true(env, "no-local" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
 
+    assert_warning(
+        env,
+        "version_not_available_locally",
+        "command={};local_versions=8.4;version=5.1.2".format(UNAVAILABLE_XCODE_MESSAGE),
+    )
+
     return analysistest.end(env)
 
 _prefers_flag_over_mutually_available_test = analysistest.make(
@@ -368,15 +384,17 @@ def _warn_with_explicit_local_only_version_test_impl(ctx):
     target_under_test = analysistest.target_under_test(env)
     xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
 
-    # TODO: b/311385128 - Once we move the rules to apple_support, hack up
-    # something that would let us actually test the warning messages. We can't
-    # test `print`.
-
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "no-remote" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
+
+    assert_warning(
+        env,
+        "explicit_version_not_available_remotely",
+        "version=8.4",
+    )
 
     return analysistest.end(env)
 
@@ -416,15 +434,17 @@ def _prefer_local_default_if_no_mutual_no_flag_different_main_version_test_impl(
     target_under_test = analysistest.target_under_test(env)
     xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
 
-    # TODO: b/311385128 - Once we move the rules to apple_support, hack up
-    # something that would let us actually test the warning messages. We can't
-    # test `print`.
-
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "no-remote" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
+
+    assert_warning(
+        env,
+        "local_default_not_available_remotely",
+        "local_version=8.4;remote_versions=5.1.2",
+    )
 
     return analysistest.end(env)
 
@@ -463,15 +483,17 @@ def _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test_impl(c
     target_under_test = analysistest.target_under_test(env)
     xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
 
-    # TODO: b/311385128 - Once we move the rules to apple_support, hack up
-    # something that would let us actually test the warning messages. We can't
-    # test `print`.
-
     asserts.equals(env, "10.0.0.10C504", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "no-remote" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
+
+    assert_warning(
+        env,
+        "local_default_not_available_remotely",
+        "local_version=10.0.0.10C504;remote_versions=10.0",
+    )
 
     return analysistest.end(env)
 
@@ -510,15 +532,17 @@ def _prefer_local_default_if_no_mutual_no_flag_different_full_version_test_impl(
     target_under_test = analysistest.target_under_test(env)
     xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
 
-    # TODO: b/311385128 - Once we move the rules to apple_support, hack up
-    # something that would let us actually test the warning messages. We can't
-    # test `print`.
-
     asserts.equals(env, "10.0.0.10C504", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "no-remote" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
+
+    assert_warning(
+        env,
+        "local_default_not_available_remotely",
+        "local_version=10.0.0.10C504;remote_versions=10.0.0.101ff",
+    )
 
     return analysistest.end(env)
 
@@ -560,10 +584,6 @@ def _choose_newest_mutual_xcode_test_impl(ctx):
 
     target_under_test = analysistest.target_under_test(env)
     xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
-
-    # TODO: b/311385128 - Once we move the rules to apple_support, hack up
-    # something that would let us actually test the warning messages. We can't
-    # test `print`.
 
     asserts.equals(env, "10", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "both", xcode_version_info.availability())
