@@ -249,12 +249,12 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                      std::string toolchain_path,
+                     std::string &linked_binary, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
-                         std::string toolchain_path,
+                         std::string &linked_binary, std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
@@ -268,7 +268,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    toolchain_path, consumer);
+                    linked_binary, toolchain_path, consumer);
   }
 
   return true;
@@ -350,15 +350,18 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
-                     std::string toolchain_path,
+                     std::string &linked_binary, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd,
-                             toolchain_path,
-                            consumer)) {
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, linked_binary,
+                            toolchain_path, consumer)) {
       return;
     }
+  }
+
+  if (SetArgIfFlagPresent(arg, "LINKED_BINARY", &linked_binary)) {
+    return;
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
@@ -414,6 +417,7 @@ int main(int argc, char *argv[]) {
 
   std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
   std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
+  std::string linked_binary;
 
   const std::string cwd = GetCurrentDirectory();
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
@@ -425,7 +429,7 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd,
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, linked_binary,
                     toolchain_path, consumer);
   }
 
@@ -458,7 +462,9 @@ int main(int argc, char *argv[]) {
     output.close();
   }
 
-  bool generate_dsym = !dsym_path.empty();
+  const char *dsym_path_raw_value = getenv("DSYM_HINT_DSYM_PATH");
+  bool generate_dsym = dsym_path_raw_value != nullptr;
+  bool strip_debug_symbols = getenv("STRIP_DEBUG_SYMBOLS") != nullptr;
   if (!generate_dsym && !strip_debug_symbols) {
     return 0;
   }
@@ -471,6 +477,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (generate_dsym) {
+    std::string dsym_path = dsym_path_raw_value;
     const std::string bundle_suffix = ".dSYM";
     bool is_bundle = dsym_path.rfind(bundle_suffix) ==
                      dsym_path.length() - bundle_suffix.length();
@@ -491,8 +498,7 @@ int main(int argc, char *argv[]) {
 
   // When stripping is requested, we should still strip the binary
   // before returning
-  const char *strip_debug_symbols = getenv("STRIP_DEBUG_SYMBOLS");
-  if (strip_debug_symbols != nullptr) {
+  if (strip_debug_symbols) {
     std::vector<std::string> strip_args = {"/usr/bin/xcrun", "strip", "-S",
                                            linked_binary};
     if (!RunSubProcess(strip_args)) {
