@@ -1432,6 +1432,24 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
         ],
+        env_sets = [
+            env_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                env_entries = [
+                    env_entry(
+                        key = "COVERAGE_PREFIX_MAP_USE_ABSOLUTE_CWD_PATH",
+                        value = "1",
+                    ),
+                ],
+            ),
+        ],
         requires = [feature_set(features = ["coverage"])],
     )
 
