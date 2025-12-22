@@ -384,22 +384,7 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
-  // call GetCanonicalPath only if needed for replacement and cache the
-  // execroot to avoid repeated file system calls
-  if (new_arg.find("__BAZEL_EXECUTION_ROOT_CANONICAL__") != std::string::npos) {
-    static std::string cached_canonical_execroot;
-    static bool cached = false;
-
-    if (!cached) {
-      cached_canonical_execroot = GetCanonicalPath(cwd);
-      cached = true;
-    }
-
-    FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__",
-                   cached_canonical_execroot,
-                   &new_arg);
-  }
-
+  FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", GetCanonicalPath(cwd), &new_arg);
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
   if (!toolchain_path.empty()) {
