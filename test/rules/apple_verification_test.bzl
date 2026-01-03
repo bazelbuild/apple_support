@@ -14,8 +14,6 @@
 
 """Test rule to perform generic bundle verification tests."""
 
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
-
 _supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _transition_impl(_, attr):
@@ -97,10 +95,10 @@ def _apple_verification_test_impl(ctx):
 
     return [
         testing.ExecutionInfo(xcode_config.execution_info()),
-        testing.TestEnvironment(dicts.add(
-            apple_common.apple_host_system_env(xcode_config),
+        testing.TestEnvironment(
+            apple_common.apple_host_system_env(xcode_config) |
             test_env,
-        )),
+        ),
         DefaultInfo(
             executable = output_script,
             runfiles = ctx.runfiles(

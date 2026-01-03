@@ -46,7 +46,7 @@ maintainers to use:
    Bazel flag. The most common way to retrieve this provider is:
    `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
 
-The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
+The returned `dict` can be added to the rule's attributes using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 
 
@@ -140,7 +140,7 @@ apple_support.platform_constraint_attrs()
 
 Returns a dictionary of all known Apple platform constraints that can be resolved.
 
-The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
+The returned `dict` can be added to the rule's attributes using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 
 
@@ -166,7 +166,7 @@ following:
 
   * `fragments = ["apple"]`
   * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
-    can be done using the `dicts.add()` method from Skylib.
+    can be done using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict)
 
 This method registers an action to run on an Apple machine, configuring it to ensure that the
 `DEVELOPER_DIR` and `SDKROOT` environment variables are set.
@@ -226,7 +226,7 @@ the following:
 
   * `fragments = ["apple"]`
   * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
-    can be done using the `dicts.add()` method from Skylib.
+    can be done using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 This method registers an action to run on an Apple machine, configuring it to ensure that the
 `DEVELOPER_DIR` and `SDKROOT` environment variables are set.
@@ -264,7 +264,7 @@ In order to use `apple_support.target_arch_from_rule_ctx()`, you'll need to modi
 definition to add the following:
 
   * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
-    This can be done using the `dicts.add()` method from Skylib.
+    This can be done using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 
 **PARAMETERS**
@@ -301,7 +301,7 @@ In order to use `apple_support.target_environment_from_rule_ctx()`, you'll need 
 rule definition to add the following:
 
   * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
-    This can be done using the `dicts.add()` method from Skylib.
+    This can be done using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 
 **PARAMETERS**
@@ -337,7 +337,7 @@ In order to use `apple_support.target_os_from_rule_ctx()`, you'll need to modify
 definition to add the following:
 
   * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
-    This can be done using the `dicts.add()` method from Skylib.
+    This can be done using a [Starlark dictionary union expression: `|`](https://bazel.build/rules/lib/core/dict).
 
 
 **PARAMETERS**
