@@ -29,7 +29,6 @@ bzl_library(
         "//lib:apple_support",
         "//lib:lipo",
         "//lib:transitions",
-        "@bazel_skylib//lib:dicts",
     ],
 )
 

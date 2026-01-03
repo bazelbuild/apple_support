@@ -14,7 +14,6 @@
 
 """Implementation for macOS universal binary rule."""
 
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:apple_support.bzl", "apple_support")
 load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
@@ -61,19 +60,17 @@ def _universal_binary_impl(ctx):
     ]
 
 universal_binary = rule(
-    attrs = dicts.add(
-        apple_support.action_required_attrs(),
-        {
-            "binary": attr.label(
-                cfg = macos_universal_transition,
-                doc = "Target to generate a 'fat' binary from.",
-                mandatory = True,
-            ),
-            "_allowlist_function_transition": attr.label(
-                default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-            ),
-        },
-    ),
+    attrs = apple_support.action_required_attrs() |
+            {
+                "binary": attr.label(
+                    cfg = macos_universal_transition,
+                    doc = "Target to generate a 'fat' binary from.",
+                    mandatory = True,
+                ),
+                "_allowlist_function_transition": attr.label(
+                    default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+                ),
+            },
     doc = """
 This rule produces a multi-architecture ("fat") binary targeting Apple macOS
 platforms *regardless* of the architecture of the macOS host platform. The
