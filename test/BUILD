@@ -68,6 +68,7 @@ bzl_library(
     name = "starlark_tests_bzls",
     srcs = glob(["*.bzl"]),
     deps = [
+        "//build_settings:build_settings_bzl",
         "//lib:apple_support",
         "//lib:xcode_support",
         "//xcode:available_xcodes",
