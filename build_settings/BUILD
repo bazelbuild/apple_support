@@ -16,6 +16,7 @@ bzl_library(
 
 filegroup(
     name = "for_bazel_tests",
-    srcs = ["BUILD"],
+    testonly = 1,
+    srcs = glob(["**"]),
     visibility = ["//:__pkg__"],
 )
