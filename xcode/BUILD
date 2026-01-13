@@ -1,4 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 
 licenses(["notice"])
 
@@ -20,7 +21,10 @@ bzl_library(
 bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
-    deps = ["//xcode/private:providers"],
+    deps = [
+        "//build_settings:build_settings_bzl",
+        "//xcode/private:providers",
+    ],
 )
 
 bzl_library(
@@ -40,4 +44,10 @@ filegroup(
         "//xcode/private:for_bazel_tests",
     ],
     visibility = ["//:__pkg__"],
+)
+
+string_flag(
+    name = "version",
+    build_setting_default = "",
+    scope = "universal",
 )

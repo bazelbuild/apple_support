@@ -14,6 +14,7 @@
 
 """Implementation of the `xcode_config` build rule."""
 
+load("@build_bazel_apple_support//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
@@ -57,7 +58,7 @@ def _xcode_config_impl(ctx):
             ctx.actions,
             local_versions,
             remote_versions,
-            apple_fragment.xcode_version_flag,
+            read_possibly_native_flag(ctx, "xcode_version"),
             apple_fragment.prefer_mutual_xcode,
             local_default_version,
         )
@@ -65,7 +66,7 @@ def _xcode_config_impl(ctx):
         xcode_version_properties = _resolve_explicitly_defined_version(
             explicit_versions,
             explicit_default_version,
-            apple_fragment.xcode_version_flag,
+            read_possibly_native_flag(ctx, "xcode_version"),
         )
         availability = "UNKNOWN"
 
@@ -161,6 +162,9 @@ These are used along with `remote_versions` to select a mutually available
 version. This may not be set if `versions` is set.
 """,
             providers = [[AvailableXcodesInfo]],
+        ),
+        "_xcode_version": attr.label(
+            default = "@build_bazel_apple_support//xcode:version",
         ),
     },
     doc = """\

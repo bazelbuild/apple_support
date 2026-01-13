@@ -30,6 +30,7 @@ filegroup(
         "BUILD",
         "LICENSE",
         "WORKSPACE",
+        "//build_settings:for_bazel_tests",
         "//lib:for_bazel_tests",
         "//rules:for_bazel_tests",
         "//xcode:for_bazel_tests",
