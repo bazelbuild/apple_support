@@ -59,7 +59,7 @@ def _xcode_config_impl(ctx):
             local_versions,
             remote_versions,
             read_possibly_native_flag(ctx, "xcode_version"),
-            apple_fragment.prefer_mutual_xcode,
+            read_possibly_native_flag(ctx, "experimental_prefer_mutual_xcode"),
             local_default_version,
         )
     else:
@@ -106,7 +106,7 @@ def _xcode_config_impl(ctx):
         xcode_version = xcode_version_properties.xcode_version,
         availability = availability,
         xcode_version_flag = apple_fragment.xcode_version_flag,
-        include_xcode_execution_info = apple_fragment.include_xcode_exec_requirements,
+        include_xcode_execution_info = read_possibly_native_flag(ctx, "include_xcode_exec_requirements"),
     )
 
     providers = [
@@ -165,6 +165,12 @@ version. This may not be set if `versions` is set.
         ),
         "_xcode_version": attr.label(
             default = "@build_bazel_apple_support//xcode:version",
+        ),
+        "_experimental_prefer_mutual_xcode": attr.label(
+            default = "@build_bazel_apple_support//xcode:experimental_prefer_mutual_xcode",
+        ),
+        "_include_xcode_exec_requirements": attr.label(
+            default = "@build_bazel_apple_support//xcode:include_xcode_exec_requirements",
         ),
     },
     doc = """\
