@@ -20,6 +20,8 @@ visibility("public")
 
 _POSSIBLY_NATIVE_FLAGS = {
     "xcode_version": (lambda ctx: ctx.fragments.apple.xcode_version_flag, "native"),
+    "experimental_prefer_mutual_xcode": (lambda ctx: ctx.fragments.apple.prefer_mutual_xcode, "native"),
+    "include_xcode_exec_requirements": (lambda ctx: ctx.fragments.apple.include_xcode_exec_requirements, "native"),
 }
 
 def read_possibly_native_flag(ctx, flag_name):

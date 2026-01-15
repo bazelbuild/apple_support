@@ -1,5 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 
 licenses(["notice"])
 
@@ -56,5 +56,16 @@ filegroup(
 string_flag(
     name = "version",
     build_setting_default = "",
+    scope = "universal",
+)
+
+bool_flag(
+    name = "experimental_prefer_mutual_xcode",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "include_xcode_exec_requirements",
+    build_setting_default = False,
     scope = "universal",
 )
