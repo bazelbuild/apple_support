@@ -49,10 +49,10 @@ tasks:
 
   macos_latest:
     name: "Current LTS"
-    bazel: last_rc # TODO: switch back to latest once 9.x is released
+    bazel: last_rc
     <<: *common
 
-  # TODO: Re-enable once >10.0.0-pre.20251105.2 is available https://github.com/bazelbuild/bazel/issues/27749
+  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
   # macos_rolling:
   #   name: "Latest Rolling"
   #   bazel: rolling
@@ -66,10 +66,11 @@ tasks:
       - test/shell/layering_check_test.sh
       - test/shell/header_parsing_test.sh
 
-  macos_last_green:
-    name: "Last Green Bazel"
-    bazel: last_green
-    <<: *common
+  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
+  # macos_last_green:
+  #   name: "Last Green Bazel"
+  #   bazel: last_green
+  #   <<: *common
 
   linux_latest:
     name: "Current LTS"

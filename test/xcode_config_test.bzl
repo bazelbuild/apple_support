@@ -17,12 +17,12 @@
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
+load(
+    "//xcode:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)
 load("//xcode:xcode_config.bzl", "xcode_config")
 load("//xcode:xcode_version.bzl", "xcode_version")
-load(
-    "//xcode/private:providers.bzl",
-    "XcodeVersionPropertiesInfo",
-)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")

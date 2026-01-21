@@ -33,62 +33,6 @@ The default Xcode version from `available_xcodes`.
     },
 )
 
-def _xcode_version_properties_info_init(
-        *,
-        xcode_version,
-        default_ios_sdk_version = "8.4",
-        default_macos_sdk_version = "10.11",
-        default_tvos_sdk_version = "9.0",
-        default_watchos_sdk_version = "2.0",
-        default_visionos_sdk_version = "1.0",
-        sdk_variant_info = None):
-    # Ensure that all fields get default values if they weren't specified.
-    return {
-        "xcode_version": xcode_version,
-        "default_ios_sdk_version": default_ios_sdk_version,
-        "default_macos_sdk_version": default_macos_sdk_version,
-        "default_tvos_sdk_version": default_tvos_sdk_version,
-        "default_watchos_sdk_version": default_watchos_sdk_version,
-        "default_visionos_sdk_version": default_visionos_sdk_version,
-        "sdk_variant_info": sdk_variant_info,
-    }
-
-XcodeVersionPropertiesInfo, _new_xcode_version_properties_info = provider(
-    doc = """\
-Information about a specific Xcode version, such as its default SDK versions.
-""",
-    fields = {
-        "xcode_version": """\
-A string representing the Xcode version number, or `None` if it is unknown.
-""",
-        "default_ios_sdk_version": """\
-A string representing the default iOS SDK version number for this version of
-Xcode, or `None` if it is unknown.
-""",
-        "default_macos_sdk_version": """\
-A string representing the default macOS SDK version number for this version of
-Xcode, or `None` if it is unknown.
-""",
-        "default_tvos_sdk_version": """\
-A string representing the default tvOS SDK version number for this version of
-Xcode, or `None` if it is unknown.
-""",
-        "default_watchos_sdk_version": """\
-A string representing the default watchOS SDK version number for this version of
-Xcode, or `None` if it is unknown.
-""",
-        "default_visionos_sdk_version": """\
-A string representing the default visionOS SDK version number for this version
-of Xcode, or `None` if it is unknown.
-""",
-        "sdk_variant_info": """\
-The `XcodeSdkVariantInfo` provider for the SDK in this version of Xcode to
-build with under the current target configuration, or `None` if it is unknown.
-""",
-    },
-    init = _xcode_version_properties_info_init,
-)
-
 XcodeVersionRuleInfo = provider(
     doc = """\
 The information in a single target of the `xcode_version` rule. A single target

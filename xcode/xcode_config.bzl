@@ -16,9 +16,12 @@
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load(
+    "@build_bazel_apple_support//xcode:providers.bzl",
+    "XcodeVersionPropertiesInfo",
+)
+load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
-    "XcodeVersionPropertiesInfo",
     "XcodeVersionRuleInfo",
 )
 
