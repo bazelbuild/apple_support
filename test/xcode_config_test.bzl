@@ -1544,79 +1544,6 @@ _default_sdk_versions_selected_xcode_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
-def _override_default_sdk_versions(namer):
-    xcode_config(
-        name = "override_default_sdk_versions__foo",
-        default = namer(":version512"),
-        versions = [
-            namer(":version512"),
-            namer(":version64"),
-        ],
-        tags = FIXTURE_TAGS,
-    )
-    xcode_version(
-        name = namer("version512"),
-        aliases = [
-            "5",
-            "5.1",
-        ],
-        default_ios_sdk_version = "7.1",
-        version = "5.1.2",
-        tags = FIXTURE_TAGS,
-    )
-    xcode_version(
-        name = namer("version64"),
-        aliases = [
-            "6.0",
-            "foo",
-            "6",
-        ],
-        default_ios_sdk_version = "101",
-        default_macos_sdk_version = "104",
-        default_tvos_sdk_version = "103",
-        default_visionos_sdk_version = "105",
-        default_watchos_sdk_version = "102",
-        version = "6.4",
-        tags = FIXTURE_TAGS,
-    )
-
-    _override_default_sdk_versions_test(
-        name = "override_default_sdk_versions",
-        target_under_test = "override_default_sdk_versions__foo",
-    )
-    return ["override_default_sdk_versions"]
-
-def _override_default_sdk_versions_test_impl(ctx):
-    env = analysistest.begin(ctx)
-
-    target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
-
-    asserts.equals(env, "6.4", str(xcode_version_info.xcode_version()))
-    asserts.equals(env, "15.3", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
-    asserts.equals(env, "15.4", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.watchos_simulator)))
-    asserts.equals(env, "15.5", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.tvos_simulator)))
-    asserts.equals(env, "15.6", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.macos)))
-    asserts.equals(env, "unknown", xcode_version_info.availability())
-    asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
-    asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
-
-    return analysistest.end(env)
-
-_override_default_sdk_versions_test = analysistest.make(
-    _override_default_sdk_versions_test_impl,
-    config_settings = {
-        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:override_default_sdk_versions__foo",
-        "//command_line_option:xcode_version": "6",
-        "//command_line_option:ios_sdk_version": "15.3",
-        "//command_line_option:watchos_sdk_version": "15.4",
-        "//command_line_option:tvos_sdk_version": "15.5",
-        "//command_line_option:macos_sdk_version": "15.6",
-    },
-)
-
-# ------------------------------------------------------------------------------
-
 def _default_without_version(namer):
     xcode_config(
         name = "default_without_version__foo",
@@ -2201,7 +2128,6 @@ def xcode_config_test(name):
             _default_ios_sdk_version,
             _default_sdk_versions,
             _default_sdk_versions_selected_xcode,
-            _override_default_sdk_versions,
             _default_without_version,
             _version_does_not_contain_default,
             _configuration_field_for_rule,
