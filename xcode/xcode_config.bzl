@@ -76,7 +76,8 @@ def _xcode_config_impl(ctx):
         )
         availability = "UNKNOWN"
 
-    # TODO: Remove once we no longer support a version of Bazel with `apple_fragment.*_sdk_version_flag`
+    # TODO: Remove `getattr` once we no longer support a version of Bazel with
+    # `apple_fragment.*_sdk_version_flag`
     ios_sdk_version = getattr(apple_fragment, "ios_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
     macos_sdk_version = getattr(apple_fragment, "macos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
     tvos_sdk_version = getattr(apple_fragment, "tvos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
