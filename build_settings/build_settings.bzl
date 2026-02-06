@@ -22,7 +22,18 @@ _POSSIBLY_NATIVE_FLAGS = {
     "xcode_version": (lambda ctx: ctx.fragments.apple.xcode_version_flag, "native"),
     "experimental_prefer_mutual_xcode": (lambda ctx: ctx.fragments.apple.prefer_mutual_xcode, "native"),
     "include_xcode_exec_requirements": (lambda ctx: ctx.fragments.apple.include_xcode_exec_requirements, "native"),
+    "ios_minimum_os": (lambda ctx: ctx.fragments.apple.ios_minimum_os_flag, "native"),
+    "macos_minimum_os": (lambda ctx: ctx.fragments.apple.macos_minimum_os_flag, "native"),
+    "tvos_minimum_os": (lambda ctx: ctx.fragments.apple.tvos_minimum_os_flag, "native"),
+    "watchos_minimum_os": (lambda ctx: ctx.fragments.apple.watchos_minimum_os_flag, "native"),
 }
+
+_DOTTED_VERSION_FLAGS = set([
+    "ios_minimum_os",
+    "macos_minimum_os",
+    "tvos_minimum_os",
+    "watchos_minimum_os",
+])
 
 def read_possibly_native_flag(ctx, flag_name):
     """
@@ -41,8 +52,18 @@ def read_possibly_native_flag(ctx, flag_name):
     """
 
     # Override to force the Starlark definition for testing/flipping flags one at a time.
-    if _POSSIBLY_NATIVE_FLAGS[flag_name][1] == "starlark":
-        # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
-        return getattr(ctx.attr, "_" + flag_name)[BuildSettingInfo].value
-    else:
+    if _POSSIBLY_NATIVE_FLAGS[flag_name][1] != "starlark":
         return _POSSIBLY_NATIVE_FLAGS[flag_name][0](ctx)
+
+    # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
+    build_setting_value = getattr(ctx.attr, "_" + flag_name)[BuildSettingInfo].value
+
+    # Dotted version flags should be converted before accessed.
+    if flag_name not in _DOTTED_VERSION_FLAGS:
+        return build_setting_value
+
+    # Special check for empty string. This is to simulate the behavior of the native flag
+    # default value "null", which avoids triggering parsing logic.
+    if build_setting_value:
+        return apple_common.dotted_version(build_setting_value)
+    return None

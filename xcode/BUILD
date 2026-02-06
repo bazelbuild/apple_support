@@ -62,3 +62,23 @@ bool_flag(
     build_setting_default = False,
     scope = "universal",
 )
+
+string_flag(
+    name = "ios_minimum_os",
+    build_setting_default = "",
+)
+
+string_flag(
+    name = "watchos_minimum_os",
+    build_setting_default = "",
+)
+
+string_flag(
+    name = "tvos_minimum_os",
+    build_setting_default = "",
+)
+
+string_flag(
+    name = "macos_minimum_os",
+    build_setting_default = "",
+)
