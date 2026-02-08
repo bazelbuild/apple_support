@@ -256,12 +256,14 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
+                     const std::string canonical_cwd,
                      std::string &linked_binary, std::string &dsym_path,
                      bool &strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
+                         const std::string canonical_cwd,
                          std::string &linked_binary, std::string &dsym_path,
                          bool &strip_debug_symbols, std::string toolchain_path,
                          std::function<void(const std::string &)> consumer) {
@@ -277,7 +279,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    linked_binary, dsym_path, strip_debug_symbols,
+                    canonical_cwd, linked_binary, dsym_path, strip_debug_symbols,
                     toolchain_path, consumer);
   }
 
@@ -360,14 +362,15 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
+                     const std::string canonical_cwd,
                      std::string &linked_binary, std::string &dsym_path,
                      bool &strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string &)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, linked_binary,
-                            dsym_path, strip_debug_symbols, toolchain_path,
-                            consumer)) {
+    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, canonical_cwd,
+                            linked_binary, dsym_path, strip_debug_symbols,
+                            toolchain_path, consumer)) {
       return;
     }
   }
@@ -384,7 +387,9 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
-  FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", GetCanonicalPath(cwd), &new_arg);
+  if (!canonical_cwd.empty()) { // empty if coverage_prefix_map_absolute_sources_non_hermetic_private_feature not requested
+    FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", canonical_cwd, &new_arg);
+  }
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
   if (!toolchain_path.empty()) {
@@ -440,6 +445,11 @@ int main(int argc, char *argv[]) {
   bool strip_debug_symbols = false;
 
   const std::string cwd = GetCurrentDirectory();
+  std::string canonical_cwd = "";
+  if (getenv("COVERAGE_PREFIX_MAP_USE_ABSOLUTE_CWD_PATH")) {
+    canonical_cwd = GetCanonicalPath(cwd);
+  }
+
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
   std::vector<std::string> processed_args = {};
 
@@ -449,8 +459,8 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, linked_binary, dsym_path,
-                    strip_debug_symbols, toolchain_path, consumer);
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, canonical_cwd, linked_binary,
+                    dsym_path, strip_debug_symbols, toolchain_path, consumer);
   }
 
   char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
