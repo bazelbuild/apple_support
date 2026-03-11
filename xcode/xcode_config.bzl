@@ -77,6 +77,7 @@ def _xcode_config_impl(ctx):
     visionos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_visionos_sdk_version, "1.0")
 
     ios_minimum_os = read_possibly_native_flag(ctx, "ios_minimum_os") or ios_sdk_version
+
     macos_minimum_os = read_possibly_native_flag(ctx, "macos_minimum_os") or macos_sdk_version
     tvos_minimum_os = read_possibly_native_flag(ctx, "tvos_minimum_os") or tvos_sdk_version
     watchos_minimum_os = read_possibly_native_flag(ctx, "watchos_minimum_os") or watchos_sdk_version
