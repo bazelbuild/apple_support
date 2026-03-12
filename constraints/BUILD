@@ -34,12 +34,17 @@ constraint_value(
 # Constraint indicating if the platform belongs to an "Apple" platform (iOS, watchOS, tvOS, etc.)
 constraint_setting(
     name = "target_vendor",
-    default_constraint_value = ":apple",
+    default_constraint_value = ":other",
     visibility = ["//visibility:private"],
 )
 
 constraint_value(
     name = "apple",
+    constraint_setting = ":target_vendor",
+)
+
+constraint_value(
+    name = "other",
     constraint_setting = ":target_vendor",
 )
 

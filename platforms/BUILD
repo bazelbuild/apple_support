@@ -9,7 +9,9 @@ package(default_visibility = ["//visibility:public"])
 [
     platform(
         name = cpu,
-        constraint_values = constraints,
+        constraint_values = constraints + [
+            "@build_bazel_apple_support//constraints:apple",
+        ],
     )
     for cpu, constraints in APPLE_PLATFORMS_CONSTRAINTS.items()
 ]
