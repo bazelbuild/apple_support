@@ -71,11 +71,6 @@ script_path="$(cd "$(/usr/bin/dirname "${BASH_SOURCE[0]}")" && pwd)"
 relative_script_path=${script_path##*"$(pwd)"/}
 "$relative_script_path"/wrapped_clang "$@"
 
-# Generate an empty file if header processing succeeded.
-if [[ "${OUTPUT}" == *.h.processed ]]; then
-  echo -n > "${OUTPUT}"
-fi
-
 function get_library_path() {
     for libdir in ${LIB_DIRS}; do
         if [ -f ${libdir}/lib$1.so ]; then
