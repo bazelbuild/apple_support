@@ -1,1 +1,4 @@
+# Verify parse_headers works as the toolchain changes
+build --process_headers_in_dependencies
+
 build --test_output=errors
