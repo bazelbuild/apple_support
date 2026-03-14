@@ -1083,7 +1083,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     pch_feature = feature(
-        name = "pch",
+        name = "__pch",
         enabled = True,
         flag_sets = [
             flag_set(

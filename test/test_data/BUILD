@@ -63,6 +63,13 @@ cc_library(
 )
 
 objc_library(
+    name = "objc_pch_lib",
+    srcs = ["objc_pch_lib.m"],
+    pch = "pch.pch",
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+objc_library(
     name = "objc_lib",
     srcs = ["objc_lib.m"],
     copts = ["-DFROM_BUILD_COPTS=1"],
