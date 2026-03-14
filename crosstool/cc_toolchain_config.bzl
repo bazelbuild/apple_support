@@ -232,7 +232,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -246,7 +245,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
         implies = [
-            "compiler_output_flags",
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
@@ -330,7 +328,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -347,7 +344,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -372,7 +368,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "compiler_output_flags",
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
@@ -397,7 +392,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -414,7 +408,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -500,7 +493,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -517,7 +509,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "compiler_output_flags",
         ],
         tools = [
             tool(
@@ -1059,6 +1050,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     compiler_output_flags_feature = feature(
         name = "compiler_output_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
