@@ -79,6 +79,12 @@ objc_library(
 )
 
 objc_library(
+    name = "objc_no_arc_lib",
+    non_arc_srcs = ["objc_lib.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+objc_library(
     name = "objc_lib_with_spaces",
     srcs = ["objc lib with spaces.m"],
     tags = TARGETS_UNDER_TEST_TAGS,

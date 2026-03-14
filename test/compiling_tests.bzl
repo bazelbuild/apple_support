@@ -86,6 +86,14 @@ def compiling_test_suite(name):
         target_under_test = "//test/test_data:cc_main",
     )
 
+    default_test(
+        name = "{}_objc_no_arc_test".format(name),
+        tags = [name],
+        expected_argv = ["-fno-objc-arc"],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_no_arc_lib",
+    )
+
     copt_order_test(
         name = "{}_objc_copt_order_test".format(name),
         tags = [name],
