@@ -7,6 +7,14 @@ load(
 
 default_test = make_action_command_line_test_rule()
 
+copt_order_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+        "//command_line_option:copt": ["-DFROM_COPTS_FLAG=1"],
+        "//command_line_option:objccopt": ["-DFROM_OBJCCOPTS_FLAG=1"],
+    },
+)
+
 opt_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
@@ -64,6 +72,38 @@ def compiling_test_suite(name):
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
+    )
+
+    copt_order_test(
+        name = "{}_objc_copt_order_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-O2",  # From --compilation_mode=opt
+            "-Werror=incompatible-sysroot",  # default warning flags
+            "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
+            "-DOS_MACOSX",
+            "-fobjc-arc",
+            "-DFROM_COPTS_FLAG=1",
+            "-DFROM_OBJCCOPTS_FLAG=1",
+            "-DFROM_BUILD_COPTS=1",
+            "-D__DATE__=\"redacted\"",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_lib",
+    )
+
+    copt_order_test(
+        name = "{}_cc_copt_order_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-O2",  # From --compilation_mode=opt
+            "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
+            "-DFROM_COPTS_FLAG=1",
+            "-DFROM_BUILD_COPTS=1",
+            "-D__DATE__=\"redacted\"",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
     )
 
     native.test_suite(

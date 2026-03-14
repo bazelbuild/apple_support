@@ -58,6 +58,8 @@ cc_library(
     name = "cc_lib",
     srcs = ["cc_lib.cc"],
     tags = TARGETS_UNDER_TEST_TAGS,
+    copts = ["-DFROM_BUILD_COPTS=1"],
+    defines = ["FROM_BUILD_DEFINES=1"],
 )
 
 objc_library(
@@ -65,6 +67,8 @@ objc_library(
     srcs = ["objc_lib.m"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
+    copts = ["-DFROM_BUILD_COPTS=1"],
+    defines = ["FROM_BUILD_DEFINES=1"],
 )
 
 objc_library(
