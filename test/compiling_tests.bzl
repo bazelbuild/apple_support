@@ -62,6 +62,17 @@ def compiling_test_suite(name):
         target_under_test = "//test/test_data:cc_main",
     )
 
+    default_test(
+        name = "{}_objc_pch_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-include",
+            "test/test_data/pch.pch",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_pch_lib",
+    )
+
     disable_ns_block_assertions_feature_test(
         name = "{}_disable_ns_block_assertions_feature_test".format(name),
         tags = [name],
