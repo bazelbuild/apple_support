@@ -194,6 +194,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     header_parsing_flags_feature = feature(
         name = "__header_parsing_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [ACTION_NAMES.cpp_header_parsing],
@@ -2392,6 +2393,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "no_dotd_file"),
 
         # Features with more configuration
+        header_parsing_flags_feature,  # NOTE: Must come before input files
         link_libcpp_feature,
         default_compile_flags_feature,
         ns_block_assertions_feature,
@@ -2456,7 +2458,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         no_warn_duplicate_libraries_feature,
         layering_check_feature,
         external_include_paths_feature,
-        header_parsing_flags_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
