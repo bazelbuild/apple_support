@@ -254,7 +254,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "apply_simulator_compiler_flags",
         ],
         tools = [
             tool(
@@ -380,7 +379,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
-            "apply_simulator_compiler_flags",
         ],
         tools = [
             tool(
@@ -766,7 +764,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     if is_simulator:
         apply_simulator_compiler_flags_feature = feature(
-            name = "apply_simulator_compiler_flags",
+            name = "__apply_simulator_compiler_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
@@ -784,7 +783,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ],
         )
     else:
-        apply_simulator_compiler_flags_feature = feature(name = "apply_simulator_compiler_flags")
+        apply_simulator_compiler_flags_feature = feature(name = "__apply_simulator_compiler_flags")
 
     user_link_flags_feature = feature(
         name = "user_link_flags",
