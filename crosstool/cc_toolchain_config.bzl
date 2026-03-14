@@ -1451,11 +1451,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.cpp_link_dynamic_library,
-                    ACTION_NAMES.cpp_link_static_library,
-                    ACTION_NAMES.cpp_link_executable,
-                ],
+                actions = _DYNAMIC_LINK_ACTIONS + _STATIC_LINK_ACTIONS,
                 flag_groups = [
                     flag_group(
                         flags = ["@%{linker_param_file}"],
