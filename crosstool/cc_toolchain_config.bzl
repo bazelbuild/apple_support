@@ -243,7 +243,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
         implies = [
-            "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
             "user_compile_flags",
@@ -359,7 +358,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
             "user_compile_flags",
@@ -568,7 +566,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_default_compiler_flags_feature = feature(
-            name = "apply_default_compiler_flags",
+            name = "__apply_default_compiler_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
@@ -580,7 +579,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
           ctx.attr.cpu == "darwin_arm64" or
           ctx.attr.cpu == "darwin_arm64e"):
         apply_default_compiler_flags_feature = feature(
-            name = "apply_default_compiler_flags",
+            name = "__apply_default_compiler_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
@@ -592,7 +592,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
           ctx.attr.cpu == "tvos_x86_64" or
           ctx.attr.cpu == "tvos_sim_arm64"):
         apply_default_compiler_flags_feature = feature(
-            name = "apply_default_compiler_flags",
+            name = "__apply_default_compiler_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
@@ -605,7 +606,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "visionos_sim_arm64"
     ):
         apply_default_compiler_flags_feature = feature(
-            name = "apply_default_compiler_flags",
+            name = "__apply_default_compiler_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
