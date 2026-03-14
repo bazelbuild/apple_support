@@ -269,7 +269,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
-            "output_execpath_flags",
             "input_param_flags",
         ],
         tools = [
@@ -441,7 +440,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_executable_action = action_config(
         action_name = ACTION_NAMES.cpp_link_executable,
         implies = [
-            "output_execpath_flags",
             "input_param_flags",
             "force_pic_flags",
         ],
@@ -954,6 +952,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     output_execpath_flags_feature = feature(
         name = "output_execpath_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
