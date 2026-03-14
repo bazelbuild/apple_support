@@ -82,6 +82,8 @@ def compiling_test_suite(name):
             "-Werror=incompatible-sysroot",  # default warning flags
             "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
             "-DOS_MACOSX",
+            "-isysroot",
+            "__BAZEL_XCODE_SDKROOT__",
             "-fobjc-arc",
             "-DFROM_COPTS_FLAG=1",
             "-DFROM_OBJCCOPTS_FLAG=1",
@@ -98,6 +100,8 @@ def compiling_test_suite(name):
         expected_argv = [
             "-O2",  # From --compilation_mode=opt
             "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
+            "-isysroot",
+            "__BAZEL_XCODE_SDKROOT__",
             "-DFROM_COPTS_FLAG=1",
             "-DFROM_BUILD_COPTS=1",
             "-D__DATE__=\"redacted\"",

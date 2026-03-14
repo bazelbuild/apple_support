@@ -228,7 +228,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_header_parsing_action = action_config(
         action_name = ACTION_NAMES.cpp_header_parsing,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -251,7 +250,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -328,7 +326,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     c_compile_action = action_config(
         action_name = ACTION_NAMES.c_compile,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -346,7 +343,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_compile,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -380,7 +376,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -400,7 +395,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         implies = [
             "objc_arc",
             "no_objc_arc",
-            "include_system_dirs",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -416,7 +410,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     preprocess_assemble_action = action_config(
         action_name = ACTION_NAMES.preprocess_assemble,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -471,7 +464,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "include_system_dirs",
             "framework_paths",
             "strip_debug_symbols",
         ],
@@ -504,7 +496,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     linkstamp_compile_action = action_config(
         action_name = ACTION_NAMES.linkstamp_compile,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -522,7 +513,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_module_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_module_compile,
         implies = [
-            "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
             "user_compile_flags",
@@ -1125,7 +1115,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     include_system_dirs_feature = feature(
-        name = "include_system_dirs",
+        name = "__include_system_dirs",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
