@@ -228,7 +228,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_header_parsing_action = action_config(
         action_name = ACTION_NAMES.cpp_header_parsing,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -252,7 +251,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -330,7 +328,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     c_compile_action = action_config(
         action_name = ACTION_NAMES.c_compile,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -349,7 +346,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_compile,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -384,7 +380,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -421,7 +416,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     preprocess_assemble_action = action_config(
         action_name = ACTION_NAMES.preprocess_assemble,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -510,7 +504,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     linkstamp_compile_action = action_config(
         action_name = ACTION_NAMES.linkstamp_compile,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -529,7 +522,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_module_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_module_compile,
         implies = [
-            "preprocessor_defines",
             "include_system_dirs",
             "objc_arc",
             "no_objc_arc",
@@ -1935,7 +1927,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     preprocessor_defines_feature = feature(
-        name = "preprocessor_defines",
+        name = "__preprocessor_defines",
         enabled = True,
         flag_sets = [
             flag_set(
