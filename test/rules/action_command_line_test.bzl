@@ -79,17 +79,25 @@ def _action_command_line_test_impl(ctx):
     # `-foo` in the expected list doesn't match `-foobar`, for example.
     concatenated_args = " ".join(action.argv) + " "
     bin_dir = analysistest.target_bin_dir_path(env)
+    remaining = concatenated_args
     for expected in ctx.attr.expected_argv:
         expected = expected.replace("$(BIN_DIR)", bin_dir).replace("$(WORKSPACE_NAME)", ctx.workspace_name)
-        if expected + " " not in concatenated_args and expected + "=" not in concatenated_args:
+        space_pos = remaining.find(expected + " ")
+        eq_pos = remaining.find(expected + "=")
+        if space_pos == -1 and eq_pos == -1:
             unittest.fail(
                 env,
-                "{}expected argv to contain '{}', but it did not: {}".format(
+                "{}expected argv to contain '{}' (in order), but it was not found in remaining args: {}\nFull args: {}".format(
                     message_prefix,
                     expected,
+                    remaining,
                     concatenated_args,
                 ),
             )
+        elif space_pos != -1 and (eq_pos == -1 or space_pos <= eq_pos):
+            remaining = remaining[space_pos + len(expected) + 1:]
+        else:
+            remaining = remaining[eq_pos + len(expected) + 1:]
     for not_expected in ctx.attr.not_expected_argv:
         not_expected = not_expected.replace("$(BIN_DIR)", bin_dir).replace("$(WORKSPACE_NAME)", ctx.workspace_name)
         if not_expected + " " in concatenated_args or not_expected + "=" in concatenated_args:
