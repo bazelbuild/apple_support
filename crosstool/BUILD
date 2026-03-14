@@ -40,6 +40,19 @@ universal_exec_tool(
     out = "libtool",
 )
 
+# TODO: Attempt to remove need for wrapper
+genrule(
+    name = "exec_strip.target_config",
+    srcs = ["strip.sh"],
+    outs = ["strip"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_strip",
+    target = ":exec_strip.target_config",
+)
+
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
