@@ -179,6 +179,19 @@ def linking_test_suite(name):
         target_under_test = "//test/test_data:ios_binary",
     )
 
+    default_test(
+        name = "{}_objc_link_sdk_frameworks_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-framework",
+            "CalendarStore",
+            "-weak_framework",
+            "Accounts",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary_with_sdk_frameworks",
+    )
+
     dsym_test(
         name = "{}_generate_dsym_test".format(name),
         tags = [name],

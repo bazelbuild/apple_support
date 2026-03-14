@@ -243,7 +243,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
         implies = [
-            "framework_paths",
             "user_compile_flags",
             "unfiltered_compile_flags",
         ],
@@ -357,7 +356,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "framework_paths",
             "user_compile_flags",
             "unfiltered_compile_flags",
         ],
@@ -437,7 +435,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "framework_paths",
             "strip_debug_symbols",
         ],
         tools = [
@@ -991,15 +988,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     framework_paths_feature = feature(
-        name = "framework_paths",
+        name = "__framework_paths",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_module_compile,
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
@@ -1007,23 +1000,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     flag_group(
                         flags = ["-F%{framework_include_paths}"],
                         iterate_over = "framework_include_paths",
-                    ),
-                ],
-            ),
-            flag_set(
-                actions = [ACTION_NAMES.objc_executable],
-                flag_groups = [
-                    flag_group(
-                        flags = ["-F%{framework_paths}"],
-                        iterate_over = "framework_paths",
-                    ),
-                    flag_group(
-                        flags = ["-framework", "%{framework_names}"],
-                        iterate_over = "framework_names",
-                    ),
-                    flag_group(
-                        flags = ["-weak_framework", "%{weak_framework_names}"],
-                        iterate_over = "weak_framework_names",
                     ),
                 ],
             ),

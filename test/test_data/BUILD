@@ -93,6 +93,23 @@ objc_library(
 )
 
 objc_library(
+    name = "objc_library_sdk_frameworks",
+    srcs = ["main.m"],
+    # SDKs picked at random but shouldn't overlap with things that might be linked naturally
+    sdk_frameworks = ["CalendarStore"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    weak_sdk_frameworks = ["Accounts"],
+)
+
+starlark_apple_binary(
+    name = "macos_binary_with_sdk_frameworks",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":objc_library_sdk_frameworks"],
+)
+
+objc_library(
     name = "objc_no_arc_lib",
     non_arc_srcs = ["objc_lib.m"],
     tags = TARGETS_UNDER_TEST_TAGS,
