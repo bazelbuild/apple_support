@@ -282,7 +282,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
-            "has_configured_linker_path",
             "shared_flag",
             "linkstamps",
             "output_execpath_flags",
@@ -2383,7 +2382,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "dbg"),
         feature(name = "exclude_private_headers_in_module_maps"),
         feature(name = "fastbuild"),
-        feature(name = "has_configured_linker_path"),
         feature(name = "module_maps", enabled = True),
         feature(name = "no_legacy_features"),
         feature(name = "only_doth_headers_in_module_maps"),
