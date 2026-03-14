@@ -57,12 +57,16 @@ starlark_apple_binary(
 cc_library(
     name = "cc_lib",
     srcs = ["cc_lib.cc"],
+    copts = ["-DFROM_BUILD_COPTS=1"],
+    defines = ["FROM_BUILD_DEFINES=1"],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
 objc_library(
     name = "objc_lib",
     srcs = ["objc_lib.m"],
+    copts = ["-DFROM_BUILD_COPTS=1"],
+    defines = ["FROM_BUILD_DEFINES=1"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
 )
