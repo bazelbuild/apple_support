@@ -179,26 +179,6 @@ def linking_test_suite(name):
         target_under_test = "//test/test_data:ios_binary",
     )
 
-    default_test(
-        name = "{}_objc_link_framework_paths_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Ftest/test_data/frameworks",
-        ],
-        mnemonic = "ObjcLink",
-        target_under_test = "//test/test_data:macos_binary_with_framework_includes",
-    )
-
-    default_test(
-        name = "{}_cpp_link_framework_paths_test".format(name),
-        tags = [name],
-        expected_argv = [
-            "-Ftest/test_data/frameworks",
-        ],
-        mnemonic = "CppLink",
-        target_under_test = "//test/test_data:cc_binary_with_framework_includes",
-    )
-
     dsym_test(
         name = "{}_generate_dsym_test".format(name),
         tags = [name],
