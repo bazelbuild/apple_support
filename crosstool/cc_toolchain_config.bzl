@@ -441,7 +441,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_executable,
         implies = [
             "input_param_flags",
-            "force_pic_flags",
         ],
         tools = [
             tool(
@@ -1384,6 +1383,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     force_pic_flags_feature = feature(
         name = "force_pic_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [ACTION_NAMES.cpp_link_executable],

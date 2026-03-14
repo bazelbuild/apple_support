@@ -56,6 +56,18 @@ dsym_test = make_action_command_line_test_rule(
     },
 )
 
+pic_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:force_pic": "true",
+    },
+)
+
+no_pic_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:force_pic": "false",
+    },
+)
+
 def linking_test_suite(name):
     """Tests for linking behavior.
 
@@ -289,4 +301,20 @@ def linking_test_suite(name):
         ],
         mnemonic = "CppLink",
         target_under_test = "//test:loadable_library_test",
+    )
+
+    pic_test(
+        name = "{}_pic_test".format(name),
+        tags = [name],
+        expected_argv = ["-Wl,-pie"],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    no_pic_test(
+        name = "{}_no_pic_test".format(name),
+        tags = [name],
+        mnemonic = "CppLink",
+        not_expected_argv = ["-Wl,-pie"],
+        target_under_test = "//test/test_data:cc_test_binary",
     )
