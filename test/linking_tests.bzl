@@ -7,6 +7,18 @@ load(
 
 default_test = make_action_command_line_test_rule()
 
+disable_strip_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:strip": "never",
+    },
+)
+
+strip_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:strip": "always",
+    },
+)
+
 opt_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
@@ -213,4 +225,44 @@ def linking_test_suite(name):
         ],
         mnemonic = "CppLink",
         target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    strip_test(
+        name = "{}_strip_objc_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "STRIP_DEBUG_SYMBOLS",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    strip_test(
+        name = "{}_strip_cc_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "STRIP_DEBUG_SYMBOLS",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    strip_test(
+        name = "{}_strip_shared_library_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "STRIP_DEBUG_SYMBOLS",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test:loadable_library_so",
+    )
+
+    disable_strip_test(
+        name = "{}_disable_strip_objc_test".format(name),
+        tags = [name],
+        not_expected_argv = [
+            "STRIP_DEBUG_SYMBOLS",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
     )
