@@ -351,3 +351,20 @@ def linking_test_suite(name):
         mnemonic = "CcStrip",
         target_under_test = "//test/test_data:cc_test_binary",
     )
+
+    default_test(
+        name = "{}_fully_link_static_lib_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D",
+            "-no_warning_for_no_symbols",
+            "-static",
+            "-arch_only",
+            "x86_64",
+            "-syslibroot",
+            "__BAZEL_XCODE_SDKROOT__",
+            "-o",
+        ],
+        mnemonic = "CppArchive",
+        target_under_test = "//test/test_data:static_lib",
+    )
