@@ -24,6 +24,7 @@ cc_library(
 cc_library(
     name = "valid_header",
     hdrs = ["valid_header.h"],
+    visibility = ["//test:__subpackages__"],
 )
 
 objc_library(

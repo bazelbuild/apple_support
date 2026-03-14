@@ -12,6 +12,7 @@ copt_order_test = make_action_command_line_test_rule(
         "//command_line_option:compilation_mode": "opt",
         "//command_line_option:copt": ["-DFROM_COPTS_FLAG=1"],
         "//command_line_option:objccopt": ["-DFROM_OBJCCOPTS_FLAG=1"],
+        "//command_line_option:process_headers_in_dependencies": "true",
     },
 )
 
@@ -104,6 +105,26 @@ def compiling_test_suite(name):
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_lib",
+    )
+
+    copt_order_test(
+        name = "{}_header_parsing_copt_order_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-xc++-header",
+            "-fsyntax-only",
+            "-O2",  # From --compilation_mode=opt
+            "-isysroot",
+            "__BAZEL_XCODE_SDKROOT__",
+            "-DFROM_COPTS_FLAG=1",
+            "-D__DATE__=\"redacted\"",
+            "-c",
+            "test/header_parsing/valid_header.h",
+            "-o",
+            "$(BIN_DIR)/test/header_parsing/_objs/valid_header/valid_header.h.processed",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/header_parsing:valid_header",
     )
 
     native.test_suite(
