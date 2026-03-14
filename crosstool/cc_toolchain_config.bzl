@@ -270,7 +270,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
             "output_execpath_flags",
-            "runtime_root_flags",
             "input_param_flags",
         ],
         tools = [
@@ -443,7 +442,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_executable,
         implies = [
             "output_execpath_flags",
-            "runtime_root_flags",
             "input_param_flags",
             "force_pic_flags",
         ],
@@ -611,10 +609,14 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 """.format(cpu = ctx.attr.cpu))
 
     runtime_root_flags_feature = feature(
-        name = "runtime_root_flags",
+        name = "__runtime_root_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
-                actions = _CPP_DYNAMIC_LINK_ACTIONS,
+                actions = [
+                    ACTION_NAMES.cpp_link_dynamic_library,
+                    ACTION_NAMES.cpp_link_executable,
+                ],
                 flag_groups = [
                     flag_group(
                         flags = [

@@ -266,3 +266,27 @@ def linking_test_suite(name):
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
+
+    default_test(
+        name = "{}_cc_shared_library_rpath_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-rpath",
+            "-Xlinker",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test:nested_library_so",
+    )
+
+    default_test(
+        name = "{}_cc_binary_rpath_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-rpath",
+            "-Xlinker",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test:loadable_library_test",
+    )

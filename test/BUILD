@@ -180,3 +180,15 @@ cc_test(
     dynamic_deps = [":loadable_library_so"],
     deps = [":loadable_library"],
 )
+
+cc_library(
+    name = "nested_library",
+    srcs = ["loadable_library.cc"],
+    deps = [":loadable_library"],
+)
+
+cc_shared_library(
+    name = "nested_library_so",
+    dynamic_deps = [":loadable_library_so"],
+    deps = [":nested_library"],
+)
