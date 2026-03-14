@@ -9,6 +9,8 @@ selects.config_setting_group(
     match_any = [
         cpu
         for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
+    ] + [
+        "@build_bazel_apple_support//constraints:apple",
     ],
 )
 
