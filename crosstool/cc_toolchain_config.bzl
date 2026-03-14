@@ -227,10 +227,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_header_parsing_action = action_config(
         action_name = ACTION_NAMES.cpp_header_parsing,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -242,10 +238,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     objc_compile_action = action_config(
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -310,10 +302,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     c_compile_action = action_config(
         action_name = ACTION_NAMES.c_compile,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -324,10 +312,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_compile,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang_pp,
@@ -350,10 +334,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
         ],
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang_pp,
@@ -364,10 +344,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     assemble_action = action_config(
         action_name = ACTION_NAMES.assemble,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -378,10 +354,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     preprocess_assemble_action = action_config(
         action_name = ACTION_NAMES.preprocess_assemble,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -452,10 +424,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     linkstamp_compile_action = action_config(
         action_name = ACTION_NAMES.linkstamp_compile,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -466,10 +434,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_module_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_module_compile,
-        implies = [
-            "user_compile_flags",
-            "unfiltered_compile_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -1429,7 +1393,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     unfiltered_compile_flags_feature = feature(
-        name = "unfiltered_compile_flags",
+        name = "unfiltered_compile_flags",  # NOTE: Name matters
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = ACTION_NAME_GROUPS.all_cc_compile_actions,
@@ -1933,7 +1898,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         link_cocoa_feature = feature(name = "link_cocoa")
 
     user_compile_flags_feature = feature(
-        name = "user_compile_flags",
+        name = "__user_compile_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
