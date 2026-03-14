@@ -192,8 +192,25 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         tools = [tool(path = "/usr/bin/strip")],
     )
 
-    header_parsing_env_feature = feature(
-        name = "header_parsing_env",
+    header_parsing_flags_feature = feature(
+        name = "__header_parsing_flags",
+        flag_sets = [
+            flag_set(
+                actions = [ACTION_NAMES.cpp_header_parsing],
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            # Note: This treats all headers as C++ headers, which may lead to
+                            # parsing failures for C headers that are not valid C++.
+                            # For such headers, use features = ["-parse_headers"] to selectively
+                            # disable parsing.
+                            "-xc++-header",
+                            "-fsyntax-only",
+                        ],
+                    ),
+                ],
+            ),
+        ],
         env_sets = [
             env_set(
                 actions = [ACTION_NAMES.cpp_header_parsing],
@@ -217,23 +234,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
-            "header_parsing_env",
-        ],
-        flag_sets = [
-            flag_set(
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            # Note: This treats all headers as C++ headers, which may lead to
-                            # parsing failures for C headers that are not valid C++.
-                            # For such headers, use features = ["-parse_headers"] to selectively
-                            # disable parsing.
-                            "-xc++-header",
-                            "-fsyntax-only",
-                        ],
-                    ),
-                ],
-            ),
         ],
         tools = [
             tool(
@@ -2456,7 +2456,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         no_warn_duplicate_libraries_feature,
         layering_check_feature,
         external_include_paths_feature,
-        header_parsing_env_feature,
+        header_parsing_flags_feature,
     ]
 
     if (ctx.attr.cpu == "darwin_x86_64" or
