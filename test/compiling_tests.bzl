@@ -107,6 +107,16 @@ def compiling_test_suite(name):
     )
 
     default_test(
+        name = "{}_framework_include_paths_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Ftest/test_data/frameworks",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_framework_includes_lib",
+    )
+
+    default_test(
         name = "{}_objc_no_arc_test".format(name),
         tags = [name],
         expected_argv = ["-fno-objc-arc"],

@@ -1,4 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "objc_library")
+load(":framework_includes_provider.bzl", "framework_includes_lib")
 load("//rules:universal_binary.bzl", "universal_binary")
 load("//test:starlark_apple_binary.bzl", "starlark_apple_binary")
 load("//test:starlark_apple_static_library.bzl", "starlark_apple_static_library")
@@ -76,6 +77,19 @@ objc_library(
     defines = ["FROM_BUILD_DEFINES=1"],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = ["cc_lib"],
+)
+
+framework_includes_lib(
+    name = "framework_includes_dep",
+    framework_includes = ["test/test_data/frameworks"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+objc_library(
+    name = "objc_framework_includes_lib",
+    srcs = ["objc_lib.m"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":framework_includes_dep"],
 )
 
 objc_library(
