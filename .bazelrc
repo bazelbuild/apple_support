@@ -1,4 +1,7 @@
 # Verify parse_headers works as the toolchain changes
 build --process_headers_in_dependencies
 
+build --per_file_copt=external/protobuf.*@-w
+build --host_per_file_copt=external/protobuf.*@-w
+
 build --test_output=errors
