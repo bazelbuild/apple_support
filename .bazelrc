@@ -5,3 +5,5 @@ build --per_file_copt=external/protobuf.*@-w
 build --host_per_file_copt=external/protobuf.*@-w
 
 build --test_output=errors
+
+try-import %workspace%/user.bazelrc
