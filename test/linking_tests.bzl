@@ -68,6 +68,12 @@ no_pic_test = make_action_command_line_test_rule(
     },
 )
 
+stripopt_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:stripopt": ["-passed_arg"],
+    },
+)
+
 def linking_test_suite(name):
     """Tests for linking behavior.
 
@@ -316,5 +322,19 @@ def linking_test_suite(name):
         tags = [name],
         mnemonic = "CppLink",
         not_expected_argv = ["-Wl,-pie"],
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    stripopt_test(
+        name = "{}_builtin_strip_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-S",
+            "-o",
+            "$(BIN_DIR)/test/test_data/cc_test_binary.stripped",
+            "-passed_arg",
+            "$(BIN_DIR)/test/test_data/cc_test_binary",
+        ],
+        mnemonic = "CcStrip",
         target_under_test = "//test/test_data:cc_test_binary",
     )

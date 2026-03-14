@@ -177,8 +177,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     strip_action = action_config(
         action_name = ACTION_NAMES.strip,
+        tools = [tool(path = "/usr/bin/strip")],
+    )
+
+    strip_args_feature = feature(
+        name = "__strip_args",
+        enabled = True,
         flag_sets = [
             flag_set(
+                actions = [ACTION_NAMES.strip],
                 flag_groups = [
                     flag_group(flags = ["-S", "-o", "%{output_file}"]),
                     flag_group(
@@ -189,7 +196,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
         ],
-        tools = [tool(path = "/usr/bin/strip")],
     )
 
     header_parsing_flags_feature = feature(
@@ -2265,6 +2271,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "no_dotd_file"),
 
         # Features with more configuration
+        strip_args_feature,
         header_parsing_flags_feature,  # NOTE: Must come before input files
         link_libcpp_feature,
         default_compile_flags_feature,
