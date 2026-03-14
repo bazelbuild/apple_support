@@ -282,7 +282,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
-            "linkstamps",
             "output_execpath_flags",
             "runtime_root_flags",
             "input_param_flags",
@@ -492,7 +491,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_executable_action = action_config(
         action_name = ACTION_NAMES.cpp_link_executable,
         implies = [
-            "linkstamps",
             "output_execpath_flags",
             "runtime_root_flags",
             "input_param_flags",
@@ -1621,22 +1619,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    linkstamps_feature = feature(
-        name = "linkstamps",
-        flag_sets = [
-            flag_set(
-                actions = _CPP_DYNAMIC_LINK_ACTIONS,
-                flag_groups = [
-                    flag_group(
-                        flags = ["%{linkstamp_paths}"],
-                        iterate_over = "linkstamp_paths",
-                        expand_if_available = "linkstamp_paths",
-                    ),
-                ],
-            ),
-        ],
-    )
-
     include_paths_feature = feature(
         name = "include_paths",
         enabled = True,
@@ -2401,7 +2383,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         strip_debug_symbols_feature,
         shared_flag_feature,
         kernel_extension_feature,
-        linkstamps_feature,
         output_execpath_flags_feature,
         runtime_root_flags_feature,
         input_param_flags_feature,

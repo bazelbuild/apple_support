@@ -151,6 +151,19 @@ cc_toolchain_forwarder(
 )
 
 cc_library(
+    name = "linkstamp_lib",
+    hdrs = ["linkstamp.h"],
+    linkstamp = "linkstamp.cc",
+)
+
+cc_test(
+    name = "linkstamp_test",
+    srcs = ["linkstamp_test.cc"],
+    stamp = 1,
+    deps = [":linkstamp_lib"],
+)
+
+cc_library(
     name = "loadable_library",
     srcs = ["loadable_library.cc"],
     hdrs = ["loadable_library.h"],
