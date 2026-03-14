@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_library")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//rules:apple_genrule.bzl", "apple_genrule")
@@ -147,4 +148,22 @@ cc_test(
 cc_toolchain_forwarder(
     name = "default_cc_toolchain_forwarder",
     visibility = [":__subpackages__"],
+)
+
+cc_library(
+    name = "loadable_library",
+    srcs = ["loadable_library.cc"],
+    hdrs = ["loadable_library.h"],
+)
+
+cc_shared_library(
+    name = "loadable_library_so",
+    deps = [":loadable_library"],
+)
+
+cc_test(
+    name = "loadable_library_test",
+    srcs = ["loadable_library_test.cc"],
+    dynamic_deps = [":loadable_library_so"],
+    deps = [":loadable_library"],
 )
