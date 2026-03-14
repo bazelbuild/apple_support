@@ -22,6 +22,12 @@ opt_test = make_action_command_line_test_rule(
     },
 )
 
+ios_simulator_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:platforms": "@@//platforms:ios_sim_arm64",  # buildifier: disable=canonical-repository
+    },
+)
+
 disable_ns_block_assertions_feature_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
@@ -46,6 +52,7 @@ def compiling_test_suite(name):
         ],
         not_expected_argv = [
             "-DNS_BLOCK_ASSERTIONS=1",
+            "-fexceptions",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
@@ -86,6 +93,19 @@ def compiling_test_suite(name):
         target_under_test = "//test/test_data:cc_main",
     )
 
+    ios_simulator_test(
+        name = "{}_ios_simulator_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-DOS_IOS",
+            "-fno-autolink",
+            "-fexceptions",
+            "-DFROM_BUILD_COPTS=1",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_lib",
+    )
+
     default_test(
         name = "{}_objc_no_arc_test".format(name),
         tags = [name],
@@ -102,6 +122,7 @@ def compiling_test_suite(name):
             "-Werror=incompatible-sysroot",  # default warning flags
             "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
             "-DOS_MACOSX",
+            "-fno-autolink",
             "-isysroot",
             "__BAZEL_XCODE_SDKROOT__",
             "-fobjc-arc",
