@@ -322,18 +322,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     objcpp_compile_action = action_config(
         action_name = ACTION_NAMES.objcpp_compile,
-        flag_sets = [
-            flag_set(
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-stdlib=libc++",
-                            "-std=gnu++17",
-                        ],
-                    ),
-                ],
-            ),
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang_pp,
@@ -1553,6 +1541,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         name = "default_compile_flags",
         enabled = True,
         flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-stdlib=libc++",
+                            "-std=gnu++17",
+                        ],
+                    ),
+                ],
+            ),
             flag_set(
                 actions = [
                     ACTION_NAMES.assemble,

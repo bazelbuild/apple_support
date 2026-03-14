@@ -126,6 +126,8 @@ def compiling_test_suite(name):
         name = "{}_objc_copt_order_test".format(name),
         tags = [name],
         expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-fstack-protector",
             "-O2",  # From --compilation_mode=opt
             "-Werror=incompatible-sysroot",  # default warning flags
             "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
@@ -141,6 +143,31 @@ def compiling_test_suite(name):
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
+    )
+
+    copt_order_test(
+        name = "{}_objcpp_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-stdlib=libc++",  # Objc++ specific opts
+            "-std=gnu++17",  # Objc++ specific opts
+            "-D_FORTIFY_SOURCE=1",
+            "-fstack-protector",
+            "-O2",  # From --compilation_mode=opt
+            "-Werror=incompatible-sysroot",  # default warning flags
+            "-DFROM_BUILD_DEFINES=1",  # TODO: This should probably be below --copts
+            "-DOS_MACOSX",
+            "-fno-autolink",
+            "-isysroot",
+            "__BAZEL_XCODE_SDKROOT__",
+            "-fobjc-arc",
+            "-DFROM_COPTS_FLAG=1",
+            "-DFROM_OBJCCOPTS_FLAG=1",
+            "-DFROM_BUILD_COPTS=1",
+            "-D__DATE__=\"redacted\"",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objcpp_lib",
     )
 
     copt_order_test(
