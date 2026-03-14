@@ -92,21 +92,6 @@ objc_library(
     deps = [":framework_includes_dep"],
 )
 
-starlark_apple_binary(
-    name = "macos_binary_with_framework_includes",
-    minimum_os_version = "13.0",
-    platform_type = "macos",
-    tags = TARGETS_UNDER_TEST_TAGS,
-    deps = [":objc_framework_includes_lib"],
-)
-
-cc_binary(
-    name = "cc_binary_with_framework_includes",
-    srcs = ["main.cc"],
-    tags = TARGETS_UNDER_TEST_TAGS,
-    deps = [":framework_includes_dep"],
-)
-
 objc_library(
     name = "objc_no_arc_lib",
     non_arc_srcs = ["objc_lib.m"],
