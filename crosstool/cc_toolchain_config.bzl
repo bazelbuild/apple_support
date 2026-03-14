@@ -228,8 +228,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_header_parsing_action = action_config(
         action_name = ACTION_NAMES.cpp_header_parsing,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -250,8 +248,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
@@ -326,8 +322,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     c_compile_action = action_config(
         action_name = ACTION_NAMES.c_compile,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -343,8 +337,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_compile,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -376,8 +368,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "apply_default_compiler_flags",
             "apply_default_warnings",
             "framework_paths",
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "apply_simulator_compiler_flags",
@@ -393,8 +383,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     assemble_action = action_config(
         action_name = ACTION_NAMES.assemble,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -410,8 +398,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     preprocess_assemble_action = action_config(
         action_name = ACTION_NAMES.preprocess_assemble,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -496,8 +482,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     linkstamp_compile_action = action_config(
         action_name = ACTION_NAMES.linkstamp_compile,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -513,8 +497,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_module_compile_action = action_config(
         action_name = ACTION_NAMES.cpp_module_compile,
         implies = [
-            "objc_arc",
-            "no_objc_arc",
             "user_compile_flags",
             "unfiltered_compile_flags",
             "compiler_output_flags",
@@ -672,7 +654,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     objc_arc_feature = feature(
-        name = "objc_arc",
+        name = "__objc_arc",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
@@ -1536,7 +1519,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     no_objc_arc_feature = feature(
-        name = "no_objc_arc",
+        name = "__no_objc_arc",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
