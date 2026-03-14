@@ -282,7 +282,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         implies = [
-            "shared_flag",
             "linkstamps",
             "output_execpath_flags",
             "runtime_root_flags",
@@ -772,7 +771,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     shared_flag_feature = feature(
-        name = "shared_flag",
+        name = "__shared_flag",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
