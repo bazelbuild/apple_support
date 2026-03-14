@@ -276,8 +276,20 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_link_static_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_static_library,
+        tools = [
+            tool(
+                tool = ctx.file.libtool,
+                execution_requirements = xcode_execution_requirements,
+            ),
+        ],
+    )
+
+    cpp_link_static_library_feature = feature(
+        name = "__cpp_link_static_library",
+        enabled = True,
         flag_sets = [
             flag_set(
+                actions = [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -290,12 +302,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         expand_if_available = "output_execpath",
                     ),
                 ],
-            ),
-        ],
-        tools = [
-            tool(
-                tool = ctx.file.libtool,
-                execution_requirements = xcode_execution_requirements,
             ),
         ],
     )
@@ -2272,6 +2278,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
         # Features with more configuration
         strip_args_feature,
+        cpp_link_static_library_feature,
         header_parsing_flags_feature,  # NOTE: Must come before input files
         link_libcpp_feature,
         default_compile_flags_feature,

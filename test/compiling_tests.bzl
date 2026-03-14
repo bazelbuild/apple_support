@@ -179,6 +179,19 @@ def compiling_test_suite(name):
         target_under_test = "//test/header_parsing:valid_header",
     )
 
+    default_test(
+        name = "{}_cc_archive_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D",
+            "-no_warning_for_no_symbols",
+            "-static",
+            "-o",
+        ],
+        mnemonic = "CppArchive",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
     native.test_suite(
         name = name,
         tags = [name],
