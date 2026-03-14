@@ -272,7 +272,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "output_execpath_flags",
             "runtime_root_flags",
             "input_param_flags",
-            "linker_param_file",
         ],
         tools = [
             tool(
@@ -286,7 +285,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_static_library,
         implies = [
             "input_param_flags",
-            "linker_param_file",
         ],
         flag_sets = [
             flag_set(
@@ -448,7 +446,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "runtime_root_flags",
             "input_param_flags",
             "force_pic_flags",
-            "linker_param_file",
         ],
         tools = [
             tool(
@@ -1450,7 +1447,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     linker_param_file_feature = feature(
-        name = "linker_param_file",
+        name = "__linker_param_file",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS + _STATIC_LINK_ACTIONS,
