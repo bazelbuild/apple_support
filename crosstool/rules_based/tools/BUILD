@@ -14,10 +14,10 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:assembly_actions": ":clang_tool",
         "@rules_cc//cc/toolchains/actions:c_compile_actions": ":clang_tool",
         "@rules_cc//cc/toolchains/actions:cpp_compile": ":clangpp_tool",  # TODO: Switch to cpp_compile_actions
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile": ":clangpp_tool",
+        "@rules_cc//cc/toolchains/actions:cpp_module_compile": ":clang_tool",  # TODO: switch to clangpp_tool?
         "@rules_cc//cc/toolchains/actions:cpp_header_parsing": ":clang_tool",  # TODO: Switch to clangpp_tool?
         "@rules_cc//cc/toolchains/actions:objcpp_compile": ":clangpp_tool",
-        "@rules_cc//cc/toolchains/actions:linkstamp_compile": ":clangpp_tool",
+        "@rules_cc//cc/toolchains/actions:linkstamp_compile": ":clang_tool",  # TODO: switch to clangpp_tool?
         "@rules_cc//cc/toolchains/actions:cpp_link_dynamic_library": ":cc_wrapper_tool",
         "@rules_cc//cc/toolchains/actions:cpp_link_executable": ":cc_wrapper_tool",
         "@rules_cc//cc/toolchains/actions:objc_compile": ":clang_tool",
