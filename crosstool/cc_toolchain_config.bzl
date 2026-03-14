@@ -243,7 +243,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.objc_compile,
         enabled = True,
         implies = [
-            "apply_default_warnings",
             "framework_paths",
             "user_compile_flags",
             "unfiltered_compile_flags",
@@ -358,7 +357,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             ),
         ],
         implies = [
-            "apply_default_warnings",
             "framework_paths",
             "user_compile_flags",
             "unfiltered_compile_flags",
@@ -1817,7 +1815,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         kernel_extension_feature = feature(name = "kernel_extension")
 
     apply_default_warnings_feature = feature(
-        name = "apply_default_warnings",
+        name = "__apply_default_warnings",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [ACTION_NAMES.objc_compile, ACTION_NAMES.objcpp_compile],
