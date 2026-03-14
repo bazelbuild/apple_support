@@ -260,9 +260,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_link_dynamic_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
-        implies = [
-            "input_param_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.cc_wrapper,
@@ -273,9 +270,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_link_static_library_action = action_config(
         action_name = ACTION_NAMES.cpp_link_static_library,
-        implies = [
-            "input_param_flags",
-        ],
         flag_sets = [
             flag_set(
                 flag_groups = [
@@ -411,9 +405,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     cpp_link_executable_action = action_config(
         action_name = ACTION_NAMES.cpp_link_executable,
-        implies = [
-            "input_param_flags",
-        ],
         tools = [
             tool(
                 tool = ctx.file.cc_wrapper,
@@ -1056,7 +1047,8 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     input_param_flags_feature = feature(
-        name = "input_param_flags",
+        name = "__input_param_flags",
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = _CPP_DYNAMIC_LINK_ACTIONS,
