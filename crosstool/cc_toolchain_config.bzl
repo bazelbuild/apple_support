@@ -272,7 +272,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "output_execpath_flags",
             "runtime_root_flags",
             "input_param_flags",
-            "strip_debug_symbols",
             "linker_param_file",
         ],
         tools = [
@@ -434,9 +433,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
         ],
-        implies = [
-            "strip_debug_symbols",
-        ],
         tools = [
             tool(
                 tool = ctx.file.wrapped_clang,
@@ -452,7 +448,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             "runtime_root_flags",
             "input_param_flags",
             "force_pic_flags",
-            "strip_debug_symbols",
             "linker_param_file",
         ],
         tools = [
@@ -706,10 +701,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     )
 
     strip_debug_symbols_feature = feature(
-        name = "strip_debug_symbols",
+        name = "__strip_debug_symbols",
+        enabled = True,
         flag_sets = [
             flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
+                actions = [
+                    ACTION_NAMES.cpp_link_dynamic_library,
+                    ACTION_NAMES.cpp_link_executable,
+                    ACTION_NAMES.objc_executable,
+                ],
                 flag_groups = [
                     flag_group(
                         flags = ["STRIP_DEBUG_SYMBOLS"],
