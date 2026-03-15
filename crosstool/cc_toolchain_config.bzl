@@ -442,8 +442,20 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     objc_fully_link_action = action_config(
         action_name = ACTION_NAMES.objc_fully_link,
+        tools = [
+            tool(
+                tool = ctx.file.libtool,
+                execution_requirements = xcode_execution_requirements,
+            ),
+        ],
+    )
+
+    objc_fully_link_feature = feature(
+        name = "__objc_fully_link",
+        enabled = True,
         flag_sets = [
             flag_set(
+                actions = [ACTION_NAMES.objc_fully_link],
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -471,12 +483,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         iterate_over = "imported_library_exec_paths",
                     ),
                 ],
-            ),
-        ],
-        tools = [
-            tool(
-                tool = ctx.file.libtool,
-                execution_requirements = xcode_execution_requirements,
             ),
         ],
     )
@@ -2288,6 +2294,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         strip_args_feature,
         cpp_link_static_library_feature,
         objc_executable_feature,
+        objc_fully_link_feature,
         header_parsing_flags_feature,  # NOTE: Must come before input files
         link_libcpp_feature,
         default_compile_flags_feature,
