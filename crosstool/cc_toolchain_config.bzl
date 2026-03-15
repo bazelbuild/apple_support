@@ -358,8 +358,20 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     objc_executable_action = action_config(
         action_name = ACTION_NAMES.objc_executable,
+        tools = [
+            tool(
+                tool = ctx.file.wrapped_clang,
+                execution_requirements = xcode_execution_requirements,
+            ),
+        ],
+    )
+
+    objc_executable_feature = feature(
+        name = "__objc_executable",
+        enabled = True,
         flag_sets = [
             flag_set(
+                actions = [ACTION_NAMES.objc_executable],
                 flag_groups = [
                     flag_group(
                         flags = [
@@ -373,6 +385,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
             flag_set(
+                actions = [ACTION_NAMES.objc_executable],
                 flag_groups = [
                     flag_group(
                         flags = ["-l%{library_names}"],
@@ -393,12 +406,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         iterate_over = "attr_linkopts",
                     ),
                 ],
-            ),
-        ],
-        tools = [
-            tool(
-                tool = ctx.file.wrapped_clang,
-                execution_requirements = xcode_execution_requirements,
             ),
         ],
     )
@@ -2280,6 +2287,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         # Features with more configuration
         strip_args_feature,
         cpp_link_static_library_feature,
+        objc_executable_feature,
         header_parsing_flags_feature,  # NOTE: Must come before input files
         link_libcpp_feature,
         default_compile_flags_feature,
