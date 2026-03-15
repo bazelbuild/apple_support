@@ -1,3 +1,8 @@
+common --repo_env=BAZEL_CONLYOPTS=-DCONLY_ENV=1
+common --repo_env=BAZEL_COPTS=-DCOPTS_ENV=1
+common --repo_env=BAZEL_CXXOPTS="-std=c++17:-DCXXOPTS_ENV=1"
+common --repo_env=BAZEL_LINKOPTS=-Wl,-prune_interval_lto,10
+
 # Verify parse_headers works as the toolchain changes
 build --process_headers_in_dependencies
 

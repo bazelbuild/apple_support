@@ -11,6 +11,7 @@ copt_order_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
         "//command_line_option:copt": ["-DFROM_COPTS_FLAG=1"],
+        "//command_line_option:cxxopt": ["-DFROM_CXX_FLAG=1"],
         "//command_line_option:objccopt": ["-DFROM_OBJCCOPTS_FLAG=1"],
         "//command_line_option:process_headers_in_dependencies": "true",
     },
@@ -48,14 +49,35 @@ def compiling_test_suite(name):
         tags = [name],
         expected_argv = [
             "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=.",
-            "-std=c++17 -std=c++20",
+            "-DCOPTS_ENV=1",
+            "-std=c++17 -DCXXOPTS_ENV=1 -std=c++20",
         ],
         not_expected_argv = [
+            "-DCONLY_ENV=1",
             "-DNS_BLOCK_ASSERTIONS=1",
             "-fexceptions",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
+    )
+
+    default_test(
+        name = "{}_default_c_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=.",
+            "-DCOPTS_ENV=1",
+            "-DCONLY_ENV=1",
+            "-std=c99",
+        ],
+        not_expected_argv = [
+            "-std=c++17",
+            "-DCXXOPTS_ENV=1",
+            "-DNS_BLOCK_ASSERTIONS=1",
+            "-fexceptions",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:c_main",
     )
 
     opt_test(
@@ -136,10 +158,15 @@ def compiling_test_suite(name):
             "-isysroot",
             "__BAZEL_XCODE_SDKROOT__",
             "-fobjc-arc",
+            "-DCOPTS_ENV=1",
             "-DFROM_COPTS_FLAG=1",
             "-DFROM_OBJCCOPTS_FLAG=1",
             "-DFROM_BUILD_COPTS=1",
             "-D__DATE__=\"redacted\"",
+        ],
+        not_expected_argv = [
+            "-DCONLY_ENV=1",
+            "-DCXXOPTS_ENV=1",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
@@ -161,10 +188,15 @@ def compiling_test_suite(name):
             "-isysroot",
             "__BAZEL_XCODE_SDKROOT__",
             "-fobjc-arc",
+            # "-DCXXOPTS_ENV=1", # TODO: Should this affect objcpp compiles?
             "-DFROM_COPTS_FLAG=1",
+            "-DFROM_CXX_FLAG=1",
             "-DFROM_OBJCCOPTS_FLAG=1",
             "-DFROM_BUILD_COPTS=1",
             "-D__DATE__=\"redacted\"",
+        ],
+        not_expected_argv = [
+            "-DCONLY_ENV=1",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objcpp_lib",
