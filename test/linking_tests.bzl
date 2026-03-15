@@ -240,6 +240,7 @@ def linking_test_suite(name):
         expected_argv = [
             "DSYM_HINT_DSYM_PATH",
             "LINKED_BINARY",
+            "-Wl,-prune_interval_lto,10",
         ],
         mnemonic = "CppLink",
         target_under_test = "//test/test_data:cc_test_binary",
