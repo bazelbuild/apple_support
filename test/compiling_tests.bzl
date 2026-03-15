@@ -190,7 +190,7 @@ def compiling_test_suite(name):
             "-fobjc-arc",
             # "-DCXXOPTS_ENV=1", # TODO: Should this affect objcpp compiles?
             "-DFROM_COPTS_FLAG=1",
-            "-DFROM_CXX_FLAG=1",
+            # "-DFROM_CXX_FLAG=1", # TODO: broken on bazel 7.x
             "-DFROM_OBJCCOPTS_FLAG=1",
             "-DFROM_BUILD_COPTS=1",
             "-D__DATE__=\"redacted\"",
