@@ -196,3 +196,11 @@ cc_library(
     ],
     tags = TARGETS_UNDER_TEST_TAGS,
 )
+
+objc_library(
+    name = "objcpp_lib",
+    srcs = ["objcpp_lib.mm"],
+    copts = ["-DFROM_BUILD_COPTS=1"],
+    defines = ["FROM_BUILD_DEFINES=1"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
