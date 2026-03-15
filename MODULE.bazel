@@ -31,3 +31,7 @@ use_repo(
     "http_dmg_test_krita",
     "http_dmg_test_krita_strip_prefix",
 )
+
+toolchain_env = use_repo_rule("//crosstool/rules_based:toolchain_env.bzl", "toolchain_env")
+
+toolchain_env(name = "apple_support_toolchain_env")
