@@ -365,6 +365,9 @@ def linking_test_suite(name):
             "-syslibroot",
             "__BAZEL_XCODE_SDKROOT__",
             "-o",
+            "-fl.a",  # output file suffix
+            "test/test_data/libobjc_lib.a",
+            "test/test_data/libcc_lib.a",
         ],
         mnemonic = "CppArchive",
         target_under_test = "//test/test_data:static_lib",
