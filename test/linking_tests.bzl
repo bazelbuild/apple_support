@@ -354,6 +354,78 @@ def linking_test_suite(name):
     )
 
     default_test(
+        name = "{}_no_deduplicate_fastbuild_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-no_deduplicate",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    opt_test(
+        name = "{}_no_deduplicate_opt_test".format(name),
+        tags = [name],
+        not_expected_argv = ["-no_deduplicate"],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
+        name = "{}_oso_prefix_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
+        name = "{}_lto_object_path_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-object_path_lto",
+            "-Xlinker",
+            "cc_test_binary.lto.o",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
+        name = "{}_output_execpath_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-o",
+            "$(BIN_DIR)/test/test_data/cc_test_binary",
+            "LINKED_BINARY",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
+        name = "{}_link_libcpp_test".format(name),
+        tags = [name],
+        expected_argv = ["-lc++"],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
+        name = "{}_libraries_to_link_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "test/test_data/_objs/cc_test_binary/main.o",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    default_test(
         name = "{}_fully_link_static_lib_test".format(name),
         tags = [name],
         expected_argv = [
