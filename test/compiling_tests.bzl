@@ -29,6 +29,18 @@ ios_simulator_test = make_action_command_line_test_rule(
     },
 )
 
+fastbuild_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+    },
+)
+
+dbg_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "dbg",
+    },
+)
+
 disable_ns_block_assertions_feature_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
@@ -236,6 +248,69 @@ def compiling_test_suite(name):
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/header_parsing:valid_header",
+    )
+
+    default_test(
+        name = "{}_dependency_file_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-MD",
+            "-MF",
+            "cc_lib.d",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    default_test(
+        name = "{}_compiler_input_output_flags_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-c",
+            "test/test_data/cc_lib.cc",
+            "-o",
+            "cc_lib.o",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    fastbuild_test(
+        name = "{}_fastbuild_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-fstack-protector",
+            "-O0",
+            "-DDEBUG",
+        ],
+        not_expected_argv = [
+            "-DNDEBUG",
+            "-g",
+            "-g0",
+            "-O2",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_main",
+    )
+
+    dbg_test(
+        name = "{}_dbg_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-fstack-protector",
+            "-g",
+        ],
+        not_expected_argv = [
+            "-DDEBUG",
+            "-DNDEBUG",
+            "-g0",
+            "-O0",
+            "-O2",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_main",
     )
 
     native.test_suite(
