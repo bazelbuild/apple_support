@@ -68,6 +68,12 @@ no_pic_test = make_action_command_line_test_rule(
     },
 )
 
+linkmap_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:objc_generate_linkmap": True,
+    },
+)
+
 stripopt_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:stripopt": ["-passed_arg"],
@@ -244,6 +250,27 @@ def linking_test_suite(name):
         ],
         mnemonic = "CppLink",
         target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    linkmap_test(
+        name = "{}_generate_linkmap_objc_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-map",
+            "-Xlinker",
+            "macos_binary.linkmap",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    default_test(
+        name = "{}_no_linkmap_by_default_test".format(name),
+        tags = [name],
+        not_expected_argv = ["-map"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
     )
 
     strip_test(
