@@ -1074,16 +1074,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ],
             ),
             flag_set(
-                actions = _CPP_DYNAMIC_LINK_ACTIONS,
-                flag_groups = [
-                    flag_group(
-                        flags = ["-Wl,-force_load,%{whole_archive_linker_params}"],
-                        iterate_over = "whole_archive_linker_params",
-                        expand_if_available = "whole_archive_linker_params",
-                    ),
-                ],
-            ),
-            flag_set(
                 actions = _CPP_DYNAMIC_LINK_ACTIONS +
                           [ACTION_NAMES.cpp_link_static_library],
                 flag_groups = [
