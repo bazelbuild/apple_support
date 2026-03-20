@@ -1,3 +1,4 @@
+load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load("@rules_cc//cc/toolchains:actions.bzl", "cc_action_type_set")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
@@ -8,6 +9,11 @@ load("@rules_cc//cc/toolchains:mutually_exclusive_category.bzl", "cc_mutually_ex
 load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":features.bzl", "enableable_feature", "negatable_feature")
+
+_OSX_DEVELOPER_PLATFORM_CPUS = [
+    "arm64",
+    "x86_64",
+]
 
 MARKER_FEATURES = [
     "no_legacy_features",
@@ -162,6 +168,13 @@ cc_args(
     ],
 )
 
+cc_feature_constraint(
+    name = "not_opt_mode",
+    none_of = [
+        "@rules_cc//cc/toolchains/features:opt",
+    ],
+)
+
 cc_args(
     name = "dbg_compile_flags",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
@@ -217,6 +230,17 @@ enableable_feature(
 )
 
 negatable_feature(
+    name = "default_env",
+    actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
+    env = {
+        # FIXME: apple env
+        "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
+        "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "ZERO_AR_DATE": "1",
+    },
+)
+
+negatable_feature(
     name = "default_required_flags",
     actions = [
         "@rules_cc//cc/toolchains/actions:link_actions",
@@ -227,12 +251,6 @@ negatable_feature(
         "-target",
         "arm64-apple-macosx26.2",  # FIXME: abstract
     ],
-    env = {
-        # FIXME: apple env
-        "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
-        "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-        "ZERO_AR_DATE": "1",
-    },
 
     # if xcode_config.xcode_version():
     #     apple_env = {
@@ -248,6 +266,27 @@ negatable_feature(
     #         "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
     #         "ZERO_AR_DATE": "1",
     #     }
+)
+
+cc_args(
+    name = "default_link_flags_base_args",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-fobjc-link-runtime"],
+)
+
+cc_args(
+    name = "default_link_flags_opt_args",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-dead_strip"],
+    requires_any_of = ["@rules_cc//cc/toolchains/features:opt"],
+)
+
+negatable_feature(
+    name = "default_link_flags",
+    custom_args = [
+        ":default_link_flags_base_args",
+        ":default_link_flags_opt_args",
+    ],
 )
 
 # cc_feature(
@@ -530,7 +569,7 @@ cc_feature(
 
 cc_args(
     name = "default_sanitizer_flags_args",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = _LIMITED_COMPILE_ACTIONS,
     args = [
         "-gline-tables-only",
         "-fno-omit-frame-pointer",
@@ -546,14 +585,188 @@ enableable_feature(
     ],
     args = ["-fripa"],
     requires_any_of = [
-        "@rules_cc//cc/toolchains/features/legacy:autofdo",
-        "@rules_cc//cc/toolchains/features/legacy:fdo_optimize",
-        "@rules_cc//cc/toolchains/features/legacy:fdo_instrument",
+        "//crosstool/rules_based/pgo:autofdo",
+        "//crosstool/rules_based/pgo:fdo_instrument",
+        "//crosstool/rules_based/pgo:fdo_optimize",
     ],
 )
 
-cc_mutually_exclusive_category(
-    name = "profile",
+cc_args(
+    name = "generate_linkmap_apple_args",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-Xlinker",
+        "-map",
+        "-Xlinker",
+        "{linkmap_exec_path}",
+    ],
+    format = {"linkmap_exec_path": "@rules_cc//cc/toolchains/variables:linkmap_exec_path"},
+    requires_not_none = "@rules_cc//cc/toolchains/variables:linkmap_exec_path",
+)
+
+cc_args(
+    name = "generate_linkmap_other_args",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-Xlinker",
+        "-map",
+        "-Xlinker",
+        "{output_execpath}.map",
+    ],
+    format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+    requires_none = "@rules_cc//cc/toolchains/variables:linkmap_exec_path",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+)
+
+enableable_feature(
+    name = "generate_linkmap",
+    custom_args = [
+        ":generate_linkmap_apple_args",
+        ":generate_linkmap_other_args",
+    ],
+)
+
+negatable_feature(
+    name = "oso_prefix_is_pwd",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/"],
+)
+
+negatable_feature(
+    name = "strip_debug_symbols",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["STRIP_DEBUG_SYMBOLS"],
+    overrides = "@rules_cc//cc/toolchains/features/legacy:strip_debug_symbols",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:strip_debug_symbols",
+)
+
+# cc_args(
+#     name = "generate_linkmap_args",
+#     actions = [":all_dynamic_link_actions"],
+#     args = ["-Xlinker", "-map", "-Xlinker", "{output_execpath}.map"],
+#     format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+#     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+# )
+
+# cc_feature(
+#     name = "generate_linkmap",
+#     feature_name = "generate_linkmap",
+#     args = [":generate_linkmap_args"],
+# )
+
+enableable_feature(
+    name = "kernel_extension",
+    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
+    args = [
+        "-nostdlib",
+        "-lkmod",
+        "-lkmodc++",
+        "-lcc_kext",
+        "-Xlinker",
+        "-kext",
+    ],
+)
+
+cc_feature_constraint(
+    name = "not_kernel_extension",
+    none_of = [":kernel_extension"],
+)
+
+negatable_feature(
+    name = "link_libc++",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-lc++"],
+    requires_any_of = [":not_kernel_extension"],
+)
+
+negatable_feature(
+    name = "output_execpath_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-o",
+        "{output_execpath}",
+        "LINKED_BINARY={output_execpath}",
+    ],
+    format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+    overrides = "@rules_cc//cc/toolchains/features/legacy:output_execpath_flags",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+)
+
+# We need to pass -object_path_lto in order to get debug symbols when building with LTO.
+# In a perfect world, we would only pass it when the thin_lto or full_lto features are enabled.
+# However, when these features are enabled, bazel will follow the linking steps expected by
+# the traditional llvm tools, which doesn't work on Apple platforms.
+# On MacOS, passing -flto (or -flto=thin) to the compiler is mostly enough for the linker to
+# do the right thing. The only thing left is to tell ld64 to keep the intermediate .o file,
+# so dsymutil can find it.
+# We're doing that here by passing -object_path_lto to every linking action. If LTO is disabled,
+# it will be a no-op for the linker. But if it is enabled, it will allow dsymutil to find the
+# symbols and put it in the .dSYM folder. Luckily for us, both ld64 and dsymutil run in the same
+# action, so the fact that it's not declared as an output is not a problem.
+negatable_feature(
+    name = "lto_object_path",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-Xlinker",
+        "-object_path_lto",
+        "-Xlinker",
+        "{output_execpath}.lto.o",
+    ],
+    format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+)
+
+negatable_feature(
+    name = "no_warn_duplicate_libraries",  # FIXME: enable based on availablity
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-Wl,-no_warn_duplicate_libraries",
+    ],
+)
+
+negatable_feature(
+    name = "no_deduplicate",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-Xlinker",
+        "-no_deduplicate",
+    ],
+    requires_any_of = [":not_opt_mode"],
+)
+
+negatable_feature(
+    name = "user_link_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["{user_link_flags}"],
+    format = {"user_link_flags": "@rules_cc//cc/toolchains/variables:user_link_flags"},
+    iterate_over = "@rules_cc//cc/toolchains/variables:user_link_flags",
+    overrides = "@rules_cc//cc/toolchains/features/legacy:user_link_flags",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:user_link_flags",
+)
+
+negatable_feature(
+    name = "headerpad",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-headerpad_max_install_names"],
+)
+
+enableable_feature(
+    name = "dead_strip",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-dead_strip"],
+)
+
+negatable_feature(
+    name = "apply_implicit_frameworks",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = select({
+        "@platforms//os:macos": [
+            "-framework",
+            "Foundation",
+        ],
+        "//conditions:default": [],
+    }),
+    requires_any_of = [":not_kernel_extension"],
 )
 
 cc_toolchain(
@@ -562,29 +775,53 @@ cc_toolchain(
     # TODO: Use experimental_replace_legacy_action_config_features as long as ordering isn't an issue
     enabled_features = ENABLED_MARKERS + [
         # NOTE: ORDER MATTERS
+        ":link_libc++",
         "@rules_cc//cc/toolchains/args/strip_flags:feature",
-        "@rules_cc//cc/toolchains/args/preprocessor_defines:feature",
-        ":pch",
         ":default_compile_flags_feature",
         ":ns_block_assertions",
-        ":generate_dsym_file_wrapper",
         ":debug_prefix_map_pwd_is_dot",
         ":remap_xcode_path",
+        ":generate_dsym_file_wrapper",
+        ":generate_linkmap_wrapper",
+        ":oso_prefix_is_pwd",
+        ":strip_debug_symbols",
+        ":kernel_extension_wrapper",
+        ":output_execpath_flags",
+        "@rules_cc//cc/toolchains/args/runtime_library_search_directories:feature",
+        "@rules_cc//cc/toolchains/args/library_search_directories:feature",
+        "@rules_cc//cc/toolchains/args/libraries_to_link:feature",
+        ":pch",
+        "@rules_cc//cc/toolchains/args/archiver_flags:feature",
+        "@rules_cc//cc/toolchains/args/include_flags:feature",
         "@rules_cc//cc/toolchains/args/dependency_file:feature",
         ":serialized_diagnostics_file_wrapper",
+        "@rules_cc//cc/toolchains/args/pic_flags:feature",
+        "@rules_cc//cc/toolchains/args/preprocessor_defines:feature",
+        "//crosstool/rules_based/pgo:fdo_instrument_wrapper",
+        "//crosstool/rules_based/pgo:fdo_optimize_wrapper",
+        "//crosstool/rules_based/pgo:autofdo_wrapper",
         ":lipo_wrapper",
+        ":lto_object_path",
         ":llvm_coverage_map_format_wrapper",
         ":gcc_coverage_map_format_wrapper",
         ":coverage_prefix_map",
         ":_coverage_prefix_map_absolute_sources_non_hermetic_wrapper",
         ":sysroot_feature",
+        ":headerpad",
         "@rules_cc//cc/toolchains/args/objc_arc_flags:feature",
-        ":default_required_flags",
+        ":user_link_flags",  # TODO: Switch to upstream feature
         "@apple_support_toolchain_env//:copts_from_env",
+        ":default_required_flags",
+        ":default_env",
+        ":default_link_flags",
+        ":no_deduplicate",
+        ":dead_strip_wrapper",
+        ":apply_implicit_frameworks",
         "@rules_cc//cc/toolchains/args/compile_flags:user_compile_flags_feature",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
         ":unfiltered_compile_flags_feature",
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
+        "@rules_cc//cc/toolchains/args/linker_param_file:feature",
         ":asan_wrapper",
         ":tsan_wrapper",
         ":ubsan_wrapper",
@@ -592,6 +829,7 @@ cc_toolchain(
         ":suppress_warnings_wrapper",
         ":treat_warnings_as_errors_wrapper",
         ":external_include_paths_wrapper",
+        ":no_warn_duplicate_libraries",
     ],
     # args = toolhain_args,
     known_features = MARKER_FEATURES + [
@@ -599,9 +837,9 @@ cc_toolchain(
         "@rules_cc//cc/toolchains/features:dbg",
         "@rules_cc//cc/toolchains/features:fastbuild",
         "@rules_cc//cc/toolchains/features/legacy:coverage",
-        "@rules_cc//cc/toolchains/features/legacy:autofdo",
         "@rules_cc//cc/toolchains/features/legacy:fdo_optimize",
         "@rules_cc//cc/toolchains/features/legacy:fdo_instrument",
+        ":kernel_extension",
         ":serialized_diagnostics_file",
         ":lipo",
         ":llvm_coverage_map_format",
@@ -611,11 +849,33 @@ cc_toolchain(
         ":tsan",
         ":ubsan",
         ":generate_dsym_file",
+        ":generate_linkmap",
+        ":dead_strip",
         ":suppress_warnings",
         ":treat_warnings_as_errors",
         ":external_include_paths",
+        "//crosstool/rules_based/pgo:fdo_instrument",
+        "//crosstool/rules_based/pgo:autofdo",
+        "//crosstool/rules_based/pgo:fdo_optimize",
     ],
     supports_header_parsing = True,
     supports_param_files = True,
     tool_map = "//crosstool/rules_based/tools",
 )
+
+[
+    toolchain(
+        name = "cc-toolchain-" + arch + "-" + cpu,
+        exec_compatible_with = [
+            # These only execute on macOS.
+            "@platforms//os:macos",
+            "@platforms//cpu:" + cpu,
+        ],
+        target_compatible_with = APPLE_PLATFORMS_CONSTRAINTS[arch],
+        toolchain = ":foo",
+        toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+        visibility = ["//visibility:public"],
+    )
+    for arch in APPLE_PLATFORMS_CONSTRAINTS.keys()
+    for cpu in _OSX_DEVELOPER_PLATFORM_CPUS
+]
