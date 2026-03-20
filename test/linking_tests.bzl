@@ -74,6 +74,18 @@ linkmap_test = make_action_command_line_test_rule(
     },
 )
 
+link_cocoa_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": ["link_cocoa"],
+    },
+)
+
+kernel_extension_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": ["kernel_extension"],
+    },
+)
+
 stripopt_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:stripopt": ["-passed_arg"],
@@ -103,6 +115,7 @@ def linking_test_suite(name):
             "-g",
             "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
+            "-framework UIKit",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
@@ -126,6 +139,7 @@ def linking_test_suite(name):
             "-g",
             "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
+            "-framework Cocoa",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:ios_binary",
@@ -213,6 +227,40 @@ def linking_test_suite(name):
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:ios_binary",
+    )
+
+    link_cocoa_test(
+        name = "{}_link_cocoa_macos_test".format(name),
+        tags = [name],
+        expected_argv = ["-framework Cocoa"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    link_cocoa_test(
+        name = "{}_link_cocoa_ios_noop_test".format(name),
+        tags = [name],
+        not_expected_argv = ["-framework Cocoa"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:ios_binary",
+    )
+
+    kernel_extension_test(
+        name = "{}_kernel_extension_macos_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-nostdlib",
+            "-lkmod",
+            "-lkmodc++",
+            "-lcc_kext",
+            "-Xlinker",
+            "-kext",
+        ],
+        not_expected_argv = [
+            "-lc++",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
     )
 
     default_test(
