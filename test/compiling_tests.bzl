@@ -29,6 +29,12 @@ ios_simulator_test = make_action_command_line_test_rule(
     },
 )
 
+ios_device_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:platforms": "@@//platforms:ios_arm64",  # buildifier: disable=canonical-repository
+    },
+)
+
 fastbuild_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "fastbuild",
@@ -134,7 +140,49 @@ def compiling_test_suite(name):
             "-DOS_IOS",
             "-fno-autolink",
             "-fexceptions",
+            "-fasm-blocks",
+            "-fobjc-abi-version=2",
+            "-fobjc-legacy-dispatch",
             "-DFROM_BUILD_COPTS=1",
+        ],
+        not_expected_argv = [
+            "-DOS_MACOSX",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_lib",
+    )
+
+    ios_device_test(
+        name = "{}_ios_device_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-DOS_IOS",
+            "-fno-autolink",
+        ],
+        not_expected_argv = [
+            "-DOS_MACOSX",
+            "-fexceptions",
+            "-fasm-blocks",
+            "-fobjc-abi-version=2",
+            "-fobjc-legacy-dispatch",
+        ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_lib",
+    )
+
+    default_test(
+        name = "{}_macos_objc_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-DOS_MACOSX",
+            "-fno-autolink",
+        ],
+        not_expected_argv = [
+            "-DOS_IOS",
+            "-fexceptions",
+            "-fasm-blocks",
+            "-fobjc-abi-version=2",
+            "-fobjc-legacy-dispatch",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
