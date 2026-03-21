@@ -509,8 +509,6 @@ def linking_test_suite(name):
             "-static",
             "-arch_only",
             "x86_64",
-            "-syslibroot",
-            "__BAZEL_XCODE_SDKROOT__",
             "-o",
             "-fl.a",  # output file suffix
             "test/test_data/libobjc_lib.a",

@@ -464,8 +464,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             "-static",
                             "-arch_only",
                             arch,
-                            "-syslibroot",
-                            "__BAZEL_XCODE_SDKROOT__",
                             "-o",
                             "%{fully_linked_archive_path}",
                         ],
