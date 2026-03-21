@@ -26,7 +26,7 @@
 extern char **environ;
 
 const std::regex libRegex = std::regex(".*\\.a$");
-const std::regex singleArgFlags = std::regex("-arch_only|-syslibroot|-o");
+const std::regex singleArgFlags = std::regex("-arch_only|-o");
 
 // An RAII temporary directory.
 class TempDirectory {
