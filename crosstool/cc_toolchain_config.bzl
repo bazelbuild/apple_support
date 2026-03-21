@@ -387,10 +387,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = [ACTION_NAMES.objc_executable],
                 flag_groups = [
-                    flag_group(
-                        flags = ["-l%{library_names}"],
-                        iterate_over = "library_names",
-                    ),
                     flag_group(flags = ["-filelist", "%{filelist}"]),
                     flag_group(flags = ["-o", "%{linked_binary}", "LINKED_BINARY=%{linked_binary}"]),
                     flag_group(
