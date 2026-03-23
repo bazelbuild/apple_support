@@ -1083,6 +1083,22 @@ cc_make_variable(
     variable_name = "STACK_FRAME_UNLIMITED",
 )
 
+# TODO: Use upstream's after https://github.com/bazelbuild/rules_cc/pull/651
+negatable_feature(
+    name = "set_install_name",
+    # enabled = getattr(ctx.fragments.cpp, "do_not_use_macos_set_install_name", True), # FIXME: can we always default this to true now?
+    actions = ["@rules_cc//cc/toolchains/actions:dynamic_library_link_actions"],
+    args = [
+        "-Xlinker",
+        "-install_name",
+        "-Xlinker",
+        "@rpath/{runtime_solib_name}",
+    ],
+    format = {"runtime_solib_name": "@rules_cc//cc/toolchains/variables:runtime_solib_name"},
+    requires_not_none = "@rules_cc//cc/toolchains/variables:runtime_solib_name",
+    target_compatible_with = ["@rules_cc//cc/toolchains/platforms:apple"],
+)
+
 cc_toolchain(
     name = "foo",  # name = "cc-compiler-" + cpu,
     artifact_name_patterns = [":dylib_pattern"],
@@ -1145,7 +1161,7 @@ cc_toolchain(
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-        "@rules_cc//cc/toolchains/args/soname_flags:feature",
+        ":set_install_name",
         ":asan_wrapper",
         ":tsan_wrapper",
         ":ubsan_wrapper",
