@@ -1,0 +1,215 @@
+"""Test framework for diffing cc_toolchain config against checked-in golden files."""
+
+load(
+    "@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl",
+    "CcToolchainConfigInfo",
+)
+load("//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
+
+def _platform_transition_impl(_settings, attr):
+    return {"//command_line_option:platforms": [attr.platform]}
+
+_platform_transition = transition(
+    implementation = _platform_transition_impl,
+    inputs = [],
+    outputs = ["//command_line_option:platforms"],
+)
+
+def _config_to_json(config_info):
+    """Serialize CcToolchainConfigInfo to JSON.
+
+    Uses json.encode which handles structs natively.
+    """
+    return json.encode_indent(config_info, indent = "  ")
+
+def _toolchain_config_test_impl(ctx):
+    config_info = ctx.attr.toolchain_config[0][CcToolchainConfigInfo]
+    actual_json = _config_to_json(config_info)
+
+    golden = ctx.file.golden
+    test_script = ctx.actions.declare_file(ctx.label.name + ".sh")
+    actual_file = ctx.actions.declare_file(ctx.label.name + ".actual.json")
+
+    ctx.actions.write(
+        output = actual_file,
+        content = actual_json,
+    )
+
+    ctx.actions.write(
+        output = test_script,
+        content = """\
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! diff -u "$GOLDEN" "$ACTUAL"; then
+  echo ""
+  echo "ERROR: Toolchain config does not match golden file."
+  echo "To update, run: bazel run {update_target}"
+  exit 1
+fi
+""".format(update_target = str(ctx.label).rsplit("_test", 1)[0] + "_update"),
+        is_executable = True,
+    )
+
+    return [DefaultInfo(
+        executable = test_script,
+        runfiles = ctx.runfiles(files = [actual_file, golden]),
+    ), RunEnvironmentInfo(environment = {
+        "ACTUAL": actual_file.short_path,
+        "GOLDEN": golden.short_path,
+    })]
+
+_toolchain_config_test = rule(
+    implementation = _toolchain_config_test_impl,
+    test = True,
+    attrs = {
+        "toolchain_config": attr.label(
+            mandatory = True,
+            providers = [CcToolchainConfigInfo],
+            cfg = _platform_transition,
+        ),
+        "golden": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "platform": attr.string(mandatory = True),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+    },
+)
+
+def _toolchain_config_update_impl(ctx):
+    config_info = ctx.attr.toolchain_config[0][CcToolchainConfigInfo]
+    actual_json = _config_to_json(config_info)
+
+    actual_file = ctx.actions.declare_file(ctx.label.name + ".json")
+    ctx.actions.write(
+        output = actual_file,
+        content = actual_json,
+    )
+
+    update_script = ctx.actions.declare_file(ctx.label.name + ".sh")
+    ctx.actions.write(
+        output = update_script,
+        content = """\
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+actual="${{RUNFILES_DIR:-$0.runfiles}}/{workspace}/{actual}"
+golden="{golden_path}"
+cp "$actual" "${{BUILD_WORKSPACE_DIRECTORY}}/${{golden}}"
+echo "Updated $golden"
+""".format(
+            workspace = ctx.workspace_name,
+            actual = actual_file.short_path,
+            golden_path = ctx.file.golden.short_path,
+        ),
+        is_executable = True,
+    )
+
+    return [DefaultInfo(
+        executable = update_script,
+        runfiles = ctx.runfiles(files = [actual_file]),
+    ), _UpdateInfo(
+        actual = actual_file,
+        golden_path = ctx.file.golden.short_path,
+    )]
+
+_UpdateInfo = provider(fields = ["actual", "golden_path"])
+
+_toolchain_config_update = rule(
+    implementation = _toolchain_config_update_impl,
+    executable = True,
+    attrs = {
+        "toolchain_config": attr.label(
+            mandatory = True,
+            providers = [CcToolchainConfigInfo],
+            cfg = _platform_transition,
+        ),
+        "golden": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "platform": attr.string(mandatory = True),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+    },
+)
+
+def toolchain_config_test_suite(name):
+    """Create toolchain config tests for all platforms.
+
+    Args:
+        name: Name for the test suite.
+    """
+
+    platforms = APPLE_PLATFORMS_CONSTRAINTS.keys()
+    toolchain_config = "//crosstool/rules_based:_foo_config"
+    tests = []
+    updates = []
+    for platform in platforms:
+        golden = "//test/test_data/toolchain_configs:" + platform + ".json"
+        platform_label = "//platforms:" + platform
+
+        test_name = name + "_" + platform + "_test"
+        _toolchain_config_test(
+            name = test_name,
+            toolchain_config = toolchain_config,
+            golden = golden,
+            platform = platform_label,
+        )
+        tests.append(test_name)
+
+        update_name = name + "_" + platform + "_update"
+        _toolchain_config_update(
+            name = update_name,
+            toolchain_config = toolchain_config,
+            golden = golden,
+            platform = platform_label,
+        )
+        updates.append(update_name)
+
+    native.test_suite(
+        name = name,
+        tests = tests,
+    )
+
+    _update_all(
+        name = name + "_update_all",
+        updates = updates,
+    )
+
+def _update_all_impl(ctx):
+    script = ctx.actions.declare_file(ctx.label.name + ".sh")
+    lines = ["#!/usr/bin/env bash", "set -euo pipefail"]
+    all_files = []
+    for update in ctx.attr.updates:
+        info = update[_UpdateInfo]
+        all_files.append(info.actual)
+        lines.append('cp "${{RUNFILES_DIR:-$0.runfiles}}/{workspace}/{actual}" "${{BUILD_WORKSPACE_DIRECTORY}}/{golden}"'.format(
+            workspace = ctx.workspace_name,
+            actual = info.actual.short_path,
+            golden = info.golden_path,
+        ))
+        lines.append('echo "Updated {golden}"'.format(golden = info.golden_path))
+    ctx.actions.write(
+        output = script,
+        content = "\n".join(lines) + "\n",
+        is_executable = True,
+    )
+    return [DefaultInfo(
+        executable = script,
+        runfiles = ctx.runfiles(files = all_files),
+    )]
+
+_update_all = rule(
+    implementation = _update_all_impl,
+    executable = True,
+    attrs = {
+        "updates": attr.label_list(providers = [_UpdateInfo]),
+    },
+)
