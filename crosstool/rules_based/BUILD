@@ -75,7 +75,7 @@ cc_args(
         "-isysroot",
         "__BAZEL_XCODE_SDKROOT__",
         "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
-        "-F{PLATFORM_FRAMEWORKS}",  # FIXME: verify working
+        "-F{PLATFORM_FRAMEWORKS}",  # NOTE: This is lazy so cquery doesn't show the right value
     ],
     toolchains = [":target_thing"],
 )
