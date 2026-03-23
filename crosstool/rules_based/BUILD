@@ -262,10 +262,9 @@ negatable_feature(
     name = "__clt_env",
     actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
     env = {
-        # FIXME: apple env
         "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
         "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-        # "ZERO_AR_DATE": "1",
+        "ZERO_AR_DATE": "1",
     },
 )
 
@@ -276,6 +275,7 @@ negatable_feature(
         "XCODE_VERSION_OVERRIDE": "{XCODE_VERSION_OVERRIDE}",
         "APPLE_SDK_VERSION_OVERRIDE": "{APPLE_SDK_VERSION_OVERRIDE}",
         "APPLE_SDK_PLATFORM": "{APPLE_SDK_PLATFORM}",
+        "ZERO_AR_DATE": "1",
     },
     toolchains = [":target_thing"],
 )
@@ -293,55 +293,9 @@ negatable_feature(
     args = [
         "-no-canonical-prefixes",
         "-target",
-        "{TARGET}",  # FIXME: abstract
+        "{TARGET}",
     ],
-    env = {
-        "ZERO_AR_DATE": "1",
-    },
     toolchains = [":target_thing"],
-
-    # if xcode_config.xcode_version():
-    #     apple_env = {
-    #         "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
-    #         # TODO: Remove once we drop bazel 7.x support
-    #         "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
-    #         "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
-    #         "ZERO_AR_DATE": "1",
-    #     }
-    # else:
-    #     apple_env = {
-    #         "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
-    #         "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-    #         "ZERO_AR_DATE": "1",
-    #     }
-)
-
-negatable_feature(
-    name = "default_required_flags_bak",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:link_actions",
-        "@rules_cc//cc/toolchains/actions:compile_actions",
-    ],
-    args = [
-        "-no-canonical-prefixes",
-        "-target",
-        "arm64-apple-macosx26.2",  # FIXME: abstract
-    ],
-
-    # if xcode_config.xcode_version():
-    #     apple_env = {
-    #         "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
-    #         # TODO: Remove once we drop bazel 7.x support
-    #         "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),
-    #         "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
-    #         "ZERO_AR_DATE": "1",
-    #     }
-    # else:
-    #     apple_env = {
-    #         "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
-    #         "SDKROOT": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
-    #         "ZERO_AR_DATE": "1",
-    #     }
 )
 
 cc_args(
@@ -1016,8 +970,9 @@ cc_args(
         "-no_warning_for_no_symbols",
         "-static",
         "-arch_only",
-        "arm64",  # FIXME: needs to be dynamic
+        "{ARCH}",
     ],
+    toolchains = [":target_thing"],
 )
 
 cc_args(

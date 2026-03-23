@@ -111,6 +111,7 @@ def _foo_impl(ctx):
 
     return [platform_common.TemplateVariableInfo(
         xcode_env | {
+            "ARCH": triple_arch,
             "TARGET": target,
         },
     )]
