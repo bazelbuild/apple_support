@@ -94,6 +94,8 @@ def _toolchain_env_impl(repository_ctx):
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 
+package(default_visibility = ["@build_bazel_apple_support//:__subpackages__"])
+
 cc_feature(
     name = "copts_from_env",
     feature_name = "__copts_from_env",
