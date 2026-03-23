@@ -101,7 +101,6 @@ cc_feature(
         ":copts",
         ":conlyopts",
         ":cxxopts",
-        ":linkopts",
     ],
 )
 
@@ -127,6 +126,14 @@ cc_args(
         "@rules_cc//cc/toolchains/actions:linkstamp_compile",
     ],
     args = [{cxx_opts}],
+)
+
+cc_feature(
+    name = "linkopts_from_env",
+    feature_name = "__linkopts_from_env",
+    args = [
+        ":linkopts",
+    ],
 )
 
 cc_args(
