@@ -148,7 +148,7 @@ def toolchain_config_test_suite(name):
     """
 
     platforms = APPLE_PLATFORMS_CONSTRAINTS.keys()
-    toolchain_config = "//crosstool/rules_based:_foo_config"
+    toolchain_config = "//crosstool/rules_based:toolchain_config"
     tests = []
     updates = []
     for platform in platforms:
