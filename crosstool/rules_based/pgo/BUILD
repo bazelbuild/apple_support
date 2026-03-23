@@ -9,6 +9,8 @@ load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load("//crosstool/rules_based:features.bzl", "enableable_feature", "negatable_feature")
 
+package(default_visibility = ["//:__subpackages__"])
+
 cc_mutually_exclusive_category(
     name = "profile",
 )
