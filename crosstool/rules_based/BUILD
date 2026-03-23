@@ -1227,3 +1227,10 @@ cc_toolchain(
     for arch in APPLE_PLATFORMS_CONSTRAINTS.keys()
     for cpu in _OSX_DEVELOPER_PLATFORM_CPUS
 ]
+
+# TODO: Remove https://github.com/bazelbuild/rules_cc/pull/652
+alias(
+    name = "toolchain_config",
+    actual = ":_foo_config",
+    visibility = ["//test:__subpackages__"],
+)
