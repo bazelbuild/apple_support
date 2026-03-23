@@ -1174,21 +1174,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    lipo_feature = feature(
-        name = "lipo",
-        flag_sets = [
-            flag_set(
-                actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                flag_groups = [flag_group(flags = ["-fripa"])],
-            ),
-        ],
-        requires = [
-            feature_set(features = ["autofdo"]),
-            feature_set(features = ["fdo_optimize"]),
-            feature_set(features = ["fdo_instrument"]),
-        ],
-    )
-
     if (ctx.attr.cpu == "ios_arm64" or
         ctx.attr.cpu == "ios_arm64e" or
         ctx.attr.cpu == "ios_x86_64" or
@@ -2308,7 +2293,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         fdo_instrument_feature,
         fdo_optimize_feature,
         autofdo_feature,
-        lipo_feature,
         lto_object_path_feature,
         llvm_coverage_map_format_feature,
         gcc_coverage_map_format_feature,
