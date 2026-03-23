@@ -1,0 +1,5102 @@
+{
+  "_action_configs_DO_NOT_USE": [
+    {
+      "action_name": "assemble",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang_pp",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang_pp"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-header-parsing",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-link-dynamic-library",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/cc_wrapper.sh",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/cc_wrapper.sh"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-link-executable",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/cc_wrapper.sh",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/cc_wrapper.sh"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-link-static-library",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/libtool",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/libtool"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c++-module-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "c-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "linkstamp-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "objc++-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang_pp",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang_pp"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "objc-compile",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "objc-executable",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "objc-fully-link",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/libtool",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/libtool"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "preprocess-assemble",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "strip",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/strip",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/strip"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    }
+  ],
+  "_artifact_name_patterns_DO_NOT_USE": [
+    {
+      "category_name": "dynamic_library",
+      "extension": ".dylib",
+      "prefix": "lib",
+      "type_name": "artifact_name_pattern"
+    }
+  ],
+  "_exec_os_DO_NOT_USE": "DARWIN",
+  "_features_DO_NOT_USE": [
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "archive_param_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "strip"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-S"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "strip"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{stripopts}"
+              ],
+              "iterate_over": "stripopts",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "strip"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{output_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "strip"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "input_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{input_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "strip_flags_feature",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xlinker",
+                "-objc_abi_version",
+                "-Xlinker",
+                "2"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "kernel_extension"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "filelist",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-filelist",
+                "%{filelist}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "linked_binary",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{linked_binary}",
+                "LINKED_BINARY=%{linked_binary}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "force_load_exec_paths",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-force_load",
+                "%{force_load_exec_paths}"
+              ],
+              "iterate_over": "force_load_exec_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "dep_linkopts",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{dep_linkopts}"
+              ],
+              "iterate_over": "dep_linkopts",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "attr_linkopts",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,%{attr_linkopts}"
+              ],
+              "iterate_over": "attr_linkopts",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__objc_executable_feature",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-D",
+                "-no_warning_for_no_symbols",
+                "-static",
+                "-arch_only",
+                "arm64"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "fully_linked_archive_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{fully_linked_archive_path}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "objc_library_exec_paths",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{objc_library_exec_paths}"
+              ],
+              "iterate_over": "objc_library_exec_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "cc_library_exec_paths",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{cc_library_exec_paths}"
+              ],
+              "iterate_over": "cc_library_exec_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "imported_library_exec_paths",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{imported_library_exec_paths}"
+              ],
+              "iterate_over": "imported_library_exec_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__objc_fully_link_feature",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [
+        {
+          "actions": [
+            "c++-header-parsing"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": "output_file",
+              "key": "HEADER_PARSING_OUTPUT",
+              "type_name": "env_entry",
+              "value": "%{output_file}"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-header-parsing"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-xc++-header",
+                "-fsyntax-only"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__header_parsing_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-lc++"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "kernel_extension"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "link_libc++",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc++-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-stdlib=libc++",
+                "-std=gnu++17"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-D_FORTIFY_SOURCE=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "asan"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fstack-protector",
+                "-fcolor-diagnostics",
+                "-Wall",
+                "-Wthread-safety",
+                "-Wself-assign",
+                "-fno-omit-frame-pointer"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-O0",
+                "-DDEBUG"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "fastbuild"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-g0",
+                "-O2",
+                "-DNDEBUG"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "opt"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-g"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "dbg"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "default_compile_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-DNS_BLOCK_ASSERTIONS=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "opt"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "ns_block_assertions",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=."
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "debug_prefix_map_pwd_is_dot",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fdebug-prefix-map=__BAZEL_XCODE_DEVELOPER_DIR__=/PLACEHOLDER_DEVELOPER_DIR"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "remap_xcode_path",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-g"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "dsym_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "DSYM_HINT_DSYM_PATH=%{dsym_path}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__generate_dsym_file_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "generate_dsym_file"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "linkmap_exec_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xlinker",
+                "-map",
+                "-Xlinker",
+                "%{linkmap_exec_path}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_execpath",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xlinker",
+                "-map",
+                "-Xlinker",
+                "%{output_execpath}.map"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__generate_linkmap_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "generate_linkmap"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-oso_prefix,__BAZEL_EXECUTION_ROOT__/"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "oso_prefix_is_pwd",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "strip_debug_symbols",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "STRIP_DEBUG_SYMBOLS"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "strip_debug_symbols",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-nodeps-dynamic-library"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-shared"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "shared_flag",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "__kernel_extension_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "kernel_extension"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_execpath",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{output_execpath}",
+                "LINKED_BINARY=%{output_execpath}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "output_execpath_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "runtime_library_search_directories",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [
+                {
+                  "expand_if_available": null,
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [
+                    {
+                      "expand_if_available": null,
+                      "expand_if_equal": null,
+                      "expand_if_false": null,
+                      "expand_if_not_available": null,
+                      "expand_if_true": "is_cc_test",
+                      "flag_groups": [],
+                      "flags": [
+                        "-Xlinker",
+                        "-rpath",
+                        "-Xlinker",
+                        "$EXEC_ORIGIN/%{runtime_library_search_directories}"
+                      ],
+                      "iterate_over": null,
+                      "type_name": "flag_group"
+                    },
+                    {
+                      "expand_if_available": null,
+                      "expand_if_equal": null,
+                      "expand_if_false": "is_cc_test",
+                      "expand_if_not_available": null,
+                      "expand_if_true": null,
+                      "flag_groups": [],
+                      "flags": [
+                        "-Xlinker",
+                        "-rpath",
+                        "-Xlinker",
+                        "@loader_path/%{runtime_library_search_directories}"
+                      ],
+                      "iterate_over": null,
+                      "type_name": "flag_group"
+                    }
+                  ],
+                  "flags": [],
+                  "iterate_over": "runtime_library_search_directories",
+                  "type_name": "flag_group"
+                }
+              ],
+              "flags": [],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "static_link_cpp_runtimes"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "runtime_library_search_directories",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [
+                {
+                  "expand_if_available": null,
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [],
+                  "flags": [
+                    "-Xlinker",
+                    "-rpath",
+                    "-Xlinker",
+                    "@loader_path/%{runtime_library_search_directories}"
+                  ],
+                  "iterate_over": "runtime_library_search_directories",
+                  "type_name": "flag_group"
+                }
+              ],
+              "flags": [],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "static_link_cpp_runtimes"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "runtime_library_search_directories",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "library_search_directories",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-L%{library_search_directories}"
+              ],
+              "iterate_over": "library_search_directories",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "library_search_directories",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [
+                {
+                  "expand_if_available": "thinlto_param_file",
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [],
+                  "flags": [
+                    "-Wl,@%{thinlto_param_file}"
+                  ],
+                  "iterate_over": null,
+                  "type_name": "flag_group"
+                },
+                {
+                  "expand_if_available": "libraries_to_link",
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [
+                    {
+                      "expand_if_available": null,
+                      "expand_if_equal": null,
+                      "expand_if_false": null,
+                      "expand_if_not_available": null,
+                      "expand_if_true": null,
+                      "flag_groups": [
+                        {
+                          "expand_if_available": null,
+                          "expand_if_equal": {
+                            "name": "libraries_to_link.type",
+                            "type_name": "variable_with_value",
+                            "value": "object_file_group"
+                          },
+                          "expand_if_false": null,
+                          "expand_if_not_available": null,
+                          "expand_if_true": null,
+                          "flag_groups": [
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": null,
+                              "expand_if_false": "libraries_to_link.is_whole_archive",
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [],
+                              "flags": [
+                                "-Wl,--start-lib"
+                              ],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            }
+                          ],
+                          "flags": [],
+                          "iterate_over": null,
+                          "type_name": "flag_group"
+                        },
+                        {
+                          "expand_if_available": null,
+                          "expand_if_equal": null,
+                          "expand_if_false": null,
+                          "expand_if_not_available": null,
+                          "expand_if_true": null,
+                          "flag_groups": [
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "object_file_group"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [
+                                {
+                                  "expand_if_available": null,
+                                  "expand_if_equal": null,
+                                  "expand_if_false": null,
+                                  "expand_if_not_available": null,
+                                  "expand_if_true": null,
+                                  "flag_groups": [
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": null,
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": "libraries_to_link.is_whole_archive",
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "-Wl,-force_load,%{libraries_to_link.object_files}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    },
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": "libraries_to_link.is_whole_archive",
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": null,
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "%{libraries_to_link.object_files}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    }
+                                  ],
+                                  "flags": [],
+                                  "iterate_over": null,
+                                  "type_name": "flag_group"
+                                }
+                              ],
+                              "flags": [],
+                              "iterate_over": "libraries_to_link.object_files",
+                              "type_name": "flag_group"
+                            },
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "object_file"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [
+                                {
+                                  "expand_if_available": null,
+                                  "expand_if_equal": null,
+                                  "expand_if_false": null,
+                                  "expand_if_not_available": null,
+                                  "expand_if_true": null,
+                                  "flag_groups": [
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": null,
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": "libraries_to_link.is_whole_archive",
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "-Wl,-force_load,%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    },
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": "libraries_to_link.is_whole_archive",
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": null,
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    }
+                                  ],
+                                  "flags": [],
+                                  "iterate_over": null,
+                                  "type_name": "flag_group"
+                                }
+                              ],
+                              "flags": [],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            },
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "interface_library"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [
+                                {
+                                  "expand_if_available": null,
+                                  "expand_if_equal": null,
+                                  "expand_if_false": null,
+                                  "expand_if_not_available": null,
+                                  "expand_if_true": null,
+                                  "flag_groups": [
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": null,
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": "libraries_to_link.is_whole_archive",
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "-Wl,-force_load,%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    },
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": "libraries_to_link.is_whole_archive",
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": null,
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    }
+                                  ],
+                                  "flags": [],
+                                  "iterate_over": null,
+                                  "type_name": "flag_group"
+                                }
+                              ],
+                              "flags": [],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            },
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "static_library"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [
+                                {
+                                  "expand_if_available": null,
+                                  "expand_if_equal": null,
+                                  "expand_if_false": null,
+                                  "expand_if_not_available": null,
+                                  "expand_if_true": null,
+                                  "flag_groups": [
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": null,
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": "libraries_to_link.is_whole_archive",
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "-Wl,-force_load,%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    },
+                                    {
+                                      "expand_if_available": null,
+                                      "expand_if_equal": null,
+                                      "expand_if_false": "libraries_to_link.is_whole_archive",
+                                      "expand_if_not_available": null,
+                                      "expand_if_true": null,
+                                      "flag_groups": [],
+                                      "flags": [
+                                        "%{libraries_to_link.name}"
+                                      ],
+                                      "iterate_over": null,
+                                      "type_name": "flag_group"
+                                    }
+                                  ],
+                                  "flags": [],
+                                  "iterate_over": null,
+                                  "type_name": "flag_group"
+                                }
+                              ],
+                              "flags": [],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            },
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "dynamic_library"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [],
+                              "flags": [
+                                "-l%{libraries_to_link.name}"
+                              ],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            },
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": {
+                                "name": "libraries_to_link.type",
+                                "type_name": "variable_with_value",
+                                "value": "versioned_dynamic_library"
+                              },
+                              "expand_if_false": null,
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [],
+                              "flags": [
+                                "%{libraries_to_link.path}"
+                              ],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            }
+                          ],
+                          "flags": [],
+                          "iterate_over": null,
+                          "type_name": "flag_group"
+                        },
+                        {
+                          "expand_if_available": null,
+                          "expand_if_equal": {
+                            "name": "libraries_to_link.type",
+                            "type_name": "variable_with_value",
+                            "value": "object_file_group"
+                          },
+                          "expand_if_false": null,
+                          "expand_if_not_available": null,
+                          "expand_if_true": null,
+                          "flag_groups": [
+                            {
+                              "expand_if_available": null,
+                              "expand_if_equal": null,
+                              "expand_if_false": "libraries_to_link.is_whole_archive",
+                              "expand_if_not_available": null,
+                              "expand_if_true": null,
+                              "flag_groups": [],
+                              "flags": [
+                                "-Wl,--end-lib"
+                              ],
+                              "iterate_over": null,
+                              "type_name": "flag_group"
+                            }
+                          ],
+                          "flags": [],
+                          "iterate_over": null,
+                          "type_name": "flag_group"
+                        }
+                      ],
+                      "flags": [],
+                      "iterate_over": "libraries_to_link",
+                      "type_name": "flag_group"
+                    }
+                  ],
+                  "flags": [],
+                  "iterate_over": null,
+                  "type_name": "flag_group"
+                }
+              ],
+              "flags": [],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "libraries_to_link",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-ObjC"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "kernel_extension"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "objc_link_flag",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "pch_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-include",
+                "%{pch_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "pch",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Werror=incompatible-sysroot",
+                "-Wshorten-64-to-32",
+                "-Wbool-conversion",
+                "-Wconstant-conversion",
+                "-Wduplicate-method-match",
+                "-Wempty-body",
+                "-Wenum-conversion",
+                "-Wint-conversion",
+                "-Wunreachable-code",
+                "-Wmismatched-return-types",
+                "-Wundeclared-selector",
+                "-Wuninitialized",
+                "-Wunused-function",
+                "-Wunused-variable"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__apple_default_warnings",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-static-library"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-D",
+                "-no_warning_for_no_symbols",
+                "-static"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-static-library"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_execpath",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{output_execpath}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-static-library"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "libraries_to_link",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [
+                {
+                  "expand_if_available": null,
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [
+                    {
+                      "expand_if_available": null,
+                      "expand_if_equal": {
+                        "name": "libraries_to_link.type",
+                        "type_name": "variable_with_value",
+                        "value": "object_file"
+                      },
+                      "expand_if_false": null,
+                      "expand_if_not_available": null,
+                      "expand_if_true": null,
+                      "flag_groups": [],
+                      "flags": [
+                        "%{libraries_to_link.name}"
+                      ],
+                      "iterate_over": null,
+                      "type_name": "flag_group"
+                    },
+                    {
+                      "expand_if_available": null,
+                      "expand_if_equal": {
+                        "name": "libraries_to_link.type",
+                        "type_name": "variable_with_value",
+                        "value": "object_file_group"
+                      },
+                      "expand_if_false": null,
+                      "expand_if_not_available": null,
+                      "expand_if_true": null,
+                      "flag_groups": [],
+                      "flags": [
+                        "%{libraries_to_link.object_files}"
+                      ],
+                      "iterate_over": "libraries_to_link.object_files",
+                      "type_name": "flag_group"
+                    }
+                  ],
+                  "flags": [],
+                  "iterate_over": "libraries_to_link",
+                  "type_name": "flag_group"
+                }
+              ],
+              "flags": [],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "archiver_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "includes",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-include",
+                "%{includes}"
+              ],
+              "iterate_over": "includes",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "includes",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-iquote",
+                "%{quote_include_paths}"
+              ],
+              "iterate_over": "quote_include_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-I%{include_paths}"
+              ],
+              "iterate_over": "include_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-isystem",
+                "%{system_include_paths}"
+              ],
+              "iterate_over": "system_include_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-F%{framework_include_paths}"
+              ],
+              "iterate_over": "framework_include_paths",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "include_paths",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "dependency_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-MD",
+                "-MF",
+                "%{dependency_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "dependency_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "serialized_diagnostics_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "--serialize-diagnostics",
+                "%{serialized_diagnostics_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__serialized_diagnostics_file_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "serialized_diagnostics_file"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-executable",
+            "lto-index-for-executable",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "force_pic",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-pie"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "force_pic_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "pic",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fPIC"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "pic",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-D%{preprocessor_defines}"
+              ],
+              "iterate_over": "preprocessor_defines",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "preprocessor_defines",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "fdo_instrument_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fprofile-generate=%{fdo_instrument_path}",
+                "-fno-data-sections"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__fdo_instrument_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "fdo_instrument"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "fdo_profile_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fprofile-use=%{fdo_profile_path}",
+                "-Wno-profile-instr-unprofiled",
+                "-Wno-profile-instr-out-of-date",
+                "-fprofile-correction"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__fdo_optimize_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "fdo_optimize"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "fdo_profile_path",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fauto-profile=%{fdo_profile_path}",
+                "-fprofile-correction"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__autofdo_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "autofdo"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fripa"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__lipo_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "lipo"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_execpath",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xlinker",
+                "-object_path_lto",
+                "-Xlinker",
+                "%{output_execpath}.lto.o"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "lto_object_path",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fprofile-instr-generate",
+                "-fcoverage-mapping",
+                "-g"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fprofile-instr-generate"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__llvm_coverage_map_format_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "llvm_coverage_map_format"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fprofile-arcs",
+                "-ftest-coverage",
+                "-g"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "--coverage"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__gcc_coverage_map_format_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "gcc_coverage_map_format"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=."
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "coverage_prefix_map",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": null,
+              "key": "COVERAGE_PREFIX_MAP_USE_ABSOLUTE_CWD_PATH",
+              "type_name": "env_entry",
+              "value": "1"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=__BAZEL_EXECUTION_ROOT_CANONICAL__"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "___coverage_prefix_map_absolute_sources_non_hermetic_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "_coverage_prefix_map_absolute_sources_non_hermetic"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-DOS_IOS",
+                "-fno-autolink"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__apple_default_compiler_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "objc-executable",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-isysroot",
+                "__BAZEL_XCODE_SDKROOT__",
+                "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
+                "-F__BAZEL_XCODE_DEVELOPER_DIR__/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "sysroot",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-headerpad_max_install_names"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "headerpad",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "objc_arc",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fobjc-arc"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "no_objc_arc",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fno-objc-arc"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "_objc_arc",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "user_link_flags",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{user_link_flags}"
+              ],
+              "iterate_over": "user_link_flags",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "user_link_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-prune_interval_lto,10"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__linkopts_from_env",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc++-compile",
+            "objc-compile",
+            "objc-executable",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-no-canonical-prefixes",
+                "-target",
+                "arm64-apple-watchos26.2"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "default_required_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-DCOPTS_ENV=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-DCONLY_ENV=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-compile",
+            "linkstamp-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-std=c++17",
+                "-DCXXOPTS_ENV=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__copts_from_env",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fobjc-link-runtime"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-dead_strip"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "opt"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "default_link_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xlinker",
+                "-no_deduplicate"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "opt"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        }
+      ],
+      "implies": [],
+      "name": "no_deduplicate",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-dead_strip"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__dead_strip_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "dead_strip"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "apply_implicit_frameworks",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "__link_cocoa_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "link_cocoa"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "user_compile_flags",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "%{user_compile_flags}"
+              ],
+              "iterate_over": "user_compile_flags",
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "user_compile_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wno-builtin-macro-redefined",
+                "-D__DATE__=\"redacted\"",
+                "-D__TIMESTAMP__=\"redacted\"",
+                "-D__TIME__=\"redacted\""
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "unfiltered_compile_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "source_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-c",
+                "%{source_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "compiler_input_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_assembly_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-S"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_preprocess_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-E"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-o",
+                "%{output_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "compiler_output_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "c++-link-static-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable",
+            "objc-fully-link"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "linker_param_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "@%{linker_param_file}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "linker_param_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-nodeps-dynamic-library"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "runtime_solib_name",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-install_name,@rpath/%{runtime_solib_name}"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "_soname_flags",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=address"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=address"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__asan_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "asan"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=thread"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=thread"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__tsan_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "tsan"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=undefined"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-fsanitize=undefined"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__ubsan_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "ubsan"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-gline-tables-only",
+                "-fno-omit-frame-pointer",
+                "-fno-sanitize-recover=all"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "default_sanitizer_flags",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "asan"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
+            "ubsan"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
+            "tsan"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-w"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__suppress_warnings_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "suppress_warnings"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Werror"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        },
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-fatal_warnings"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__treat_warnings_as_errors_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "treat_warnings_as_errors"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "external_include_paths",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [
+                {
+                  "expand_if_available": null,
+                  "expand_if_equal": null,
+                  "expand_if_false": null,
+                  "expand_if_not_available": null,
+                  "expand_if_true": null,
+                  "flag_groups": [],
+                  "flags": [
+                    "-isystem",
+                    "%{external_include_paths}"
+                  ],
+                  "iterate_over": "external_include_paths",
+                  "type_name": "flag_group"
+                }
+              ],
+              "flags": [],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "__external_include_paths_wrapper",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "external_include_paths"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [
+        {
+          "actions": [
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "objc-executable"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Wl,-no_warn_duplicate_libraries"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": []
+        }
+      ],
+      "implies": [],
+      "name": "no_warn_duplicate_libraries",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-analysis",
+            "c++-header-parsing",
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "c++-link-static-library",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c++-module-deps-scanning",
+            "c++20-module-codegen",
+            "c++20-module-compile",
+            "c-compile",
+            "cc-flags-make-variable",
+            "clif-match",
+            "ld_embed_data",
+            "linkstamp-compile",
+            "llvm-cov",
+            "lto-backend",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "lto-indexing",
+            "objc++-compile",
+            "objc++-executable",
+            "objc-compile",
+            "objc-executable",
+            "objc-fully-link",
+            "objcopy_embed_data",
+            "preprocess-assemble",
+            "strip",
+            "validate-static-library"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": null,
+              "key": "XCODE_VERSION_OVERRIDE",
+              "type_name": "env_entry",
+              "value": "26.3.0.17C519"
+            },
+            {
+              "expand_if_available": null,
+              "key": "APPLE_SDK_VERSION_OVERRIDE",
+              "type_name": "env_entry",
+              "value": "26.2"
+            },
+            {
+              "expand_if_available": null,
+              "key": "APPLE_SDK_PLATFORM",
+              "type_name": "env_entry",
+              "value": "WatchOS"
+            },
+            {
+              "expand_if_available": null,
+              "key": "ZERO_AR_DATE",
+              "type_name": "env_entry",
+              "value": "1"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
+      "flag_sets": [],
+      "implies": [],
+      "name": "__xcode_env",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "compile_all_modules",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "compiler_param_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "exclude_private_headers_in_module_maps",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "no_dotd_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "no_legacy_features",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "only_doth_headers_in_module_maps",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "parse_headers",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "coverage",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "kernel_extension",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "serialized_diagnostics_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "lipo",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "autofdo"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
+            "fdo_instrument"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
+            "fdo_optimize"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "llvm_coverage_map_format",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "coverage"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "gcc_coverage_map_format",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "coverage"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "_coverage_prefix_map_absolute_sources_non_hermetic",
+      "provides": [],
+      "requires": [
+        {
+          "features": [
+            "coverage"
+          ],
+          "type_name": "feature_set"
+        }
+      ],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "asan",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "tsan",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "ubsan",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "generate_dsym_file",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "generate_linkmap",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "link_cocoa",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "dead_strip",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "suppress_warnings",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "treat_warnings_as_errors",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "external_include_paths",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "fdo_instrument",
+      "provides": [
+        "@@//crosstool/rules_based/pgo:profile"
+      ],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "autofdo",
+      "provides": [
+        "@@//crosstool/rules_based/pgo:profile"
+      ],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "fdo_optimize",
+      "provides": [
+        "@@//crosstool/rules_based/pgo:profile"
+      ],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "implied_by_always_enabled_env_sets",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    }
+  ],
+  "abi_libc_version": "",
+  "abi_version": "",
+  "builtin_sysroot": "",
+  "compiler": "clang",
+  "cxx_builtin_include_directories": [],
+  "make_variables": [
+    {
+      "name": "STACK_FRAME_UNLIMITED",
+      "type_name": "make_variable",
+      "value": "-Wframe-larger-than=100000000 -Wno-vla"
+    }
+  ],
+  "target_cpu": "",
+  "target_libc": "",
+  "target_system_name": "",
+  "tool_paths": [],
+  "toolchain_id": "@@//crosstool/rules_based:_foo_config"
+}
