@@ -163,6 +163,11 @@ cc_test(
     deps = [":linkstamp_lib"],
 )
 
+cc_test(
+    name = "hello_asm_test",
+    srcs = ["hello.S"],
+)
+
 cc_library(
     name = "loadable_library",
     srcs = ["loadable_library.cc"],
