@@ -1,3 +1,7 @@
+"""FIXME:"""
+
+load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
@@ -33,17 +37,6 @@ def _sdk_name(platform_type, is_simulator):
         return "MacOSX"
     else:
         fail("Unhandled platform type: {}".format(platform_type))
-
-# def _foo_impl(ctx):
-#     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-
-#     # xcode_execution_requirements = xcode_config.execution_info().keys() # FIXME
-#     target_os_version = xcode_config.minimum_os_for_platform_type(ctx.attr.platform_type)
-#     sdk_version = _sdk_version_for_platform(xcode_config, ctx.attr.platform_type)
-
-#     return platform_common.TemplateVariableInfo({
-#         "TARGET": "thing",
-#     })
 
 def _foo_impl(ctx):
     if ctx.target_platform_has_constraint(ctx.attr._macos[platform_common.ConstraintValueInfo]):
@@ -89,12 +82,11 @@ def _foo_impl(ctx):
     target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
     sdk_version = _sdk_version_for_platform(xcode_config, platform_type)
 
-    target = "{}-apple-{}{}{}{}".format(
+    target = "{}-apple-{}{}{}".format(
         triple_arch,
         triple_os,
-        ctx.attr.target_triple_version,
-        triple_suffix,
         target_os_version,
+        triple_suffix,
     )
 
     xcode_env = {
@@ -112,6 +104,7 @@ def _foo_impl(ctx):
     return [platform_common.TemplateVariableInfo(
         xcode_env | {
             "ARCH": triple_arch,
+            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple),
             "TARGET": target,
         },
     )]
@@ -119,7 +112,6 @@ def _foo_impl(ctx):
 foo = rule(
     implementation = _foo_impl,
     attrs = {
-        "target_triple_version": attr.string(),
         "_macos": attr.label(default = "@platforms//os:macos"),
         "_ios": attr.label(default = "@platforms//os:ios"),
         "_tvos": attr.label(default = "@platforms//os:tvos"),
@@ -136,19 +128,7 @@ foo = rule(
             name = "xcode_config_label",
         )),
     },
+    fragments = [
+        "apple",
+    ],
 )
-
-# foo = rule(
-#     implementation = _foo_impl,
-#     attrs = {
-#         "platform_type": attr.string(),
-#         "_xcode_config": attr.label(default = configuration_field(
-#             fragment = "apple",
-#             name = "xcode_config_label",
-#         )),
-#     },
-#     fragments = [
-#         "apple",
-#         "cpp",
-#     ],
-# )

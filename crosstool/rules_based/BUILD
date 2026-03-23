@@ -1,20 +1,11 @@
-# cc_feature(
-#     name = "generate_linkmap",
-#     feature_name = "generate_linkmap",
-#     args = [":generate_linkmap_args"],
-# )
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
-load("@rules_cc//cc/toolchains:actions.bzl", "cc_action_type_set")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
 load("@rules_cc//cc/toolchains:artifacts.bzl", "cc_artifact_name_pattern")
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
-load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
-load("@rules_cc//cc/toolchains:mutually_exclusive_category.bzl", "cc_mutually_exclusive_category")
-load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":features.bzl", "enableable_feature", "negatable_feature")
 load(":foo.bzl", "foo")
@@ -84,9 +75,9 @@ cc_args(
         "-isysroot",
         "__BAZEL_XCODE_SDKROOT__",
         "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
-        # "-F" + cpu_info.platform_frameworks_dir,
-        "-F__BAZEL_XCODE_DEVELOPER_DIR__/Platforms/MacOSX.platform/Developer/Library/Frameworks",  # FIXME: abstract per platform
+        "-F{PLATFORM_FRAMEWORKS}",  # FIXME: verify working
     ],
+    toolchains = [":target_thing"],
 )
 
 cc_feature(
@@ -296,6 +287,23 @@ negatable_feature(
         "{TARGET}",
     ],
     toolchains = [":target_thing"],
+)
+
+negatable_feature(
+    name = "__apply_simulator_compiler_flags",
+    actions = [
+        "@rules_cc//cc/toolchains/actions:objc_compile",
+        "@rules_cc//cc/toolchains/actions:objcpp_compile",
+    ],
+    args = select({
+        "@build_bazel_apple_support//constraints:simulator": [
+            "-fexceptions",
+            "-fasm-blocks",
+            "-fobjc-abi-version=2",
+            "-fobjc-legacy-dispatch",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 cc_args(
@@ -608,20 +616,6 @@ cc_args(
     ],
 )
 
-enableable_feature(
-    name = "lipo",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-    ],
-    args = ["-fripa"],
-    requires_any_of = [
-        "//crosstool/rules_based/pgo:autofdo",
-        "//crosstool/rules_based/pgo:fdo_instrument",
-        "//crosstool/rules_based/pgo:fdo_optimize",
-    ],
-)
-
 cc_args(
     name = "generate_linkmap_apple_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
@@ -821,6 +815,30 @@ negatable_feature(
         "@platforms//os:macos": [
             "-framework",
             "Foundation",
+        ],
+        "@platforms//os:ios": [
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
+        ],
+        "@platforms//os:tvos": [
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
+        ],
+        "@platforms//os:visionos": [
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
+        ],
+        "@platforms//os:watchos": [
+            "-framework",
+            "Foundation",
+            "-framework",
+            "UIKit",
         ],
         "//conditions:default": [],
     }),
@@ -1103,7 +1121,6 @@ cc_toolchain(
         "//crosstool/rules_based/pgo:fdo_instrument_wrapper",
         "//crosstool/rules_based/pgo:fdo_optimize_wrapper",
         "//crosstool/rules_based/pgo:autofdo_wrapper",
-        ":lipo_wrapper",
         ":lto_object_path",
         ":llvm_coverage_map_format_wrapper",
         ":gcc_coverage_map_format_wrapper",
@@ -1116,6 +1133,7 @@ cc_toolchain(
         ":user_link_flags",  # TODO: Switch to upstream feature
         "@apple_support_toolchain_env//:linkopts_from_env",  # TODO: Join with the copts below
         ":default_required_flags",
+        ":__apply_simulator_compiler_flags",
         "@apple_support_toolchain_env//:copts_from_env",
         ":default_link_flags",
         ":no_deduplicate",
@@ -1148,7 +1166,6 @@ cc_toolchain(
         ":coverage",
         ":kernel_extension",
         ":serialized_diagnostics_file",
-        ":lipo",
         ":llvm_coverage_map_format",
         ":gcc_coverage_map_format",
         ":_coverage_prefix_map_absolute_sources_non_hermetic",
@@ -1175,6 +1192,7 @@ cc_toolchain(
     supports_header_parsing = True,
     supports_param_files = True,
     tool_map = "//crosstool/rules_based/tools",  # FIXME: tool_path_overrides
+    visibility = ["//:__subpackages__"],
 )
 
 [
