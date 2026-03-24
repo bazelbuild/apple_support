@@ -9,6 +9,7 @@ def negatable_feature(
         args = [],
         env = {},
         custom_args = [],
+        visibility = None,
         **kwargs):
     all_args = []
     if custom_args:
@@ -23,6 +24,7 @@ def negatable_feature(
             actions = actions,
             args = args,
             env = env,
+            visibility = visibility,
             **kwargs
         )
 
@@ -31,6 +33,7 @@ def negatable_feature(
         feature_name = None if overrides else name,
         overrides = overrides,
         args = all_args,
+        visibility = visibility,
     )
 
 def enableable_feature(
