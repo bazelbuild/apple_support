@@ -5388,7 +5388,7 @@
   ],
   "target_cpu": "darwin_arm64",
   "target_libc": "",
-  "target_system_name": "",
+  "target_system_name": "arm64-apple-macosx26.2",
   "tool_paths": [],
   "toolchain_id": "@@//crosstool/rules_based:_foo_config"
 }

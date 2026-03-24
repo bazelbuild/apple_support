@@ -5383,7 +5383,7 @@
   ],
   "target_cpu": "",
   "target_libc": "",
-  "target_system_name": "",
+  "target_system_name": "arm64-apple-watchos26.2-simulator",
   "tool_paths": [],
   "toolchain_id": "@@//crosstool/rules_based:_foo_config"
 }
