@@ -15,12 +15,24 @@ _platform_transition = transition(
     outputs = ["//command_line_option:platforms"],
 )
 
-def _config_to_json(config_info):
-    """Serialize CcToolchainConfigInfo to JSON.
+def _sanitize_path(path):
+    if not path:
+        return path
 
-    Uses json.encode which handles structs natively.
-    """
-    return json.encode_indent(config_info, indent = "  ")
+    # /Users/<username>/foo -> /USER_HOME/foo
+    parts = path.split("/")
+    if len(parts) >= 3 and parts[0] == "" and parts[1] == "Users":
+        return "/USER_HOME/" + "/".join(parts[3:])
+    return path
+
+def _config_to_json(config_info):
+    # convert struct to dict
+    output = json.decode(json.encode(config_info))
+    output["cxx_builtin_include_directories"] = [
+        _sanitize_path(x)
+        for x in config_info.cxx_builtin_include_directories
+    ]
+    return json.encode_indent(output, indent = "  ")
 
 def _toolchain_config_test_impl(ctx):
     config_info = ctx.attr.toolchain_config[0][CcToolchainConfigInfo]
@@ -118,7 +130,10 @@ echo "Updated $golden"
         golden_path = ctx.file.golden.short_path,
     )]
 
-_UpdateInfo = provider(fields = ["actual", "golden_path"])
+_UpdateInfo = provider(
+    fields = ["actual", "golden_path"],
+    doc = "",
+)
 
 _toolchain_config_update = rule(
     implementation = _toolchain_config_update_impl,
