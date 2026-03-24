@@ -1110,10 +1110,20 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:user_compile_flags",
 )
 
+cc_args(
+    name = "layering_check_modulemap",
+    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    data = ["//crosstool:generate_layering_check_modulemap"],
+    env = {"APPLE_SUPPORT_MODULEMAP": "{modulemap}"},
+    format = {"modulemap": "//crosstool:generate_layering_check_modulemap"},
+    requires_any_of = ["@rules_cc//cc/toolchains/args/layering_check"],
+)
+
 cc_toolchain(
-    name = "foo",  # name = "cc-compiler-" + cpu,
+    name = "foo",
     args = [
         "@apple_support_toolchain_env//:include_directories_from_xcode",
+        ":layering_check_modulemap",
     ] + select({
         ":no_xcode_version": [":clt_env"],
         "//conditions:default": [":xcode_env"],
@@ -1123,6 +1133,7 @@ cc_toolchain(
     # TODO: Use experimental_replace_legacy_action_config_features as long as ordering isn't an issue
     enabled_features = ENABLED_MARKERS + [
         # NOTE: ORDER MATTERS
+        "@rules_cc//cc/toolchains/args/layering_check:module_maps",  # NOTE: This is a marker feature
         "@rules_cc//cc/toolchains/args/strip_flags:feature",
         ":__objc_executable_feature",
         ":__objc_fully_link_feature",
@@ -1185,8 +1196,8 @@ cc_toolchain(
         ":default_sanitizer_flags",
         ":suppress_warnings_wrapper",
         ":treat_warnings_as_errors_wrapper",
-        ":external_include_paths_wrapper",
         ":no_warn_duplicate_libraries",
+        ":external_include_paths_wrapper",
     ],
     known_features = MARKER_FEATURES + [
         "@rules_cc//cc/toolchains/features:opt",
@@ -1211,6 +1222,8 @@ cc_toolchain(
         "//crosstool/rules_based/pgo:fdo_instrument",
         "//crosstool/rules_based/pgo:autofdo",
         "//crosstool/rules_based/pgo:fdo_optimize",
+        "@rules_cc//cc/toolchains/args/layering_check",
+        "@rules_cc//cc/toolchains/args/layering_check:use_module_maps",  # TODO: https://github.com/bazelbuild/rules_cc/pull/657
     ] + select({
         "@platforms//os:macos": [
             ":dynamic_linking_mode",
@@ -1218,9 +1231,10 @@ cc_toolchain(
         "//conditions:default": [],
     }),
     make_variables = [":stack_frame_variable"],
+    module_map = "//crosstool:module.modulemap",
     supports_header_parsing = True,
     supports_param_files = True,
-    tool_map = "//crosstool/rules_based/tools",  # FIXME: tool_path_overrides
+    tool_map = "//crosstool/rules_based/tools",  # FIXME: tool_path_overrides https://github.com/bazelbuild/bazel/commit/ba2ccb151672216113c1a700b2ac8ce302bb6210
     visibility = ["//:__subpackages__"],
 )
 
