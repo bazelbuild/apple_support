@@ -1,4 +1,8 @@
-"""FIXME"""
+"""A repo rule for fetching the toolchain configuration from environment variables.
+
+This does much less than in the past but is still required for a few environment
+variable reading use cases.
+"""
 
 load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
 load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
