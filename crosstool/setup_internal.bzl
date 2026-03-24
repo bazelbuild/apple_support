@@ -6,6 +6,7 @@ visibility("//lib/...")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
+_NEW_TOOLCHAIN_VAR = "APPLE_SUPPORT_RULES_BASED_TOOLCHAIN"
 
 def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     """Generate BUILD file with 'toolchain' targets for the local host C++ toolchain.
@@ -16,23 +17,34 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
     old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
+    use_new_toolchain = _NEW_TOOLCHAIN_VAR in env and env[_NEW_TOOLCHAIN_VAR] == "1"
 
     if should_disable or old_should_disable:
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(
             _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
         ))
-    else:
-        repository_ctx.file(
+    elif use_new_toolchain:
+        repository_ctx.template(
             "BUILD",
-            content = repository_ctx.read(
-                Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
-            ),
+            Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
+            {
+                "%{label}": "@build_bazel_apple_support//crosstool/rules_based:foo",
+            },
+        )
+    else:
+        repository_ctx.template(
+            "BUILD",
+            Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
+            {
+                "%{label}": "@local_config_apple_cc//:cc-compiler-{}",
+            },
         )
 
 apple_cc_autoconf_toolchains = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
         _OLD_DISABLE_ENV_VAR,
+        _NEW_TOOLCHAIN_VAR,
     ],
     implementation = _apple_cc_autoconf_toolchains_impl,
     configure = True,
@@ -42,8 +54,9 @@ def _apple_cc_autoconf_impl(repository_ctx):
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
     old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
+    use_new_toolchain = _NEW_TOOLCHAIN_VAR in env and env[_NEW_TOOLCHAIN_VAR] == "1"
 
-    if should_disable or old_should_disable:
+    if should_disable or old_should_disable or use_new_toolchain:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(
             _DISABLE_ENV_VAR if should_disable else _OLD_DISABLE_ENV_VAR,
         ))
@@ -54,6 +67,7 @@ def _apple_cc_autoconf_impl(repository_ctx):
 
 apple_cc_autoconf = repository_rule(
     environ = [
+        _NEW_TOOLCHAIN_VAR,
         _DISABLE_ENV_VAR,
         _OLD_DISABLE_ENV_VAR,
         "APPLE_SUPPORT_LAYERING_CHECK_BETA",
