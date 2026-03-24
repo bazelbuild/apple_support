@@ -1099,6 +1099,17 @@ negatable_feature(
     target_compatible_with = ["@rules_cc//cc/toolchains/platforms:apple"],
 )
 
+# TODO: Remove https://github.com/bazelbuild/rules_cc/pull/653
+negatable_feature(
+    name = "user_compile_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    args = ["{user_compile_flags}"],
+    format = {"user_compile_flags": "@rules_cc//cc/toolchains/variables:user_compile_flags"},
+    iterate_over = "@rules_cc//cc/toolchains/variables:user_compile_flags",
+    overrides = "@rules_cc//cc/toolchains/features/legacy:user_compile_flags",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:user_compile_flags",
+)
+
 cc_toolchain(
     name = "foo",  # name = "cc-compiler-" + cpu,
     artifact_name_patterns = [":dylib_pattern"],
@@ -1156,7 +1167,7 @@ cc_toolchain(
         ":dead_strip_wrapper",
         ":apply_implicit_frameworks",
         ":link_cocoa_wrapper",
-        "@rules_cc//cc/toolchains/args/compile_flags:user_compile_flags_feature",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
+        ":user_compile_flags",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
         ":unfiltered_compile_flags_feature",
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
