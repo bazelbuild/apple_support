@@ -4692,82 +4692,6 @@
       "type_name": "feature"
     },
     {
-      "enabled": true,
-      "env_sets": [
-        {
-          "actions": [
-            "assemble",
-            "c++-compile",
-            "c++-header-analysis",
-            "c++-header-parsing",
-            "c++-link-dynamic-library",
-            "c++-link-executable",
-            "c++-link-nodeps-dynamic-library",
-            "c++-link-static-library",
-            "c++-module-codegen",
-            "c++-module-compile",
-            "c++-module-deps-scanning",
-            "c++20-module-codegen",
-            "c++20-module-compile",
-            "c-compile",
-            "cc-flags-make-variable",
-            "clif-match",
-            "ld_embed_data",
-            "linkstamp-compile",
-            "llvm-cov",
-            "lto-backend",
-            "lto-index-for-dynamic-library",
-            "lto-index-for-executable",
-            "lto-index-for-nodeps-dynamic-library",
-            "lto-indexing",
-            "objc++-compile",
-            "objc++-executable",
-            "objc-compile",
-            "objc-executable",
-            "objc-fully-link",
-            "objcopy_embed_data",
-            "preprocess-assemble",
-            "strip",
-            "validate-static-library"
-          ],
-          "env_entries": [
-            {
-              "expand_if_available": null,
-              "key": "XCODE_VERSION_OVERRIDE",
-              "type_name": "env_entry",
-              "value": "26.3.0.17C519"
-            },
-            {
-              "expand_if_available": null,
-              "key": "APPLE_SDK_VERSION_OVERRIDE",
-              "type_name": "env_entry",
-              "value": "26.2"
-            },
-            {
-              "expand_if_available": null,
-              "key": "APPLE_SDK_PLATFORM",
-              "type_name": "env_entry",
-              "value": "WatchOS"
-            },
-            {
-              "expand_if_available": null,
-              "key": "ZERO_AR_DATE",
-              "type_name": "env_entry",
-              "value": "1"
-            }
-          ],
-          "type_name": "env_set",
-          "with_features": []
-        }
-      ],
-      "flag_sets": [],
-      "implies": [],
-      "name": "__xcode_env",
-      "provides": [],
-      "requires": [],
-      "type_name": "feature"
-    },
-    {
       "enabled": false,
       "env_sets": [],
       "flag_sets": [],
@@ -5056,7 +4980,73 @@
     },
     {
       "enabled": true,
-      "env_sets": [],
+      "env_sets": [
+        {
+          "actions": [
+            "assemble",
+            "c++-compile",
+            "c++-header-analysis",
+            "c++-header-parsing",
+            "c++-link-dynamic-library",
+            "c++-link-executable",
+            "c++-link-nodeps-dynamic-library",
+            "c++-link-static-library",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "c++-module-deps-scanning",
+            "c++20-module-codegen",
+            "c++20-module-compile",
+            "c-compile",
+            "cc-flags-make-variable",
+            "clif-match",
+            "ld_embed_data",
+            "linkstamp-compile",
+            "llvm-cov",
+            "lto-backend",
+            "lto-index-for-dynamic-library",
+            "lto-index-for-executable",
+            "lto-index-for-nodeps-dynamic-library",
+            "lto-indexing",
+            "objc++-compile",
+            "objc++-executable",
+            "objc-compile",
+            "objc-executable",
+            "objc-fully-link",
+            "objcopy_embed_data",
+            "preprocess-assemble",
+            "strip",
+            "validate-static-library"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": null,
+              "key": "APPLE_SDK_PLATFORM",
+              "type_name": "env_entry",
+              "value": "WatchOS"
+            },
+            {
+              "expand_if_available": null,
+              "key": "APPLE_SDK_VERSION_OVERRIDE",
+              "type_name": "env_entry",
+              "value": "APPLE_SDK_VERSION_OVERRIDE_PLACEHOLDER"
+            },
+            {
+              "expand_if_available": null,
+              "key": "XCODE_VERSION_OVERRIDE",
+              "type_name": "env_entry",
+              "value": "XCODE_VERSION_OVERRIDE_PLACEHOLDER"
+            },
+            {
+              "expand_if_available": null,
+              "key": "ZERO_AR_DATE",
+              "type_name": "env_entry",
+              "value": "1"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
       "flag_sets": [],
       "implies": [],
       "name": "implied_by_always_enabled_env_sets",

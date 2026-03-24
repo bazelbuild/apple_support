@@ -249,8 +249,8 @@ enableable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:serialized_diagnostics_file",
 )
 
-negatable_feature(
-    name = "__clt_env",
+cc_args(
+    name = "clt_env",
     actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
     env = {
         "DEVELOPER_DIR": "/Library/Developer/CommandLineTools",
@@ -259,13 +259,13 @@ negatable_feature(
     },
 )
 
-negatable_feature(
-    name = "__xcode_env",
+cc_args(
+    name = "xcode_env",
     actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
     env = {
-        "XCODE_VERSION_OVERRIDE": "{XCODE_VERSION_OVERRIDE}",
-        "APPLE_SDK_VERSION_OVERRIDE": "{APPLE_SDK_VERSION_OVERRIDE}",
         "APPLE_SDK_PLATFORM": "{APPLE_SDK_PLATFORM}",
+        "APPLE_SDK_VERSION_OVERRIDE": "{APPLE_SDK_VERSION_OVERRIDE}",
+        "XCODE_VERSION_OVERRIDE": "{XCODE_VERSION_OVERRIDE}",
         "ZERO_AR_DATE": "1",
     },
     toolchains = [":target_thing"],
@@ -1114,7 +1114,10 @@ cc_toolchain(
     name = "foo",  # name = "cc-compiler-" + cpu,
     args = [
         "@apple_support_toolchain_env//:include_directories_from_xcode",
-    ],
+    ] + select({
+        ":no_xcode_version": [":clt_env"],
+        "//conditions:default": [":xcode_env"],
+    }),
     artifact_name_patterns = [":dylib_pattern"],
     compiler = "clang",
     # TODO: Use experimental_replace_legacy_action_config_features as long as ordering isn't an issue
@@ -1184,11 +1187,7 @@ cc_toolchain(
         ":treat_warnings_as_errors_wrapper",
         ":external_include_paths_wrapper",
         ":no_warn_duplicate_libraries",
-    ] + select({
-        ":no_xcode_version": [":__clt_env"],
-        "//conditions:default": [":__xcode_env"],
-    }),
-    # args = toolhain_args,
+    ],
     known_features = MARKER_FEATURES + [
         "@rules_cc//cc/toolchains/features:opt",
         "@rules_cc//cc/toolchains/features:dbg",
