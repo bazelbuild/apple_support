@@ -3,6 +3,9 @@
 load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
 load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
 
+_DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
+_OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
+
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
@@ -124,6 +127,11 @@ def _toolchain_env_impl(repository_ctx):
     escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator)
     enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
 
+    env = repository_ctx.os.environ
+    should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
+    old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
+    disable_toolchain = should_disable or old_should_disable
+
     repository_ctx.file(
         "BUILD.bazel",
         """\
@@ -207,20 +215,25 @@ cc_feature_set(
             c_opts = _get_starlark_list(c_opts),
             conly_opts = _get_starlark_list(conly_opts),
             cxx_opts = _get_starlark_list(cxx_opts),
-            link_opts = _get_starlark_list(link_opts),
+            disable_toolchain = disable_toolchain,
             enable_layering_check = enable_layering_check,
+            link_opts = _get_starlark_list(link_opts),
         ),
     )
 
 toolchain_env = repository_rule(
     environ = [
+        _DISABLE_ENV_VAR,
+        _OLD_DISABLE_ENV_VAR,
         "APPLE_SUPPORT_LAYERING_CHECK_BETA",
         "BAZEL_ALLOW_NON_APPLICATIONS_XCODE",  # Signals that some Xcodes may live outside of /Applications and we need to probe further when detecting/configuring them.
         "BAZEL_CONLYOPTS",
         "BAZEL_COPTS",
         "BAZEL_CXXOPTS",
         "BAZEL_LINKOPTS",
+        "USE_CLANG_CL",  # Kept as a hack for those who rely on this invaliding the toolchain
         "USER",  # Used to allow paths for custom toolchains to be used by C* compiles
+        "XCODE_VERSION",  # Force re-computing the toolchain by including the current Xcode version info in an env var
     ],
     implementation = _toolchain_env_impl,
 )
