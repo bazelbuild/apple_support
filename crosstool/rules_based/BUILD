@@ -996,14 +996,6 @@ cc_args(
 )
 
 cc_args(
-    name = "objc_fully_link_linker_param_file",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = ["@{param_file}"],
-    format = {"param_file": "@rules_cc//cc/toolchains/variables:linker_param_file"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:linker_param_file",
-)
-
-cc_args(
     name = "objc_fully_link_objc_library_exec_paths",
     actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
     args = ["{objc_library_exec_paths}"],
@@ -1039,7 +1031,6 @@ negatable_feature(
         ":objc_fully_link_objc_library_exec_paths",
         ":objc_fully_link_cc_library_exec_paths",
         ":objc_fully_link_imported_library_exec_paths",
-        # ":objc_fully_link_linker_param_file", # FIXME: variable missing
     ],
 )
 
@@ -1232,26 +1223,10 @@ cc_toolchain(
     visibility = ["//:__subpackages__"],
 )
 
-[
-    toolchain(
-        name = "cc-toolchain-" + arch + "-" + cpu,
-        exec_compatible_with = [
-            # These only execute on macOS.
-            "@platforms//os:macos",
-            "@platforms//cpu:" + cpu,
-        ],
-        target_compatible_with = APPLE_PLATFORMS_CONSTRAINTS[arch],
-        toolchain = ":foo",
-        toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
-        visibility = ["//visibility:public"],
-    )
-    for arch in APPLE_PLATFORMS_CONSTRAINTS.keys()
-    for cpu in _OSX_DEVELOPER_PLATFORM_CPUS
-]
-
 # TODO: Remove https://github.com/bazelbuild/rules_cc/pull/652
 alias(
     name = "toolchain_config",
+    testonly = True,
     actual = ":_foo_config",
     visibility = ["//test:__subpackages__"],
 )
