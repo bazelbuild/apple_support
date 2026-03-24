@@ -15,7 +15,6 @@ _OSX_DEVELOPER_PLATFORM_CPUS = [
     "x86_64",
 ]
 
-# feature(name = "module_maps", enabled = True), # FIXME: enable with layering_check stuff instead
 MARKER_FEATURES = [
     "archive_param_file",
     "compile_all_modules",
@@ -351,16 +350,7 @@ enableable_feature(
         ":generate_dsym_compile_flags",
         ":generate_dsym_link_flags",
     ],
-    # compile_actions = [
-    #     "@rules_cc//cc/toolchains/actions:c_compile",
-    #     "@rules_cc//cc/toolchains/actions:cpp_compile",
-    #     "@rules_cc//cc/toolchains/actions:objc_compile",
-    #     "@rules_cc//cc/toolchains/actions:objcpp_compile",
-    #     # ACTION_NAMES.objc_executable, # FIXME: intentionally leaving this one out because it's nothing?
-    # ],
-    # compile_args = ["-g"],
     overrides = "@rules_cc//cc/toolchains/features/legacy:generate_dsym_file",
-    # requires_not_none = "@rules_cc//cc/toolchains/variables:dsym_path",
 )
 
 cc_args(
@@ -1234,7 +1224,7 @@ cc_toolchain(
     module_map = "//crosstool:module.modulemap",
     supports_header_parsing = True,
     supports_param_files = True,
-    tool_map = "//crosstool/rules_based/tools",  # FIXME: tool_path_overrides https://github.com/bazelbuild/bazel/commit/ba2ccb151672216113c1a700b2ac8ce302bb6210
+    tool_map = "//crosstool/rules_based/tools",
     visibility = ["//:__subpackages__"],
 )
 
