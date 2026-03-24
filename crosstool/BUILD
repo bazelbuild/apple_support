@@ -65,6 +65,42 @@ force_exec(
     target = ":exec_strip.target_config",
 )
 
+genrule(
+    name = "exec_gcov.target_config",
+    srcs = ["gcov.sh"],
+    outs = ["gcov"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_gcov",
+    target = ":exec_gcov.target_config",
+)
+
+genrule(
+    name = "exec_llvm_profdata.target_config",
+    srcs = ["llvm-profdata.sh"],
+    outs = ["llvm-profdata"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_llvm_profdata",
+    target = ":exec_llvm_profdata.target_config",
+)
+
+genrule(
+    name = "exec_llvm_cov.target_config",
+    srcs = ["llvm-cov.sh"],
+    outs = ["llvm-cov"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_llvm_cov",
+    target = ":exec_llvm_cov.target_config",
+)
+
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
