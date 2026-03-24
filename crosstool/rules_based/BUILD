@@ -1,5 +1,4 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
-load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
 load("@rules_cc//cc/toolchains:artifacts.bzl", "cc_artifact_name_pattern")
@@ -9,11 +8,6 @@ load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":features.bzl", "enableable_feature", "negatable_feature")
 load(":foo.bzl", "foo")
-
-_OSX_DEVELOPER_PLATFORM_CPUS = [
-    "arm64",
-    "x86_64",
-]
 
 MARKER_FEATURES = [
     "archive_param_file",
