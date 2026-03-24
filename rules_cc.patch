@@ -1,0 +1,711 @@
+diff --git a/cc/action_names.bzl b/cc/action_names.bzl
+index 7689a4c..cef811e 100644
+--- a/cc/action_names.bzl
++++ b/cc/action_names.bzl
+@@ -52,6 +52,12 @@ PREPROCESS_ASSEMBLE_ACTION_NAME = "preprocess-assemble"
+ # Name of the coverage action.
+ LLVM_COV = "llvm-cov"
+ 
++# Name of the profile data merging action.
++LLVM_PROFDATA = "llvm-profdata"
++
++# Name of the coverage action when using gcov.
++GCOV = "gcov"
++
+ # Name of the action producing ThinLto index.
+ LTO_INDEXING_ACTION_NAME = "lto-indexing"
+ 
+@@ -126,6 +132,8 @@ ACTION_NAMES = struct(
+     assemble = ASSEMBLE_ACTION_NAME,
+     preprocess_assemble = PREPROCESS_ASSEMBLE_ACTION_NAME,
+     llvm_cov = LLVM_COV,
++    llvm_profdata = LLVM_PROFDATA,
++    gcov = GCOV,
+     lto_indexing = LTO_INDEXING_ACTION_NAME,
+     lto_backend = LTO_BACKEND_ACTION_NAME,
+     cpp_header_analysis = CPP_HEADER_ANALYSIS_ACTION_NAME,
+diff --git a/cc/common/cc_helper.bzl b/cc/common/cc_helper.bzl
+index 328933e..06c59b7 100644
+--- a/cc/common/cc_helper.bzl
++++ b/cc/common/cc_helper.bzl
+@@ -13,6 +13,7 @@
+ # limitations under the License.
+ """Utility functions for C++ rules."""
+ 
++load("//cc:action_names.bzl", "ACTION_NAMES")
+ load("//cc:find_cc_toolchain.bzl", "CC_TOOLCHAIN_TYPE")
+ load("//cc/private:paths.bzl", "is_path_absolute")
+ load("//cc/private/rules_impl:objc_common.bzl", "objc_common")
+@@ -471,8 +472,22 @@ def _get_compilation_contexts_from_deps(deps):
+             compilation_contexts.append(dep[CcInfo].compilation_context)
+     return compilation_contexts
+ 
+-def _tool_path(cc_toolchain, tool):
+-    return cc_toolchain._tool_paths.get(tool, None)
++def _tool_path(cc_toolchain, tool, feature_configuration = None, action_name = None):
++    tool = cc_toolchain._tool_paths.get(tool, None)
++    if tool:
++        return tool
++    if feature_configuration != None and action_name != None:
++        if not cc_common.action_is_enabled(
++            feature_configuration = feature_configuration,
++            action_name = action_name,
++        ):
++            return None
++
++        return cc_common.get_tool_for_action(
++            feature_configuration = feature_configuration,
++            action_name = action_name,
++        )
++    return None
+ 
+ def _get_toolchain_global_make_variables(cc_toolchain):
+     result = {
+@@ -1022,11 +1037,18 @@ def _get_coverage_environment(ctx, cc_config, cc_toolchain):
+     if not ctx.configuration.coverage_enabled:
+         return {}
+ 
++    feature_configuration = cc_common.configure_features(
++        ctx = ctx,
++        cc_toolchain = cc_toolchain,
++        requested_features = ctx.features,
++        unsupported_features = ctx.disabled_features,
++    )
++
+     # buildifier: disable=unsorted-dict-items
+     env = {
+-        "COVERAGE_GCOV_PATH": _tool_path(cc_toolchain, "gcov"),
+-        "LLVM_COV": _tool_path(cc_toolchain, "llvm-cov"),
+-        "LLVM_PROFDATA": _tool_path(cc_toolchain, "llvm-profdata"),
++        "COVERAGE_GCOV_PATH": _tool_path(cc_toolchain, "gcov", feature_configuration, ACTION_NAMES.gcov),
++        "LLVM_COV": _tool_path(cc_toolchain, "llvm-cov", feature_configuration, ACTION_NAMES.llvm_cov),
++        "LLVM_PROFDATA": _tool_path(cc_toolchain, "llvm-profdata", feature_configuration, ACTION_NAMES.llvm_profdata),
+         "GENERATE_LLVM_LCOV": "1" if cc_config.generate_llvm_lcov() else "0",
+     }
+     for k in list(env.keys()):
+diff --git a/cc/toolchains/actions/BUILD b/cc/toolchains/actions/BUILD
+index 1c2a7ba..1387ea2 100644
+--- a/cc/toolchains/actions/BUILD
++++ b/cc/toolchains/actions/BUILD
+@@ -88,6 +88,16 @@ cc_action_type(
+     action_name = ACTION_NAMES.llvm_cov,
+ )
+ 
++cc_action_type(
++    name = "llvm_profdata",
++    action_name = ACTION_NAMES.llvm_profdata,
++)
++
++cc_action_type(
++    name = "gcov",
++    action_name = ACTION_NAMES.gcov,
++)
++
+ cc_action_type(
+     name = "lto_indexing",
+     action_name = ACTION_NAMES.lto_indexing,
+@@ -326,6 +336,8 @@ cc_action_type_set(
+         ":assemble",
+         ":preprocess_assemble",
+         ":llvm_cov",
++        ":llvm_profdata",
++        ":gcov",
+         ":lto_indexing",
+         ":lto_backend",
+         ":lto_index_for_executable",
+diff --git a/cc/toolchains/args.bzl b/cc/toolchains/args.bzl
+index 95cdf52..83ea75d 100644
+--- a/cc/toolchains/args.bzl
++++ b/cc/toolchains/args.bzl
+@@ -44,12 +44,21 @@ visibility("public")
+ def _cc_args_impl(ctx):
+     actions = collect_action_types(ctx.attr.actions)
+ 
++    format_targets = {k: v for v, k in ctx.attr.format.items()}
+     formatted_env, used_format_vars = format_dict_values(
+         env = ctx.attr.env,
+         must_use = [],  # checking for unused variables in done when formatting `args`.
+-        format = {k: v for v, k in ctx.attr.format.items()},
++        format = {k: struct(__raw_string = v) for k, v in ctx.var.items()} | format_targets,
+     )
+ 
++    # Only validate format vars that point to cc_variable targets (VariableInfo).
++    # Filter out ctx.var keys and file/directory format targets.
++    used_format_vars = [
++        v
++        for v in used_format_vars
++        if v in format_targets and VariableInfo in format_targets[v]
++    ]
++
+     for path in ctx.attr.allowlist_absolute_include_directories:
+         if not is_path_absolute(path):
+             fail("`{}` is not an absolute paths".format(path))
+diff --git a/cc/toolchains/args/archiver_flags/BUILD b/cc/toolchains/args/archiver_flags/BUILD
+index 8a73c4d..f2d90b4 100644
+--- a/cc/toolchains/args/archiver_flags/BUILD
++++ b/cc/toolchains/args/archiver_flags/BUILD
+@@ -1,3 +1,4 @@
++load("@bazel_skylib//lib:selects.bzl", "selects")
+ load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+ load("//cc/toolchains:args.bzl", "cc_args")
+ load("//cc/toolchains:args_list.bzl", "cc_args_list")
+@@ -13,9 +14,16 @@ bool_flag(
+ )
+ 
+ config_setting(
+-    name = "use_libtool_on_macos_setting",
+-    constraint_values = ["@platforms//os:macos"],
++    name = "use_libtool_setting",
+     flag_values = {":use_libtool_on_macos": "true"},
++)
++
++selects.config_setting_group(
++    name = "use_libtool_on_apple_setting",
++    match_all = [
++        "//cc/toolchains/platforms:apple",
++        ":use_libtool_setting",
++    ],
+     visibility = ["//visibility:public"],
+ )
+ 
+@@ -40,7 +48,7 @@ cc_args(
+     name = "create_static_archive",
+     actions = ["//cc/toolchains/actions:ar_actions"],
+     args = select({
+-        ":use_libtool_on_macos_setting": [
++        ":use_libtool_on_apple_setting": [
+             "-D",
+             "-no_warning_for_no_symbols",
+             "-static",
+@@ -54,7 +62,7 @@ cc_args(
+     name = "output_execpath",
+     actions = ["//cc/toolchains/actions:ar_actions"],
+     args = select({
+-        ":use_libtool_on_macos_setting": ["-o"],
++        ":use_libtool_on_apple_setting": ["-o"],
+         "//conditions:default": [],
+     }) + ["{output_execpath}"],
+     format = {"output_execpath": "//cc/toolchains/variables:output_execpath"},
+diff --git a/cc/toolchains/args/generate_linkmap/BUILD b/cc/toolchains/args/generate_linkmap/BUILD
+index eb73dc5..04d1ec9 100644
+--- a/cc/toolchains/args/generate_linkmap/BUILD
++++ b/cc/toolchains/args/generate_linkmap/BUILD
+@@ -13,7 +13,7 @@ cc_args(
+     name = "generate_linkmap",
+     actions = ["//cc/toolchains/actions:link_actions"],
+     args = select({
+-        "@platforms//os:macos": ["-Wl,-map,{output_execpath}.map"],
++        "//cc/toolchains/platforms:apple": ["-Wl,-map,{output_execpath}.map"],
+         "//conditions:default": ["-Wl,-Map={output_execpath}.map"],
+     }),
+     format = {"output_execpath": "//cc/toolchains/variables:output_execpath"},
+diff --git a/cc/toolchains/args/layering_check/BUILD b/cc/toolchains/args/layering_check/BUILD
+index 8effb14..23b3e07 100644
+--- a/cc/toolchains/args/layering_check/BUILD
++++ b/cc/toolchains/args/layering_check/BUILD
+@@ -58,7 +58,7 @@ cc_args(
+     name = "module_name_args",
+     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+     args = select({
+-        "@platforms//os:macos": ["-Xclang"],
++        "//cc/toolchains/platforms:apple": ["-Xclang"],
+         "//conditions:default": [],
+     }) + ["-fmodule-name={module_name}"],
+     format = {
+@@ -71,7 +71,7 @@ cc_args(
+     name = "module_map_file_args",
+     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+     args = select({
+-        "@platforms//os:macos": ["-Xclang"],
++        "//cc/toolchains/platforms:apple": ["-Xclang"],
+         "//conditions:default": [],
+     }) + ["-fmodule-map-file={module_map_file}"],
+     format = {
+@@ -84,7 +84,7 @@ cc_args(
+     name = "dependent_module_map_files_args",
+     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+     args = select({
+-        "@platforms//os:macos": ["-Xclang"],
++        "//cc/toolchains/platforms:apple": ["-Xclang"],
+         "//conditions:default": [],
+     }) + [
+         "-fmodule-map-file={dependent_module_map_files}",
+diff --git a/cc/toolchains/args/libraries_to_link/BUILD b/cc/toolchains/args/libraries_to_link/BUILD
+index 6271856..7db9641 100644
+--- a/cc/toolchains/args/libraries_to_link/BUILD
++++ b/cc/toolchains/args/libraries_to_link/BUILD
+@@ -76,7 +76,7 @@ cc_nested_args(
+ cc_nested_args(
+     name = "single_library_args",
+     nested = select({
+-        "@platforms//os:macos": [],
++        "//cc/toolchains/platforms:apple": [],
+         "//conditions:default": [":optional_whole_archive_start"],
+     }) + [
+         ":optional_object_file_group",
+@@ -85,11 +85,11 @@ cc_nested_args(
+         ":optional_static_library",
+         ":optional_dynamic_library",
+     ] + select({
+-        # maOS has a minor nuance where it uses the path to the library instead of `-l:{library_name}`.
+-        "@platforms//os:macos": [":macos_optional_versioned_dynamic_library"],
++        # Apple platforms have a minor nuance where they use the path to the library instead of `-l:{library_name}`.
++        "//cc/toolchains/platforms:apple": [":apple_optional_versioned_dynamic_library"],
+         "//conditions:default": [":generic_optional_versioned_dynamic_library"],
+     }) + select({
+-        "@platforms//os:macos": [],
++        "//cc/toolchains/platforms:apple": [],
+         "//conditions:default": [":optional_whole_archive_end"],
+     }),
+ )
+@@ -166,7 +166,7 @@ cc_nested_args(
+ )
+ 
+ cc_nested_args(
+-    name = "macos_optional_versioned_dynamic_library",
++    name = "apple_optional_versioned_dynamic_library",
+     args = ["{library_path}"],
+     format = {
+         "library_path": "//cc/toolchains/variables:libraries_to_link.path",
+diff --git a/cc/toolchains/args/libraries_to_link/private/library_link_args.bzl b/cc/toolchains/args/libraries_to_link/private/library_link_args.bzl
+index 8b0e409..eb4d1b4 100644
+--- a/cc/toolchains/args/libraries_to_link/private/library_link_args.bzl
++++ b/cc/toolchains/args/libraries_to_link/private/library_link_args.bzl
+@@ -15,7 +15,7 @@
+ 
+ load("//cc/toolchains:nested_args.bzl", "cc_nested_args")
+ 
+-def macos_force_load_library_args(name, variable):
++def apple_force_load_library_args(name, variable):
+     """A helper for declaring -force_load argument expansion for a library.
+ 
+     This creates an argument expansion that will expand to -Wl,-force_load,<library>
+@@ -65,8 +65,8 @@ def library_link_args(name, library_type, from_variable, iterate_over_variable =
+             },
+         )
+ 
+-    For macos, this expands to a more complex cc_nested_args structure that
+-    handles the -force_load flag.
++    For Apple platforms, this expands to a more complex cc_nested_args structure
++    that handles the -force_load flag.
+ 
+     Args:
+       name: The name of the rule.
+@@ -77,7 +77,7 @@ def library_link_args(name, library_type, from_variable, iterate_over_variable =
+     native.alias(
+         name = name,
+         actual = select({
+-            "@platforms//os:macos": ":macos_{}".format(name),
++            "//cc/toolchains/platforms:apple": ":apple_{}".format(name),
+             "//conditions:default": ":generic_{}".format(name),
+         }),
+     )
+@@ -92,13 +92,13 @@ def library_link_args(name, library_type, from_variable, iterate_over_variable =
+         },
+     )
+     cc_nested_args(
+-        name = "macos_{}".format(name),
++        name = "apple_{}".format(name),
+         requires_equal = "//cc/toolchains/variables:libraries_to_link.type",
+         requires_equal_value = library_type,
+         iterate_over = from_variable if iterate_over_variable else None,
+         nested = [":{}_maybe_force_load".format(name)],
+     )
+-    macos_force_load_library_args(
++    apple_force_load_library_args(
+         name = "{}_maybe_force_load".format(name),
+         variable = from_variable,
+     )
+diff --git a/cc/toolchains/args/linker_param_file/BUILD b/cc/toolchains/args/linker_param_file/BUILD
+index b9d4096..efdc3ed 100644
+--- a/cc/toolchains/args/linker_param_file/BUILD
++++ b/cc/toolchains/args/linker_param_file/BUILD
+@@ -22,6 +22,7 @@ cc_args(
+     actions = [
+         "//cc/toolchains/actions:link_actions",
+         "//cc/toolchains/actions:ar_actions",
++        "//cc/toolchains/actions:objc_fully_link",
+     ],
+     args = ["@{param_file}"],
+     format = {"param_file": "//cc/toolchains/variables:linker_param_file"},
+diff --git a/cc/toolchains/args/pic_flags/BUILD b/cc/toolchains/args/pic_flags/BUILD
+index 5b7668a..f67a4ef 100644
+--- a/cc/toolchains/args/pic_flags/BUILD
++++ b/cc/toolchains/args/pic_flags/BUILD
+@@ -36,7 +36,7 @@ cc_args(
+     name = "force_pic_flags",
+     actions = ["//cc/toolchains/actions:link_executable_actions"],
+     args = select({
+-        "@platforms//os:macos": ["-Wl,-pie"],
++        "//cc/toolchains/platforms:apple": ["-Wl,-pie"],
+         "//conditions:default": ["-pie"],
+     }),
+     requires_not_none = "//cc/toolchains/variables:force_pic",
+diff --git a/cc/toolchains/args/runtime_library_search_directories/BUILD b/cc/toolchains/args/runtime_library_search_directories/BUILD
+index 51b83ea..29f55dc 100644
+--- a/cc/toolchains/args/runtime_library_search_directories/BUILD
++++ b/cc/toolchains/args/runtime_library_search_directories/BUILD
+@@ -77,7 +77,7 @@ cc_nested_args(
+         "-rpath",
+         "-Xlinker",
+     ] + select({
+-        "@platforms//os:macos": ["@loader_path/{search_path}"],
++        "//cc/toolchains/platforms:apple": ["@loader_path/{search_path}"],
+         "//conditions:default": ["$ORIGIN/{search_path}"],
+     }),
+     format = {
+@@ -106,7 +106,7 @@ cc_nested_args(
+         "-rpath",
+         "-Xlinker",
+     ] + select({
+-        "@platforms//os:macos": ["@loader_path/{search_path}"],
++        "//cc/toolchains/platforms:apple": ["@loader_path/{search_path}"],
+         "//conditions:default": ["$ORIGIN/{search_path}"],
+     }),
+     format = {
+diff --git a/cc/toolchains/args/soname_flags/BUILD b/cc/toolchains/args/soname_flags/BUILD
+index 9cc6d2f..eb2e7fd 100644
+--- a/cc/toolchains/args/soname_flags/BUILD
++++ b/cc/toolchains/args/soname_flags/BUILD
+@@ -4,7 +4,7 @@ load("//cc/toolchains:feature.bzl", "cc_feature")
+ cc_feature(
+     name = "feature",
+     args = select({
+-        "@platforms//os:macos": [":macos_set_install_name"],
++        "//cc/toolchains/platforms:apple": [":apple_set_install_name"],
+         "//conditions:default": [],
+     }),
+     feature_name = "_soname_flags",  # Doesn't override legacy feature, but shouldn't be disabled
+@@ -12,12 +12,12 @@ cc_feature(
+ )
+ 
+ cc_args(
+-    name = "macos_set_install_name",
++    name = "apple_set_install_name",
+     actions = ["//cc/toolchains/actions:link_actions"],
+     args = ["-Wl,-install_name,@rpath/{runtime_solib_name}"],
+     format = {"runtime_solib_name": "//cc/toolchains/variables:runtime_solib_name"},
+     requires_not_none = "//cc/toolchains/variables:runtime_solib_name",
+-    target_compatible_with = ["@platforms//os:macos"],
++    target_compatible_with = ["//cc/toolchains/platforms:apple"],
+ )
+ 
+ cc_args(
+diff --git a/cc/toolchains/args/strip_flags/BUILD b/cc/toolchains/args/strip_flags/BUILD
+index 3594a21..1104c0f 100644
+--- a/cc/toolchains/args/strip_flags/BUILD
++++ b/cc/toolchains/args/strip_flags/BUILD
+@@ -42,7 +42,7 @@ cc_args(
+     name = "preserve_dates",
+     actions = ["//cc/toolchains/actions:strip"],
+     args = select({
+-        "@platforms//os:macos": [],
++        "//cc/toolchains/platforms:apple": [],
+         "@platforms//os:windows": [],
+         "//conditions:default": ["-p"],
+     }),
+diff --git a/cc/toolchains/impl/nested_args.bzl b/cc/toolchains/impl/nested_args.bzl
+index e59711d..0af4c2b 100644
+--- a/cc/toolchains/impl/nested_args.bzl
++++ b/cc/toolchains/impl/nested_args.bzl
+@@ -23,7 +23,7 @@ visibility([
+     "//tests/rule_based_toolchain/...",
+ ])
+ 
+-REQUIRES_MUTUALLY_EXCLUSIVE_ERR = "requires_none, requires_not_none, requires_true, requires_false, and requires_equal are mutually exclusive"
++REQUIRES_MUTUALLY_EXCLUSIVE_ERR = "requires_none and requires_not_none are mututally exclusive with requires_true, requires_false, and requires_equal"
+ REQUIRES_NOT_NONE_ERR = "requires_not_none only works on options"
+ REQUIRES_NONE_ERR = "requires_none only works on options"
+ REQUIRES_TRUE_ERR = "requires_true only works on bools"
+@@ -97,6 +97,7 @@ def nested_args_provider_from_ctx(ctx, maybe_used_vars = []):
+     return nested_args_provider(
+         label = ctx.label,
+         args = ctx.attr.args,
++        make_variables = ctx.var,
+         format = ctx.attr.format,
+         nested = collect_provider(ctx.attr.nested, NestedArgsInfo),
+         files = collect_files(ctx.attr.data),
+@@ -125,6 +126,7 @@ def nested_args_provider(
+         requires_equal = None,
+         requires_equal_value = "",
+         maybe_used_vars = [],
++        make_variables = {},
+         fail = fail):
+     """Creates a validated NestedArgsInfo.
+ 
+@@ -153,6 +155,8 @@ def nested_args_provider(
+         requires_equal_value: (str) The value to compare the requires_equal
+           variable with
+         maybe_used_vars: (List[str]) A list of format variables that are not needed during args formatting.
++        make_variables: (dict[str, str]) Make variable substitutions from
++          ctx.var. {KEY} references in args are replaced with values.
+         fail: A fail function. Use only for testing.
+     Returns:
+         NestedArgsInfo
+@@ -177,6 +181,8 @@ def nested_args_provider(
+             ))
+         replacements[name] = target
+ 
++    make_replacements = {k: struct(__raw_string = v) for k, v in make_variables.items()}
++
+     # Intentionally ensure that we do not have to use the variable provided by
+     # iterate_over in the format string.
+     # For example, a valid use case is:
+@@ -190,7 +196,7 @@ def nested_args_provider(
+     # )
+     formatted_args, _ = format_list(
+         args,
+-        replacements,
++        make_replacements | replacements,
+         must_use = [var for var in format.values() if var not in maybe_used_vars],
+         fail = fail,
+     )
+@@ -198,17 +204,11 @@ def nested_args_provider(
+     transitive_files = [ea.files for ea in nested]
+     transitive_files.append(files)
+ 
+-    has_value = [attr for attr in [
+-        requires_not_none,
+-        requires_none,
+-        requires_true,
+-        requires_false,
+-        requires_equal,
+-    ] if attr != None]
+-
+     # We may want to reconsider this down the line, but it's easier to open up
+     # an API than to lock down an API.
+-    if len(has_value) > 1:
++    optional_checks = any([requires_not_none, requires_none])
++    boolean_checks = any([requires_true, requires_false, requires_equal])
++    if optional_checks and boolean_checks:
+         fail(REQUIRES_MUTUALLY_EXCLUSIVE_ERR)
+ 
+     kwargs = {}
+@@ -292,7 +292,9 @@ def _escape(s):
+     return s.replace("%", "%%")
+ 
+ def _format_target(target, fail = fail):
+-    if VariableInfo in target:
++    if hasattr(target, "__raw_string"):
++        return _escape(target.__raw_string)
++    elif VariableInfo in target:
+         return "%%{%s}" % target[VariableInfo].name
+     elif DirectoryInfo in target:
+         return _escape(target[DirectoryInfo].path)
+diff --git a/cc/toolchains/impl/toolchain_config.bzl b/cc/toolchains/impl/toolchain_config.bzl
+index 1f6efef..1a7c916 100644
+--- a/cc/toolchains/impl/toolchain_config.bzl
++++ b/cc/toolchains/impl/toolchain_config.bzl
+@@ -84,8 +84,8 @@ def _cc_toolchain_config_impl(ctx):
+             # compiler
+             compiler = ctx.attr.compiler,
+             target_cpu = ctx.attr.cpu,
++            target_system_name = ctx.expand_make_variables("target_system_name", ctx.attr.target_system_name, {}),
+             # These fields are only relevant for legacy toolchain resolution.
+-            target_system_name = "",
+             target_libc = "",
+             abi_version = "",
+             abi_libc_version = "",
+@@ -105,6 +105,7 @@ cc_toolchain_config = rule(
+         # Attributes new to this rule.
+         "compiler": attr.string(default = ""),
+         "cpu": attr.string(default = ""),
++        "target_system_name": attr.string(default = ""),
+         "tool_map": attr.label(providers = [ToolConfigInfo], mandatory = True),
+         "args": attr.label_list(providers = [ArgsListInfo]),
+         "known_features": attr.label_list(providers = [FeatureSetInfo]),
+diff --git a/cc/toolchains/platforms/BUILD b/cc/toolchains/platforms/BUILD
+new file mode 100644
+index 0000000..336a8c8
+--- /dev/null
++++ b/cc/toolchains/platforms/BUILD
+@@ -0,0 +1,13 @@
++load("@bazel_skylib//lib:selects.bzl", "selects")
++
++selects.config_setting_group(
++    name = "apple",
++    match_any = [
++        "@platforms//os:ios",
++        "@platforms//os:macos",
++        "@platforms//os:tvos",
++        "@platforms//os:visionos",
++        "@platforms//os:watchos",
++    ],
++    visibility = ["//visibility:public"],
++)
+diff --git a/cc/toolchains/toolchain.bzl b/cc/toolchains/toolchain.bzl
+index fa41163..9d2633e 100644
+--- a/cc/toolchains/toolchain.bzl
++++ b/cc/toolchains/toolchain.bzl
+@@ -70,6 +70,7 @@ def cc_toolchain(
+         supports_header_parsing = False,
+         supports_param_files = False,
+         compiler = "",
++        target_system_name = None,
+         **kwargs):
+     """A C/C++ toolchain configuration.
+ 
+@@ -158,6 +159,8 @@ def cc_toolchain(
+         compiler: (str) The type of compiler used by this toolchain (e.g. "gcc", "clang"). The current
+             toolchain's compiler is exposed to `@rules_cc//cc/private/toolchain:compiler
+             (compiler_flag)` as a flag value.
++        target_system_name: (str) The target system name for this toolchain. This is exposed through the
++            toolchain info providers.
+         **kwargs: [common attributes](https://bazel.build/reference/be/common-definitions#common-attributes)
+             that should be applied to all rules created by this macro.
+     """
+@@ -177,6 +180,7 @@ def cc_toolchain(
+         known_features = known_features,
+         enabled_features = enabled_features,
+         compiler = compiler,
++        target_system_name = target_system_name,
+         cpu = select({
+             Label("//cc/toolchains/impl:darwin_aarch64"): "darwin_arm64",
+             Label("//cc/toolchains/impl:darwin_x86_64"): "darwin_x86_64",
+diff --git a/cc/toolchains/variables/BUILD b/cc/toolchains/variables/BUILD
+index 2e9c0a3..bbc1152 100644
+--- a/cc/toolchains/variables/BUILD
++++ b/cc/toolchains/variables/BUILD
+@@ -269,6 +269,7 @@ cc_variable(
+     name = "linker_param_file",
+     actions = [
+         "//cc/toolchains/actions:cpp_link_static_library",
++        "//cc/toolchains/actions:objc_fully_link",
+         "//cc/toolchains/actions:link_actions",
+     ],
+     type = types.option(types.file),
+@@ -316,6 +317,12 @@ cc_variable(
+     type = types.option(types.string),
+ )
+ 
++cc_variable(
++    name = "pch_file",
++    actions = ["//cc/toolchains/actions:compile_actions"],
++    type = types.option(types.file),
++)
++
+ cc_variable(
+     name = "output_assembly_file",
+     actions = ["//cc/toolchains/actions:compile_actions"],
+@@ -331,6 +338,71 @@ cc_variable(
+     type = types.option(types.file),
+ )
+ 
++cc_variable(
++    name = "fully_linked_archive_path",
++    actions = ["//cc/toolchains/actions:objc_fully_link"],
++    type = types.option(types.file),
++)
++
++cc_variable(
++    name = "objc_library_exec_paths",
++    actions = ["//cc/toolchains/actions:objc_fully_link"],
++    type = types.option(types.list(types.file)),
++)
++
++cc_variable(
++    name = "cc_library_exec_paths",
++    actions = ["//cc/toolchains/actions:objc_fully_link"],
++    type = types.option(types.list(types.file)),
++)
++
++cc_variable(
++    name = "imported_library_exec_paths",
++    actions = ["//cc/toolchains/actions:objc_fully_link"],
++    type = types.option(types.list(types.file)),
++)
++
++# TODO: Remove when we drop bazel 8.x support
++cc_variable(
++    name = "filelist",
++    actions = ["//cc/toolchains/actions:objc_executable"],
++    type = types.option(types.file),
++)
++
++# TODO: Remove when we drop bazel 8.x support
++cc_variable(
++    name = "linked_binary",
++    actions = ["//cc/toolchains/actions:objc_executable"],
++    type = types.option(types.file),
++)
++
++# TODO: Remove when we drop bazel 8.x support
++cc_variable(
++    name = "force_load_exec_paths",
++    actions = ["//cc/toolchains/actions:objc_executable"],
++    type = types.option(types.list(types.file)),
++)
++
++# TODO: Remove when we drop bazel 8.x support
++cc_variable(
++    name = "dep_linkopts",
++    actions = ["//cc/toolchains/actions:objc_executable"],
++    type = types.option(types.list(types.string)),
++)
++
++# TODO: Remove when we drop bazel 8.x support
++cc_variable(
++    name = "attr_linkopts",
++    actions = ["//cc/toolchains/actions:objc_executable"],
++    type = types.option(types.list(types.string)),
++)
++
++cc_variable(
++    name = "linkmap_exec_path",
++    actions = ["//cc/toolchains/actions:link_actions"],
++    type = types.option(types.file),
++)
++
+ cc_variable(
+     name = "dsym_path",
+     actions = ["//cc/toolchains/actions:link_actions"],
+@@ -496,8 +568,11 @@ cc_variable(
+ cc_builtin_variables(
+     name = "variables",
+     srcs = [
++        ":attr_linkopts",
++        ":cc_library_exec_paths",
+         ":cs_fdo_instrument_path",
+         ":def_file_path",
++        ":dep_linkopts",
+         ":dependency_file",
+         ":dependent_module_map_files",
+         ":dsym_path",
+@@ -505,10 +580,14 @@ cc_builtin_variables(
+         ":fdo_instrument_path",
+         ":fdo_prefetch_hints_path",
+         ":fdo_profile_path",
++        ":filelist",
++        ":force_load_exec_paths",
+         ":force_pic",
+         ":framework_include_paths",
++        ":fully_linked_archive_path",
+         ":gcov_gcno_file",
+         ":generate_interface_library",
++        ":imported_library_exec_paths",
+         ":include",
+         ":include_paths",
+         ":includes",
+@@ -522,7 +601,9 @@ cc_builtin_variables(
+         ":legacy_link_flags",
+         ":libraries_to_link",
+         ":library_search_directories",
++        ":linked_binary",
+         ":linker_param_file",
++        ":linkmap_exec_path",
+         ":linkstamp_paths",
+         ":lto_indexing_bitcode_file",
+         ":module_files",
+@@ -530,10 +611,12 @@ cc_builtin_variables(
+         ":module_name",
+         ":no_objc_arc",
+         ":objc_arc",
++        ":objc_library_exec_paths",
+         ":output_assembly_file",
+         ":output_execpath",
+         ":output_file",
+         ":output_preprocess_file",
++        ":pch_file",
+         ":per_object_debug_info_file",
+         ":pic",
+         ":preprocessor_defines",
