@@ -4871,6 +4871,36 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "opt",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "dbg",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "fastbuild",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "coverage",
       "provides": [],
       "requires": [],
