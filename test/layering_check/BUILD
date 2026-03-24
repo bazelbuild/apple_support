@@ -17,6 +17,7 @@ cc_library(
 cc_test(
     name = "bad_layering_check",
     srcs = ["c.cpp"],
+    tags = ["manual"],
     deps = [":b"],
 )
 
@@ -45,6 +46,7 @@ objc_library(
 
 build_test(
     name = "bad_layering_check_objc_test",
+    tags = ["manual"],
     targets = [":bad_layering_check_objc"],
 )
 
