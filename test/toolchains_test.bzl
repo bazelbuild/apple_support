@@ -25,7 +25,7 @@ def _sanitize_path(path):
         return "/USER_HOME/" + "/".join(parts[3:])
     return path
 
-_SANITIZED_ENV_KEYS = ["APPLE_SDK_VERSION_OVERRIDE", "XCODE_VERSION_OVERRIDE"]
+_SANITIZED_ENV_KEYS = ["APPLE_SDK_VERSION_OVERRIDE", "APPLE_SUPPORT_MODULEMAP", "XCODE_VERSION_OVERRIDE"]
 
 def _sanitize_env_entries(features):
     """Replace machine-specific env values with placeholders."""
