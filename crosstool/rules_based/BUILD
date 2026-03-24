@@ -47,6 +47,21 @@ _LIMITED_COMPILE_ACTIONS = [
 ]
 
 cc_feature(
+    name = "dbg",
+    overrides = "@rules_cc//cc/toolchains/features:dbg",
+)
+
+cc_feature(
+    name = "fastbuild",
+    overrides = "@rules_cc//cc/toolchains/features:fastbuild",
+)
+
+cc_feature(
+    name = "opt",
+    overrides = "@rules_cc//cc/toolchains/features:opt",
+)
+
+cc_feature(
     name = "coverage",
     overrides = "@rules_cc//cc/toolchains/features/legacy:coverage",
 )
@@ -169,9 +184,7 @@ cc_args(
         "-O0",
         "-DDEBUG",
     ],
-    requires_any_of = [
-        "@rules_cc//cc/toolchains/features:fastbuild",
-    ],
+    requires_any_of = [":fastbuild"],
 )
 
 cc_args(
@@ -182,38 +195,26 @@ cc_args(
         "-O2",
         "-DNDEBUG",
     ],
-    requires_any_of = [
-        "@rules_cc//cc/toolchains/features:opt",
-    ],
+    requires_any_of = [":opt"],
 )
 
 cc_feature_constraint(
     name = "not_opt_mode",
-    none_of = [
-        "@rules_cc//cc/toolchains/features:opt",
-    ],
+    none_of = [":opt"],
 )
 
 cc_args(
     name = "dbg_compile_flags",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-    args = [
-        "-g",
-    ],
-    requires_any_of = [
-        "@rules_cc//cc/toolchains/features:dbg",
-    ],
+    args = ["-g"],
+    requires_any_of = [":dbg"],
 )
 
 negatable_feature(
     name = "ns_block_assertions",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-    args = [
-        "-DNS_BLOCK_ASSERTIONS=1",
-    ],
-    requires_any_of = [
-        "@rules_cc//cc/toolchains/features:opt",
-    ],
+    args = ["-DNS_BLOCK_ASSERTIONS=1"],
+    requires_any_of = [":opt"],
 )
 
 negatable_feature(
@@ -315,7 +316,7 @@ cc_args(
     name = "default_link_flags_opt_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
     args = ["-dead_strip"],
-    requires_any_of = ["@rules_cc//cc/toolchains/features:opt"],
+    requires_any_of = [":opt"],
 )
 
 negatable_feature(
@@ -1190,9 +1191,9 @@ cc_toolchain(
         ":external_include_paths_wrapper",
     ],
     known_features = MARKER_FEATURES + [
-        "@rules_cc//cc/toolchains/features:opt",
-        "@rules_cc//cc/toolchains/features:dbg",
-        "@rules_cc//cc/toolchains/features:fastbuild",
+        ":opt",
+        ":dbg",
+        ":fastbuild",
         ":coverage",
         ":kernel_extension",
         ":serialized_diagnostics_file",
@@ -1224,9 +1225,9 @@ cc_toolchain(
     module_map = "//crosstool:module.modulemap",
     supports_header_parsing = True,
     supports_param_files = True,
+    target_system_name = "$(TARGET)",
     tool_map = "//crosstool/rules_based/tools",
     toolchains = [":target_thing"],
-    target_system_name = "$(TARGET)",
     visibility = ["//:__subpackages__"],
 )
 
