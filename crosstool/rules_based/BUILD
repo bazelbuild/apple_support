@@ -1225,6 +1225,8 @@ cc_toolchain(
     supports_header_parsing = True,
     supports_param_files = True,
     tool_map = "//crosstool/rules_based/tools",
+    toolchains = [":target_thing"],
+    target_system_name = "$(TARGET)",
     visibility = ["//:__subpackages__"],
 )
 
