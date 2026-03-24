@@ -185,6 +185,29 @@
       "type_name": "action_config"
     },
     {
+      "action_name": "gcov",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/gcov",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/gcov"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
       "action_name": "linkstamp-compile",
       "enabled": true,
       "flag_sets": [],
@@ -200,6 +223,52 @@
             "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
             "root": "bazel-out/darwin_arm64-opt-exec/bin",
             "short_path": "crosstool/wrapped_clang"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "llvm-cov",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/llvm-cov",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/llvm-cov"
+          },
+          "type_name": "tool",
+          "with_features": []
+        }
+      ],
+      "type_name": "action_config"
+    },
+    {
+      "action_name": "llvm-profdata",
+      "enabled": true,
+      "flag_sets": [],
+      "implies": [],
+      "tools": [
+        {
+          "execution_requirements": [
+            "requires-darwin",
+            "supports-xcode-requirements-set"
+          ],
+          "path": null,
+          "tool": {
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/llvm-profdata",
+            "root": "bazel-out/darwin_arm64-opt-exec/bin",
+            "short_path": "crosstool/llvm-profdata"
           },
           "type_name": "tool",
           "with_features": []
@@ -5270,9 +5339,11 @@
             "c-compile",
             "cc-flags-make-variable",
             "clif-match",
+            "gcov",
             "ld_embed_data",
             "linkstamp-compile",
             "llvm-cov",
+            "llvm-profdata",
             "lto-backend",
             "lto-index-for-dynamic-library",
             "lto-index-for-executable",
