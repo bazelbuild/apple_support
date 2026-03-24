@@ -1,4 +1,9 @@
-"""FIXME:"""
+"""Rules for fetching dynamic info to insert into the toolchain.
+
+Since the rules based toolchains operate as normal targets, some of the
+internal bazel APIs that we use to derive some flags must be exposed via custom
+rules.
+"""
 
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
 
@@ -38,7 +43,7 @@ def _sdk_name(platform_type, is_simulator):
     else:
         fail("Unhandled platform type: {}".format(platform_type))
 
-def _foo_impl(ctx):
+def _dynamic_toolchain_info_impl(ctx):
     if ctx.target_platform_has_constraint(ctx.attr._macos[platform_common.ConstraintValueInfo]):
         triple_os = "macosx"
         platform_type = apple_common.platform_type.macos
@@ -77,8 +82,6 @@ def _foo_impl(ctx):
         triple_suffix = ""
 
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-
-    # xcode_execution_requirements = xcode_config.execution_info().keys() # FIXME
     target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
     sdk_version = _sdk_version_for_platform(xcode_config, platform_type)
 
@@ -109,8 +112,8 @@ def _foo_impl(ctx):
         },
     )]
 
-foo = rule(
-    implementation = _foo_impl,
+dynamic_toolchain_info = rule(
+    implementation = _dynamic_toolchain_info_impl,
     attrs = {
         "_macos": attr.label(default = "@platforms//os:macos"),
         "_ios": attr.label(default = "@platforms//os:ios"),

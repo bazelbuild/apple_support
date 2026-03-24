@@ -6,8 +6,8 @@ load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
+load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "set_install_name_flag")
 load(":features.bzl", "enableable_feature", "negatable_feature")
-load(":foo.bzl", "foo", "set_install_name_flag")
 
 MARKER_FEATURES = [
     "archive_param_file",
@@ -85,7 +85,7 @@ cc_args(
         "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
         "-F{PLATFORM_FRAMEWORKS}",  # NOTE: This is lazy so cquery doesn't show the right value
     ],
-    toolchains = [":target_thing"],
+    toolchains = [":dynamic_toolchain_info"],
 )
 
 cc_feature(
@@ -262,11 +262,11 @@ cc_args(
         "XCODE_VERSION_OVERRIDE": "{XCODE_VERSION_OVERRIDE}",
         "ZERO_AR_DATE": "1",
     },
-    toolchains = [":target_thing"],
+    toolchains = [":dynamic_toolchain_info"],
 )
 
-foo(
-    name = "target_thing",
+dynamic_toolchain_info(
+    name = "dynamic_toolchain_info",
 )
 
 negatable_feature(
@@ -280,7 +280,7 @@ negatable_feature(
         "-target",
         "{TARGET}",
     ],
-    toolchains = [":target_thing"],
+    toolchains = [":dynamic_toolchain_info"],
 )
 
 negatable_feature(
@@ -973,7 +973,7 @@ cc_args(
         "-arch_only",
         "{ARCH}",
     ],
-    toolchains = [":target_thing"],
+    toolchains = [":dynamic_toolchain_info"],
 )
 
 cc_args(
@@ -1223,7 +1223,7 @@ cc_toolchain(
     supports_param_files = True,
     target_system_name = "$(TARGET)",
     tool_map = "//crosstool/rules_based/tools",
-    toolchains = [":target_thing"],
+    toolchains = [":dynamic_toolchain_info"],
     visibility = ["//:__subpackages__"],
 )
 
