@@ -7,7 +7,7 @@ load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":features.bzl", "enableable_feature", "negatable_feature")
-load(":foo.bzl", "foo")
+load(":foo.bzl", "foo", "set_install_name_flag")
 
 MARKER_FEATURES = [
     "archive_param_file",
@@ -1057,10 +1057,19 @@ cc_make_variable(
     variable_name = "STACK_FRAME_UNLIMITED",
 )
 
+# TODO: Remove when we drop bazel 8.x support (maybe earlier)
+set_install_name_flag(
+    name = "set_install_name_flag",
+)
+
+config_setting(
+    name = "should_set_install_name",
+    flag_values = {":set_install_name_flag": "True"},
+)
+
 # TODO: Use upstream's after https://github.com/bazelbuild/rules_cc/pull/651
 negatable_feature(
     name = "set_install_name",
-    # enabled = getattr(ctx.fragments.cpp, "do_not_use_macos_set_install_name", True), # FIXME: can we always default this to true now?
     actions = ["@rules_cc//cc/toolchains/actions:dynamic_library_link_actions"],
     args = [
         "-Xlinker",
@@ -1163,7 +1172,10 @@ cc_toolchain(
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-        ":set_install_name",
+    ] + select({
+        ":should_set_install_name": [":set_install_name"],
+        "//conditions:default": [],
+    }) + [
         ":asan_wrapper",
         ":tsan_wrapper",
         ":ubsan_wrapper",
