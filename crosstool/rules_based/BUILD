@@ -1112,6 +1112,9 @@ negatable_feature(
 
 cc_toolchain(
     name = "foo",  # name = "cc-compiler-" + cpu,
+    args = [
+        "@apple_support_toolchain_env//:include_directories_from_xcode",
+    ],
     artifact_name_patterns = [":dylib_pattern"],
     compiler = "clang",
     # TODO: Use experimental_replace_legacy_action_config_features as long as ordering isn't an issue

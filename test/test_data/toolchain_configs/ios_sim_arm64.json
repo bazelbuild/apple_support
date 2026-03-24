@@ -5096,7 +5096,12 @@
   "abi_version": "",
   "builtin_sysroot": "",
   "compiler": "clang",
-  "cxx_builtin_include_directories": [],
+  "cxx_builtin_include_directories": [
+    "/Applications/",
+    "/Library/",
+    "/USER_HOME/Applications/",
+    "/USER_HOME/Library/"
+  ],
   "make_variables": [
     {
       "name": "STACK_FRAME_UNLIMITED",

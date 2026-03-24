@@ -1,5 +1,33 @@
 """FIXME"""
 
+load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
+load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
+
+def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
+    # Assume that everything is managed by Xcode / toolchain installations
+    include_dirs = [
+        "/Applications/",  # Typical Xcode installation path
+        "/Library/",  # Xcode command line tools installation path
+    ]
+
+    user = repository_ctx.os.environ.get("USER")
+    if user:
+        include_dirs.extend([
+            "/Users/{}/Applications/".format(user),  # User specific Xcode installation path
+            "/Users/{}/Library/".format(user),
+        ])
+
+    xcode_toolchains = []
+    allow_non_applications_xcode = repository_ctx.os.environ.get("BAZEL_ALLOW_NON_APPLICATIONS_XCODE") == "1"
+    if allow_non_applications_xcode:
+        (xcode_toolchains, _) = run_xcode_locator(repository_ctx, xcode_locator)
+
+    # Include extra Xcode paths in case they're installed on other volumes
+    for toolchain in xcode_toolchains:
+        include_dirs.append(escape_string(toolchain.developer_dir))
+
+    return ["            \"%s\"," % x for x in include_dirs]
+
 def _get_copts_env_var(repository_ctx, name, default = ""):
     """Get an environment variable and split it on ":" to be used as copts.
 
@@ -77,16 +105,23 @@ def _split_escaped(string, delimiter):
     return result
 
 def _get_starlark_list(values):
-    """Convert a list of string into a string that can be passed to a rule attribute."""
     if not values:
         return ""
     return "\"" + "\",\n    \"".join(values) + "\""
 
 def _toolchain_env_impl(repository_ctx):
+    # All Label resolutions done at the top of the function to avoid issues
+    # with starlark function restarts, see this:
+    # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
+    # for more info
+    xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
+
     conly_opts = _get_copts_env_var(repository_ctx, "BAZEL_CONLYOPTS")
     c_opts = _get_copts_env_var(repository_ctx, "BAZEL_COPTS")
     cxx_opts = _get_copts_env_var(repository_ctx, "BAZEL_CXXOPTS", default = "-std=c++17")
     link_opts = _get_copts_env_var(repository_ctx, "BAZEL_LINKOPTS")
+
+    escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator)
 
     repository_ctx.file(
         "BUILD.bazel",
@@ -143,7 +178,17 @@ cc_args(
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
     args = [{link_opts}],
 )
+
+cc_args(
+    name = "include_directories_from_xcode",
+    actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
+    allowlist_absolute_include_directories = [
+{allowlist_absolute_include_directories}
+    ],
+)
+
 """.format(
+            allowlist_absolute_include_directories = "\n".join(escaped_include_paths),
             c_opts = _get_starlark_list(c_opts),
             conly_opts = _get_starlark_list(conly_opts),
             cxx_opts = _get_starlark_list(cxx_opts),
@@ -153,10 +198,12 @@ cc_args(
 
 toolchain_env = repository_rule(
     environ = [
-        "BAZEL_COPTS",
+        "BAZEL_ALLOW_NON_APPLICATIONS_XCODE",  # Signals that some Xcodes may live outside of /Applications and we need to probe further when detecting/configuring them.
         "BAZEL_CONLYOPTS",
+        "BAZEL_COPTS",
         "BAZEL_CXXOPTS",
         "BAZEL_LINKOPTS",
+        "USER",  # Used to allow paths for custom toolchains to be used by C* compiles
     ],
     implementation = _toolchain_env_impl,
 )
