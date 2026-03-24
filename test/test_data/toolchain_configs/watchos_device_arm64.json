@@ -2260,7 +2260,7 @@
           ],
           "flag_groups": [
             {
-              "expand_if_available": null,
+              "expand_if_available": "output_execpath",
               "expand_if_equal": null,
               "expand_if_false": null,
               "expand_if_not_available": null,
