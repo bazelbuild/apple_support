@@ -65,6 +65,7 @@ tasks:
     shell_commands:
       - test/shell/layering_check_test.sh
       - test/shell/header_parsing_test.sh
+      - test/shell/coverage_test.sh
 
   # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
   # macos_last_green:
