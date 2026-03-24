@@ -1101,20 +1101,20 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:user_compile_flags",
 )
 
-cc_args(
-    name = "layering_check_modulemap",
+negatable_feature(
+    name = "__layering_check_modulemap",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
     data = ["//crosstool:generate_layering_check_modulemap"],
     env = {"APPLE_SUPPORT_MODULEMAP": "{modulemap}"},
     format = {"modulemap": "//crosstool:generate_layering_check_modulemap"},
     requires_any_of = ["@rules_cc//cc/toolchains/args/layering_check"],
+    visibility = ["//visibility:public"],  # Referenced through the optional enabling of layering_check
 )
 
 cc_toolchain(
     name = "foo",
     args = [
         "@apple_support_toolchain_env//:include_directories_from_xcode",
-        ":layering_check_modulemap",
     ] + select({
         ":no_xcode_version": [":clt_env"],
         "//conditions:default": [":xcode_env"],
@@ -1189,6 +1189,7 @@ cc_toolchain(
         ":treat_warnings_as_errors_wrapper",
         ":no_warn_duplicate_libraries",
         ":external_include_paths_wrapper",
+        "@apple_support_toolchain_env//:off_by_default_layering_check_enabled_features",
     ],
     known_features = MARKER_FEATURES + [
         ":opt",
@@ -1213,7 +1214,7 @@ cc_toolchain(
         "//crosstool/rules_based/pgo:fdo_instrument",
         "//crosstool/rules_based/pgo:autofdo",
         "//crosstool/rules_based/pgo:fdo_optimize",
-        "@rules_cc//cc/toolchains/args/layering_check",
+        "@apple_support_toolchain_env//:off_by_default_layering_check_known_features",
         "@rules_cc//cc/toolchains/args/layering_check:use_module_maps",  # TODO: https://github.com/bazelbuild/rules_cc/pull/657
     ] + select({
         "@platforms//os:macos": [

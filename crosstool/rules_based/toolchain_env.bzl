@@ -122,11 +122,13 @@ def _toolchain_env_impl(repository_ctx):
     link_opts = _get_copts_env_var(repository_ctx, "BAZEL_LINKOPTS")
 
     escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator)
+    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
 
     repository_ctx.file(
         "BUILD.bazel",
         """\
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
+load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 
 package(default_visibility = ["@build_bazel_apple_support//:__subpackages__"])
@@ -187,17 +189,32 @@ cc_args(
     ],
 )
 
+cc_feature_set(
+    name = "off_by_default_layering_check_enabled_features",
+    all_of = [
+        "@build_bazel_apple_support//crosstool/rules_based:__layering_check_modulemap",
+    ] if {enable_layering_check} else [],
+)
+
+cc_feature_set(
+    name = "off_by_default_layering_check_known_features",
+    all_of = [
+        "@rules_cc//cc/toolchains/args/layering_check",
+    ] if {enable_layering_check} else [],
+)
 """.format(
             allowlist_absolute_include_directories = "\n".join(escaped_include_paths),
             c_opts = _get_starlark_list(c_opts),
             conly_opts = _get_starlark_list(conly_opts),
             cxx_opts = _get_starlark_list(cxx_opts),
             link_opts = _get_starlark_list(link_opts),
+            enable_layering_check = enable_layering_check,
         ),
     )
 
 toolchain_env = repository_rule(
     environ = [
+        "APPLE_SUPPORT_LAYERING_CHECK_BETA",
         "BAZEL_ALLOW_NON_APPLICATIONS_XCODE",  # Signals that some Xcodes may live outside of /Applications and we need to probe further when detecting/configuring them.
         "BAZEL_CONLYOPTS",
         "BAZEL_COPTS",
