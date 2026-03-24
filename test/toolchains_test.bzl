@@ -25,6 +25,18 @@ def _sanitize_path(path):
         return "/USER_HOME/" + "/".join(parts[3:])
     return path
 
+_SANITIZED_ENV_KEYS = ["APPLE_SDK_VERSION_OVERRIDE", "XCODE_VERSION_OVERRIDE"]
+
+def _sanitize_env_entries(features):
+    """Replace machine-specific env values with placeholders."""
+    replacements = {}
+    for feat in features:
+        for es in feat.env_sets:
+            for entry in es.env_entries:
+                if entry.key in _SANITIZED_ENV_KEYS:
+                    replacements[entry.value] = entry.key + "_PLACEHOLDER"
+    return replacements
+
 def _config_to_json(config_info):
     # convert struct to dict
     output = json.decode(json.encode(config_info))
@@ -32,7 +44,12 @@ def _config_to_json(config_info):
         _sanitize_path(x)
         for x in config_info.cxx_builtin_include_directories
     ]
-    return json.encode_indent(output, indent = "  ")
+    result = json.encode_indent(output, indent = "  ")
+
+    for old, new in _sanitize_env_entries(config_info._features_DO_NOT_USE).items():
+        result = result.replace(json.encode(old), json.encode(new))
+
+    return result
 
 def _toolchain_config_test_impl(ctx):
     config_info = ctx.attr.toolchain_config[0][CcToolchainConfigInfo]
