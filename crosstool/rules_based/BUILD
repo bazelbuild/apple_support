@@ -754,11 +754,9 @@ negatable_feature(
 )
 
 negatable_feature(
-    name = "no_warn_duplicate_libraries",  # FIXME: enable based on availablity
+    name = "no_warn_duplicate_libraries",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-Wl,-no_warn_duplicate_libraries",
-    ],
+    args = ["-Wl,-no_warn_duplicate_libraries"],
 )
 
 negatable_feature(
