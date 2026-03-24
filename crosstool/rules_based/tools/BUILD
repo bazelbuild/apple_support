@@ -1,7 +1,7 @@
 load("@rules_cc//cc/toolchains:tool.bzl", "cc_tool")
 load("@rules_cc//cc/toolchains:tool_map.bzl", "cc_tool_map")
 
-# TODO: These should come dynamically through xcode_config.execution_info()
+# FIXME: These should come dynamically through xcode_config.execution_info()
 _TAGS = [
     "requires-darwin",
     "supports-xcode-requirements-set",
