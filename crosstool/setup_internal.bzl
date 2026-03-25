@@ -28,7 +28,7 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
             "BUILD",
             Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
             {
-                "%{label}": "@build_bazel_apple_support//crosstool/rules_based:foo",
+                "%{label}": "@build_bazel_apple_support//toolchain:foo",
             },
         )
     else:

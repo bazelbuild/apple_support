@@ -1,13 +1,5 @@
-load("@rules_cc//cc/toolchains:actions.bzl", "cc_action_type_set")
-load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
-load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
-load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
-load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
-load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:mutually_exclusive_category.bzl", "cc_mutually_exclusive_category")
-load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
-load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
-load("//crosstool/rules_based:features.bzl", "enableable_feature", "negatable_feature")
+load("//toolchain:features.bzl", "enableable_feature")
 
 package(default_visibility = ["//:__subpackages__"])
 

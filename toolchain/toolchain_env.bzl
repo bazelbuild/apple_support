@@ -204,7 +204,7 @@ cc_args(
 cc_feature_set(
     name = "off_by_default_layering_check_enabled_features",
     all_of = [
-        "@build_bazel_apple_support//crosstool/rules_based:__layering_check_modulemap",
+        "@build_bazel_apple_support//toolchain:__layering_check_modulemap",
     ] if {enable_layering_check} else [],
 )
 
