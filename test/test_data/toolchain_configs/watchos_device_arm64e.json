@@ -3602,7 +3602,7 @@
               "flags": [
                 "-no-canonical-prefixes",
                 "-target",
-                "arm64e-apple-watchos26.2"
+                "arm64e-apple-watchosVERSION"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -5237,7 +5237,7 @@
   ],
   "target_cpu": "",
   "target_libc": "",
-  "target_system_name": "arm64e-apple-watchos26.2",
+  "target_system_name": "arm64e-apple-watchosVERSION",
   "tool_paths": [],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }
