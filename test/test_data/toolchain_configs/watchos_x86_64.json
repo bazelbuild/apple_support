@@ -5266,5 +5266,5 @@
   "target_libc": "",
   "target_system_name": "x86_64-apple-watchos26.2-simulator",
   "tool_paths": [],
-  "toolchain_id": "@@//toolchain:_foo_config"
+  "toolchain_id": "@@//toolchain:_toolchain_config"
 }
