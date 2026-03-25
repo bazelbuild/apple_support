@@ -453,6 +453,7 @@ selects.config_setting_group(
     name = "kernel_extension_platforms",
     match_any = [
         ":darwin_x86_64",
+        # Kernel extensions for Apple Silicon are arm64e.
         ":darwin_arm64e",
     ],
 )
@@ -461,9 +462,7 @@ enableable_feature(
     name = "kernel_extension",
     actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
     args = select({
-        # Kernel extensions for Apple Silicon are arm64e.
         ":kernel_extension_platforms": [
-            # ("//platforms:darwin_x86_64", "//platforms:darwin_arm64e"): [
             "-nostdlib",
             "-lkmod",
             "-lkmodc++",
