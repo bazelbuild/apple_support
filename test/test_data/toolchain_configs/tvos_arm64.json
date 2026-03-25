@@ -3602,7 +3602,7 @@
               "flags": [
                 "-no-canonical-prefixes",
                 "-target",
-                "arm64-apple-tvos26.2"
+                "arm64-apple-tvosVERSION"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -5237,7 +5237,7 @@
   ],
   "target_cpu": "",
   "target_libc": "",
-  "target_system_name": "arm64-apple-tvos26.2",
+  "target_system_name": "arm64-apple-tvosVERSION",
   "tool_paths": [],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }

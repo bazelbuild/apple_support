@@ -3601,7 +3601,7 @@
               "flags": [
                 "-no-canonical-prefixes",
                 "-target",
-                "arm64-apple-xros26.2-simulator"
+                "arm64-apple-xrosVERSION-simulator"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -5263,7 +5263,7 @@
   ],
   "target_cpu": "",
   "target_libc": "",
-  "target_system_name": "arm64-apple-xros26.2-simulator",
+  "target_system_name": "arm64-apple-xrosVERSION-simulator",
   "tool_paths": [],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }

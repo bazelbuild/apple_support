@@ -3602,7 +3602,7 @@
               "flags": [
                 "-no-canonical-prefixes",
                 "-target",
-                "arm64-apple-watchos26.2-simulator"
+                "arm64-apple-watchosVERSION-simulator"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -5264,7 +5264,7 @@
   ],
   "target_cpu": "",
   "target_libc": "",
-  "target_system_name": "arm64-apple-watchos26.2-simulator",
+  "target_system_name": "arm64-apple-watchosVERSION-simulator",
   "tool_paths": [],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }

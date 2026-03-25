@@ -28,6 +28,23 @@ def _sanitize_path(path):
 
 _SANITIZED_ENV_KEYS = ["APPLE_SDK_VERSION_OVERRIDE", "APPLE_SUPPORT_MODULEMAP", "XCODE_VERSION_OVERRIDE"]
 
+def _strip_triple_version(triple):
+    """Replace OS version in a target triple with VERSION.
+
+    Split on '-', strip digits and dots from the 3rd component, rejoin.
+    e.g. arm64-apple-macosx26.2 -> arm64-apple-macosxVERSION
+         arm64-apple-ios26.2-simulator -> arm64-apple-iosVERSION-simulator
+    """
+    parts = triple.split("-")
+    os_part = parts[2]
+    stripped = ""
+    for c in os_part.elems():
+        if c.isdigit() or c == ".":
+            break
+        stripped += c
+    parts[2] = stripped + "VERSION"
+    return "-".join(parts)
+
 def _sanitize_env_entries(features):
     """Replace machine-specific env values with placeholders."""
     replacements = {}
@@ -49,6 +66,11 @@ def _config_to_json(config_info):
 
     for old, new in _sanitize_env_entries(config_info._features_DO_NOT_USE).items():
         result = result.replace(json.encode(old), json.encode(new))
+
+    # Replace the versioned triple with a VERSION placeholder
+    triple = config_info.target_system_name
+    sanitized_triple = _strip_triple_version(triple)
+    result = result.replace(triple, sanitized_triple)
 
     return result
 

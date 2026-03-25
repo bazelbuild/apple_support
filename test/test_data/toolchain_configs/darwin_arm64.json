@@ -3602,7 +3602,7 @@
               "flags": [
                 "-no-canonical-prefixes",
                 "-target",
-                "arm64-apple-macosx26.2"
+                "arm64-apple-macosxVERSION"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -5269,7 +5269,7 @@
   ],
   "target_cpu": "darwin_arm64",
   "target_libc": "",
-  "target_system_name": "arm64-apple-macosx26.2",
+  "target_system_name": "arm64-apple-macosxVERSION",
   "tool_paths": [],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }
