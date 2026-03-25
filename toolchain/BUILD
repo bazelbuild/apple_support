@@ -288,6 +288,14 @@ cc_args(
     args = ["-g"],
 )
 
+cc_args(
+    name = "generate_dsym_link_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["DSYM_HINT_DSYM_PATH={dsym_path}"],
+    format = {"dsym_path": "@rules_cc//cc/toolchains/variables:dsym_path"},
+    requires_not_none = "@rules_cc//cc/toolchains/variables:dsym_path",
+)
+
 enableable_feature(
     name = "generate_dsym_file",
     custom_args = [
@@ -295,14 +303,6 @@ enableable_feature(
         ":generate_dsym_link_flags",
     ],
     overrides = "@rules_cc//cc/toolchains/features/legacy:generate_dsym_file",
-)
-
-cc_args(
-    name = "generate_dsym_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["DSYM_HINT_DSYM_PATH={dsym_path}"],
-    format = {"dsym_path": "@rules_cc//cc/toolchains/variables:dsym_path"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:dsym_path",
 )
 
 negatable_feature(
@@ -494,6 +494,9 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
 )
 
+# As of Xcode 15, linker warnings are emitted if duplicate `-l` options are
+# present. Until such linkopts can be deduped by bazel itself, we disable these
+# warnings.
 negatable_feature(
     name = "no_warn_duplicate_libraries",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
