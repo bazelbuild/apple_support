@@ -56,11 +56,6 @@ cc_feature(
 )
 
 cc_feature(
-    name = "coverage",
-    overrides = "@rules_cc//cc/toolchains/features/legacy:coverage",
-)
-
-cc_feature(
     name = "dynamic_linking_mode",
     overrides = "@rules_cc//cc/toolchains/features:dynamic_linking_mode",
     target_compatible_with = ["@platforms//os:macos"],
@@ -88,14 +83,8 @@ cc_args(
     toolchains = [":dynamic_toolchain_info"],
 )
 
-cc_feature(
-    name = "unfiltered_compile_flags_feature",
-    args = [":unfiltered_compile_flags"],
-    overrides = "@rules_cc//cc/toolchains/features/legacy:unfiltered_compile_flags",
-)
-
 # TODO: This is overriding a magic name from the default feature set but isn't reading the upstream variable
-cc_args(
+negatable_feature(
     name = "unfiltered_compile_flags",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
     args = [
@@ -104,6 +93,7 @@ cc_args(
         "-D__TIMESTAMP__=\"redacted\"",
         "-D__TIME__=\"redacted\"",
     ],
+    overrides = "@rules_cc//cc/toolchains/features/legacy:unfiltered_compile_flags",
 )
 
 cc_feature(
@@ -112,29 +102,15 @@ cc_feature(
     overrides = "@rules_cc//cc/toolchains/features/legacy:default_compile_flags",
 )
 
-# cc_feature(
-#     name = "asan_feature",
-#     feature_name = "asan",
-# )
-
 cc_args_list(
     name = "default_compile_flags",
     args = [
         ":objcpp_default_flags",
-        ":no_asan_compile_flags",
+        "//toolchain/sanitizers:no_asan_compile_flags",
         ":always_compile_flags",
         ":fastbuild_compile_flags",
         ":opt_compile_flags",
         ":dbg_compile_flags",
-    ],
-
-    # actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-)
-
-cc_feature_constraint(
-    name = "not_asan",
-    none_of = [
-        ":asan",
     ],
 )
 
@@ -144,17 +120,6 @@ cc_args(
     args = [
         "-stdlib=libc++",
         "-std=gnu++17",
-    ],
-)
-
-cc_args(
-    name = "no_asan_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-    args = [
-        "-D_FORTIFY_SOURCE=1",
-    ],
-    requires_any_of = [
-        ":not_asan",
     ],
 )
 
@@ -267,6 +232,7 @@ cc_args(
 
 dynamic_toolchain_info(
     name = "dynamic_toolchain_info",
+    visibility = ["//toolchain:__subpackages__"],
 )
 
 negatable_feature(
@@ -407,201 +373,6 @@ cc_feature(
 )
 
 cc_args(
-    name = "asan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=address",
-    ],
-)
-
-cc_args(
-    name = "asan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=address",
-    ],
-)
-
-enableable_feature(
-    name = "asan",
-    custom_args = [
-        ":asan_compile_flags",
-        ":asan_link_flags",
-    ],
-)
-
-cc_args(
-    name = "tsan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=thread",
-    ],
-)
-
-cc_args(
-    name = "tsan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=thread",
-    ],
-)
-
-cc_args(
-    name = "gcc_coverage_map_format_compile_args",
-    actions = [
-        # TODO: Should all compile actions be here?
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = [
-        "-fprofile-arcs",
-        "-ftest-coverage",
-        "-g",
-    ],
-)
-
-cc_args(
-    name = "gcc_coverage_map_format_link_args",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:cpp_link_executable",
-        "@rules_cc//cc/toolchains/actions:cpp_link_dynamic_library",
-    ],
-    args = ["--coverage"],
-)
-
-enableable_feature(
-    name = "gcc_coverage_map_format",
-    custom_args = [
-        ":gcc_coverage_map_format_compile_args",
-        ":gcc_coverage_map_format_link_args",
-    ],
-    overrides = "@rules_cc//cc/toolchains/features/legacy:gcc_coverage_map_format",
-    requires_any_of = [":coverage"],
-)
-
-cc_args(
-    name = "llvm_coverage_map_format_compile_args",
-    actions = [
-        # TODO: Should all compile actions be here?
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = [
-        "-fprofile-instr-generate",
-        "-fcoverage-mapping",
-        "-g",
-    ],
-)
-
-cc_args(
-    name = "llvm_coverage_map_format_link_args",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-fprofile-instr-generate"],
-)
-
-enableable_feature(
-    name = "llvm_coverage_map_format",
-    custom_args = [
-        ":llvm_coverage_map_format_compile_args",
-        ":llvm_coverage_map_format_link_args",
-    ],
-    overrides = "@rules_cc//cc/toolchains/features/legacy:llvm_coverage_map_format",
-    requires_any_of = [":coverage"],
-)
-
-negatable_feature(
-    name = "coverage_prefix_map",
-    actions = [
-        # TODO: Should all compile actions be here?
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = ["-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=."],
-    requires_any_of = [":coverage"],
-)
-
-enableable_feature(
-    name = "_coverage_prefix_map_absolute_sources_non_hermetic",
-    actions = [
-        # TODO: Should all compile actions be here?
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = ["-fcoverage-prefix-map=__BAZEL_EXECUTION_ROOT__=__BAZEL_EXECUTION_ROOT_CANONICAL__"],
-    env = {"COVERAGE_PREFIX_MAP_USE_ABSOLUTE_CWD_PATH": "1"},
-    requires_any_of = [":coverage"],
-)
-
-enableable_feature(
-    name = "tsan",
-    custom_args = [
-        ":tsan_compile_flags",
-        ":tsan_link_flags",
-    ],
-)
-
-cc_args(
-    name = "ubsan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=undefined",
-    ],
-)
-
-cc_args(
-    name = "ubsan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=undefined",
-    ],
-)
-
-enableable_feature(
-    name = "ubsan",
-    custom_args = [
-        ":ubsan_compile_flags",
-        ":ubsan_link_flags",
-    ],
-)
-
-cc_feature(
-    name = "default_sanitizer_flags",
-    args = [":default_sanitizer_flags_args"],
-    feature_name = "default_sanitizer_flags",
-    requires_any_of = [
-        ":asan",
-        ":ubsan",
-        ":tsan",
-    ],
-)
-
-cc_args(
-    name = "default_sanitizer_flags_args",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-gline-tables-only",
-        "-fno-omit-frame-pointer",
-        "-fno-sanitize-recover=all",
-    ],
-)
-
-cc_args(
     name = "generate_linkmap_apple_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
     args = [
@@ -707,6 +478,7 @@ enableable_feature(
 cc_feature_constraint(
     name = "not_kernel_extension",
     none_of = [":kernel_extension"],
+    visibility = ["//toolchain:__subpackages__"],
 )
 
 negatable_feature(
@@ -841,192 +613,6 @@ enableable_feature(
 )
 
 negatable_feature(
-    name = "__apple_default_warnings",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-    ],
-    args = [
-        "-Werror=incompatible-sysroot",
-        "-Wshorten-64-to-32",
-        "-Wbool-conversion",
-        "-Wconstant-conversion",
-        "-Wduplicate-method-match",
-        "-Wempty-body",
-        "-Wenum-conversion",
-        "-Wint-conversion",
-        "-Wunreachable-code",
-        "-Wmismatched-return-types",
-        "-Wundeclared-selector",
-        "-Wuninitialized",
-        "-Wunused-function",
-        "-Wunused-variable",
-    ],
-)
-
-negatable_feature(
-    name = "__apple_default_compiler_flags",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-    ],
-    args = select({
-        "@platforms//os:macos": ["-DOS_MACOSX"],
-        "@platforms//os:ios": ["-DOS_IOS"],
-        "@platforms//os:watchos": ["-DOS_IOS"],  # NOTE: This is weird
-        "@platforms//os:tvos": ["-DOS_TVOS"],  # NOTE: This is weird
-        "@platforms//os:visionos": [],
-    }) + ["-fno-autolink"],
-)
-
-cc_args(
-    name = "objc_executable_non_kernel_extension_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = [
-        "-Xlinker",
-        "-objc_abi_version",
-        "-Xlinker",
-        "2",
-    ],
-    requires_any_of = [":not_kernel_extension"],
-)
-
-cc_args(
-    name = "objc_executable_filelist_args",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = [
-        "-filelist",
-        "{filelist}",
-    ],
-    format = {"filelist": "@rules_cc//cc/toolchains/variables:filelist"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:filelist",
-)
-
-cc_args(
-    name = "objc_executable_linked_binary_args",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = [
-        "-o",
-        "{linked_binary}",
-        "LINKED_BINARY={linked_binary}",
-    ],
-    format = {"linked_binary": "@rules_cc//cc/toolchains/variables:linked_binary"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:linked_binary",
-)
-
-cc_args(
-    name = "objc_executable_force_load_args",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = [
-        "-force_load",
-        "{force_load_exec_paths}",
-    ],
-    format = {"force_load_exec_paths": "@rules_cc//cc/toolchains/variables:force_load_exec_paths"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:force_load_exec_paths",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:force_load_exec_paths",
-)
-
-cc_args(
-    name = "objc_executable_dep_linkopts",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = ["{dep_linkopts}"],
-    format = {"dep_linkopts": "@rules_cc//cc/toolchains/variables:dep_linkopts"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:dep_linkopts",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:dep_linkopts",
-)
-
-cc_args(
-    name = "objc_executable_attr_linkopts",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = ["-Wl,{attr_linkopts}"],
-    format = {"attr_linkopts": "@rules_cc//cc/toolchains/variables:attr_linkopts"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:attr_linkopts",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:attr_linkopts",
-)
-
-negatable_feature(
-    name = "__objc_executable_feature",
-    custom_args = [
-        ":objc_executable_non_kernel_extension_flags",
-        ":objc_executable_filelist_args",
-        ":objc_executable_linked_binary_args",
-        ":objc_executable_force_load_args",
-        ":objc_executable_dep_linkopts",
-        ":objc_executable_attr_linkopts",
-    ],
-)
-
-negatable_feature(
-    name = "objc_link_flag",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = ["-ObjC"],
-    requires_any_of = [":not_kernel_extension"],
-)
-
-cc_args(
-    name = "objc_fully_link_default_args",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = [
-        "-D",
-        "-no_warning_for_no_symbols",
-        "-static",
-        "-arch_only",
-        "{ARCH}",
-    ],
-    toolchains = [":dynamic_toolchain_info"],
-)
-
-cc_args(
-    name = "objc_fully_link_output_args",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = [
-        "-o",
-        "{fully_linked_archive_path}",
-    ],
-    format = {"fully_linked_archive_path": "@rules_cc//cc/toolchains/variables:fully_linked_archive_path"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:fully_linked_archive_path",
-)
-
-cc_args(
-    name = "objc_fully_link_objc_library_exec_paths",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = ["{objc_library_exec_paths}"],
-    format = {"objc_library_exec_paths": "@rules_cc//cc/toolchains/variables:objc_library_exec_paths"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:objc_library_exec_paths",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:objc_library_exec_paths",
-)
-
-cc_args(
-    name = "objc_fully_link_cc_library_exec_paths",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = ["{cc_library_exec_paths}"],
-    format = {"cc_library_exec_paths": "@rules_cc//cc/toolchains/variables:cc_library_exec_paths"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:cc_library_exec_paths",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:cc_library_exec_paths",
-)
-
-cc_args(
-    name = "objc_fully_link_imported_library_exec_paths",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_fully_link"],
-    args = ["{imported_library_exec_paths}"],
-    format = {"imported_library_exec_paths": "@rules_cc//cc/toolchains/variables:imported_library_exec_paths"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:imported_library_exec_paths",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:imported_library_exec_paths",
-)
-
-# TODO: Remove https://github.com/bazelbuild/rules_cc/pull/644
-negatable_feature(
-    name = "__objc_fully_link_feature",
-    custom_args = [
-        ":objc_fully_link_default_args",
-        ":objc_fully_link_output_args",
-        ":objc_fully_link_objc_library_exec_paths",
-        ":objc_fully_link_cc_library_exec_paths",
-        ":objc_fully_link_imported_library_exec_paths",
-    ],
-)
-
-negatable_feature(
     name = "__header_parsing_flags",
     actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
     args = [
@@ -1118,8 +704,8 @@ cc_toolchain(
         # NOTE: ORDER MATTERS
         "@rules_cc//cc/toolchains/args/layering_check:module_maps",  # NOTE: This is a marker feature
         "@rules_cc//cc/toolchains/args/strip_flags:feature",
-        ":__objc_executable_feature",
-        ":__objc_fully_link_feature",
+        "//toolchain/objc:__objc_executable_feature",
+        "//toolchain/objc:__objc_fully_link_feature",
         ":__header_parsing_flags",  # NOTE: Must come before input files
         ":link_libc++",
         ":default_compile_flags_feature",
@@ -1136,9 +722,9 @@ cc_toolchain(
         "@rules_cc//cc/toolchains/args/runtime_library_search_directories:feature",
         "@rules_cc//cc/toolchains/args/library_search_directories:feature",
         "@rules_cc//cc/toolchains/args/libraries_to_link:feature",
-        ":objc_link_flag",
+        "//toolchain/objc:objc_link_flag",
         ":pch",
-        ":__apple_default_warnings",
+        "//toolchain/objc:__apple_default_warnings",
         "@rules_cc//cc/toolchains/args/archiver_flags:feature",
         "@rules_cc//cc/toolchains/args/include_flags:feature",
         "@rules_cc//cc/toolchains/args/dependency_file:feature",
@@ -1149,11 +735,11 @@ cc_toolchain(
         "//toolchain/pgo:fdo_optimize_wrapper",
         "//toolchain/pgo:autofdo_wrapper",
         ":lto_object_path",
-        ":llvm_coverage_map_format_wrapper",
-        ":gcc_coverage_map_format_wrapper",
-        ":coverage_prefix_map",
-        ":_coverage_prefix_map_absolute_sources_non_hermetic_wrapper",
-        ":__apple_default_compiler_flags",
+        "//toolchain/coverage:llvm_coverage_map_format_wrapper",
+        "//toolchain/coverage:gcc_coverage_map_format_wrapper",
+        "//toolchain/coverage:coverage_prefix_map",
+        "//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic_wrapper",
+        "//toolchain/objc:__apple_default_compiler_flags",
         ":sysroot_feature",
         ":headerpad",
         "@rules_cc//cc/toolchains/args/objc_arc_flags:feature",
@@ -1168,7 +754,7 @@ cc_toolchain(
         ":apply_implicit_frameworks",
         ":link_cocoa_wrapper",
         ":user_compile_flags",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
-        ":unfiltered_compile_flags_feature",
+        ":unfiltered_compile_flags",
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
@@ -1176,10 +762,10 @@ cc_toolchain(
         ":should_set_install_name": [":set_install_name"],
         "//conditions:default": [],
     }) + [
-        ":asan_wrapper",
-        ":tsan_wrapper",
-        ":ubsan_wrapper",
-        ":default_sanitizer_flags",
+        "//toolchain/sanitizers:asan_wrapper",
+        "//toolchain/sanitizers:tsan_wrapper",
+        "//toolchain/sanitizers:ubsan_wrapper",
+        "//toolchain/sanitizers:default_sanitizer_flags",
         ":suppress_warnings_wrapper",
         ":treat_warnings_as_errors_wrapper",
         ":no_warn_duplicate_libraries",
@@ -1190,15 +776,15 @@ cc_toolchain(
         ":opt",
         ":dbg",
         ":fastbuild",
-        ":coverage",
+        "//toolchain/coverage",
         ":kernel_extension",
         ":serialized_diagnostics_file",
-        ":llvm_coverage_map_format",
-        ":gcc_coverage_map_format",
-        ":_coverage_prefix_map_absolute_sources_non_hermetic",
-        ":asan",
-        ":tsan",
-        ":ubsan",
+        "//toolchain/coverage:llvm_coverage_map_format",
+        "//toolchain/coverage:gcc_coverage_map_format",
+        "//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic",
+        "//toolchain/sanitizers:asan",
+        "//toolchain/sanitizers:tsan",
+        "//toolchain/sanitizers:ubsan",
         ":generate_dsym_file",
         ":generate_linkmap",
         ":link_cocoa",
