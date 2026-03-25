@@ -12,28 +12,10 @@ _LIMITED_COMPILE_ACTIONS = [
     "@rules_cc//cc/toolchains/actions:objcpp_compile",
 ]
 
-cc_args(
-    name = "asan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=address",
-    ],
-)
-
-cc_args(
-    name = "asan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=address",
-    ],
-)
-
 enableable_feature(
     name = "asan",
-    custom_args = [
-        ":asan_compile_flags",
-        ":asan_link_flags",
-    ],
+    actions = _LIMITED_COMPILE_ACTIONS + ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-fsanitize=address"],
 )
 
 cc_feature_constraint(
@@ -48,52 +30,16 @@ cc_args(
     requires_any_of = ["//toolchain/sanitizers:not_asan"],
 )
 
-cc_args(
-    name = "tsan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=thread",
-    ],
-)
-
-cc_args(
-    name = "tsan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=thread",
-    ],
-)
-
 enableable_feature(
     name = "tsan",
-    custom_args = [
-        ":tsan_compile_flags",
-        ":tsan_link_flags",
-    ],
-)
-
-cc_args(
-    name = "ubsan_compile_flags",
-    actions = _LIMITED_COMPILE_ACTIONS,
-    args = [
-        "-fsanitize=undefined",
-    ],
-)
-
-cc_args(
-    name = "ubsan_link_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-fsanitize=undefined",
-    ],
+    actions = _LIMITED_COMPILE_ACTIONS + ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-fsanitize=thread"],
 )
 
 enableable_feature(
     name = "ubsan",
-    custom_args = [
-        ":ubsan_compile_flags",
-        ":ubsan_link_flags",
-    ],
+    actions = _LIMITED_COMPILE_ACTIONS + ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-fsanitize=undefined"],
 )
 
 cc_feature(
