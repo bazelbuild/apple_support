@@ -1104,7 +1104,7 @@ negatable_feature(
 )
 
 cc_toolchain(
-    name = "foo",
+    name = "toolchain",
     args = [
         "@apple_support_toolchain_env//:include_directories_from_xcode",
     ] + select({
@@ -1231,6 +1231,6 @@ cc_toolchain(
 alias(
     name = "toolchain_config",
     testonly = True,
-    actual = ":_foo_config",
+    actual = ":_toolchain_config",
     visibility = ["//test:__subpackages__"],
 )

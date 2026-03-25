@@ -5299,5 +5299,5 @@
   "target_libc": "",
   "target_system_name": "x86_64-apple-macosx26.2",
   "tool_paths": [],
-  "toolchain_id": "@@//toolchain:_foo_config"
+  "toolchain_id": "@@//toolchain:_toolchain_config"
 }
