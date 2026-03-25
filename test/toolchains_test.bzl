@@ -1,5 +1,6 @@
 """Test framework for diffing cc_toolchain config against checked-in golden files."""
 
+load("@bazel_features//private:util.bzl", bazel_version_ge = "ge")
 load(
     "@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl",
     "CcToolchainConfigInfo",
@@ -172,12 +173,19 @@ _toolchain_config_update = rule(
     },
 )
 
+_is_bazel_9_or_later = bazel_version_ge("9.0.0")
+
 def toolchain_config_test_suite(name):
     """Create toolchain config tests for all platforms.
 
     Args:
         name: Name for the test suite.
     """
+    if not _is_bazel_9_or_later:
+        # Bazel 7.x/8.x use proto encoding for CcToolchainConfigInfo
+        # instead of JSON, so these tests don't work there.
+        native.test_suite(name = name, tests = [])
+        return
 
     platforms = APPLE_PLATFORMS_CONSTRAINTS.keys()
     toolchain_config = "//toolchain:toolchain_config"
