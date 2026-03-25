@@ -4317,36 +4317,15 @@
         {
           "actions": [
             "c++-compile",
-            "c-compile",
-            "objc++-compile",
-            "objc-compile"
-          ],
-          "flag_groups": [
-            {
-              "expand_if_available": null,
-              "expand_if_equal": null,
-              "expand_if_false": null,
-              "expand_if_not_available": null,
-              "expand_if_true": null,
-              "flag_groups": [],
-              "flags": [
-                "-fsanitize=address"
-              ],
-              "iterate_over": null,
-              "type_name": "flag_group"
-            }
-          ],
-          "type_name": "flag_set",
-          "with_features": []
-        },
-        {
-          "actions": [
             "c++-link-dynamic-library",
             "c++-link-executable",
             "c++-link-nodeps-dynamic-library",
+            "c-compile",
             "lto-index-for-dynamic-library",
             "lto-index-for-executable",
             "lto-index-for-nodeps-dynamic-library",
+            "objc++-compile",
+            "objc-compile",
             "objc-executable"
           ],
           "flag_groups": [
@@ -4388,36 +4367,15 @@
         {
           "actions": [
             "c++-compile",
-            "c-compile",
-            "objc++-compile",
-            "objc-compile"
-          ],
-          "flag_groups": [
-            {
-              "expand_if_available": null,
-              "expand_if_equal": null,
-              "expand_if_false": null,
-              "expand_if_not_available": null,
-              "expand_if_true": null,
-              "flag_groups": [],
-              "flags": [
-                "-fsanitize=thread"
-              ],
-              "iterate_over": null,
-              "type_name": "flag_group"
-            }
-          ],
-          "type_name": "flag_set",
-          "with_features": []
-        },
-        {
-          "actions": [
             "c++-link-dynamic-library",
             "c++-link-executable",
             "c++-link-nodeps-dynamic-library",
+            "c-compile",
             "lto-index-for-dynamic-library",
             "lto-index-for-executable",
             "lto-index-for-nodeps-dynamic-library",
+            "objc++-compile",
+            "objc-compile",
             "objc-executable"
           ],
           "flag_groups": [
@@ -4459,36 +4417,15 @@
         {
           "actions": [
             "c++-compile",
-            "c-compile",
-            "objc++-compile",
-            "objc-compile"
-          ],
-          "flag_groups": [
-            {
-              "expand_if_available": null,
-              "expand_if_equal": null,
-              "expand_if_false": null,
-              "expand_if_not_available": null,
-              "expand_if_true": null,
-              "flag_groups": [],
-              "flags": [
-                "-fsanitize=undefined"
-              ],
-              "iterate_over": null,
-              "type_name": "flag_group"
-            }
-          ],
-          "type_name": "flag_set",
-          "with_features": []
-        },
-        {
-          "actions": [
             "c++-link-dynamic-library",
             "c++-link-executable",
             "c++-link-nodeps-dynamic-library",
+            "c-compile",
             "lto-index-for-dynamic-library",
             "lto-index-for-executable",
             "lto-index-for-nodeps-dynamic-library",
+            "objc++-compile",
+            "objc-compile",
             "objc-executable"
           ],
           "flag_groups": [
