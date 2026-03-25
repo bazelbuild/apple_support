@@ -1,3 +1,4 @@
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "objc_library")
 load("//rules:universal_binary.bzl", "universal_binary")
 load("//test:starlark_apple_binary.bzl", "starlark_apple_binary")
@@ -210,4 +211,18 @@ objc_library(
     copts = ["-DFROM_BUILD_COPTS=1"],
     defines = ["FROM_BUILD_DEFINES=1"],
     tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+cc_library(
+    name = "test_lib_for_coverage",
+    srcs = ["test_lib.c"],
+    hdrs = ["test_lib.h"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
+cc_test(
+    name = "c_test",
+    srcs = ["c_test_for_coverage.c"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":test_lib_for_coverage"],
 )
