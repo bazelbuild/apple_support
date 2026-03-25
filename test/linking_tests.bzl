@@ -71,6 +71,7 @@ no_pic_test = make_action_command_line_test_rule(
 linkmap_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:objc_generate_linkmap": True,
+        "//command_line_option:features": ["generate_linkmap"],
     },
 )
 
@@ -311,6 +312,19 @@ def linking_test_suite(name):
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
+    )
+
+    linkmap_test(
+        name = "{}_generate_linkmap_cc_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-map",
+            "-Xlinker",
+            "cc_test_binary.map",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
     )
 
     default_test(
