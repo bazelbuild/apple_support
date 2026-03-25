@@ -469,16 +469,17 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
 )
 
-# We need to pass -object_path_lto in order to get debug symbols when building with LTO.
-# In a perfect world, we would only pass it when the thin_lto or full_lto features are enabled.
-# However, when these features are enabled, bazel will follow the linking steps expected by
-# the traditional llvm tools, which doesn't work on Apple platforms.
-# On MacOS, passing -flto (or -flto=thin) to the compiler is mostly enough for the linker to
-# do the right thing. The only thing left is to tell ld64 to keep the intermediate .o file,
-# so dsymutil can find it.
-# We're doing that here by passing -object_path_lto to every linking action. If LTO is disabled,
-# it will be a no-op for the linker. But if it is enabled, it will allow dsymutil to find the
-# symbols and put it in the .dSYM folder. Luckily for us, both ld64 and dsymutil run in the same
+# We need to pass -object_path_lto in order to get debug symbols when building
+# with LTO. In a perfect world, we would only pass it when the thin_lto or
+# full_lto features are enabled. However, when these features are enabled,
+# bazel will follow the linking steps expected by the traditional llvm tools,
+# which doesn't work on Apple platforms. On MacOS, passing -flto (or
+# -flto=thin) to the compiler is mostly enough for the linker to do the right
+# thing. The only thing left is to tell ld64 to keep the intermediate .o file,
+# so dsymutil can find it. We're doing that here by passing -object_path_lto to
+# every linking action. If LTO is disabled, it will be a no-op for the linker.
+# But if it is enabled, it will allow dsymutil to find the symbols and put it
+# in the .dSYM folder. Luckily for us, both ld64 and dsymutil run in the same
 # action, so the fact that it's not declared as an output is not a problem.
 negatable_feature(
     name = "lto_object_path",
