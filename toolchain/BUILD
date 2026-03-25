@@ -190,13 +190,6 @@ negatable_feature(
     ],
 )
 
-# cc_feature(
-#     name = "serialized_diagnostics_file_wrapper",
-#     args = [":serialized_diagnostics_file_args"],
-#     feature_name = "__serialized_diagnostics_file_wrapper",
-#     requires_any_of = [":serialized_diagnostics_file"],
-# )
-
 enableable_feature(
     name = "serialized_diagnostics_file",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
@@ -286,16 +279,6 @@ negatable_feature(
         ":default_link_flags_opt_args",
     ],
 )
-
-# cc_feature(
-#     name = "generate_dsym_file_wrapper",
-#     args = [
-#         ":generate_dsym_compile_flags",
-#         ":generate_dsym_link_flags",
-#     ],
-#     feature_name = "__generate_dsym_file_wrapper",
-#     requires_any_of = ["@rules_cc//cc/toolchains/features/legacy:generate_dsym_file"],
-# )
 
 cc_args(
     name = "generate_dsym_compile_flags",
@@ -421,13 +404,6 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:strip_debug_symbols",
 )
 
-# cc_args(
-#     name = "generate_linkmap_args",
-#     actions = [":all_dynamic_link_actions"],
-#     args = ["-Xlinker", "-map", "-Xlinker", "{output_execpath}.map"],
-#     format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
-#     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
-# )
 config_setting(
     name = "no_xcode_version",
     flag_values = {"@bazel_tools//tools/osx:xcode_version_flag_major": "None"},
@@ -622,9 +598,7 @@ negatable_feature(
         "-xc++-header",
         "-fsyntax-only",
     ],
-    env = {
-        "HEADER_PARSING_OUTPUT": "{output_file}",
-    },
+    env = {"HEADER_PARSING_OUTPUT": "{output_file}"},
     format = {"output_file": "@rules_cc//cc/toolchains/variables:output_file"},
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_file",
 )

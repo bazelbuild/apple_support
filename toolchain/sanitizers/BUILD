@@ -27,7 +27,7 @@ cc_args(
     name = "no_asan_compile_flags",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
     args = ["-D_FORTIFY_SOURCE=1"],
-    requires_any_of = ["//toolchain/sanitizers:not_asan"],
+    requires_any_of = [":not_asan"],
 )
 
 enableable_feature(
