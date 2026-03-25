@@ -1,3 +1,4 @@
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
@@ -14,6 +15,7 @@ MARKER_FEATURES = [
     "compile_all_modules",
     "compiler_param_file",
     "exclude_private_headers_in_module_maps",
+    "gcc_quoting_for_param_files",
     "no_dotd_file",
     "no_legacy_features",
     "only_doth_headers_in_module_maps",
@@ -22,7 +24,9 @@ MARKER_FEATURES = [
 
 ENABLED_MARKERS = [
     "archive_param_file",
-]
+] + (
+    ["gcc_quoting_for_param_files"] if bazel_features.cc.fixed_dsym_path_quoting else []
+)
 
 # TODO: See if we really need this one
 _LIMITED_COMPILE_ACTIONS = [
