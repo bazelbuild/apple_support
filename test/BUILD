@@ -10,6 +10,7 @@ load(":binary_tests.bzl", "binary_test_suite")
 load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
+load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
@@ -28,6 +29,8 @@ binary_test_suite(name = "binary")
 compiling_test_suite(name = "compiling")
 
 linking_test_suite(name = "linking")
+
+sanitizer_test_suite(name = "sanitizer")
 
 xcode_config_test(name = "xcode_config_test")
 
