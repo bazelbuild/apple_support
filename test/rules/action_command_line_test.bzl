@@ -56,6 +56,12 @@ def _action_command_line_test_impl(ctx):
                     "external/local_config_apple_cc/libtool",
                 ]
             ]
+        if len(matching_actions) != 1 and ctx.attr.argv_filter:
+            matching_actions = [
+                action
+                for action in matching_actions
+                if ctx.attr.argv_filter + " " in " ".join(action.argv) + " "
+            ]
         if len(matching_actions) != 1:
             unittest.fail(
                 env,
@@ -147,6 +153,13 @@ space-delimited string.
                 doc = """\
 The mnemonic of the action to be inspected on the target under test. It is
 expected that there will be exactly one of these.
+""",
+            ),
+            "argv_filter": attr.string(
+                doc = """\
+If set, when multiple actions match the mnemonic, select the action whose
+argv contains this string. Useful when a config like --save_temps produces
+multiple actions with the same mnemonic.
 """,
             ),
         },

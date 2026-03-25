@@ -47,6 +47,12 @@ dbg_test = make_action_command_line_test_rule(
     },
 )
 
+save_temps_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:save_temps": True,
+    },
+)
+
 disable_ns_block_assertions_feature_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
@@ -319,6 +325,30 @@ def compiling_test_suite(name):
             "-o",
             "cc_lib.o",
         ],
+        not_expected_argv = [
+            "-S",
+            "-E",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    save_temps_test(
+        name = "{}_output_assembly_file_test".format(name),
+        tags = [name],
+        expected_argv = ["-S"],
+        not_expected_argv = ["-E"],
+        argv_filter = "-S",
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    save_temps_test(
+        name = "{}_output_preprocess_file_test".format(name),
+        tags = [name],
+        expected_argv = ["-E"],
+        not_expected_argv = ["-S"],
+        argv_filter = "-E",
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_lib",
     )
