@@ -440,6 +440,16 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "gcc_quoting_for_param_files",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "module_maps",
       "provides": [],
       "requires": [],
