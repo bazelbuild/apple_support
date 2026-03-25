@@ -343,16 +343,9 @@ enableable_feature(
 )
 
 # TODO: Remove after https://github.com/bazelbuild/rules_cc/pull/386
-cc_feature(
+enableable_feature(
     name = "external_include_paths",
-    feature_name = "external_include_paths",
-)
-
-cc_feature(
-    name = "external_include_paths_wrapper",
-    args = ["@rules_cc//cc/toolchains/args/external_include_paths"],
-    feature_name = "__external_include_paths_wrapper",
-    requires_any_of = [":external_include_paths"],
+    custom_args = ["@rules_cc//cc/toolchains/args/external_include_paths"],
 )
 
 cc_args(
