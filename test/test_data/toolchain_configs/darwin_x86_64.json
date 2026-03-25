@@ -5108,7 +5108,7 @@
       "implies": [],
       "name": "fdo_instrument",
       "provides": [
-        "@@//crosstool/rules_based/pgo:profile"
+        "@@//toolchain/pgo:profile"
       ],
       "requires": [],
       "type_name": "feature"
@@ -5120,7 +5120,7 @@
       "implies": [],
       "name": "autofdo",
       "provides": [
-        "@@//crosstool/rules_based/pgo:profile"
+        "@@//toolchain/pgo:profile"
       ],
       "requires": [],
       "type_name": "feature"
@@ -5132,7 +5132,7 @@
       "implies": [],
       "name": "fdo_optimize",
       "provides": [
-        "@@//crosstool/rules_based/pgo:profile"
+        "@@//toolchain/pgo:profile"
       ],
       "requires": [],
       "type_name": "feature"
@@ -5299,5 +5299,5 @@
   "target_libc": "",
   "target_system_name": "x86_64-apple-macosx26.2",
   "tool_paths": [],
-  "toolchain_id": "@@//crosstool/rules_based:_foo_config"
+  "toolchain_id": "@@//toolchain:_foo_config"
 }
