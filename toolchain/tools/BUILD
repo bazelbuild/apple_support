@@ -28,7 +28,7 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:llvm_profdata": ":llvm_profdata_tool",
         "@rules_cc//cc/toolchains/actions:llvm_cov": ":llvm_cov_tool",
     },
-    visibility = ["//crosstool:__subpackages__"],
+    visibility = ["//:__subpackages__"],
 )
 
 cc_tool(
