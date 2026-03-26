@@ -24,7 +24,6 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:objc_executable": ":clang_tool",  # TODO: This should be the same as the other link actions
         "@rules_cc//cc/toolchains/actions:objc_fully_link": ":libtool_tool",
         "@rules_cc//cc/toolchains/actions:strip": ":strip_tool",
-        "@rules_cc//cc/toolchains/actions:gcov": ":gcov_tool",
         "@rules_cc//cc/toolchains/actions:llvm_profdata": ":llvm_profdata_tool",
         "@rules_cc//cc/toolchains/actions:llvm_cov": ":llvm_cov_tool",
     },
@@ -61,12 +60,6 @@ cc_tool(
 cc_tool(
     name = "strip_tool",
     src = "//crosstool:exec_strip",
-    tags = _TAGS,
-)
-
-cc_tool(
-    name = "gcov_tool",
-    src = "//crosstool:exec_gcov",
     tags = _TAGS,
 )
 

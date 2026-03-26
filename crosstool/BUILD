@@ -66,18 +66,6 @@ force_exec(
 )
 
 genrule(
-    name = "exec_gcov.target_config",
-    srcs = ["gcov.sh"],
-    outs = ["gcov"],
-    cmd = "cp $(SRCS) $(OUTS)",
-)
-
-force_exec(
-    name = "exec_gcov",
-    target = ":exec_gcov.target_config",
-)
-
-genrule(
     name = "exec_llvm_profdata.target_config",
     srcs = ["llvm-profdata.sh"],
     outs = ["llvm-profdata"],

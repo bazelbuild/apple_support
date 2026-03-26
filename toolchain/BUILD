@@ -3,6 +3,7 @@ load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
 load("@rules_cc//cc/toolchains:artifacts.bzl", "cc_artifact_name_pattern")
+load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
@@ -663,6 +664,12 @@ negatable_feature(
     visibility = ["//visibility:public"],  # Referenced through the optional enabling of layering_check
 )
 
+cc_legacy_tool(
+    name = "gcov",
+    path = "/usr/bin/gcov",
+    tool_name = "gcov",
+)
+
 cc_toolchain(
     name = "toolchain",
     args = [
@@ -777,6 +784,9 @@ cc_toolchain(
         ],
         "//conditions:default": [],
     }),
+    legacy_tools = [
+        ":gcov",
+    ],
     make_variables = [":stack_frame_variable"],
     module_map = "//crosstool:module.modulemap",
     supports_header_parsing = True,
