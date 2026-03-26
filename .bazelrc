@@ -15,6 +15,6 @@ build --host_per_file_copt=external/protobuf.*@-w
 build --test_output=errors
 
 # Be strict about toolchain changes introducing warnings, but don't cause downstream projects to fail
-build --copt=-Werror=unused-command-line-argument --host_copt=-Werror=unused-command-line-argument
+build:macos --copt=-Werror=unused-command-line-argument --host_copt=-Werror=unused-command-line-argument
 
 try-import %workspace%/user.bazelrc
