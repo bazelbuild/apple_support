@@ -185,29 +185,6 @@
       "type_name": "action_config"
     },
     {
-      "action_name": "gcov",
-      "enabled": true,
-      "flag_sets": [],
-      "implies": [],
-      "tools": [
-        {
-          "execution_requirements": [
-            "requires-darwin",
-            "supports-xcode-requirements-set"
-          ],
-          "path": null,
-          "tool": {
-            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/gcov",
-            "root": "bazel-out/darwin_arm64-opt-exec/bin",
-            "short_path": "crosstool/gcov"
-          },
-          "type_name": "tool",
-          "with_features": []
-        }
-      ],
-      "type_name": "action_config"
-    },
-    {
       "action_name": "linkstamp-compile",
       "enabled": true,
       "flag_sets": [],
@@ -5185,6 +5162,12 @@
   "target_cpu": "",
   "target_libc": "",
   "target_system_name": "arm64-apple-iosVERSION",
-  "tool_paths": [],
+  "tool_paths": [
+    {
+      "name": "gcov",
+      "path": "/usr/bin/gcov",
+      "type_name": "tool_path"
+    }
+  ],
   "toolchain_id": "@@//toolchain:_toolchain_config"
 }
