@@ -6,6 +6,7 @@ package(default_visibility = ["//toolchain:__pkg__"])
 negatable_feature(
     name = "__apple_default_warnings",
     actions = [
+        # TODO: Add to more compile actions
         "@rules_cc//cc/toolchains/actions:objc_compile",
         "@rules_cc//cc/toolchains/actions:objcpp_compile",
     ],
