@@ -59,7 +59,7 @@ tasks:
   #   <<: *common
 
   macos_latest_shell_scripts:
-    name: "Current layering_check and header parsing"
+    name: "Shell tests"
     platform: macos_arm64
     bazel: latest
     shell_commands:
