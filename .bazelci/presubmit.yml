@@ -52,11 +52,10 @@ tasks:
     bazel: last_rc
     <<: *common
 
-  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
-  # macos_rolling:
-  #   name: "Latest Rolling"
-  #   bazel: rolling
-  #   <<: *common
+  macos_rolling:
+    name: "Latest Rolling"
+    bazel: rolling
+    <<: *common
 
   macos_latest_shell_scripts:
     name: "Current layering_check and header parsing"
@@ -67,11 +66,10 @@ tasks:
       - test/shell/header_parsing_test.sh
       - test/shell/coverage_test.sh
 
-  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
-  # macos_last_green:
-  #   name: "Last Green Bazel"
-  #   bazel: last_green
-  #   <<: *common
+  macos_last_green:
+    name: "Last Green Bazel"
+    bazel: last_green
+    <<: *common
 
   linux_latest:
     name: "Current LTS"

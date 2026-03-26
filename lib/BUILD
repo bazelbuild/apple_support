@@ -7,6 +7,8 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+exports_files(glob(["*.bzl"]))
+
 # This target is mainly for use by rules_apple and rules_swift.
 # When this target is linked into an XCTest binary, and the
 # `BUILD_WORKSPACE_DIRECTORY` environment variable is set, the relative paths of
