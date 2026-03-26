@@ -378,13 +378,13 @@ def compiling_test_suite(name):
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
             "-fstack-protector",
+            "-O0",
+            "-DDEBUG",
             "-g",
         ],
         not_expected_argv = [
-            "-DDEBUG",
             "-DNDEBUG",
             "-g0",
-            "-O0",
             "-O2",
         ],
         mnemonic = "CppCompile",

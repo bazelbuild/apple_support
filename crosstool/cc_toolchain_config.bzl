@@ -1638,7 +1638,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                flag_groups = [flag_group(flags = ["-g"])],
+                flag_groups = [flag_group(flags = ["-O0", "-DDEBUG", "-g"])],
                 with_features = [with_feature_set(features = ["dbg"])],
             ),
         ],
