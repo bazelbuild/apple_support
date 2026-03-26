@@ -175,7 +175,7 @@ def configure_osx_toolchain(repository_ctx):
 
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
 
-    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
+    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") != "0"
 
     tool_paths = {}
     gcov_path = repository_ctx.os.environ.get("GCOV")
