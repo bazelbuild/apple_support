@@ -8,7 +8,8 @@ source "$script_path"/unittest.bash
 bazel="${BAZEL:-bazel}"
 
 function test_good_header_parsing() {
-  "$bazel" test --process_headers_in_dependencies -- //test/header_parsing/... &>"$TEST_log"
+  "$bazel" test --announce_rc --process_headers_in_dependencies -- //test/header_parsing/...
+  "$bazel" test --announce_rc --process_headers_in_dependencies -- //test/header_parsing/... &>"$TEST_log"
 }
 
 function test_bad_header_parsing() {
