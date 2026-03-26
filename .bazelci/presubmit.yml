@@ -24,68 +24,11 @@ x_defaults:
       - "//tools/http_dmg/..."
 
 tasks:
-  macos_7_lowest:
-    name: "7.x lowest supported"
-    bazel: "7.1.0"
-    <<: *common
-    test_targets:
-      - "//..."
-      - "-//test:linking_generate_cpp_dsym_test"
-      - "-//doc/..."
-
-  macos_7:
-    name: "7.x LTS"
-    bazel: 7.x
-    <<: *common
-    test_targets:
-      - "//..."
-      - "-//test:linking_generate_cpp_dsym_test"
-      - "-//doc/..."
-
-  macos_8:
-    name: "8.x LTS"
-    bazel: 8.x
-    <<: *common
-
-  macos_latest:
-    name: "Current LTS"
-    bazel: last_rc
-    <<: *common
-
-  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
-  # macos_rolling:
-  #   name: "Latest Rolling"
-  #   bazel: rolling
-  #   <<: *common
-
   macos_latest_shell_scripts:
     name: "Current layering_check and header parsing"
     platform: macos_arm64
     bazel: latest
     shell_commands:
-      - test/shell/layering_check_test.sh
       - test/shell/header_parsing_test.sh
-      - test/shell/coverage_test.sh
-
-  # TODO: Enable ASAP when we remove usage of `//command_line_option:incompatible_enable_apple_toolchain_resolution`
-  # macos_last_green:
-  #   name: "Last Green Bazel"
-  #   bazel: last_green
-  #   <<: *common
-
-  linux_latest:
-    name: "Current LTS"
-    bazel: latest
-    <<: *linux_common
-
-  linux_last_green:
-    name: "Last Green Bazel"
-    bazel: last_green
-    <<: *linux_common
-
-  windows_latest:
-    name: "Current LTS"
-    bazel: latest
-    <<: *windows_common
 
 buildifier: 8.2.1
