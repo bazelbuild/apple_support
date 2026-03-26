@@ -25,6 +25,8 @@ single_version_override(
         # https://github.com/bazelbuild/rules_cc/pull/659
         # https://github.com/bazelbuild/rules_cc/pull/660
         "//:rules_cc.patch",
+        # https://github.com/bazelbuild/rules_cc/pull/667
+        "//:rules_cc_legacy_tool.patch",
     ],
 )
 
