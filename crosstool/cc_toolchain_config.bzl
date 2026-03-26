@@ -45,6 +45,9 @@ _CPP_DYNAMIC_LINK_ACTIONS = [
     ACTION_NAMES.cpp_link_dynamic_library,
 ]
 
+_COMPILE_ACTIONS_WITHOUT_HEADER_PARSING = list(ACTION_NAME_GROUPS.all_cc_compile_actions)
+_COMPILE_ACTIONS_WITHOUT_HEADER_PARSING.remove(ACTION_NAMES.cpp_header_parsing)
+
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
@@ -622,10 +625,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = ACTION_NAME_GROUPS.all_cc_compile_actions,
+                actions = _COMPILE_ACTIONS_WITHOUT_HEADER_PARSING,
                 flag_groups = [
                     flag_group(
                         flags = ["-c", "%{source_file}"],
+                        expand_if_available = "source_file",
+                    ),
+                ],
+            ),
+            flag_set(
+                actions = [ACTION_NAMES.cpp_header_parsing],
+                flag_groups = [
+                    flag_group(
+                        flags = ["%{source_file}"],
                         expand_if_available = "source_file",
                     ),
                 ],
