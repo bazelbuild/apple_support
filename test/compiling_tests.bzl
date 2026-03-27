@@ -298,10 +298,12 @@ def compiling_test_suite(name):
             "__BAZEL_XCODE_SDKROOT__",
             "-DFROM_COPTS_FLAG=1",
             "-D__DATE__=\"redacted\"",
-            "-c",
             "test/header_parsing/valid_header.h",
             "-o",
             "$(BIN_DIR)/test/header_parsing/_objs/valid_header/valid_header.h.processed",
+        ],
+        not_expected_argv = [
+            "-c",  # Produces a clang warning since we don't compile anything in this action
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/header_parsing:valid_header",
