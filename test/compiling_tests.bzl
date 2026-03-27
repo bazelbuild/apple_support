@@ -74,7 +74,10 @@ def compiling_test_suite(name):
         expected_argv = [
             "-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=.",
             "-DCOPTS_ENV=1",
-            "-std=c++17 -DCXXOPTS_ENV=1 -std=c++20",
+            # NOTE: Validation is done in order
+            "-std=c++17",
+            "-DCXXOPTS_ENV=1",
+            "-std=c++20",
         ],
         not_expected_argv = [
             "-DCONLY_ENV=1",
