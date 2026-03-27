@@ -175,7 +175,7 @@ def configure_osx_toolchain(repository_ctx):
 
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
 
-    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
+    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") != "0"
 
     tool_paths = {}
     gcov_path = repository_ctx.os.environ.get("GCOV")
@@ -209,7 +209,7 @@ def configure_osx_toolchain(repository_ctx):
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{cxx_flags}": _get_starlark_list(cxx_opts),
             "%{features}": "\n".join(['"{}"'.format(x) for x in features]),
-            "%{layering_check_modulemap}": "\"@build_bazel_apple_support//crosstool:generate_layering_check_modulemap\"," if enable_layering_check else "",
+            "%{layering_check_modulemap}": "\"@build_bazel_apple_support//crosstool:exec_layering_check_modulemap\"," if enable_layering_check else "",
             "%{link_flags}": _get_starlark_list(link_opts),
             "%{placeholder_modulemap}": "\"@build_bazel_apple_support//crosstool:module.modulemap\"" if enable_layering_check else "None",
             "%{tool_paths_overrides}": ",\n            ".join(

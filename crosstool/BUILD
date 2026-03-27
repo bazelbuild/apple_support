@@ -16,6 +16,12 @@ apple_genrule(
     tools = ["generate-modulemap.sh"],
 )
 
+# TODO: Remove when we drop bazel 7.x
+force_exec(
+    name = "exec_layering_check_modulemap",
+    target = ":generate_layering_check_modulemap",
+)
+
 universal_exec_tool(
     name = "exec_wrapped_clang",
     srcs = ["wrapped_clang.cc"],
