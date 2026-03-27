@@ -16,6 +16,7 @@ apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
+register_toolchains("//lipo:default_lipo_toolchain")
 
 bazel_dep(name = "rules_shell", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
