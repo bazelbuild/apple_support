@@ -20,6 +20,8 @@ register_toolchains(
     "//rules/install_name_tool:default_toolchain",
 )
 
+register_toolchains("//lipo:default_lipo_toolchain")
+
 register_toolchains("//rules/private:macos_apple_genrule_toolchain")
 
 xcode_configure = use_extension("//xcode:xcode_configure.bzl", "xcode_configure_extension")
