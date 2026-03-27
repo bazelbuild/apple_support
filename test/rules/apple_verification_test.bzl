@@ -21,7 +21,6 @@ def _transition_impl(_, attr):
         "//command_line_option:apple_generate_dsym": attr.generate_dsym,
         "//command_line_option:compilation_mode": attr.compilation_mode,
         "//command_line_option:cpu": "darwin_x86_64",
-        "//command_line_option:ios_signing_cert_name": "-",
         "//command_line_option:macos_cpus": "x86_64",
         "//command_line_option:objc_enable_binary_stripping": attr.objc_enable_binary_stripping,
     }
@@ -59,7 +58,6 @@ _transition = transition(
         "//command_line_option:compilation_mode",
         "//command_line_option:cpu",
         "//command_line_option:ios_multi_cpus",
-        "//command_line_option:ios_signing_cert_name",
         "//command_line_option:macos_cpus",
         "//command_line_option:objc_enable_binary_stripping",
         "//command_line_option:tvos_cpus",

@@ -85,7 +85,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
     )
 
     output_dictionary = {
-        "//command_line_option:apple configuration distinguisher": "applebin_" + platform_type,
         "//command_line_option:apple_platform_type": platform_type,
         "//command_line_option:apple_platforms": apple_platforms,
         # `apple_split_cpu` is used by the Bazel Apple configuration distinguisher to distinguish
@@ -125,7 +124,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
 _apple_platform_transition_inputs = [
     "//command_line_option:apple_platforms",
     "//command_line_option:cpu",
-    "//command_line_option:incompatible_enable_apple_toolchain_resolution",
     "//command_line_option:ios_multi_cpus",
     "//command_line_option:macos_cpus",
     "//command_line_option:platforms",
@@ -136,7 +134,6 @@ _apple_platform_transition_inputs = [
 )
 
 _apple_rule_base_transition_outputs = [
-    "//command_line_option:apple configuration distinguisher",
     "//command_line_option:apple_platform_type",
     "//command_line_option:apple_platforms",
     "//command_line_option:apple_split_cpu",
@@ -153,52 +150,26 @@ _apple_rule_base_transition_outputs = [
 
 def _apple_platform_split_transition_impl(settings, attr):
     output_dictionary = {}
-    if settings["//command_line_option:incompatible_enable_apple_toolchain_resolution"]:
-        platforms = (
-            settings["//command_line_option:apple_platforms"] or
-            settings["//command_line_option:platforms"]
+    platform_type = attr.platform_type
+    environment_archs = settings[_PLATFORM_TYPE_TO_CPUS_FLAG[platform_type]]
+    if not environment_archs:
+        environment_archs = [_PLATFORM_TYPE_TO_DEFAULT_ARCH[platform_type]]
+    for environment_arch in environment_archs:
+        found_cpu = _cpu_string(
+            environment_arch = environment_arch,
+            platform_type = platform_type,
+            settings = settings,
         )
-        # Currently there is no "default" platform for Apple-based platforms. If necessary, a
-        # default platform could be generated for the rule's underlying platform_type, but for now
-        # we work with the assumption that all users of the rules should set an appropriate set of
-        # platforms when building Apple targets with `apple_platforms`.
+        if found_cpu in output_dictionary:
+            continue
 
-        for index, platform in enumerate(platforms):
-            # Create a new, reordered list so that the platform we need to resolve is always first,
-            # and the other platforms will follow.
-            apple_platforms = list(platforms)
-            platform_to_resolve = apple_platforms.pop(index)
-            apple_platforms.insert(0, platform_to_resolve)
-
-            if str(platform) not in output_dictionary:
-                output_dictionary[str(platform)] = _command_line_options(
-                    apple_platforms = apple_platforms,
-                    minimum_os_version = attr.minimum_os_version,
-                    platform_type = attr.platform_type,
-                    settings = settings,
-                )
-
-    else:
-        platform_type = attr.platform_type
-        environment_archs = settings[_PLATFORM_TYPE_TO_CPUS_FLAG[platform_type]]
-        if not environment_archs:
-            environment_archs = [_PLATFORM_TYPE_TO_DEFAULT_ARCH[platform_type]]
-        for environment_arch in environment_archs:
-            found_cpu = _cpu_string(
-                environment_arch = environment_arch,
-                platform_type = platform_type,
-                settings = settings,
-            )
-            if found_cpu in output_dictionary:
-                continue
-
-            minimum_os_version = attr.minimum_os_version
-            output_dictionary[found_cpu] = _command_line_options(
-                environment_arch = environment_arch,
-                minimum_os_version = minimum_os_version,
-                platform_type = platform_type,
-                settings = settings,
-            )
+        minimum_os_version = attr.minimum_os_version
+        output_dictionary[found_cpu] = _command_line_options(
+            environment_arch = environment_arch,
+            minimum_os_version = minimum_os_version,
+            platform_type = platform_type,
+            settings = settings,
+        )
 
     return output_dictionary
 
