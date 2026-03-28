@@ -128,9 +128,7 @@ universal_binary(<a href="#universal_binary-name">name</a>, <a href="#universal_
 
 This rule produces a multi-architecture ("fat") binary targeting Apple macOS
 platforms *regardless* of the architecture of the macOS host platform. The
-`lipo` tool is used to combine built binaries of multiple architectures. For
-non-macOS platforms, this simply just creates a symbolic link of the input
-binary.
+`lipo` tool is used to combine built binaries of multiple architectures.
 
 **ATTRIBUTES**
 

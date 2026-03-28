@@ -25,6 +25,7 @@ xcode_lipo_toolchain(
 toolchain(
     name = "default_lipo_toolchain",
     exec_compatible_with = ["@platforms//os:macos"],
+    target_compatible_with = ["@platforms//os:macos"],
     toolchain = ":lipo_toolchain",
     toolchain_type = ":toolchain_type",
 )
