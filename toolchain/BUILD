@@ -170,7 +170,11 @@ cc_feature_constraint(
 cc_args(
     name = "dbg_compile_flags",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-    args = ["-g"],
+    args = [
+        "-O0",
+        "-DDEBUG",
+        "-g",
+    ],
     requires_any_of = [":dbg"],
 )
 
