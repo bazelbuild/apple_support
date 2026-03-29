@@ -1,5 +1,4 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("@build_bazel_apple_support//xcode:xcode_config.bzl", "xcode_config")
 
 licenses(["notice"])
 
@@ -39,9 +38,4 @@ filegroup(
     # integration tests that need to copy all the support files into
     # a temporary workspace for the tests.
     visibility = ["//visibility:public"],
-)
-
-xcode_config(
-    name = "host_xcodes",
-    versions = [],
 )

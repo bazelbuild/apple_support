@@ -56,7 +56,7 @@ save_temps_test = make_action_command_line_test_rule(
 empty_xcodes_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:xcode_version_config": str(Label(
-            "//:host_xcodes",
+            "//test:empty_xcode_config",
         )),
     },
 )
