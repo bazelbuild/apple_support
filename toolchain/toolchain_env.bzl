@@ -129,7 +129,7 @@ def _toolchain_env_impl(repository_ctx):
     link_opts = _get_copts_env_var(repository_ctx, "BAZEL_LINKOPTS")
 
     escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator)
-    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") == "1"
+    enable_layering_check = repository_ctx.os.environ.get("APPLE_SUPPORT_LAYERING_CHECK_BETA") != "0"
 
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
