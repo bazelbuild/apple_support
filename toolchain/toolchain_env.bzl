@@ -13,15 +13,15 @@ _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
-        "/Applications/",  # Typical Xcode installation path
-        "/Library/",  # Xcode command line tools installation path
+        "/Applications/",
+        "/Library/",  # Global installation of CLT
     ]
 
     user = repository_ctx.os.environ.get("USER")
     if user:
         include_dirs.extend([
-            "/Users/{}/Applications/".format(user),  # User specific Xcode installation path
-            "/Users/{}/Library/".format(user),
+            "/Users/{}/Applications/".format(user),  # User only installation of Xcode
+            "/Users/{}/Library/Developer/".format(user),  # Custom Swift toolchains, user only installation of CLT
         ])
 
     xcode_toolchains = []
