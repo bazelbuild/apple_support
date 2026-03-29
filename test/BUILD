@@ -204,5 +204,6 @@ cc_shared_library(
 
 xcode_config(
     name = "empty_xcode_config",
+    tags = ["manual"],  # TODO: Remove when we drop 7.x
     versions = [],
 )
