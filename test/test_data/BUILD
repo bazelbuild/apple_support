@@ -95,7 +95,10 @@ framework_includes_lib(
 
 objc_library(
     name = "objc_framework_includes_lib",
-    srcs = ["objc_lib.m"],
+    srcs = [
+        "objc_lib.cpp",
+        "objc_lib.m",
+    ],
     tags = TARGETS_UNDER_TEST_TAGS,
     deps = [":framework_includes_dep"],
 )
