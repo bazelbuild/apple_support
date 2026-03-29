@@ -115,14 +115,14 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
         "/Applications/",
-        "/Library/",
+        "/Library/",  # Global installation of CLT
     ]
 
     user = repository_ctx.os.environ.get("USER")
     if user:
         include_dirs.extend([
-            "/Users/{}/Applications/".format(user),
-            "/Users/{}/Library/".format(user),
+            "/Users/{}/Applications/".format(user),  # User only installation of Xcode
+            "/Users/{}/Library/Developer/".format(user),  # Custom Swift toolchains, user only installation of CLT
         ])
 
     # Include extra Xcode paths in case they're installed on other volumes
