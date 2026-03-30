@@ -44,8 +44,8 @@ def _create(
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to
             configure the action environment. Required when `toolchain` is not
             provided.
-        toolchain: An optional `LipoToolchainInfo` provider. When provided,
-            the action is registered via `ctx.actions.run` using the tool,
+        toolchain: An optional `LipoInfo` provider. When provided, the
+            action is registered via `ctx.actions.run` using the tool,
             env, and execution requirements from the toolchain.
     """
     if not inputs:
@@ -58,7 +58,7 @@ def _create(
         args.add("-output")
         args.add(output)
         actions.run(
-            executable = toolchain.lipo,
+            executable = toolchain.tool,
             arguments = [args],
             mnemonic = "AppleLipo",
             inputs = inputs,

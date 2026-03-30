@@ -18,7 +18,7 @@ use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_too
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
 
-register_toolchains("//lipo:default_lipo_toolchain")
+register_toolchains("//rules/lipo:default_lipo_toolchain")
 
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
 

@@ -1,25 +1,22 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
-load(":xcode_lipo_toolchain.bzl", "xcode_lipo_toolchain")
+load(":xcode_toolchain.bzl", "xcode_lipo_toolchain")
 
 licenses(["notice"])
 
-package(
-    default_visibility = ["//visibility:public"],
-)
+package(default_visibility = ["//visibility:public"])
 
-toolchain_type(
-    name = "toolchain_type",
-)
+toolchain_type(name = "toolchain_type")
 
 sh_binary(
     name = "lipo",
     srcs = ["lipo.sh"],
+    visibility = ["//visibility:private"],
 )
 
 xcode_lipo_toolchain(
     name = "lipo_toolchain",
-    lipo = ":lipo",
+    tool = ":lipo",
 )
 
 toolchain(
@@ -31,20 +28,22 @@ toolchain(
 )
 
 bzl_library(
-    name = "lipo_toolchain_lib",
-    srcs = ["lipo_toolchain.bzl"],
+    name = "toolchain_bzl",
+    srcs = ["toolchain.bzl"],
 )
 
 bzl_library(
-    name = "xcode_lipo_toolchain_lib",
-    srcs = ["xcode_lipo_toolchain.bzl"],
-    deps = [":lipo_toolchain_lib"],
+    name = "xcode_toolchain_bzl",
+    srcs = ["xcode_toolchain.bzl"],
+    deps = [
+        ":toolchain_bzl",
+        "//lib:apple_support",
+    ],
 )
 
-# Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
+    visibility = ["//:__subpackages__"],
 )

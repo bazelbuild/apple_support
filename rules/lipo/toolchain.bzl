@@ -14,10 +14,10 @@
 
 """Toolchain rule for providing a custom `lipo` tool."""
 
-LipoToolchainInfo = provider(
+LipoInfo = provider(
     doc = "Provides a `lipo` tool for creating and manipulating universal binaries.",
     fields = {
-        "lipo": "A `FilesToRunProvider` for the `lipo` tool.",
+        "tool": "A `FilesToRunProvider` for the `lipo` tool.",
         "env": "A `dict` of environment variables to set when running the tool.",
         "execution_requirements": """\
 A `dict` of execution requirements for the action (e.g. `requires-darwin`).
@@ -28,8 +28,8 @@ A `dict` of execution requirements for the action (e.g. `requires-darwin`).
 def _lipo_toolchain_impl(ctx):
     return [
         platform_common.ToolchainInfo(
-            lipo_info = LipoToolchainInfo(
-                lipo = ctx.attr.lipo[DefaultInfo].files_to_run,
+            lipo_info = LipoInfo(
+                tool = ctx.attr.tool[DefaultInfo].files_to_run,
                 env = ctx.attr.env,
                 execution_requirements = ctx.attr.execution_requirements,
             ),
@@ -38,7 +38,7 @@ def _lipo_toolchain_impl(ctx):
 
 lipo_toolchain = rule(
     attrs = {
-        "lipo": attr.label(
+        "tool": attr.label(
             doc = "The `lipo` tool binary.",
             mandatory = True,
             allow_files = True,

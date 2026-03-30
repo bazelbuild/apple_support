@@ -17,7 +17,7 @@
 load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
 
-_LIPO_TOOLCHAIN_TYPE = "//lipo:toolchain_type"
+_LIPO_TOOLCHAIN_TYPE = "//rules/lipo:toolchain_type"
 
 def _universal_binary_impl(ctx):
     inputs = [
