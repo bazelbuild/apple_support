@@ -15,7 +15,7 @@
 """Xcode-aware toolchain rule for providing a `lipo` tool."""
 
 load("//lib:apple_support.bzl", "apple_support")
-load(":lipo_toolchain.bzl", "LipoToolchainInfo")
+load(":toolchain.bzl", "LipoInfo")
 
 def _xcode_lipo_toolchain_impl(ctx):
     env = dict(ctx.attr.env)
@@ -31,8 +31,8 @@ def _xcode_lipo_toolchain_impl(ctx):
 
     return [
         platform_common.ToolchainInfo(
-            lipo_info = LipoToolchainInfo(
-                lipo = ctx.attr.lipo[DefaultInfo].files_to_run,
+            lipo_info = LipoInfo(
+                tool = ctx.attr.tool[DefaultInfo].files_to_run,
                 env = env,
                 execution_requirements = execution_requirements,
             ),
@@ -41,7 +41,7 @@ def _xcode_lipo_toolchain_impl(ctx):
 
 xcode_lipo_toolchain = rule(
     attrs = apple_support.action_required_attrs() | {
-        "lipo": attr.label(
+        "tool": attr.label(
             doc = "The `lipo` tool binary.",
             mandatory = True,
             allow_files = True,
