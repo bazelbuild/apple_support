@@ -216,6 +216,13 @@ objc_library(
     tags = TARGETS_UNDER_TEST_TAGS,
 )
 
+cc_binary(
+    name = "test_dylib",
+    srcs = ["dylib.c"],
+    linkopts = ["-dynamiclib"],
+    tags = TARGETS_UNDER_TEST_TAGS,
+)
+
 cc_library(
     name = "test_lib_for_coverage",
     srcs = ["test_lib.c"],
