@@ -32,11 +32,15 @@ def _universal_binary_impl(ctx):
     output = ctx.actions.declare_file(ctx.label.name)
 
     if len(inputs) > 1:
+        lipo_toolchain = ctx.toolchains[_LIPO_TOOLCHAIN_TYPE]
+        if not lipo_toolchain:
+            fail("{} requires a lipo toolchain to build a universal binary but no lipo toolchain was found.".format(ctx.attr.name))
+
         lipo.create(
             actions = ctx.actions,
             inputs = inputs,
             output = output,
-            toolchain = ctx.toolchains[_LIPO_TOOLCHAIN_TYPE].lipo_info,
+            toolchain = lipo_toolchain.lipo_info,
         )
 
     else:
@@ -77,5 +81,5 @@ platforms *regardless* of the architecture of the macOS host platform. The
 """,
     executable = True,
     implementation = _universal_binary_impl,
-    toolchains = [_LIPO_TOOLCHAIN_TYPE],
+    toolchains = [config_common.toolchain_type(_LIPO_TOOLCHAIN_TYPE, mandatory = False)],
 )
