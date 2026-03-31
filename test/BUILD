@@ -44,6 +44,7 @@ bzl_library(
         "//xcode:available_xcodes",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
+        "//xcode/private:providers",
         "@bazel_skylib//lib:unittest",
     ],
 )

@@ -13,6 +13,10 @@ package(
 bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],
+    visibility = [
+        "//test:__pkg__",
+        "//xcode:__subpackages__",
+    ],
 )
 
 # The `config_setting`s below are NOT intended for general use. These specific

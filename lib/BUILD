@@ -29,6 +29,7 @@ bzl_library(
     name = "xcode_support",
     srcs = ["xcode_support.bzl"],
     deps = [
+        "//build_settings:build_settings_bzl",
         "//xcode:providers",
     ],
 )

@@ -52,6 +52,11 @@ string_flag(
     scope = "universal",
 )
 
+label_flag(
+    name = "version_config",
+    build_setting_default = "@bazel_tools//tools/cpp:host_xcodes",
+)
+
 bool_flag(
     name = "experimental_prefer_mutual_xcode",
     build_setting_default = True,
