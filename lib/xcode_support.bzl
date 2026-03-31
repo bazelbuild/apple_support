@@ -24,6 +24,7 @@ load("@build_bazel_apple_support//lib:xcode_support.bzl", "xcode_support")
 ```
 """
 
+load("@build_bazel_apple_support//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
     "@build_bazel_apple_support//xcode:providers.bzl",
     "XcodeSdkVariantInfo",
@@ -44,7 +45,7 @@ def _get_current_sdk(ctx):
     Returns:
         The `XcodeSdkVariantInfo` provider for the current configuration.
     """
-    xcode_config = getattr(ctx.attr, "_xcode_config")
+    xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")
     if not xcode_config or XcodeSdkVariantInfo not in xcode_config:
         fail("Failed to read the Xcode configuration from the current " +
              "context. Does the calling rule or aspect correctly define the " +
@@ -64,7 +65,7 @@ def _get_current_xcode(ctx):
     Returns:
         The `XcodeVersionConfig` provider for the current configuration.
     """
-    xcode_config = getattr(ctx.attr, "_xcode_config")
+    xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")
     if not xcode_config or apple_common.XcodeVersionConfig not in xcode_config:
         fail("Failed to read the Xcode configuration from the current " +
              "context. Does the calling rule or aspect correctly define the " +

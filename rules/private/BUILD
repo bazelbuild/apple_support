@@ -10,6 +10,7 @@ bzl_library(
         "//rules:__pkg__",
     ],
     deps = [
+        "//build_settings:build_settings_bzl",
         "//lib:apple_support",
     ],
 )

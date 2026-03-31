@@ -26,6 +26,10 @@ _POSSIBLY_NATIVE_FLAGS = {
     "macos_minimum_os": (lambda ctx: ctx.fragments.apple.macos_minimum_os_flag, "native"),
     "tvos_minimum_os": (lambda ctx: ctx.fragments.apple.tvos_minimum_os_flag, "native"),
     "watchos_minimum_os": (lambda ctx: ctx.fragments.apple.watchos_minimum_os_flag, "native"),
+    # xcode_version_config is a configuration field in the apple fragment, so there is no
+    # "native" Bazel function to read it. It is assumed that the configuration field is surfaced
+    # in the rule's attrs as "_xcode_config".
+    "xcode_version_config": (lambda ctx: ctx.attr._xcode_config, "native"),
 }
 
 _DOTTED_VERSION_FLAGS = set([
@@ -35,12 +39,16 @@ _DOTTED_VERSION_FLAGS = set([
     "watchos_minimum_os",
 ])
 
+_LABEL_FLAGS = set([
+    "xcode_version_config",
+])
+
 def read_possibly_native_flag(ctx, flag_name):
     """
     Canonical API for reading an Apple build flag.
 
-    Flags might be defined in Starlark or native-Bazel. This function reasd flags
-    from tbe correct source based on supporting Bazel version and --incompatible*
+    Flags might be defined in Starlark or native-Bazel. This function reads flags
+    from the correct source based on supporting Bazel version and --incompatible*
     flags that disable native references.
 
     Args:
@@ -50,12 +58,22 @@ def read_possibly_native_flag(ctx, flag_name):
     Returns:
         The flag's value.
     """
+    native_lambda, mode = _POSSIBLY_NATIVE_FLAGS[flag_name]
+
+    # If the fragment is not present, default to the Starlark definition.
+    use_native_def = "apple" in dir(ctx.fragments)
 
     # Override to force the Starlark definition for testing/flipping flags one at a time.
-    if _POSSIBLY_NATIVE_FLAGS[flag_name][1] != "starlark":
-        return _POSSIBLY_NATIVE_FLAGS[flag_name][0](ctx)
+    if mode == "starlark":
+        use_native_def = False
+
+    if use_native_def:
+        return native_lambda(ctx)
 
     # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
+    if flag_name in _LABEL_FLAGS:
+        # Label flags do not use BuildSettingInfo.
+        return getattr(ctx.attr, "_" + flag_name)
     build_setting_value = getattr(ctx.attr, "_" + flag_name)[BuildSettingInfo].value
 
     # Dotted version flags should be converted before accessed.

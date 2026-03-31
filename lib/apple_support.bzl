@@ -237,6 +237,9 @@ def _action_required_attrs():
                 fragment = "apple",
             ),
         ),
+        "_xcode_version_config": attr.label(
+            default = "@build_bazel_apple_support//xcode:version_config",
+        ),
     }
 
 def _platform_constraint_attrs():
