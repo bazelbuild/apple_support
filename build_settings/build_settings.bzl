@@ -43,6 +43,26 @@ _LABEL_FLAGS = set([
     "xcode_version_config",
 ])
 
+def _should_use_native_def(ctx, flag_name, mode):
+    """Returns True if the native definition should be used."""
+
+    # If the override to force the Starlark definition for testing/flipping flags one at
+    # a time is active, return early.
+    if mode == "starlark":
+        return False
+
+    # If the apple fragment is active, we should read the native flag.
+    if "apple" in dir(ctx.fragments):
+        return True
+
+    # Special case: xcode_version_config can be read as a configuration_field attribute
+    # even without the apple fragment, provided the attribute is present and resolved.
+    if flag_name == "xcode_version_config" and getattr(ctx.attr, "_xcode_config", None):
+        return True
+
+    # Fall through case where the fragment is disabled.
+    return False
+
 def read_possibly_native_flag(ctx, flag_name):
     """
     Canonical API for reading an Apple build flag.
@@ -60,14 +80,7 @@ def read_possibly_native_flag(ctx, flag_name):
     """
     native_lambda, mode = _POSSIBLY_NATIVE_FLAGS[flag_name]
 
-    # If the fragment is not present, default to the Starlark definition.
-    use_native_def = "apple" in dir(ctx.fragments)
-
-    # Override to force the Starlark definition for testing/flipping flags one at a time.
-    if mode == "starlark":
-        use_native_def = False
-
-    if use_native_def:
+    if _should_use_native_def(ctx, flag_name, mode):
         return native_lambda(ctx)
 
     # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
