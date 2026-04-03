@@ -2275,6 +2275,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "opt"),
         feature(name = "parse_headers"),
         feature(name = "no_dotd_file"),
+        feature(name = "supports_dynamic_library_deps", enabled = True),
 
         # Features with more configuration
         strip_args_feature,
