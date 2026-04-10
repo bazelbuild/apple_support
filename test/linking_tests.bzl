@@ -251,17 +251,37 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-nostdlib",
-            "-lkmod",
-            "-lkmodc++",
-            "-lcc_kext",
             "-Xlinker",
             "-kext",
+            "-lcc_kext",
+            "-lkmod",
+            "-lkmodc++",
         ],
         not_expected_argv = [
             "-lc++",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
+    )
+
+    kernel_extension_test(
+        name = "{}_kernel_extension_ios_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-nostdlib",
+            "-Xlinker",
+            "-kext",
+            "-lcc_kext",
+        ],
+        not_expected_argv = [
+            "-lc++",
+            "-Objc",
+            "-fobjc-link-runtime",
+            "-lkmod",
+            "-lkmodc++",
+        ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:ios_binary",
     )
 
     default_test(
