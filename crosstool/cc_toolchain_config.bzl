@@ -861,6 +861,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
                 flag_groups = [flag_group(flags = ["-fobjc-link-runtime"])],
+                with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,
@@ -1734,7 +1735,12 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     # Kernel extensions for Apple Silicon are arm64e.
     if (ctx.attr.cpu == "darwin_x86_64" or
-        ctx.attr.cpu == "darwin_arm64e"):
+        ctx.attr.cpu == "darwin_arm64e" or
+        ctx.attr.cpu.startswith("ios")):
+        kext_flags = ["-nostdlib", "-Xlinker", "-kext", "-lcc_kext"]
+        if not ctx.attr.cpu.startswith("ios"):
+            kext_flags.extend(["-lkmod", "-lkmodc++"])
+
         kernel_extension_feature = feature(
             name = "kernel_extension",
             flag_sets = [
@@ -1742,14 +1748,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     actions = [ACTION_NAMES.objc_executable],
                     flag_groups = [
                         flag_group(
-                            flags = [
-                                "-nostdlib",
-                                "-lkmod",
-                                "-lkmodc++",
-                                "-lcc_kext",
-                                "-Xlinker",
-                                "-kext",
-                            ],
+                            flags = kext_flags,
                         ),
                     ],
                 ),
