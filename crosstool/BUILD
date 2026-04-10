@@ -1,5 +1,5 @@
 load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
-load(":universal_exec_tool.bzl", "universal_exec_tool")
+load(":universal_exec_tool.bzl", "force_exec", "universal_exec_tool")
 
 package(default_visibility = ["//visibility:public"])
 
