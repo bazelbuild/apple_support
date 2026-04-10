@@ -40,18 +40,6 @@ universal_exec_tool(
     out = "libtool",
 )
 
-genrule(
-    name = "exec_cc_wrapper.target_config",
-    srcs = ["osx_cc_wrapper.sh.tpl"],
-    outs = ["cc_wrapper.sh"],
-    cmd = "cp $(SRCS) $(OUTS)",  # Make sure this script is always beside wrapped_clang
-)
-
-force_exec(
-    name = "exec_cc_wrapper",
-    target = ":exec_cc_wrapper.target_config",
-)
-
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
