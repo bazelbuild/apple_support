@@ -14,10 +14,6 @@
 """Definition of a test rule to test apple_support."""
 
 load(
-    "@build_bazel_apple_support//build_settings:build_settings.bzl",
-    "read_possibly_native_flag",
-)
-load(
     "@build_bazel_apple_support//lib:apple_support.bzl",
     "apple_support",
 )
@@ -129,7 +125,7 @@ def _apple_support_test_impl(ctx):
     # apple_support.run_shell helper methods.
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
         apple_fragment = ctx.fragments.apple,
         outputs = [run_output],
         executable = test_tool,
@@ -143,7 +139,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
         apple_fragment = ctx.fragments.apple,
         outputs = [run_output_xcode_path_in_args],
         executable = test_tool,
@@ -172,7 +168,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
         apple_fragment = ctx.fragments.apple,
         outputs = [run_output_xcode_path_in_file],
         executable = test_tool,
@@ -186,7 +182,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run_shell(
         actions = ctx.actions,
-        xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
         apple_fragment = ctx.fragments.apple,
         outputs = [run_shell_output],
         tools = [test_tool],
@@ -211,7 +207,7 @@ def _apple_support_test_impl(ctx):
         xcode_path_placeholder = apple_support.path_placeholders.xcode(),
     ), is_executable = True)
 
-    xcode_config = read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig]
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     apple_platform = ctx.fragments.apple.single_arch_platform
 
     test_env = {}

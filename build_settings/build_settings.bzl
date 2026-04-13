@@ -28,8 +28,8 @@ _POSSIBLY_NATIVE_FLAGS = {
     "watchos_minimum_os": (lambda ctx: ctx.fragments.apple.watchos_minimum_os_flag, "native"),
     # xcode_version_config is a configuration field in the apple fragment, so there is no
     # "native" Bazel function to read it. It is assumed that the configuration field is surfaced
-    # in the rule's attrs as "_xcode_config".
-    "xcode_version_config": (lambda ctx: ctx.attr._xcode_config, "native"),
+    # in the rule's attrs as "_xcode_version_config_native".
+    "xcode_version_config": (lambda ctx: ctx.attr._xcode_version_config_native, "native"),
 }
 
 _DOTTED_VERSION_FLAGS = set([
@@ -53,11 +53,6 @@ def _should_use_native_def(ctx, flag_name, mode):
 
     # If the apple fragment is active, we should read the native flag.
     if "apple" in dir(ctx.fragments):
-        return True
-
-    # Special case: xcode_version_config can be read as a configuration_field attribute
-    # even without the apple fragment, provided the attribute is present and resolved.
-    if flag_name == "xcode_version_config" and getattr(ctx.attr, "_xcode_config", None):
         return True
 
     # Fall through case where the fragment is disabled.

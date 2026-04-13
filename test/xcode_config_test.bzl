@@ -16,10 +16,6 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load(
-    "@build_bazel_apple_support//build_settings:build_settings.bzl",
-    "read_possibly_native_flag",
-)
-load(
     "@build_bazel_apple_support//xcode:available_xcodes.bzl",
     "available_xcodes",
 )
@@ -49,7 +45,7 @@ visibility("private")
 # ------------------------------------------------------------------------------
 
 def _version_retriever_impl(ctx):
-    xcode_properties = read_possibly_native_flag(ctx, "xcode_version_config")[XcodeVersionPropertiesInfo]
+    xcode_properties = ctx.attr._xcode_config[XcodeVersionPropertiesInfo]
     version = xcode_properties.xcode_version
     return [config_common.FeatureFlagInfo(value = version)]
 
@@ -57,12 +53,6 @@ version_retriever = rule(
     implementation = _version_retriever_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = configuration_field(
-                fragment = "apple",
-                name = "xcode_config_label",
-            ),
-        ),
-        "_xcode_version_config": attr.label(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
@@ -70,18 +60,12 @@ version_retriever = rule(
 )
 
 def _provider_grabber_impl(ctx):
-    return [read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig]]
+    return [ctx.attr._xcode_config[apple_common.XcodeVersionConfig]]
 
 provider_grabber = rule(
     implementation = _provider_grabber_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = configuration_field(
-                fragment = "apple",
-                name = "xcode_config_label",
-            ),
-        ),
-        "_xcode_version_config": attr.label(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
@@ -89,18 +73,12 @@ provider_grabber = rule(
 )
 
 def _provider_grabber_aspect_impl(_target, ctx):
-    return [read_possibly_native_flag(ctx, "xcode_version_config")[apple_common.XcodeVersionConfig]]
+    return [ctx.attr._xcode_config[apple_common.XcodeVersionConfig]]
 
 provider_grabber_aspect = aspect(
     implementation = _provider_grabber_aspect_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = configuration_field(
-                fragment = "apple",
-                name = "xcode_config_label",
-            ),
-        ),
-        "_xcode_version_config": attr.label(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
@@ -321,7 +299,6 @@ _accepts_flag_for_mutually_available_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "8.4",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:accepts_flag_for_mutually_available__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:accepts_flag_for_mutually_available__foo",
     },
 )
 
@@ -371,7 +348,6 @@ _prefers_flag_over_mutually_available_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "5.1.2",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefers_flag_over_mutually_available__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:prefers_flag_over_mutually_available__foo",
     },
 )
 
@@ -420,7 +396,6 @@ _warn_with_explicit_local_only_version_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "8.4",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:warn_with_explicit_local_only_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:warn_with_explicit_local_only_version__foo",
     },
 )
 
@@ -468,7 +443,6 @@ _prefer_local_default_if_no_mutual_no_flag_different_main_version_test = analysi
     _prefer_local_default_if_no_mutual_no_flag_different_main_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_main_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_main_version__foo",
     },
 )
 
@@ -516,7 +490,6 @@ _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test = analysis
     _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_build_alias__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_build_alias__foo",
     },
 )
 
@@ -564,7 +537,6 @@ _prefer_local_default_if_no_mutual_no_flag_different_full_version_test = analysi
     _prefer_local_default_if_no_mutual_no_flag_different_full_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_full_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:prefer_local_default_if_no_mutual_no_flag_different_full_version__foo",
     },
 )
 
@@ -609,7 +581,6 @@ _choose_newest_mutual_xcode_test = analysistest.make(
     _choose_newest_mutual_xcode_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:choose_newest_mutual_xcode__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:choose_newest_mutual_xcode__foo",
     },
 )
 
@@ -644,7 +615,6 @@ _invalid_xcode_from_mutual_throws_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "6",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:invalid_xcode_from_mutual_throws__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:invalid_xcode_from_mutual_throws__foo",
     },
     expect_failure = True,
 )
@@ -871,7 +841,6 @@ _config_alias_config_setting_no_flag_test = analysistest.make(
     _config_alias_config_setting_no_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
     },
 )
 
@@ -884,7 +853,6 @@ _config_alias_config_setting_6_4_test = analysistest.make(
     _config_alias_config_setting_6_4_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
         "//command_line_option:xcode_version": "6.4",
     },
 )
@@ -893,7 +861,6 @@ _config_alias_config_setting_6_test = analysistest.make(
     _config_alias_config_setting_6_4_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
         "//command_line_option:xcode_version": "6",
     },
 )
@@ -907,7 +874,6 @@ _config_alias_config_setting_12_test = analysistest.make(
     _config_alias_config_setting_12_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:config_alias_config_setting__config",
         "//command_line_option:xcode_version": "12",
     },
 )
@@ -995,7 +961,6 @@ _default_version_config_setting_no_flag_test = analysistest.make(
     _default_version_config_setting_no_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_version_config_setting__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_version_config_setting__foo",
     },
 )
 
@@ -1008,7 +973,6 @@ _default_version_config_setting_6_4_test = analysistest.make(
     _default_version_config_setting_6_4_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_version_config_setting__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_version_config_setting__foo",
         "//command_line_option:xcode_version": "6.4",
     },
 )
@@ -1048,7 +1012,6 @@ _valid_version_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "5.1.2",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:valid_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:valid_version__foo",
     },
 )
 
@@ -1087,7 +1050,6 @@ _valid_alias_dotted_version_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "5",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:valid_alias_dotted_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:valid_alias_dotted_version__foo",
     },
 )
 
@@ -1126,7 +1088,6 @@ _valid_alias_nonnumerical_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "valid_version",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:valid_alias_nonnumerical__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:valid_alias_nonnumerical__foo",
     },
 )
 
@@ -1158,7 +1119,6 @@ _invalid_xcode_specified_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "6",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:invalid_xcode_specified__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:invalid_xcode_specified__foo",
     },
     expect_failure = True,
 )
@@ -1197,7 +1157,6 @@ _requires_default_test = analysistest.make(
     config_settings = {
         "//command_line_option:xcode_version": "6",
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:requires_default__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:requires_default__foo",
     },
     expect_failure = True,
 )
@@ -1231,7 +1190,6 @@ _duplicate_aliases_defined_version_test = analysistest.make(
     _duplicate_aliases_defined_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:duplicate_aliases_defined_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:duplicate_aliases_defined_version__foo",
     },
     expect_failure = True,
 )
@@ -1268,7 +1226,6 @@ _duplicate_aliases_within_available_xcodes_test = analysistest.make(
     _duplicate_aliases_within_available_xcodes_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:duplicate_aliases_within_available_xcodes__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:duplicate_aliases_within_available_xcodes__foo",
     },
     expect_failure = True,
 )
@@ -1307,7 +1264,6 @@ _version_aliased_to_itself_test = analysistest.make(
     _version_aliased_to_itself_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:version_aliased_to_itself__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:version_aliased_to_itself__foo",
     },
 )
 
@@ -1340,7 +1296,6 @@ _duplicate_version_numbers_test = analysistest.make(
     _duplicate_version_numbers_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:duplicate_version_numbers__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:duplicate_version_numbers__foo",
         "//command_line_option:xcode_version": "5",
     },
     expect_failure = True,
@@ -1375,7 +1330,6 @@ _version_conflicts_with_alias_test = analysistest.make(
     _version_conflicts_with_alias_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:version_conflicts_with_alias__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:version_conflicts_with_alias__foo",
     },
     expect_failure = True,
 )
@@ -1438,7 +1392,6 @@ _default_ios_sdk_version_test = analysistest.make(
     _default_ios_sdk_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_ios_sdk_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_ios_sdk_version__foo",
     },
 )
 
@@ -1508,7 +1461,6 @@ _default_sdk_versions_test = analysistest.make(
     _default_sdk_versions_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_sdk_versions__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_sdk_versions__foo",
     },
 )
 
@@ -1578,7 +1530,6 @@ _default_sdk_versions_selected_xcode_test = analysistest.make(
     _default_sdk_versions_selected_xcode_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_sdk_versions_selected_xcode__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_sdk_versions_selected_xcode__foo",
         "//command_line_option:xcode_version": "6",
     },
 )
@@ -1619,7 +1570,6 @@ _default_without_version_test = analysistest.make(
     _default_without_version_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:default_without_version__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:default_without_version__foo",
     },
     expect_failure = True,
 )
@@ -1666,7 +1616,6 @@ _version_does_not_contain_default_test = analysistest.make(
     _version_does_not_contain_default_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:version_does_not_contain_default__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:version_does_not_contain_default__foo",
     },
     expect_failure = True,
 )
@@ -1732,7 +1681,6 @@ _configuration_field_for_rule_1_test = analysistest.make(
     _configuration_field_for_rule_1_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:configuration_field_for_rule__config1",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:configuration_field_for_rule__config1",
     },
 )
 
@@ -1750,7 +1698,6 @@ _configuration_field_for_rule_2_test = analysistest.make(
     _configuration_field_for_rule_2_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:configuration_field_for_rule__config2",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:configuration_field_for_rule__config2",
     },
 )
 
@@ -1820,7 +1767,6 @@ _configuration_field_for_aspect_1_test = analysistest.make(
     _configuration_field_for_aspect_1_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:configuration_field_for_aspect__config1",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:configuration_field_for_aspect__config1",
     },
 )
 
@@ -1838,7 +1784,6 @@ _configuration_field_for_aspect_2_test = analysistest.make(
     _configuration_field_for_aspect_2_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:configuration_field_for_aspect__config2",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:configuration_field_for_aspect__config2",
     },
 )
 
@@ -1874,7 +1819,6 @@ _explicit_xcodes_mode_no_flag_test = analysistest.make(
     _explicit_xcodes_mode_no_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:explicit_xcodes_mode_no_flag__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:explicit_xcodes_mode_no_flag__foo",
     },
 )
 
@@ -1910,7 +1854,6 @@ _explicit_xcodes_mode_with_flag_test = analysistest.make(
     _explicit_xcodes_mode_with_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:explicit_xcodes_mode_with_flag__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:explicit_xcodes_mode_with_flag__foo",
         "//command_line_option:xcode_version": "6.4",
     },
 )
@@ -1950,7 +1893,6 @@ _available_xcodes_mode_no_flag_test = analysistest.make(
     _available_xcodes_mode_no_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:available_xcodes_mode_no_flag__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:available_xcodes_mode_no_flag__foo",
     },
 )
 
@@ -1984,7 +1926,6 @@ _available_xcodes_mode_different_alias_test = analysistest.make(
     _available_xcodes_mode_different_alias_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:available_xcodes_mode_different_alias__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:available_xcodes_mode_different_alias__foo",
         "//command_line_option:xcode_version": "5",
     },
     expect_failure = True,
@@ -2025,7 +1966,6 @@ _available_xcodes_mode_different_alias_fully_specified_test = analysistest.make(
     _available_xcodes_mode_different_alias_fully_specified_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:available_xcodes_mode_different_alias_fully_specified__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:available_xcodes_mode_different_alias_fully_specified__foo",
         "//command_line_option:xcode_version": "5.1.2",
     },
 )
@@ -2065,8 +2005,48 @@ _available_xcodes_mode_with_flag_test = analysistest.make(
     _available_xcodes_mode_with_flag_test_impl,
     config_settings = {
         "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:available_xcodes_mode_with_flag__foo",
-        "@build_bazel_apple_support//xcode:version_config": "@build_bazel_apple_support//test:available_xcodes_mode_with_flag__foo",
         "//command_line_option:xcode_version": "5.1.2",
+    },
+)
+
+# ------------------------------------------------------------------------------
+
+def _xcode_config_resolver_with_fragment_removed(namer):
+    _make_xcode_fixtures(
+        namer = namer,
+        xcode_config_name = "xcode_config_resolver_with_fragment_removed__foo",
+        remote_versions = [
+            struct(name = "version512", version = "5.1.2", is_default = True),
+            struct(name = "version84", version = "8.4"),
+        ],
+        local_versions = [
+            struct(name = "version512", version = "5.1.2", is_default = True),
+            struct(name = "version84", version = "8.4"),
+        ],
+    )
+
+    _xcode_config_resolver_with_fragment_removed_test(
+        name = "xcode_config_resolver_with_fragment_removed",
+        target_under_test = "xcode_config_resolver_with_fragment_removed__foo",
+    )
+
+    return ["xcode_config_resolver_with_fragment_removed"]
+
+def _xcode_config_resolver_with_fragment_removed_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+
+    asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
+
+    return analysistest.end(env)
+
+_xcode_config_resolver_with_fragment_removed_test = analysistest.make(
+    _xcode_config_resolver_with_fragment_removed_test_impl,
+    config_settings = {
+        "//command_line_option:incompatible_remove_ctx_apple_fragment": "true",
+        "@build_bazel_apple_support//xcode:starlark_version_config": "@build_bazel_apple_support//test:xcode_config_resolver_with_fragment_removed__foo",
     },
 )
 
@@ -2191,6 +2171,7 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias,
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
+            _xcode_config_resolver_with_fragment_removed,
         ],
     )
 

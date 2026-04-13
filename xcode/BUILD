@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+load("//xcode:xcode_config_resolver.bzl", "xcode_config_resolver")
 
 licenses(["notice"])
 
@@ -21,6 +22,15 @@ bzl_library(
 bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
+    deps = [
+        "//build_settings:build_settings_bzl",
+        "//xcode/private:providers",
+    ],
+)
+
+bzl_library(
+    name = "xcode_config_resolver_lib",
+    srcs = ["xcode_config_resolver.bzl"],
     deps = [
         "//build_settings:build_settings_bzl",
         "//xcode/private:providers",
@@ -52,9 +62,17 @@ string_flag(
     scope = "universal",
 )
 
+# TODO (b/469732626) - Rename to version_config once the migration is complete.
 label_flag(
-    name = "version_config",
+    name = "starlark_version_config",
     build_setting_default = "@bazel_tools//tools/cpp:host_xcodes",
+)
+
+# The source of truth for Xcode configuration resolution.
+# Gates between the native field and the Starlark flag.
+# TODO (b/469732626) - Remove this once the migration is complete.
+xcode_config_resolver(
+    name = "version_config",
 )
 
 bool_flag(
