@@ -115,7 +115,7 @@ def _xcode_config_impl(ctx):
         macos_minimum_os_version = str(macos_minimum_os),
         xcode_version = xcode_version_properties.xcode_version,
         availability = availability,
-        xcode_version_flag = apple_fragment.xcode_version_flag,
+        xcode_version_flag = read_possibly_native_flag(ctx, "xcode_version"),
         include_xcode_execution_info = read_possibly_native_flag(ctx, "include_xcode_exec_requirements"),
     )
 
