@@ -2370,7 +2370,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     tool_paths = {
         "ar": ctx.file.libtool.path,
         "cpp": "/usr/bin/cpp",
-        "dwp": "/usr/bin/dwp",
         "gcc": ctx.file.cc_wrapper.path,
         "gcov": "/usr/bin/gcov",
         "ld": "/usr/bin/ld",
