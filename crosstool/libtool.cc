@@ -256,9 +256,6 @@ void createSymlinks(std::filesystem::path temp_directory,
   for (auto file : files) {
     std::filesystem::path path = file;
 
-    std::hash<std::string> hasher;
-    hasher(file);
-
     std::string new_basename = path.stem();
     new_basename.append("_");
     new_basename.append(hash(file));
