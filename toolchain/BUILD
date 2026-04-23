@@ -21,11 +21,13 @@ MARKER_FEATURES = [
     "no_legacy_features",
     "only_doth_headers_in_module_maps",
     "parse_headers",
+    "sanitize_pwd"
     "set_soname",
 ]
 
 ENABLED_MARKERS = [
     "archive_param_file",
+    "sanitize_pwd"
     "set_soname",
 ] + (
     ["gcc_quoting_for_param_files"] if bazel_features.cc.fixed_dsym_path_quoting else []
