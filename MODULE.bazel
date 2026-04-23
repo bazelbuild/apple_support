@@ -17,6 +17,9 @@ use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_too
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
 
+xcode_configure = use_extension("//xcode:xcode_configure.bzl", "xcode_configure_extension")
+use_repo(xcode_configure, "local_config_xcode")
+
 bazel_dep(name = "rules_shell", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
 

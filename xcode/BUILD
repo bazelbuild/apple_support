@@ -24,6 +24,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "xcode_configure",
+    srcs = ["xcode_configure.bzl"],
+)
+
+exports_files(["xcode_configure.bzl"])
+
+bzl_library(
     name = "xcode_version",
     srcs = ["xcode_version.bzl"],
     deps = [

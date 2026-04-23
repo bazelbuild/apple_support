@@ -18,7 +18,7 @@ load(
     "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
     "escape_string",
 )
-load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
+load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 def _get_copts_env_var(repository_ctx, name, default = ""):
     """Get an environment variable and split it on ":" to be used as copts.
