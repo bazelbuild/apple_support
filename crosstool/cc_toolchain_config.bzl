@@ -2274,6 +2274,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "opt"),
         feature(name = "parse_headers"),
         feature(name = "no_dotd_file"),
+        feature(name = "sanitize_pwd", enabled = True),
         feature(name = "set_soname", enabled = True),
 
         # Features with more configuration
