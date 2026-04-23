@@ -14,9 +14,10 @@
 
 """Implementation for macOS universal binary rule."""
 
-load("//lib:apple_support.bzl", "apple_support")
 load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
+
+_LIPO_TOOLCHAIN_TYPE = "//rules/lipo:toolchain_type"
 
 def _universal_binary_impl(ctx):
     inputs = [
@@ -31,12 +32,15 @@ def _universal_binary_impl(ctx):
     output = ctx.actions.declare_file(ctx.label.name)
 
     if len(inputs) > 1:
+        lipo_toolchain = ctx.toolchains[_LIPO_TOOLCHAIN_TYPE]
+        if not lipo_toolchain:
+            fail("{} requires a lipo toolchain to build a universal binary but no lipo toolchain was found.".format(ctx.attr.name))
+
         lipo.create(
             actions = ctx.actions,
-            apple_fragment = ctx.fragments.apple,
             inputs = inputs,
             output = output,
-            xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+            toolchain = lipo_toolchain.lipo_info,
         )
 
     else:
@@ -60,25 +64,22 @@ def _universal_binary_impl(ctx):
     ]
 
 universal_binary = rule(
-    attrs = apple_support.action_required_attrs() |
-            {
-                "binary": attr.label(
-                    cfg = macos_universal_transition,
-                    doc = "Target to generate a 'fat' binary from.",
-                    mandatory = True,
-                ),
-                "_allowlist_function_transition": attr.label(
-                    default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-                ),
-            },
+    attrs = {
+        "binary": attr.label(
+            cfg = macos_universal_transition,
+            doc = "Target to generate a 'fat' binary from.",
+            mandatory = True,
+        ),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+    },
     doc = """
 This rule produces a multi-architecture ("fat") binary targeting Apple macOS
 platforms *regardless* of the architecture of the macOS host platform. The
-`lipo` tool is used to combine built binaries of multiple architectures. For
-non-macOS platforms, this simply just creates a symbolic link of the input
-binary.
+`lipo` tool is used to combine built binaries of multiple architectures.
 """,
     executable = True,
-    fragments = ["apple"],
     implementation = _universal_binary_impl,
+    toolchains = [config_common.toolchain_type(_LIPO_TOOLCHAIN_TYPE, mandatory = False)],
 )

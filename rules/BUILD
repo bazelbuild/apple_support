@@ -47,6 +47,7 @@ filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = glob(["**"]) + [
+        "//rules/lipo:for_bazel_tests",
         "//rules/private:for_bazel_tests",
     ],
     visibility = ["//:__pkg__"],
