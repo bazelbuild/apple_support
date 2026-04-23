@@ -90,7 +90,7 @@ def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir,
     build_contents += "\n)\n"
     if error_msg:
         build_contents += "\n# Error: " + error_msg.replace("\n", " ") + "\n"
-        print(error_msg)
+        print(error_msg)  # buildifier: disable=print
     return build_contents
 
 VERSION_CONFIG_STUB = """
@@ -263,7 +263,7 @@ load("@build_bazel_apple_support//xcode:xcode_version.bzl", "xcode_version")
     if not default_xcode_target and target_names:
         default_xcode_target = sorted(target_names, reverse = True)[0]
         print("No default Xcode version is set with 'xcode-select'; picking %s" %
-              default_xcode_target)
+              default_xcode_target)  # buildifier: disable=print
     if default_xcode_target:
         buildcontents += "\n  default = %s," % default_xcode_target
 
