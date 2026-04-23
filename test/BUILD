@@ -4,6 +4,7 @@ load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_library")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//rules:apple_genrule.bzl", "apple_genrule")
+load("//xcode:xcode_config.bzl", "xcode_config")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
@@ -199,4 +200,10 @@ cc_shared_library(
     name = "nested_library_so",
     dynamic_deps = [":loadable_library_so"],
     deps = [":nested_library"],
+)
+
+xcode_config(
+    name = "empty_xcode_config",
+    tags = ["manual"],  # TODO: Remove when we drop 7.x
+    versions = [],
 )
