@@ -453,9 +453,9 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-S",
+            "-passed_arg",
             "-o",
             "$(BIN_DIR)/test/test_data/cc_test_binary.stripped",
-            "-passed_arg",
             "$(BIN_DIR)/test/test_data/cc_test_binary",
         ],
         mnemonic = "CcStrip",

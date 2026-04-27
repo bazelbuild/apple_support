@@ -1,5 +1,7 @@
 common --enable_platform_specific_config
 
+common --repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=1
+
 common --repo_env=BAZEL_CONLYOPTS=-DCONLY_ENV=1
 common --repo_env=BAZEL_COPTS=-DCOPTS_ENV=1
 common --repo_env=BAZEL_CXXOPTS="-std=c++17:-DCXXOPTS_ENV=1"

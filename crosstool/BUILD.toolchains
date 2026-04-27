@@ -14,7 +14,7 @@ _OSX_DEVELOPER_PLATFORM_CPUS = [
             "@platforms//cpu:" + cpu,
         ],
         target_compatible_with = APPLE_PLATFORMS_CONSTRAINTS[arch],
-        toolchain = "@local_config_apple_cc//:cc-compiler-" + arch,
+        toolchain = "%{label}".format(arch),
         toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
         visibility = ["//visibility:public"],
     )
