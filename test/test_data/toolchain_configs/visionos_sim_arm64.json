@@ -5377,5 +5377,5 @@
       "type_name": "tool_path"
     }
   ],
-  "toolchain_id": "@@//toolchain:_toolchain_config"
+  "toolchain_id": "@@//toolchain:toolchain"
 }
