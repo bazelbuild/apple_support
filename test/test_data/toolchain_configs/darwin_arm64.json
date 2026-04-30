@@ -1436,7 +1436,7 @@
               "expand_if_available": "output_execpath",
               "expand_if_equal": null,
               "expand_if_false": null,
-              "expand_if_not_available": null,
+              "expand_if_not_available": "linkmap_exec_path",
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
