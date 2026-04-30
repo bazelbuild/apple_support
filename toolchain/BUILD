@@ -21,13 +21,13 @@ MARKER_FEATURES = [
     "no_legacy_features",
     "only_doth_headers_in_module_maps",
     "parse_headers",
-    "sanitize_pwd"
+    "sanitize_pwd",
     "set_soname",
 ]
 
 ENABLED_MARKERS = [
     "archive_param_file",
-    "sanitize_pwd"
+    "sanitize_pwd",
     "set_soname",
 ] + (
     ["gcc_quoting_for_param_files"] if bazel_features.cc.fixed_dsym_path_quoting else []
@@ -648,7 +648,7 @@ negatable_feature(
     ],
     format = {"runtime_solib_name": "@rules_cc//cc/toolchains/variables:runtime_solib_name"},
     requires_not_none = "@rules_cc//cc/toolchains/variables:runtime_solib_name",
-    target_compatible_with = ["@rules_cc//cc/toolchains/platforms:apple"],
+    target_compatible_with = ["@rules_cc//cc/settings:apple_constraint"],
 )
 
 # TODO: Remove https://github.com/bazelbuild/rules_cc/pull/653
