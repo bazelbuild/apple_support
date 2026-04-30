@@ -3758,7 +3758,15 @@
             }
           ],
           "type_name": "flag_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "kernel_extension"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         },
         {
           "actions": [
