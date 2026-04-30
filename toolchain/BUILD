@@ -7,6 +7,7 @@ load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
 load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
+load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "set_install_name_flag")
 load(":features.bzl", "enableable_feature", "negatable_feature")
@@ -672,6 +673,76 @@ negatable_feature(
     visibility = ["//visibility:public"],  # Referenced through the optional enabling of layering_check
 )
 
+# TODO: Remove verifying that objc_fully_link_static_library doesn't break
+cc_feature(
+    name = "__archiver_flags",
+    args = [":archiver_flags"],
+    overrides = "@rules_cc//cc/toolchains/features/legacy:archiver_flags",
+)
+
+cc_args_list(
+    name = "archiver_flags",
+    args = [
+        ":create_static_archive",
+        ":output_execpath",
+        ":libraries_to_link",
+    ],
+)
+
+cc_args(
+    name = "create_static_archive",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_link_static_library"],
+    args = [
+        "-D",
+        "-no_warning_for_no_symbols",
+        "-static",
+    ],
+)
+
+cc_args(
+    name = "output_execpath",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_link_static_library"],
+    args = [
+        "-o",
+        "{output_execpath}",
+    ],
+    format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+)
+
+cc_args(
+    name = "libraries_to_link",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_link_static_library"],
+    nested = ["libraries_to_link_expansion"],
+    requires_not_none = "@rules_cc//cc/toolchains/variables:libraries_to_link",
+)
+
+cc_nested_args(
+    name = "libraries_to_link_expansion",
+    iterate_over = "@rules_cc//cc/toolchains/variables:libraries_to_link",
+    nested = [
+        ":link_obj_file",
+        ":link_object_file_group",
+    ],
+)
+
+cc_nested_args(
+    name = "link_obj_file",
+    args = ["{object_file}"],
+    format = {"object_file": "@rules_cc//cc/toolchains/variables:libraries_to_link.name"},
+    requires_equal = "@rules_cc//cc/toolchains/variables:libraries_to_link.type",
+    requires_equal_value = "object_file",
+)
+
+cc_nested_args(
+    name = "link_object_file_group",
+    args = ["{object_files}"],
+    format = {"object_files": "@rules_cc//cc/toolchains/variables:libraries_to_link.object_files"},
+    iterate_over = "@rules_cc//cc/toolchains/variables:libraries_to_link.object_files",
+    requires_equal = "@rules_cc//cc/toolchains/variables:libraries_to_link.type",
+    requires_equal_value = "object_file_group",
+)
+
 cc_legacy_tool(
     name = "gcov",
     path = "/usr/bin/gcov",
@@ -714,7 +785,7 @@ cc_toolchain(
         "//toolchain/objc:objc_link_flag",
         ":pch",
         "//toolchain/objc:__apple_default_warnings",
-        "@rules_cc//cc/toolchains/args/archiver_flags:feature",
+        ":__archiver_flags",
         "@rules_cc//cc/toolchains/args/include_flags:feature",
         "@rules_cc//cc/toolchains/args/dependency_file:feature",
         ":serialized_diagnostics_file_wrapper",
