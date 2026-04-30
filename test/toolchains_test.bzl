@@ -210,7 +210,7 @@ def toolchain_config_test_suite(name):
         return
 
     platforms = APPLE_PLATFORMS_CONSTRAINTS.keys()
-    toolchain_config = "//toolchain:toolchain_config"
+    toolchain_config = "//toolchain"
     tests = []
     updates = []
     for platform in platforms:

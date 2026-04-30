@@ -804,11 +804,3 @@ cc_toolchain(
     toolchains = [":dynamic_toolchain_info"],
     visibility = ["//:__subpackages__"],
 )
-
-# TODO: Remove https://github.com/bazelbuild/rules_cc/pull/652
-alias(
-    name = "toolchain_config",
-    testonly = True,
-    actual = ":_toolchain_config",
-    visibility = ["//test:__subpackages__"],
-)
