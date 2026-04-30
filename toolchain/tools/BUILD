@@ -22,7 +22,6 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:cpp_link_executable": ":cc_wrapper_tool",
         "@rules_cc//cc/toolchains/actions:objc_compile": ":clang_tool",
         "@rules_cc//cc/toolchains/actions:objc_executable": ":clang_tool",  # TODO: This should be the same as the other link actions
-        "@rules_cc//cc/toolchains/actions:objc_fully_link": ":libtool_tool",
         "@rules_cc//cc/toolchains/actions:strip": ":strip_tool",
         "@rules_cc//cc/toolchains/actions:llvm_profdata": ":llvm_profdata_tool",
         "@rules_cc//cc/toolchains/actions:llvm_cov": ":llvm_cov_tool",
