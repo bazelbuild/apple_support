@@ -417,6 +417,26 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "sanitize_pwd",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "set_soname",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "gcc_quoting_for_param_files",
       "provides": [],
       "requires": [],
@@ -1128,6 +1148,8 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
+                "-O0",
+                "-DDEBUG",
                 "-g"
               ],
               "iterate_over": null,
@@ -5177,7 +5199,7 @@
     "/Applications/",
     "/Library/",
     "/USER_HOME/Applications/",
-    "/USER_HOME/Library/"
+    "/USER_HOME/Library/Developer/"
   ],
   "make_variables": [
     {
