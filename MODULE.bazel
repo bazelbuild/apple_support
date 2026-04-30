@@ -20,6 +20,7 @@ archive_override(
         # https://github.com/bazelbuild/rules_cc/pull/642
         # https://github.com/bazelbuild/rules_cc/pull/647
         # https://github.com/bazelbuild/rules_cc/pull/648
+        # https://github.com/bazelbuild/rules_cc/pull/708
         "//:rules_cc.patch",
     ],
     strip_prefix = "rules_cc-f2587eb002545f3e1bade9ba5909cf45ee035bb8",
