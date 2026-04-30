@@ -277,6 +277,7 @@ cc_args(
     name = "default_link_flags_base_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
     args = ["-fobjc-link-runtime"],
+    requires_any_of = [":not_kernel_extension"],
 )
 
 cc_args(
@@ -438,6 +439,7 @@ selects.config_setting_group(
         ":darwin_x86_64",
         # Kernel extensions for Apple Silicon are arm64e.
         ":darwin_arm64e",
+        "@platforms//os:ios",
     ],
 )
 
@@ -447,11 +449,15 @@ enableable_feature(
     args = select({
         ":kernel_extension_platforms": [
             "-nostdlib",
-            "-lkmod",
-            "-lkmodc++",
-            "-lcc_kext",
             "-Xlinker",
             "-kext",
+            "-lcc_kext",
+        ],
+        "//conditions:default": [],
+    }) + select({
+        "@platforms//os:macos": [
+            "-lkmod",
+            "-lkmodc++",
         ],
         "//conditions:default": [],
     }),
