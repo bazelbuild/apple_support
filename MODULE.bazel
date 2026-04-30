@@ -10,23 +10,21 @@ module(
 bazel_dep(name = "bazel_features", version = "1.27.0")
 bazel_dep(name = "bazel_skylib", version = "1.3.0")
 bazel_dep(name = "platforms", version = "0.0.9")
-bazel_dep(name = "rules_cc", version = "0.2.17")
-single_version_override(
+bazel_dep(name = "rules_cc", version = "0.2.18")
+archive_override(
     module_name = "rules_cc",
+    integrity = "sha256-BDbwwjtgusg7H4aQFVYtZDVuK+PBEccZFZqpaTOCuac=",
     patch_strip = 1,
     patches = [
-        # https://github.com/bazelbuild/rules_cc/commit/f32fdf585dd07f67d9ef60cd2633960d0d8cb6a2
         # https://github.com/bazelbuild/rules_cc/pull/614
         # https://github.com/bazelbuild/rules_cc/pull/642
-        # https://github.com/bazelbuild/rules_cc/pull/645
         # https://github.com/bazelbuild/rules_cc/pull/647
         # https://github.com/bazelbuild/rules_cc/pull/648
-        # https://github.com/bazelbuild/rules_cc/pull/658
-        # https://github.com/bazelbuild/rules_cc/pull/659
-        # https://github.com/bazelbuild/rules_cc/pull/660
         "//:rules_cc.patch",
-        # https://github.com/bazelbuild/rules_cc/pull/667
-        "//:rules_cc_legacy_tool.patch",
+    ],
+    strip_prefix = "rules_cc-f2587eb002545f3e1bade9ba5909cf45ee035bb8",
+    urls = [
+        "https://github.com/bazelbuild/rules_cc/archive/f2587eb002545f3e1bade9ba5909cf45ee035bb8.tar.gz",
     ],
 )
 
