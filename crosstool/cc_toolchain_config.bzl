@@ -1218,6 +1218,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             flags = ["-framework", "Foundation", "-framework", "UIKit"],
                         ),
                     ],
+                    with_features = [with_feature_set(not_features = ["kernel_extension"])],
                 ),
             ],
         )
