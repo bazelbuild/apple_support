@@ -845,7 +845,9 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
         env_sets = [
             env_set(
-                actions = ACTION_NAME_GROUPS.all_cc_compile_actions + _DYNAMIC_LINK_ACTIONS + _STATIC_LINK_ACTIONS,
+                actions = ACTION_NAME_GROUPS.all_cc_compile_actions + _DYNAMIC_LINK_ACTIONS + _STATIC_LINK_ACTIONS + [
+                    ACTION_NAMES.strip,
+                ],
                 env_entries = [
                     env_entry(key = key, value = value)
                     for key, value in (apple_env | ctx.attr.extra_env).items()
