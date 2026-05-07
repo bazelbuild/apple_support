@@ -37,7 +37,7 @@ def _transition_impl(_, attr):
             "//command_line_option:ios_multi_cpus": "arm64",
             "//command_line_option:tvos_cpus": "arm64",
             "//command_line_option:visionos_cpus": "arm64",
-            "//command_line_option:watchos_cpus": "arm64_32,armv7k",
+            "//command_line_option:watchos_cpus": "arm64_32",
         })
 
     if hasattr(attr, "cpus"):
