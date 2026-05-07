@@ -119,8 +119,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         target_system_name = "arm64_32-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "ios_arm64e"):
         target_system_name = "arm64e-apple-ios{}".format(target_os_version)
-    elif (ctx.attr.cpu == "watchos_armv7k"):
-        target_system_name = "armv7k-apple-watchos{}".format(target_os_version)
     elif (ctx.attr.cpu == "ios_x86_64"):
         target_system_name = "x86_64-apple-ios{}-simulator".format(target_os_version)
         is_simulator = True
@@ -509,7 +507,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_device_arm64" or
         ctx.attr.cpu == "watchos_device_arm64e" or
-        ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_default_compiler_flags_feature = feature(
@@ -1206,7 +1203,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ctx.attr.cpu == "watchos_arm64_32" or
         ctx.attr.cpu == "watchos_device_arm64" or
         ctx.attr.cpu == "watchos_device_arm64e" or
-        ctx.attr.cpu == "watchos_armv7k" or
         ctx.attr.cpu == "watchos_x86_64" or
         ctx.attr.cpu == "watchos_arm64"):
         apply_implicit_frameworks_feature = feature(
