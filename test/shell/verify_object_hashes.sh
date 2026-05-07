@@ -6,17 +6,17 @@ readonly binary="%{binary}s"
 output=$(ar t "$binary")
 
 # NOTE: The first character of the transition hash is enough to verify they're unique
-if ! echo "$output" | grep -q "duplicate_f.*.o"; then
+if ! echo "$output" | grep -q "duplicate_9.*.o"; then
   echo "error: missing expected object 1: $output" >&2
   exit 1
 fi
 
-if ! echo "$output" | grep -q "duplicate_3.*.o"; then
+if ! echo "$output" | grep -q "duplicate_a.*.o"; then
   echo "error: missing expected object 2: $output" >&2
   exit 1
 fi
 
-if ! echo "$output" | grep -q "cc_lib_c.*.o"; then
+if ! echo "$output" | grep -q "cc_lib_6.*.o"; then
   echo "error: missing expected object 3: $output" >&2
   exit 1
 fi
