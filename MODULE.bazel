@@ -13,7 +13,7 @@ bazel_dep(name = "platforms", version = "0.0.9")
 bazel_dep(name = "rules_cc", version = "0.2.18")
 archive_override(
     module_name = "rules_cc",
-    integrity = "sha256-Q8ZRVWjxB6oK0T0l5Tiy76J5RLX7nK1BdeGliI5b3b8=",
+    integrity = "sha256-7+P7QYSsazn2I3E7OL54GwUq4HrqseAhTU7SnhqcuOw=",
     patch_strip = 1,
     patches = [
         # https://github.com/bazelbuild/rules_cc/pull/642
@@ -21,9 +21,9 @@ archive_override(
         # https://github.com/bazelbuild/rules_cc/pull/648
         "//:rules_cc.patch",
     ],
-    strip_prefix = "rules_cc-d52bd2dd46e49e5e4742e1ad846c36313b4f1cc6",
+    strip_prefix = "rules_cc-b81b6e470c9bb3ae44986d68fb03db89871c39ae",
     urls = [
-        "https://github.com/bazelbuild/rules_cc/archive/d52bd2dd46e49e5e4742e1ad846c36313b4f1cc6.tar.gz",
+        "https://github.com/bazelbuild/rules_cc/archive/b81b6e470c9bb3ae44986d68fb03db89871c39ae.tar.gz",
     ],
 )
 
