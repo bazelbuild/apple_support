@@ -19,6 +19,26 @@ index 501c207..3bbec86 100644
      used_format_vars = [
          v
          for v in used_format_vars
+diff --git a/cc/toolchains/cc_toolchain_info.bzl b/cc/toolchains/cc_toolchain_info.bzl
+index 5474476..6a70436 100644
+--- a/cc/toolchains/cc_toolchain_info.bzl
++++ b/cc/toolchains/cc_toolchain_info.bzl
+@@ -182,6 +182,15 @@ MakeVariableInfo = provider(
+     },
+ )
+ 
++ExecutionRequirementsInfo = provider(
++    doc = "Provider for execution requirements attached to tool actions.",
++    # @unsorted-dict-items
++    fields = {
++        "label": "(Label) The label defining this provider. Place in error messages to simplify debugging",
++        "requirements": "(Sequence[str]) The execution requirements to apply.",
++    },
++)
++
+ MutuallyExclusiveCategoryInfo = provider(
+     doc = "Multiple features with the category will be mutally exclusive",
+     # @unsorted-dict-items
 diff --git a/cc/toolchains/impl/nested_args.bzl b/cc/toolchains/impl/nested_args.bzl
 index fc2add9..8cf0557 100644
 --- a/cc/toolchains/impl/nested_args.bzl
@@ -79,6 +99,102 @@ index fc2add9..8cf0557 100644
          return "%%{%s}" % target[VariableInfo].name
      elif BuildSettingInfo in target:
          return _format_build_setting(
+diff --git a/cc/toolchains/providers.bzl b/cc/toolchains/providers.bzl
+new file mode 100644
+index 0000000..6cd84a9
+--- /dev/null
++++ b/cc/toolchains/providers.bzl
+@@ -0,0 +1,20 @@
++# Copyright 2026 The Bazel Authors. All rights reserved.
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++"""Public providers for rule-based toolchain configuration."""
++
++load(":cc_toolchain_info.bzl", _ExecutionRequirementsInfo = "ExecutionRequirementsInfo")
++
++visibility("public")
++
++ExecutionRequirementsInfo = _ExecutionRequirementsInfo
+diff --git a/cc/toolchains/tool.bzl b/cc/toolchains/tool.bzl
+index d4481e0..246d54c 100644
+--- a/cc/toolchains/tool.bzl
++++ b/cc/toolchains/tool.bzl
+@@ -19,6 +19,7 @@ load("//cc/toolchains/impl:label_utils.bzl", "deduplicate_label_list")
+ load("//cc/toolchains/impl:nested_args.bzl", "format_dict_values")
+ load(
+     ":cc_toolchain_info.bzl",
++    "ExecutionRequirementsInfo",
+     "ToolCapabilityInfo",
+     "ToolInfo",
+ )
+@@ -40,13 +41,16 @@ def _cc_tool_impl(ctx):
+         format = format_targets,
+         must_use = format_targets.keys(),
+     )
++    execution_requirements = []
++    for info in collect_provider(ctx.attr.execution_requirements, ExecutionRequirementsInfo):
++        execution_requirements.extend(info.requirements)
+ 
+     runfiles = collect_data(ctx, ctx.attr.data + [ctx.attr.src])
+     tool = ToolInfo(
+         label = ctx.label,
+         exe = exe,
+         runfiles = runfiles,
+-        execution_requirements = tuple(ctx.attr.tags),
++        execution_requirements = tuple(ctx.attr.tags + execution_requirements),
+         env = env,
+         allowlist_include_directories = depset(
+             direct = [d[DirectoryInfo] for d in ctx.attr.allowlist_include_directories],
+@@ -116,6 +120,13 @@ This can help work around errors like:
+             doc = """Environment variables to apply when running this tool.
+ 
+ Format expansion is performed on values using the format attribute.
++""",
++        ),
++        "execution_requirements": attr.label_list(
++            providers = [ExecutionRequirementsInfo],
++            doc = """Additional execution requirements for actions that run this tool.
++
++Each label must provide `ExecutionRequirementsInfo`. For fixed execution requirements, use `tags`.
+ """,
+         ),
+         "format_keys": attr.string_list(
+@@ -181,6 +192,7 @@ def cc_tool(
+         data = None,
+         allowlist_include_directories = None,
+         env = None,
++        execution_requirements = None,
+         format = {},
+         capabilities = None,
+         **kwargs):
+@@ -235,6 +247,9 @@ def cc_tool(
+             (if these are builtin files, make sure these paths are in your toolchain)`.
+         env: (Dict[str, str]) Environment variables to apply when running this tool.
+             Format expansion is performed on values using `format`.
++        execution_requirements: (List[Label]) Additional execution requirements for actions that
++            run this tool. Each label must provide `ExecutionRequirementsInfo`. For fixed
++            execution requirements, use `tags`.
+         format: (Dict[str, Label]) A mapping of format strings to the label of a corresponding
+             target. This target can be a `directory`, `subdirectory`, or a single file that the
+             value should be pulled from. All instances of `{variable_name}` in the `env` dictionary
+@@ -255,6 +270,7 @@ def cc_tool(
+         data = data,
+         allowlist_include_directories = allowlist_include_directories,
+         env = env,
++        execution_requirements = execution_requirements,
+         format_keys = format_keys,
+         format_values = format_values.labels,
+         format_value_indexes = format_values.indexes,
 diff --git a/cc/toolchains/variables/BUILD b/cc/toolchains/variables/BUILD
 index 0de3cb5..1732769 100644
 --- a/cc/toolchains/variables/BUILD

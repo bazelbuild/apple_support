@@ -17,8 +17,8 @@ archive_override(
     patch_strip = 1,
     patches = [
         # https://github.com/bazelbuild/rules_cc/pull/642
-        # https://github.com/bazelbuild/rules_cc/pull/647
         # https://github.com/bazelbuild/rules_cc/pull/648
+        # https://github.com/bazelbuild/rules_cc/pull/718
         "//:rules_cc.patch",
     ],
     strip_prefix = "rules_cc-b81b6e470c9bb3ae44986d68fb03db89871c39ae",
