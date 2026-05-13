@@ -87,6 +87,24 @@ kernel_extension_test = make_action_command_line_test_rule(
     },
 )
 
+supported_linker_flags_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": [
+            "no_warn_duplicate_libraries",
+            "reproducible_linker_flag",
+        ],
+    },
+)
+
+disabled_linker_flags_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": [
+            "-no_warn_duplicate_libraries",
+            "-reproducible_linker_flag",
+        ],
+    },
+)
+
 stripopt_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:stripopt": ["-passed_arg"],
@@ -359,6 +377,40 @@ def linking_test_suite(name):
         not_expected_argv = ["-map"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
+    )
+
+    # Assume we're on a new enough version to test that detection works
+    default_test(
+        name = "{}_default_supported_linker_flags_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Wl,-no_warn_duplicate_libraries",
+            "-Wl,-reproducible",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    supported_linker_flags_test(
+        name = "{}_supported_linker_flags_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Wl,-no_warn_duplicate_libraries",
+            "-Wl,-reproducible",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    disabled_linker_flags_test(
+        name = "{}_disabled_linker_flags_test".format(name),
+        tags = [name],
+        not_expected_argv = [
+            "-Wl,-no_warn_duplicate_libraries",
+            "-Wl,-reproducible",
+        ],
+        mnemonic = "CppLink",
+        target_under_test = "//test/test_data:cc_test_binary",
     )
 
     strip_test(
