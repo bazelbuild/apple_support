@@ -524,6 +524,12 @@ negatable_feature(
 )
 
 negatable_feature(
+    name = "reproducible_linker_flag",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-Wl,-reproducible"],
+)
+
+negatable_feature(
     name = "no_deduplicate",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
     args = [
@@ -871,6 +877,7 @@ cc_toolchain(
         ":suppress_warnings_wrapper",
         ":treat_warnings_as_errors_wrapper",
         ":no_warn_duplicate_libraries",
+        ":reproducible_linker_flag",
         ":external_include_paths_wrapper",
         "@apple_support_toolchain_env//:off_by_default_layering_check_enabled_features",
     ],
