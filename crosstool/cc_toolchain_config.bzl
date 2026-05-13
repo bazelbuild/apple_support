@@ -2204,6 +2204,22 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    is_26_or_above = False
+    if xcode_config.xcode_version():
+        is_26_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+
+    reproducible_linker_flag_feature = feature(
+        name = "reproducible_linker_flag",
+        enabled = "reproducible_linker_flag" in ctx.features or
+                  (is_26_or_above and "reproducible_linker_flag" not in ctx.disabled_features),
+        flag_sets = [
+            flag_set(
+                actions = _DYNAMIC_LINK_ACTIONS,
+                flag_groups = [flag_group(flags = ["-Wl,-reproducible"])],
+            ),
+        ],
+    )
+
     modulemaps = ctx.attr.module_map[DefaultInfo].files.to_list()
     if modulemaps:
         if len(modulemaps) != 1:
@@ -2347,6 +2363,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         suppress_warnings_feature,
         treat_warnings_as_errors_feature,
         no_warn_duplicate_libraries_feature,
+        reproducible_linker_flag_feature,
         layering_check_feature,
         external_include_paths_feature,
     ]
