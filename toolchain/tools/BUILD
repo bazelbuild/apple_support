@@ -1,12 +1,6 @@
 load("@rules_cc//cc/toolchains:tool.bzl", "cc_tool")
 load("@rules_cc//cc/toolchains:tool_map.bzl", "cc_tool_map")
 
-# FIXME: These should come dynamically through xcode_config.execution_info()
-_TAGS = [
-    "requires-darwin",
-    "supports-xcode-requirements-set",
-]
-
 cc_tool_map(
     name = "tools",
     tools = {
@@ -32,13 +26,13 @@ cc_tool_map(
 cc_tool(
     name = "clang_tool",
     src = "//crosstool:exec_wrapped_clang",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
     name = "clangpp_tool",
     src = "//crosstool:exec_wrapped_clang_pp",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
@@ -47,29 +41,29 @@ cc_tool(
     data = [
         "//crosstool:exec_wrapped_clang",
     ],
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
     name = "libtool_tool",
     src = "//crosstool:exec_libtool",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
     name = "strip_tool",
     src = "//crosstool:exec_strip",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
     name = "llvm_profdata_tool",
     src = "//crosstool:exec_llvm_profdata",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 
 cc_tool(
     name = "llvm_cov_tool",
     src = "//crosstool:exec_llvm_cov",
-    tags = _TAGS,
+    execution_requirements = ["//toolchain:xcode_execution_info"],
 )

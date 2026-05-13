@@ -6,6 +6,7 @@ rules.
 """
 
 load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@rules_cc//cc/toolchains:providers.bzl", "ExecutionRequirementsInfo")
 
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
@@ -126,6 +127,28 @@ dynamic_toolchain_info = rule(
         "_arm64_32": attr.label(default = "@platforms//cpu:arm64_32"),
         "_armv7k": attr.label(default = "@platforms//cpu:armv7k"),
         "_simulator": attr.label(default = "@build_bazel_apple_support//constraints:simulator"),
+        "_xcode_config": attr.label(default = configuration_field(
+            fragment = "apple",
+            name = "xcode_config_label",
+        )),
+    },
+    fragments = [
+        "apple",
+    ],
+)
+
+def _xcode_execution_info_impl(ctx):
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    return [
+        ExecutionRequirementsInfo(
+            label = ctx.label,
+            requirements = tuple(xcode_config.execution_info().keys()),
+        ),
+    ]
+
+xcode_execution_info = rule(
+    implementation = _xcode_execution_info_impl,
+    attrs = {
         "_xcode_config": attr.label(default = configuration_field(
             fragment = "apple",
             name = "xcode_config_label",

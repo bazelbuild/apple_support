@@ -9,7 +9,7 @@ load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
-load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "set_install_name_flag")
+load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "set_install_name_flag", "xcode_execution_info")
 load(":features.bzl", "enableable_feature", "negatable_feature")
 
 MARKER_FEATURES = [
@@ -239,6 +239,11 @@ cc_args(
 
 dynamic_toolchain_info(
     name = "dynamic_toolchain_info",
+    visibility = ["//toolchain:__subpackages__"],
+)
+
+xcode_execution_info(
+    name = "xcode_execution_info",
     visibility = ["//toolchain:__subpackages__"],
 )
 
