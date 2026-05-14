@@ -77,7 +77,7 @@ def _min_os_version_or_none(*, minimum_os_version, platform, platform_type):
         return minimum_os_version
     return None
 
-def _command_line_options(*, apple_platforms = [], environment_arch = None, minimum_os_version, platform_type, settings):
+def _command_line_options(*, environment_arch = None, minimum_os_version, platform_type, settings):
     cpu = _cpu_string(
         environment_arch = environment_arch,
         platform_type = platform_type,
@@ -86,7 +86,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
 
     output_dictionary = {
         "//command_line_option:apple_platform_type": platform_type,
-        "//command_line_option:apple_platforms": apple_platforms,
         # `apple_split_cpu` is used by the Bazel Apple configuration distinguisher to distinguish
         # architecture and environment, therefore we set `environment_arch` when it is available.
         "//command_line_option:apple_split_cpu": environment_arch if environment_arch else "",
@@ -94,9 +93,7 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
         "//command_line_option:cpu": cpu,
         "//command_line_option:fission": [],
         "//command_line_option:grte_top": None,
-        "//command_line_option:platforms": (
-            [apple_platforms[0]] if apple_platforms else [settings[_CPU_TO_DEFAULT_PLATFORM_FLAG[cpu]]]
-        ),
+        "//command_line_option:platforms": settings[_CPU_TO_DEFAULT_PLATFORM_FLAG[cpu]],
         "//command_line_option:ios_minimum_os": _min_os_version_or_none(
             minimum_os_version = minimum_os_version,
             platform = "ios",
@@ -122,7 +119,6 @@ def _command_line_options(*, apple_platforms = [], environment_arch = None, mini
     return output_dictionary
 
 _apple_platform_transition_inputs = [
-    "//command_line_option:apple_platforms",
     "//command_line_option:cpu",
     "//command_line_option:ios_multi_cpus",
     "//command_line_option:macos_cpus",
@@ -135,7 +131,6 @@ _apple_platform_transition_inputs = [
 
 _apple_rule_base_transition_outputs = [
     "//command_line_option:apple_platform_type",
-    "//command_line_option:apple_platforms",
     "//command_line_option:apple_split_cpu",
     "//command_line_option:compiler",
     "//command_line_option:cpu",
