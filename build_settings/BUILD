@@ -10,7 +10,6 @@ licenses(["notice"])
 bzl_library(
     name = "build_settings_bzl",
     srcs = ["build_settings.bzl"],
-    parse_tests = True,
     deps = ["@bazel_skylib//rules:common_settings"],
 )
 
