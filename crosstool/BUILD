@@ -52,6 +52,43 @@ force_exec(
     target = ":exec_cc_wrapper.target_config",
 )
 
+# TODO: Attempt to remove need for wrapper
+genrule(
+    name = "exec_strip.target_config",
+    srcs = ["strip.sh"],
+    outs = ["strip"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_strip",
+    target = ":exec_strip.target_config",
+)
+
+genrule(
+    name = "exec_llvm_profdata.target_config",
+    srcs = ["llvm-profdata.sh"],
+    outs = ["llvm-profdata"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_llvm_profdata",
+    target = ":exec_llvm_profdata.target_config",
+)
+
+genrule(
+    name = "exec_llvm_cov.target_config",
+    srcs = ["llvm-cov.sh"],
+    outs = ["llvm-cov"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_llvm_cov",
+    target = ":exec_llvm_cov.target_config",
+)
+
 # Consumed by bazel tests.
 filegroup(
     name = "for_bazel_tests",
