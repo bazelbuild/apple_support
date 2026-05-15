@@ -93,7 +93,7 @@ def _command_line_options(*, environment_arch = None, minimum_os_version, platfo
         "//command_line_option:cpu": cpu,
         "//command_line_option:fission": [],
         "//command_line_option:grte_top": None,
-        "//command_line_option:platforms": settings[_CPU_TO_DEFAULT_PLATFORM_FLAG[cpu]],
+        "//command_line_option:platforms": [settings[_CPU_TO_DEFAULT_PLATFORM_FLAG[cpu]]],
         "//command_line_option:ios_minimum_os": _min_os_version_or_none(
             minimum_os_version = minimum_os_version,
             platform = "ios",
