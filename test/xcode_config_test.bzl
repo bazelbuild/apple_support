@@ -15,6 +15,7 @@
 """Tests for the `xcode_config` rule."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
+load("@bazel_features//private:util.bzl", "lt")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
 load(
@@ -26,6 +27,14 @@ load("//xcode:xcode_version.bzl", "xcode_version")
 load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")
+
+# The incompatible_remove_ctx_apple_fragment option is available in Bazel 8.x,
+# where analysis tests can transition incompatible flags, but is not registered
+# in Bazel 9.x.
+_SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT = (
+    bazel_features.rules.analysis_tests_can_transition_on_experimental_incompatible_flags and
+    lt("9.0.0")
+)
 
 # ------------------------------------------------------------------------------
 
@@ -2304,7 +2313,7 @@ def _make_xcode_fixtures(
 def xcode_config_test(name):
     make_all_tests(
         name = name,
-        tests = [
+        tests = ([
             _mutual_and_explicit_xcodes_fails,
             _mutual_and_default_xcodes_fails,
             _no_local_xcodes_fails,
@@ -2343,8 +2352,9 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias,
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
+        ] + ([
             _xcode_config_resolver_with_fragment_removed,
-        ] if bazel_features.apple.xcode_config_migrated else [],
+        ] if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else [])) if bazel_features.apple.xcode_config_migrated else [],
     )
 
     # TODO: b/311385128 - The following tests from `XcodeConfigTest.java`
