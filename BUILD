@@ -31,7 +31,6 @@ filegroup(
         "//lib:for_bazel_tests",
         "//platforms:for_bazel_tests",
         "//rules:for_bazel_tests",
-        "//tools:for_bazel_tests",
         "//xcode:for_bazel_tests",
     ],
     # Exposed publicly just so other rules can use this if they set up
