@@ -24,6 +24,14 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 """
 
 load("@bazel_skylib//lib:types.bzl", "types")
+load(
+    "@build_bazel_apple_support//lib:missing_platform_fallback_users.bzl",
+    "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
+)
+load(
+    "@build_bazel_apple_support//lib/private:providers.bzl",
+    "new_appleplatforminfo",
+)
 
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
 # invocation.
@@ -576,6 +584,71 @@ def _target_os_from_rule_ctx(
         return None
     fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")
 
+def _platform_from_info(*, apple_platform_info):
+    """Returns an apple_common.platform given the contents of an ApplePlatformInfo provider"""
+    if apple_platform_info.target_os == "ios":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.ios_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.ios_simulator
+    elif apple_platform_info.target_os == "macos":
+        return apple_common.platform.macos
+    elif apple_platform_info.target_os == "tvos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.tvos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.tvos_simulator
+    elif apple_platform_info.target_os == "visionos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.visionos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.visionos_simulator
+    elif apple_platform_info.target_os == "watchos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.watchos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.watchos_simulator
+    else:
+        fail("Internal Error: Found unrecognized target os of " + apple_platform_info.target_os)
+    fail(
+        """
+Internal Error: Found unrecognized target environment of {target_environment} for os {target_os}
+""".format(
+            target_environment = apple_platform_info.target_environment,
+            target_os = apple_platform_info.target_os,
+        ),
+    )
+
+def _apple_platform_info_from_rule_ctx(ctx):
+    """Returns an ApplePlatformInfo provider from a rule context, needed to resolve constraints."""
+    target_os = _target_os_from_rule_ctx(ctx, fail_on_missing_constraint = False)
+    if not target_os:
+        full_label = "//{package}:{name}".format(package = ctx.label.package, name = ctx.label.name)
+        if full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK:
+            fail("ERROR: A valid Apple platform constraint could not be found for target " + full_label)
+
+        # Starlark-only default fallback when Apple constraints are missing (e.g. Linux host analysis)
+        # buildifier: disable=print
+        print("Warning: Target {} is analyzed without Apple platform constraints. Applying temporary macos fallback.".format(full_label))
+        target_os = "macos"
+        target_env = "device"
+        target_arch = "x86_64"
+    else:
+        target_env = _target_environment_from_rule_ctx(ctx)
+        target_arch = _target_arch_from_rule_ctx(ctx)
+
+    platform = _platform_from_info(
+        apple_platform_info = struct(target_os = target_os, target_environment = target_env),
+    )
+
+    return new_appleplatforminfo(
+        target_arch = target_arch,
+        target_build_config = ctx.configuration,
+        target_environment = target_env,
+        target_os = target_os,
+        platform = platform,
+    )
+
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
     path_placeholders = struct(
@@ -584,6 +657,7 @@ apple_support = struct(
         xcode = _xcode_path_placeholder,
     ),
     platform_constraint_attrs = _platform_constraint_attrs,
+    platform_info_from_rule_ctx = _apple_platform_info_from_rule_ctx,
     run = _run,
     run_shell = _run_shell,
     target_arch_from_rule_ctx = _target_arch_from_rule_ctx,

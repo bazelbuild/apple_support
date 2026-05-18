@@ -34,8 +34,24 @@ bzl_library(
     name = "apple_support",
     srcs = ["apple_support.bzl"],
     deps = [
+        ":missing_platform_fallback_users",
+        ":providers",
+        "//lib/private:providers",
         "@bazel_skylib//lib:types",
     ],
+)
+
+bzl_library(
+    name = "providers",
+    srcs = ["providers.bzl"],
+    deps = [
+        "//lib/private:providers",
+    ],
+)
+
+bzl_library(
+    name = "missing_platform_fallback_users",
+    srcs = ["missing_platform_fallback_users.bzl"],
 )
 
 bzl_library(
@@ -63,6 +79,8 @@ bzl_library(
 filegroup(
     name = "for_bazel_tests",
     testonly = 1,
-    srcs = glob(["**"]),
+    srcs = glob(["**"]) + [
+        "//lib/private:for_bazel_tests",
+    ],
     visibility = ["//:__pkg__"],
 )
