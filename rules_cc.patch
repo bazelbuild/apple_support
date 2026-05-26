@@ -1,26 +1,5 @@
-diff --git a/cc/toolchains/args.bzl b/cc/toolchains/args.bzl
-index 501c207..3bbec86 100644
---- a/cc/toolchains/args.bzl
-+++ b/cc/toolchains/args.bzl
-@@ -48,7 +48,7 @@ def _cc_args_impl(ctx):
-     formatted_env, used_format_vars = format_dict_values(
-         env = ctx.attr.env,
-         must_use = [],  # checking for unused variables in done when formatting `args`.
--        format = format_targets,
-+        format = {k: struct(__raw_string = v) for k, v in ctx.var.items()} | format_targets,
-     )
-     used_env_variables = [
-         var
-@@ -57,6 +57,7 @@ def _cc_args_impl(ctx):
-     ]
- 
-     # Ignore file / directory replacements for validation
-+    # Filter out variables from ctx.var which don't have to be used
-     used_format_vars = [
-         v
-         for v in used_format_vars
 diff --git a/cc/toolchains/cc_toolchain_info.bzl b/cc/toolchains/cc_toolchain_info.bzl
-index 5474476..6a70436 100644
+index 54744763..6a704367 100644
 --- a/cc/toolchains/cc_toolchain_info.bzl
 +++ b/cc/toolchains/cc_toolchain_info.bzl
 @@ -182,6 +182,15 @@ MakeVariableInfo = provider(
@@ -39,69 +18,9 @@ index 5474476..6a70436 100644
  MutuallyExclusiveCategoryInfo = provider(
      doc = "Multiple features with the category will be mutally exclusive",
      # @unsorted-dict-items
-diff --git a/cc/toolchains/impl/nested_args.bzl b/cc/toolchains/impl/nested_args.bzl
-index fc2add9..8cf0557 100644
---- a/cc/toolchains/impl/nested_args.bzl
-+++ b/cc/toolchains/impl/nested_args.bzl
-@@ -100,6 +100,7 @@ def nested_args_provider_from_ctx(ctx, maybe_used_vars = []):
-     return nested_args_provider(
-         label = ctx.label,
-         args = ctx.attr.args,
-+        make_variables = ctx.var,
-         format = ctx.attr.format,
-         nested = collect_provider(ctx.attr.nested, NestedArgsInfo),
-         files = collect_files(ctx.attr.data),
-@@ -128,6 +129,7 @@ def nested_args_provider(
-         requires_equal = None,
-         requires_equal_value = "",
-         maybe_used_vars = [],
-+        make_variables = {},
-         fail = fail):
-     """Creates a validated NestedArgsInfo.
- 
-@@ -156,6 +158,8 @@ def nested_args_provider(
-         requires_equal_value: (str) The value to compare the requires_equal
-           variable with
-         maybe_used_vars: (List[str]) A list of format variables that are not needed during args formatting.
-+        make_variables: (dict[str, str]) Make variable substitutions from
-+          ctx.var. {KEY} references in args are replaced with values.
-         fail: A fail function. Use only for testing.
-     Returns:
-         NestedArgsInfo
-@@ -180,6 +184,8 @@ def nested_args_provider(
-             ))
-         replacements[name] = target
- 
-+    make_replacements = {k: struct(__raw_string = v) for k, v in make_variables.items()}
-+
-     # Intentionally ensure that we do not have to use the variable provided by
-     # iterate_over in the format string.
-     # For example, a valid use case is:
-@@ -193,7 +199,7 @@ def nested_args_provider(
-     # )
-     formatted_args, _ = format_list(
-         args,
--        replacements,
-+        make_replacements | replacements,
-         must_use = [var for var in format.values() if var not in maybe_used_vars],
-         fail = fail,
-     )
-@@ -305,7 +311,11 @@ def _format_build_setting(value, label, fail = fail):
-     fail("%s had an unsupported build setting type %s. Only string, bool, int, or Label values may be formatted." % (label, type(value)))
- 
- def _format_target(target, fail = fail):
--    if VariableInfo in target:
-+    # NOTE: This is for use with ctx.var where we don't have a variable, but we
-+    # also don't want to allow arbitrary strings. See args.bzl for usage.
-+    if hasattr(target, "__raw_string"):
-+        return _escape(target.__raw_string)
-+    elif VariableInfo in target:
-         return "%%{%s}" % target[VariableInfo].name
-     elif BuildSettingInfo in target:
-         return _format_build_setting(
 diff --git a/cc/toolchains/providers.bzl b/cc/toolchains/providers.bzl
 new file mode 100644
-index 0000000..6cd84a9
+index 00000000..6cd84a9f
 --- /dev/null
 +++ b/cc/toolchains/providers.bzl
 @@ -0,0 +1,20 @@
@@ -126,7 +45,7 @@ index 0000000..6cd84a9
 +
 +ExecutionRequirementsInfo = _ExecutionRequirementsInfo
 diff --git a/cc/toolchains/tool.bzl b/cc/toolchains/tool.bzl
-index d4481e0..246d54c 100644
+index d4481e0e..246d54c5 100644
 --- a/cc/toolchains/tool.bzl
 +++ b/cc/toolchains/tool.bzl
 @@ -19,6 +19,7 @@ load("//cc/toolchains/impl:label_utils.bzl", "deduplicate_label_list")
@@ -195,78 +114,3 @@ index d4481e0..246d54c 100644
          format_keys = format_keys,
          format_values = format_values.labels,
          format_value_indexes = format_values.indexes,
-diff --git a/cc/toolchains/variables/BUILD b/cc/toolchains/variables/BUILD
-index 0de3cb5..1732769 100644
---- a/cc/toolchains/variables/BUILD
-+++ b/cc/toolchains/variables/BUILD
-@@ -361,6 +361,41 @@ cc_variable(
-     type = types.option(types.list(types.file)),
- )
- 
-+# TODO: Remove when we drop bazel 8.x support
-+cc_variable(
-+    name = "filelist",
-+    actions = ["//cc/toolchains/actions:objc_executable"],
-+    type = types.option(types.file),
-+)
-+
-+# TODO: Remove when we drop bazel 8.x support
-+cc_variable(
-+    name = "linked_binary",
-+    actions = ["//cc/toolchains/actions:objc_executable"],
-+    type = types.option(types.file),
-+)
-+
-+# TODO: Remove when we drop bazel 8.x support
-+cc_variable(
-+    name = "force_load_exec_paths",
-+    actions = ["//cc/toolchains/actions:objc_executable"],
-+    type = types.option(types.list(types.file)),
-+)
-+
-+# TODO: Remove when we drop bazel 8.x support
-+cc_variable(
-+    name = "dep_linkopts",
-+    actions = ["//cc/toolchains/actions:objc_executable"],
-+    type = types.option(types.list(types.string)),
-+)
-+
-+# TODO: Remove when we drop bazel 8.x support
-+cc_variable(
-+    name = "attr_linkopts",
-+    actions = ["//cc/toolchains/actions:objc_executable"],
-+    type = types.option(types.list(types.string)),
-+)
-+
- cc_variable(
-     name = "linkmap_exec_path",
-     actions = ["//cc/toolchains/actions:link_actions"],
-@@ -532,9 +567,11 @@ cc_variable(
- cc_builtin_variables(
-     name = "variables",
-     srcs = [
-+        ":attr_linkopts",
-         ":cc_library_exec_paths",
-         ":cs_fdo_instrument_path",
-         ":def_file_path",
-+        ":dep_linkopts",
-         ":dependency_file",
-         ":dependent_module_map_files",
-         ":dsym_path",
-@@ -542,6 +579,8 @@ cc_builtin_variables(
-         ":fdo_instrument_path",
-         ":fdo_prefetch_hints_path",
-         ":fdo_profile_path",
-+        ":filelist",
-+        ":force_load_exec_paths",
-         ":force_pic",
-         ":framework_include_paths",
-         ":fully_linked_archive_path",
-@@ -561,6 +600,7 @@ cc_builtin_variables(
-         ":legacy_link_flags",
-         ":libraries_to_link",
-         ":library_search_directories",
-+        ":linked_binary",
-         ":linker_param_file",
-         ":linkmap_exec_path",
-         ":linkstamp_paths",

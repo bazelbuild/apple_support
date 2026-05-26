@@ -15,8 +15,6 @@ archive_override(
     integrity = "sha256-7+P7QYSsazn2I3E7OL54GwUq4HrqseAhTU7SnhqcuOw=",
     patch_strip = 1,
     patches = [
-        # https://github.com/bazelbuild/rules_cc/pull/642
-        # https://github.com/bazelbuild/rules_cc/pull/648
         # https://github.com/bazelbuild/rules_cc/pull/718
         "//:rules_cc.patch",
     ],
