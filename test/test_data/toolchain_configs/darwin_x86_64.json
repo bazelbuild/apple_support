@@ -4915,6 +4915,16 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "compiler_param_file_on_demand",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "exclude_private_headers_in_module_maps",
       "provides": [],
       "requires": [],
@@ -5481,7 +5491,7 @@
     }
   ],
   "target_cpu": "darwin_x86_64",
-  "target_libc": "",
+  "target_libc": "macosx",
   "target_system_name": "x86_64-apple-macosxVERSION",
   "tool_paths": [
     {
