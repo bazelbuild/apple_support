@@ -16,6 +16,7 @@ MARKER_FEATURES = [
     "archive_param_file",
     "compile_all_modules",
     "compiler_param_file",
+    "compiler_param_file_on_demand",
     "exclude_private_headers_in_module_maps",
     "gcc_quoting_for_param_files",
     "no_dotd_file",
