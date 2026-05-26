@@ -102,6 +102,13 @@ string_flag(
 )
 
 string_flag(
+    name = "host_macos_minimum_os",
+    build_setting_default = "",
+    scope = "universal",
+)
+
+string_flag(
     name = "macos_minimum_os",
     build_setting_default = "",
+    scope = "exec:--//xcode:host_macos_minimum_os",
 )
