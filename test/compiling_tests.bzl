@@ -1,5 +1,6 @@
 """Tests for compilation behavior."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "//test/rules:action_command_line_test.bzl",
     "make_action_command_line_test_rule",
@@ -50,6 +51,14 @@ dbg_test = make_action_command_line_test_rule(
 save_temps_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:save_temps": True,
+    },
+)
+
+empty_xcodes_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:empty_xcode_config",
+        )),
     },
 )
 
@@ -178,6 +187,18 @@ def compiling_test_suite(name):
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
     )
+
+    if bazel_features.apple.xcode_config_migrated:
+        empty_xcodes_test(
+            name = "{}_empty_xcodes_target_test".format(name),
+            tags = [name],
+            expected_argv = [
+                "-target",
+                "arm64-apple-macosx10.11",
+            ],
+            mnemonic = "CppCompile",
+            target_under_test = "//test/test_data:cc_lib",
+        )
 
     default_test(
         name = "{}_macos_objc_compile_test".format(name),
