@@ -269,7 +269,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_dynamic_library,
         tools = [
             tool(
-                tool = ctx.file.cc_wrapper,
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -411,7 +411,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         action_name = ACTION_NAMES.cpp_link_executable,
         tools = [
             tool(
-                tool = ctx.file.cc_wrapper,
+                tool = ctx.file.wrapped_clang,
                 execution_requirements = xcode_execution_requirements,
             ),
         ],
@@ -2008,7 +2008,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     set_install_name = feature(
         name = "set_install_name",
-        enabled = getattr(ctx.fragments.cpp, "do_not_use_macos_set_install_name", True),
+        enabled = True,
         flag_sets = [
             flag_set(
                 actions = [
@@ -2394,7 +2394,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     tool_paths = {
         "ar": ctx.file.libtool.path,
         "cpp": "/usr/bin/cpp",
-        "gcc": ctx.file.cc_wrapper.path,
+        "gcc": ctx.file.wrapped_clang.path,
         "gcov": "/usr/bin/gcov",
         "ld": "/usr/bin/ld",
         "nm": "/usr/bin/nm",
@@ -2429,10 +2429,6 @@ cc_toolchain_config = rule(
     implementation = _impl,
     attrs = {
         "c_flags": attr.string_list(),
-        "cc_wrapper": attr.label(
-            allow_single_file = True,
-            mandatory = True,
-        ),
         "conly_flags": attr.string_list(),
         "cpu": attr.string(mandatory = True),
         "cxx_builtin_include_directories": attr.string_list(),

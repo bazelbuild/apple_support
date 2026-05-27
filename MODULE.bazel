@@ -2,7 +2,7 @@
 
 module(
     name = "apple_support",
-    bazel_compatibility = [">=7.0.0"],
+    bazel_compatibility = [">=7.4.0"],
     compatibility_level = 1,
     repo_name = "build_bazel_apple_support",
 )
