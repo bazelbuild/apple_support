@@ -25,6 +25,7 @@ filegroup(
     srcs = [
         "BUILD",
         "LICENSE",
+        "//build_settings:for_bazel_tests",
         "//configs:for_bazel_tests",
         "//constraints:for_bazel_tests",
         "//crosstool:for_bazel_tests",

@@ -232,10 +232,7 @@ def _action_required_attrs():
     """
     return {
         "_xcode_config": attr.label(
-            default = configuration_field(
-                name = "xcode_config_label",
-                fragment = "apple",
-            ),
+            default = "@build_bazel_apple_support//xcode:version_config",
         ),
     }
 

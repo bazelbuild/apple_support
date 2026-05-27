@@ -15,6 +15,7 @@
 """Implementation of the `xcode_config` build rule."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
+load("@build_bazel_apple_support//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
     "@build_bazel_apple_support//xcode:providers.bzl",
     "XcodeVersionPropertiesInfo",
@@ -34,7 +35,7 @@ def _xcode_config_impl(ctx):
     if not bazel_features.apple.xcode_config_migrated:
         fail("This rule is not available on the current Bazel version")
 
-    apple_fragment = ctx.fragments.apple
+    apple_fragment = getattr(ctx.fragments, "apple", None)
     cpp_fragment = ctx.fragments.cpp
 
     explicit_default_version = ctx.attr.default[XcodeVersionRuleInfo] if ctx.attr.default else None
@@ -64,30 +65,31 @@ def _xcode_config_impl(ctx):
         xcode_version_properties, availability = _resolve_xcode_from_local_and_remote(
             local_versions,
             remote_versions,
-            apple_fragment.xcode_version_flag,
-            apple_fragment.prefer_mutual_xcode,
+            read_possibly_native_flag(ctx, "xcode_version"),
+            read_possibly_native_flag(ctx, "experimental_prefer_mutual_xcode"),
             local_default_version,
         )
     else:
         xcode_version_properties = _resolve_explicitly_defined_version(
             explicit_versions,
             explicit_default_version,
-            apple_fragment.xcode_version_flag,
+            read_possibly_native_flag(ctx, "xcode_version"),
         )
         availability = "UNKNOWN"
 
     # TODO: Remove `getattr` once we no longer support a version of Bazel with
     # `apple_fragment.*_sdk_version_flag`
-    ios_sdk_version = getattr(apple_fragment, "ios_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
-    macos_sdk_version = getattr(apple_fragment, "macos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
-    tvos_sdk_version = getattr(apple_fragment, "tvos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
-    watchos_sdk_version = getattr(apple_fragment, "watchos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "2.0")
+    ios_sdk_version = _sdk_version_flag(apple_fragment, "ios_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
+    macos_sdk_version = _sdk_version_flag(apple_fragment, "macos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
+    tvos_sdk_version = _sdk_version_flag(apple_fragment, "tvos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
+    watchos_sdk_version = _sdk_version_flag(apple_fragment, "watchos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "2.0")
     visionos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_visionos_sdk_version, "1.0")
 
-    ios_minimum_os = apple_fragment.ios_minimum_os_flag or ios_sdk_version
-    macos_minimum_os = apple_fragment.macos_minimum_os_flag or macos_sdk_version
-    tvos_minimum_os = apple_fragment.tvos_minimum_os_flag or tvos_sdk_version
-    watchos_minimum_os = apple_fragment.watchos_minimum_os_flag or watchos_sdk_version
+    ios_minimum_os = read_possibly_native_flag(ctx, "ios_minimum_os") or ios_sdk_version
+
+    macos_minimum_os = read_possibly_native_flag(ctx, "macos_minimum_os") or macos_sdk_version
+    tvos_minimum_os = read_possibly_native_flag(ctx, "tvos_minimum_os") or tvos_sdk_version
+    watchos_minimum_os = read_possibly_native_flag(ctx, "watchos_minimum_os") or watchos_sdk_version
     if cpp_fragment.minimum_os_version():
         visionos_minimum_os = apple_common.dotted_version(cpp_fragment.minimum_os_version())
     else:
@@ -113,8 +115,8 @@ def _xcode_config_impl(ctx):
         macos_minimum_os_version = str(macos_minimum_os),
         xcode_version = xcode_version_properties.xcode_version,
         availability = availability,
-        xcode_version_flag = apple_fragment.xcode_version_flag,
-        include_xcode_execution_info = apple_fragment.include_xcode_exec_requirements,
+        xcode_version_flag = read_possibly_native_flag(ctx, "xcode_version"),
+        include_xcode_execution_info = read_possibly_native_flag(ctx, "include_xcode_exec_requirements"),
     )
 
     providers = [
@@ -170,6 +172,27 @@ These are used along with `remote_versions` to select a mutually available
 version. This may not be set if `versions` is set.
 """,
             providers = [[AvailableXcodesInfo]],
+        ),
+        "_xcode_version": attr.label(
+            default = "@build_bazel_apple_support//xcode:version",
+        ),
+        "_experimental_prefer_mutual_xcode": attr.label(
+            default = "@build_bazel_apple_support//xcode:experimental_prefer_mutual_xcode",
+        ),
+        "_include_xcode_exec_requirements": attr.label(
+            default = "@build_bazel_apple_support//xcode:include_xcode_exec_requirements",
+        ),
+        "_ios_minimum_os": attr.label(
+            default = "@build_bazel_apple_support//xcode:ios_minimum_os",
+        ),
+        "_macos_minimum_os": attr.label(
+            default = "@build_bazel_apple_support//xcode:macos_minimum_os",
+        ),
+        "_tvos_minimum_os": attr.label(
+            default = "@build_bazel_apple_support//xcode:tvos_minimum_os",
+        ),
+        "_watchos_minimum_os": attr.label(
+            default = "@build_bazel_apple_support//xcode:watchos_minimum_os",
         ),
     },
     doc = """\
@@ -366,6 +389,9 @@ def _compare_version_strings(first, second):
     return apple_common.dotted_version(first).compare_to(
         apple_common.dotted_version(second),
     )
+
+def _sdk_version_flag(apple_fragment, name):
+    return getattr(apple_fragment, name, None) if apple_fragment else None
 
 def _resolve_explicitly_defined_version(
         explicit_versions,
