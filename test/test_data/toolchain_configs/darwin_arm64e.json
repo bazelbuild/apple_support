@@ -82,9 +82,9 @@
           ],
           "path": null,
           "tool": {
-            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/cc_wrapper.sh",
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
             "root": "bazel-out/darwin_arm64-opt-exec/bin",
-            "short_path": "crosstool/cc_wrapper.sh"
+            "short_path": "crosstool/wrapped_clang"
           },
           "type_name": "tool",
           "with_features": []
@@ -105,9 +105,9 @@
           ],
           "path": null,
           "tool": {
-            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/cc_wrapper.sh",
+            "path": "bazel-out/darwin_arm64-opt-exec/bin/crosstool/wrapped_clang",
             "root": "bazel-out/darwin_arm64-opt-exec/bin",
-            "short_path": "crosstool/cc_wrapper.sh"
+            "short_path": "crosstool/wrapped_clang"
           },
           "type_name": "tool",
           "with_features": []

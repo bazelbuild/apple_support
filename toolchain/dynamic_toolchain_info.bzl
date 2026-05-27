@@ -158,12 +158,3 @@ xcode_execution_info = rule(
         "apple",
     ],
 )
-
-set_install_name_flag = rule(
-    implementation = lambda ctx: config_common.FeatureFlagInfo(
-        value = str(getattr(ctx.fragments.cpp, "do_not_use_macos_set_install_name", True)),
-    ),
-    fragments = [
-        "cpp",
-    ],
-)

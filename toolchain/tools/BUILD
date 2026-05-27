@@ -12,8 +12,8 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:cpp_header_parsing": ":clang_tool",  # TODO: Switch to clangpp_tool?
         "@rules_cc//cc/toolchains/actions:objcpp_compile": ":clangpp_tool",
         "@rules_cc//cc/toolchains/actions:linkstamp_compile": ":clang_tool",  # TODO: switch to clangpp_tool?
-        "@rules_cc//cc/toolchains/actions:cpp_link_dynamic_library": ":cc_wrapper_tool",
-        "@rules_cc//cc/toolchains/actions:cpp_link_executable": ":cc_wrapper_tool",
+        "@rules_cc//cc/toolchains/actions:cpp_link_dynamic_library": ":clang_tool",  # TODO: switch to clangpp_tool?
+        "@rules_cc//cc/toolchains/actions:cpp_link_executable": ":clang_tool",  # TODO: switch to clangpp_tool?
         "@rules_cc//cc/toolchains/actions:objc_compile": ":clang_tool",
         "@rules_cc//cc/toolchains/actions:objc_executable": ":clang_tool",  # TODO: This should be the same as the other link actions
         "@rules_cc//cc/toolchains/actions:strip": ":strip_tool",
@@ -32,15 +32,6 @@ cc_tool(
 cc_tool(
     name = "clangpp_tool",
     src = "//crosstool:exec_wrapped_clang_pp",
-    execution_requirements = ["//toolchain:xcode_execution_info"],
-)
-
-cc_tool(
-    name = "cc_wrapper_tool",
-    src = "//crosstool:exec_cc_wrapper",
-    data = [
-        "//crosstool:exec_wrapped_clang",
-    ],
     execution_requirements = ["//toolchain:xcode_execution_info"],
 )
 

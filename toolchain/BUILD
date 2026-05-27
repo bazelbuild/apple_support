@@ -9,7 +9,7 @@ load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
-load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "set_install_name_flag", "xcode_execution_info")
+load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "xcode_execution_info")
 load(":features.bzl", "enableable_feature", "negatable_feature")
 
 MARKER_FEATURES = [
@@ -645,16 +645,6 @@ cc_make_variable(
     variable_name = "STACK_FRAME_UNLIMITED",
 )
 
-# TODO: Remove when we drop bazel 8.x support (maybe earlier)
-set_install_name_flag(
-    name = "set_install_name_flag",
-)
-
-config_setting(
-    name = "should_set_install_name",
-    flag_values = {":set_install_name_flag": "True"},
-)
-
 # TODO: Use upstream's after https://github.com/bazelbuild/rules_cc/pull/651
 negatable_feature(
     name = "set_install_name",
@@ -872,10 +862,7 @@ cc_toolchain(
         ":__header_parsing_input_flags",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-    ] + select({
-        ":should_set_install_name": [":set_install_name"],
-        "//conditions:default": [],
-    }) + [
+        ":set_install_name",
         "//toolchain/sanitizers:asan_wrapper",
         "//toolchain/sanitizers:tsan_wrapper",
         "//toolchain/sanitizers:ubsan_wrapper",
