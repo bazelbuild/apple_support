@@ -2229,7 +2229,7 @@ _xcode_config_resolver_with_fragment_removed_test = analysistest.make(
             "//test:xcode_config_resolver_with_fragment_removed__foo",
         )),
     },
-)
+) if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else None
 
 # ------------------------------------------------------------------------------
 
