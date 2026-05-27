@@ -32,18 +32,18 @@ _POSSIBLY_NATIVE_FLAGS = {
     "xcode_version_config": (lambda ctx: ctx.attr._xcode_version_config_native, "native"),
 }
 
-_DOTTED_VERSION_FLAGS = set([
-    "ios_minimum_os",
-    "macos_minimum_os",
-    "tvos_minimum_os",
-    "watchos_minimum_os",
-])
+_DOTTED_VERSION_FLAGS = {
+    "ios_minimum_os": True,
+    "macos_minimum_os": True,
+    "tvos_minimum_os": True,
+    "watchos_minimum_os": True,
+}
 
-_LABEL_FLAGS = set([
-    "xcode_version_config",
-])
+_LABEL_FLAGS = {
+    "xcode_version_config": True,
+}
 
-def _should_use_native_def(ctx, flag_name, mode):
+def _should_use_native_def(ctx, _flag_name, mode):
     """Returns True if the native definition should be used."""
 
     # If the override to force the Starlark definition for testing/flipping flags one at
@@ -79,13 +79,13 @@ def read_possibly_native_flag(ctx, flag_name):
         return native_lambda(ctx)
 
     # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
-    if flag_name in _LABEL_FLAGS:
+    if flag_name in _LABEL_FLAGS.keys():
         # Label flags do not use BuildSettingInfo.
         return getattr(ctx.attr, "_" + flag_name)
     build_setting_value = getattr(ctx.attr, "_" + flag_name)[BuildSettingInfo].value
 
     # Dotted version flags should be converted before accessed.
-    if flag_name not in _DOTTED_VERSION_FLAGS:
+    if flag_name not in _DOTTED_VERSION_FLAGS.keys():
         return build_setting_value
 
     # Special check for empty string. This is to simulate the behavior of the native flag
