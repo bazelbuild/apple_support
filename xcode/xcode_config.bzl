@@ -35,7 +35,7 @@ def _xcode_config_impl(ctx):
     if not bazel_features.apple.xcode_config_migrated:
         fail("This rule is not available on the current Bazel version")
 
-    apple_fragment = ctx.fragments.apple
+    apple_fragment = getattr(ctx.fragments, "apple", None)
     cpp_fragment = ctx.fragments.cpp
 
     explicit_default_version = ctx.attr.default[XcodeVersionRuleInfo] if ctx.attr.default else None
@@ -79,10 +79,10 @@ def _xcode_config_impl(ctx):
 
     # TODO: Remove `getattr` once we no longer support a version of Bazel with
     # `apple_fragment.*_sdk_version_flag`
-    ios_sdk_version = getattr(apple_fragment, "ios_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
-    macos_sdk_version = getattr(apple_fragment, "macos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
-    tvos_sdk_version = getattr(apple_fragment, "tvos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
-    watchos_sdk_version = getattr(apple_fragment, "watchos_sdk_version_flag", None) or _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "2.0")
+    ios_sdk_version = _sdk_version_flag(apple_fragment, "ios_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
+    macos_sdk_version = _sdk_version_flag(apple_fragment, "macos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
+    tvos_sdk_version = _sdk_version_flag(apple_fragment, "tvos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
+    watchos_sdk_version = _sdk_version_flag(apple_fragment, "watchos_sdk_version_flag") or _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "2.0")
     visionos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_visionos_sdk_version, "1.0")
 
     ios_minimum_os = read_possibly_native_flag(ctx, "ios_minimum_os") or ios_sdk_version
@@ -389,6 +389,9 @@ def _compare_version_strings(first, second):
     return apple_common.dotted_version(first).compare_to(
         apple_common.dotted_version(second),
     )
+
+def _sdk_version_flag(apple_fragment, name):
+    return getattr(apple_fragment, name, None) if apple_fragment else None
 
 def _resolve_explicitly_defined_version(
         explicit_versions,

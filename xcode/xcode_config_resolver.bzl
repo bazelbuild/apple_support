@@ -34,10 +34,52 @@ def _xcode_config_resolver_impl(ctx):
     if not resolved_target:
         fail("Failed to resolve Xcode configuration.")
 
+    xcode_version_config = resolved_target[apple_common.XcodeVersionConfig]
+    if XcodeVersionPropertiesInfo in resolved_target:
+        xcode_version_properties = resolved_target[XcodeVersionPropertiesInfo]
+    else:
+        xcode_version_properties = _properties_from_legacy_xcode_config(
+            xcode_version_config,
+        )
+
     return [
-        resolved_target[apple_common.XcodeVersionConfig],
-        resolved_target[XcodeVersionPropertiesInfo],
+        xcode_version_config,
+        xcode_version_properties,
     ]
+
+def _string_or_none(value):
+    return str(value) if value else None
+
+def _sdk_version_for_platform(xcode_version_config, platform_name):
+    platform = getattr(apple_common.platform, platform_name, None)
+    if platform == None:
+        return None
+    return _string_or_none(xcode_version_config.sdk_version_for_platform(platform))
+
+def _properties_from_legacy_xcode_config(xcode_version_config):
+    return XcodeVersionPropertiesInfo(
+        xcode_version = _string_or_none(xcode_version_config.xcode_version()),
+        default_ios_sdk_version = _sdk_version_for_platform(
+            xcode_version_config,
+            "ios_device",
+        ),
+        default_macos_sdk_version = _sdk_version_for_platform(
+            xcode_version_config,
+            "macos",
+        ),
+        default_tvos_sdk_version = _sdk_version_for_platform(
+            xcode_version_config,
+            "tvos_device",
+        ),
+        default_visionos_sdk_version = _sdk_version_for_platform(
+            xcode_version_config,
+            "visionos_device",
+        ),
+        default_watchos_sdk_version = _sdk_version_for_platform(
+            xcode_version_config,
+            "watchos_device",
+        ),
+    )
 
 # This is a temporary implementation while the migration from native Xcode
 # configuration to Starlark flags is ongoing. Once the native fragment is

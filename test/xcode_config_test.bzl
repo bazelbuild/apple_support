@@ -15,7 +15,7 @@
 """Tests for the `xcode_config` rule."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
-load("@bazel_features//private:util.bzl", "lt")
+load("@bazel_features//private:util.bzl", "ge")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//xcode:available_xcodes.bzl", "available_xcodes")
 load(
@@ -28,13 +28,7 @@ load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action", "make_all_tests")
 
 visibility("private")
 
-# The incompatible_remove_ctx_apple_fragment option is available in Bazel 8.x,
-# where analysis tests can transition incompatible flags, but is not registered
-# in Bazel 9.x.
-_SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT = (
-    bazel_features.rules.analysis_tests_can_transition_on_experimental_incompatible_flags and
-    lt("9.0.0")
-)
+_SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT = ge("10.0.0-pre")
 
 # ------------------------------------------------------------------------------
 
