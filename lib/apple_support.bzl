@@ -276,6 +276,9 @@ def _platform_constraint_attrs():
         "_x86_64_constraint": attr.label(
             default = Label("@platforms//cpu:x86_64"),
         ),
+        "_pointer_authentication_constraint": attr.label(
+            default = Label("@build_bazel_apple_support//constraints:pointer_authentication"),
+        ),
         "_apple_device_constraint": attr.label(
             default = Label("//constraints:device"),
         ),
@@ -477,8 +480,15 @@ def _target_arch_from_rule_ctx(
     arm64_32_constraint = ctx.attr._arm64_32_constraint[platform_common.ConstraintValueInfo]
     x86_64_constraint = ctx.attr._x86_64_constraint[platform_common.ConstraintValueInfo]
 
+    pointer_authentication_constraint = (
+        ctx.attr._pointer_authentication_constraint[platform_common.ConstraintValueInfo]
+    )
+
     if ctx.target_platform_has_constraint(arm64_constraint):
-        return "arm64"
+        if ctx.target_platform_has_constraint(pointer_authentication_constraint):
+            return "arm64e"
+        else:
+            return "arm64"
     elif ctx.target_platform_has_constraint(arm64e_constraint):
         return "arm64e"
     elif ctx.target_platform_has_constraint(arm64_32_constraint):
