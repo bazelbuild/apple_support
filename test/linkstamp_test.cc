@@ -1,7 +1,7 @@
+#include "linkstamp.h"
+
 #include <stdio.h>
 #include <string.h>
-
-#include "linkstamp.h"
 
 int main() {
   const char* host = build_host;

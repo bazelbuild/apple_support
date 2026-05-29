@@ -1,3 +1,1 @@
-int loadable_library() {
-  return 42;
-}
+int loadable_library() { return 42; }

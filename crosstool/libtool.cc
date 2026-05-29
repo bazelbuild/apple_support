@@ -23,7 +23,7 @@
 #include <sstream>
 #include <unordered_set>
 
-extern char **environ;
+extern char** environ;
 
 const std::regex libRegex = std::regex(".*\\.a$");
 const std::regex singleArgFlags = std::regex("-arch_only|-o");
@@ -39,7 +39,7 @@ class TempDirectory {
     std::unique_ptr<char[]> path(new char[temp_path.string().size() + 1]);
     std::strcpy(path.get(), temp_path.string().c_str());
 
-    char *temp_dir = mkdtemp(path.get());
+    char* temp_dir = mkdtemp(path.get());
     if (temp_dir == nullptr) {
       std::cerr << "error: failed to create temporary directory" << std::endl;
       exit(EXIT_FAILURE);
@@ -49,25 +49,25 @@ class TempDirectory {
   }
 
   // Explicitly make TempDirectory non-copyable and movable.
-  TempDirectory(const TempDirectory &) = delete;
-  TempDirectory &operator=(const TempDirectory &) = delete;
-  TempDirectory(TempDirectory &&) = default;
-  TempDirectory &operator=(TempDirectory &&) = default;
+  TempDirectory(const TempDirectory&) = delete;
+  TempDirectory& operator=(const TempDirectory&) = delete;
+  TempDirectory(TempDirectory&&) = default;
+  TempDirectory& operator=(TempDirectory&&) = default;
 
   ~TempDirectory() { std::filesystem::remove_all(path_.c_str()); }
 
   std::filesystem::path GetPath() const { return path_; }
 
  private:
-  explicit TempDirectory(const std::string &path) : path_(path) {}
+  explicit TempDirectory(const std::string& path) : path_(path) {}
 
   std::string path_;
 };
 
 // Returns the DEVELOPER_DIR environment variable in the current process
 // environment. Aborts if this variable is unset.
-std::string getMandatoryEnvVar(const std::string &var_name) {
-  char *env_value = getenv(var_name.c_str());
+std::string getMandatoryEnvVar(const std::string& var_name) {
+  char* env_value = getenv(var_name.c_str());
   if (env_value == nullptr) {
     std::cerr << "error: " << var_name << " not set.\n";
     exit(EXIT_FAILURE);
@@ -77,8 +77,8 @@ std::string getMandatoryEnvVar(const std::string &var_name) {
 
 // Returns the base name of the given filepath. For example, given
 // /foo/bar/baz.txt, returns 'baz.txt'.
-const char *basename(const char *filepath) {
-  const char *base = strrchr(filepath, '/');
+const char* basename(const char* filepath) {
+  const char* base = strrchr(filepath, '/');
   return base ? (base + 1) : filepath;
 }
 
@@ -86,8 +86,8 @@ const char *basename(const char *filepath) {
 // The first arg is reduced to its basename as per execve conventions.
 // Note that the lifetime of the char* arguments in the returned array
 // are controlled by the lifetime of the strings in args.
-std::vector<const char *> ConvertToCArgs(const std::vector<std::string> &args) {
-  std::vector<const char *> c_args;
+std::vector<const char*> ConvertToCArgs(const std::vector<std::string>& args) {
+  std::vector<const char*> c_args;
   c_args.push_back(basename(args[0].c_str()));
   for (int i = 1; i < args.size(); i++) {
     c_args.push_back(args[i].c_str());
@@ -98,14 +98,14 @@ std::vector<const char *> ConvertToCArgs(const std::vector<std::string> &args) {
 
 // Spawns a subprocess for given arguments args. The first argument is used
 // for the executable path.
-bool runSubProcess(const std::vector<std::string> &args) {
+bool runSubProcess(const std::vector<std::string>& args) {
   int pipefd[2];  // File descriptors for the pipe
   if (pipe(pipefd) == -1) {
     perror("pipe failed");
     return false;
   }
 
-  std::vector<const char *> exec_argv = ConvertToCArgs(args);
+  std::vector<const char*> exec_argv = ConvertToCArgs(args);
   pid_t pid;
   posix_spawn_file_actions_t actions;
   posix_spawn_file_actions_init(&actions);
@@ -116,7 +116,7 @@ bool runSubProcess(const std::vector<std::string> &args) {
                                     pipefd[0]);  // Close unused read end
 
   int status = posix_spawn(&pid, args[0].c_str(), &actions, nullptr,
-                           const_cast<char **>(exec_argv.data()), environ);
+                           const_cast<char**>(exec_argv.data()), environ);
   close(pipefd[1]);  // Close write end in the parent
   if (status == 0) {
     posix_spawn_file_actions_destroy(&actions);
@@ -152,16 +152,13 @@ bool runSubProcess(const std::vector<std::string> &args) {
     }
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
       std::cerr << "Child process '" << args[0]
-                << "' terminated with exit code "
-                << WEXITSTATUS(status)
+                << "' terminated with exit code " << WEXITSTATUS(status)
                 << "\nstderr:\n"
                 << oss.str();
       return false;
     } else if (WIFSIGNALED(status)) {
-      std::cerr << "Child process '" << args[0]
-                << "' terminated with signal "
-                << WTERMSIG(status)
-                << "\nstderr:\n"
+      std::cerr << "Child process '" << args[0] << "' terminated with signal "
+                << WTERMSIG(status) << "\nstderr:\n"
                 << oss.str();
       return false;
     }
@@ -175,8 +172,8 @@ bool runSubProcess(const std::vector<std::string> &args) {
 }
 
 // Finds and replaces all instances of oldsub with newsub, in-place on str.
-void findAndReplace(const std::string &oldsub, const std::string &newsub,
-                    std::string *str) {
+void findAndReplace(const std::string& oldsub, const std::string& newsub,
+                    std::string* str) {
   int start = 0;
   while ((start = str->find(oldsub, start)) != std::string::npos) {
     str->replace(start, oldsub.length(), newsub);
@@ -205,8 +202,8 @@ bool hasDuplicateBasenames(const std::vector<std::string> files) {
 }
 
 void processArgs(const std::vector<std::string> args,
-                 std::function<void(const std::string &)> flags_consumer,
-                 std::function<void(const std::string &)> files_consumer) {
+                 std::function<void(const std::string&)> flags_consumer,
+                 std::function<void(const std::string&)> files_consumer) {
   for (auto it = args.begin(); it != args.end(); ++it) {
     const std::string arg = *it;
     if (arg == "-filelist") {
@@ -239,7 +236,7 @@ void processArgs(const std::vector<std::string> args,
   }
 }
 
-std::string hash(const std::string &input) {
+std::string hash(const std::string& input) {
   std::hash<std::string> hasher;
   size_t hashValue = hasher(input);
 
@@ -252,7 +249,7 @@ std::string hash(const std::string &input) {
 
 void createSymlinks(std::filesystem::path temp_directory,
                     const std::vector<std::string> files,
-                    std::function<void(const std::string &)> files_consumer) {
+                    std::function<void(const std::string&)> files_consumer) {
   for (auto file : files) {
     std::filesystem::path path = file;
 
@@ -268,7 +265,7 @@ void createSymlinks(std::filesystem::path temp_directory,
   }
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[]) {
   std::vector<std::string> args;
   // Set i to 1 to skip executable path
   for (int i = 1; argv[i] != nullptr; i++) {
@@ -282,10 +279,10 @@ int main(int argc, const char *argv[]) {
   // maintaining file order might?
   std::vector<std::string> processed_args = {};
   std::vector<std::string> files = {};
-  auto flags_consumer = [&](const std::string &arg) {
+  auto flags_consumer = [&](const std::string& arg) {
     processed_args.push_back(rewriteArg(arg, developer_dir, sdk_root));
   };
-  auto files_consumer = [&](const std::string &arg) {
+  auto files_consumer = [&](const std::string& arg) {
     files.push_back(rewriteArg(arg, developer_dir, sdk_root));
   };
 
@@ -300,7 +297,7 @@ int main(int argc, const char *argv[]) {
 
   auto response_file = temp_directory->GetPath() / "bazel_libtool.params";
   std::ofstream response_file_stream(response_file);
-  for (const auto &arg : processed_args) {
+  for (const auto& arg : processed_args) {
     response_file_stream << '"';
     for (auto ch : arg) {
       if (ch == '"') {

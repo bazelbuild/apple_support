@@ -9,6 +9,6 @@ repos:
       - id: buildifier-lint
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v20.1.0
+    rev: v22.1.5
     hooks:
       - id: clang-format
