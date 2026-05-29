@@ -43,19 +43,19 @@
 #include <utility>
 #include <vector>
 
-extern char **environ;
+extern char** environ;
 
 namespace {
 
 // Returns the base name of the given filepath. For example, given
 // /foo/bar/baz.txt, returns 'baz.txt'.
-const char *Basename(const char *filepath) {
-  const char *base = strrchr(filepath, '/');
+const char* Basename(const char* filepath) {
+  const char* base = strrchr(filepath, '/');
   return base ? (base + 1) : filepath;
 }
 
 // Unescape and unquote an argument read from a line of a response file.
-static std::string Unescape(const std::string &arg) {
+static std::string Unescape(const std::string& arg) {
   std::string result;
   auto length = arg.size();
   for (size_t i = 0; i < length; ++i) {
@@ -97,8 +97,8 @@ static std::string Unescape(const std::string &arg) {
 // The first arg is reduced to its basename as per execve conventions.
 // Note that the lifetime of the char* arguments in the returned array
 // are controlled by the lifetime of the strings in args.
-std::vector<const char *> ConvertToCArgs(const std::vector<std::string> &args) {
-  std::vector<const char *> c_args;
+std::vector<const char*> ConvertToCArgs(const std::vector<std::string>& args) {
+  std::vector<const char*> c_args;
   c_args.push_back(Basename(args[0].c_str()));
   for (int i = 1; i < args.size(); i++) {
     c_args.push_back(args[i].c_str());
@@ -109,11 +109,11 @@ std::vector<const char *> ConvertToCArgs(const std::vector<std::string> &args) {
 
 // Spawns a subprocess for given arguments args. The first argument is used
 // for the executable path.
-bool RunSubProcess(const std::vector<std::string> &args) {
-  std::vector<const char *> exec_argv = ConvertToCArgs(args);
+bool RunSubProcess(const std::vector<std::string>& args) {
+  std::vector<const char*> exec_argv = ConvertToCArgs(args);
   pid_t pid;
   int status = posix_spawn(&pid, args[0].c_str(), nullptr, nullptr,
-                           const_cast<char **>(exec_argv.data()), environ);
+                           const_cast<char**>(exec_argv.data()), environ);
   if (status == 0) {
     int wait_status;
     do {
@@ -143,8 +143,8 @@ bool RunSubProcess(const std::vector<std::string> &args) {
 }
 
 // Finds and replaces all instances of oldsub with newsub, in-place on str.
-void FindAndReplace(const std::string &oldsub, const std::string &newsub,
-                    std::string *str) {
+void FindAndReplace(const std::string& oldsub, const std::string& newsub,
+                    std::string* str) {
   int start = 0;
   while ((start = str->find(oldsub, start)) != std::string::npos) {
     str->replace(start, oldsub.length(), newsub);
@@ -155,8 +155,8 @@ void FindAndReplace(const std::string &oldsub, const std::string &newsub,
 // If arg is of the classic flag form "foo=bar", and flagname is 'foo', sets
 // str to point to a new std::string 'bar' and returns true.
 // Otherwise, returns false.
-bool SetArgIfFlagPresent(const std::string &arg, const std::string &flagname,
-                         std::string *str) {
+bool SetArgIfFlagPresent(const std::string& arg, const std::string& flagname,
+                         std::string* str) {
   std::string prefix_string = flagname + "=";
   if (arg.compare(0, prefix_string.length(), prefix_string) == 0) {
     *str = arg.substr(prefix_string.length());
@@ -167,8 +167,8 @@ bool SetArgIfFlagPresent(const std::string &arg, const std::string &flagname,
 
 // Returns the DEVELOPER_DIR environment variable in the current process
 // environment. Aborts if this variable is unset.
-std::string GetMandatoryEnvVar(const std::string &var_name) {
-  char *env_value = getenv(var_name.c_str());
+std::string GetMandatoryEnvVar(const std::string& var_name) {
+  char* env_value = getenv(var_name.c_str());
   if (env_value == nullptr) {
     std::cerr << "Error: " << var_name << " not set.\n";
     exit(EXIT_FAILURE);
@@ -177,13 +177,13 @@ std::string GetMandatoryEnvVar(const std::string &var_name) {
 }
 
 // Returns true if `str` starts with the specified `prefix`.
-bool StartsWith(const std::string &str, const std::string &prefix) {
+bool StartsWith(const std::string& str, const std::string& prefix) {
   return str.compare(0, prefix.size(), prefix) == 0;
 }
 
 // If *`str` begins `prefix`, strip it out and return true.
 // Otherwise leave *`str` unchanged and return false.
-bool StripPrefixStringIfPresent(std::string *str, const std::string &prefix) {
+bool StripPrefixStringIfPresent(std::string* str, const std::string& prefix) {
   if (StartsWith(*str, prefix)) {
     *str = str->substr(prefix.size());
     return true;
@@ -197,8 +197,8 @@ class TempFile {
   // Create a new temporary file using the given path template string (the same
   // form used by `mkstemp`). The file will automatically be deleted when the
   // object goes out of scope.
-  static std::unique_ptr<TempFile> Create(const std::string &path_template) {
-    const char *tmpDir = getenv("TMPDIR");
+  static std::unique_ptr<TempFile> Create(const std::string& path_template) {
+    const char* tmpDir = getenv("TMPDIR");
     if (!tmpDir) {
       tmpDir = "/tmp";
     }
@@ -215,10 +215,10 @@ class TempFile {
   }
 
   // Explicitly make TempFile non-copyable and movable.
-  TempFile(const TempFile &) = delete;
-  TempFile &operator=(const TempFile &) = delete;
-  TempFile(TempFile &&) = default;
-  TempFile &operator=(TempFile &&) = default;
+  TempFile(const TempFile&) = delete;
+  TempFile& operator=(const TempFile&) = delete;
+  TempFile(TempFile&&) = default;
+  TempFile& operator=(TempFile&&) = default;
 
   ~TempFile() { remove(path_.c_str()); }
 
@@ -226,17 +226,17 @@ class TempFile {
   std::string GetPath() const { return path_; }
 
  private:
-  explicit TempFile(const std::string &path) : path_(path) {}
+  explicit TempFile(const std::string& path) : path_(path) {}
 
   std::string path_;
 };
 
 static std::unique_ptr<TempFile> WriteResponseFile(
-    const std::vector<std::string> &args) {
+    const std::vector<std::string>& args) {
   auto response_file = TempFile::Create("wrapped_clang_params.XXXXXX");
   std::ofstream response_file_stream(response_file->GetPath());
 
-  for (const auto &arg : args) {
+  for (const auto& arg : args) {
     // When Clang/Swift write out a response file to communicate from driver to
     // frontend, they just quote every argument to be safe; we duplicate that
     // instead of trying to be "smarter" and only quoting when necessary.
@@ -257,16 +257,16 @@ static std::unique_ptr<TempFile> WriteResponseFile(
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      const std::string canonical_cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
-                     std::function<void(const std::string &)> consumer);
+                     std::string& linked_binary, std::string& dsym_path,
+                     bool& strip_debug_symbols, std::string toolchain_path,
+                     std::function<void(const std::string&)> consumer);
 
 bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
                          const std::string sdk_root, const std::string cwd,
                          const std::string canonical_cwd,
-                         std::string &linked_binary, std::string &dsym_path,
-                         bool &strip_debug_symbols, std::string toolchain_path,
-                         std::function<void(const std::string &)> consumer) {
+                         std::string& linked_binary, std::string& dsym_path,
+                         bool& strip_debug_symbols, std::string toolchain_path,
+                         std::function<void(const std::string&)> consumer) {
   auto path = arg.substr(1);
   std::ifstream original_file(path);
   // Ignore non-file args such as '@loader_path/...'
@@ -279,8 +279,8 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
     ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    canonical_cwd, linked_binary, dsym_path, strip_debug_symbols,
-                    toolchain_path, consumer);
+                    canonical_cwd, linked_binary, dsym_path,
+                    strip_debug_symbols, toolchain_path, consumer);
   }
 
   return true;
@@ -288,7 +288,7 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
 
 std::string GetCurrentDirectory() {
   // Passing null,0 causes getcwd to allocate the buffer of the correct size.
-  char *buffer = getcwd(nullptr, 0);
+  char* buffer = getcwd(nullptr, 0);
   std::string cwd(buffer);
   free(buffer);
   return cwd;
@@ -301,12 +301,12 @@ std::string GetCanonicalPath(const std::filesystem::path& path) {
   // Find the first regular file within the path, to use as a reference point.
   //
   // We do this because the Bazel execroot is a normal directory, but inside of
-  // it there are symlinks to our source tree. This approach ensures that we fetch
-  // the true path of a known directory in order to get the actual source root
-  // of the workspace.
+  // it there are symlinks to our source tree. This approach ensures that we
+  // fetch the true path of a known directory in order to get the actual source
+  // root of the workspace.
   //
   // This should only work with sandboxing disabled.
-  auto found = std::find_if(iter_first, iter_last, [](const auto &entry) {
+  auto found = std::find_if(iter_first, iter_last, [](const auto& entry) {
     return entry.is_regular_file();
   });
 
@@ -335,7 +335,7 @@ std::string exec(std::string cmd) {
   return result;
 }
 
-std::string GetToolchainPath(const std::string &toolchain_id) {
+std::string GetToolchainPath(const std::string& toolchain_id) {
   // NOTE: This requires all toolchains to contain a 'clang' executable. This
   // is true today for custom Swift toolchains, but could change in the future.
   std::string output = exec("xcrun --find clang --toolchain " + toolchain_id);
@@ -363,9 +363,9 @@ std::string GetToolchainPath(const std::string &toolchain_id) {
 void ProcessArgument(const std::string arg, const std::string developer_dir,
                      const std::string sdk_root, const std::string cwd,
                      const std::string canonical_cwd,
-                     std::string &linked_binary, std::string &dsym_path,
-                     bool &strip_debug_symbols, std::string toolchain_path,
-                     std::function<void(const std::string &)> consumer) {
+                     std::string& linked_binary, std::string& dsym_path,
+                     bool& strip_debug_symbols, std::string toolchain_path,
+                     std::function<void(const std::string&)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
     if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, canonical_cwd,
@@ -387,8 +387,11 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
-  if (!canonical_cwd.empty()) { // empty if coverage_prefix_map_absolute_sources_non_hermetic_private_feature not requested
-    FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", canonical_cwd, &new_arg);
+  if (!canonical_cwd.empty()) {  // empty if
+                                 // coverage_prefix_map_absolute_sources_non_hermetic_private_feature
+                                 // not requested
+    FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", canonical_cwd,
+                   &new_arg);
   }
   FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
   FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
@@ -401,8 +404,8 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
 }
 
 void AddLayeringCheckVFS(const std::string vfs_overlay_file,
-                         const char *modulemap, const std::string developer_dir,
-                         std::function<void(const std::string &)> consumer) {
+                         const char* modulemap, const std::string developer_dir,
+                         std::function<void(const std::string&)> consumer) {
   std::ofstream vfs_overlay_file_stream(vfs_overlay_file);
   vfs_overlay_file_stream
       << R"EOF({"case-sensitive":true,"overlay-relative":false,"roots":[{"contents":[{"external-contents":")EOF"
@@ -418,7 +421,7 @@ void AddLayeringCheckVFS(const std::string vfs_overlay_file,
 
 }  // namespace
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   std::string tool_name;
 
   std::string binary_name = Basename(argv[0]);
@@ -433,7 +436,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const char *toolchain_id = getenv("TOOLCHAINS");
+  const char* toolchain_id = getenv("TOOLCHAINS");
   std::string toolchain_path = "";
   if (toolchain_id != nullptr) {
     toolchain_path = GetToolchainPath(toolchain_id);
@@ -453,17 +456,18 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> invocation_args = {"/usr/bin/xcrun", tool_name};
   std::vector<std::string> processed_args = {};
 
-  auto consumer = [&](const std::string &arg) {
+  auto consumer = [&](const std::string& arg) {
     processed_args.push_back(arg);
   };
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, canonical_cwd, linked_binary,
-                    dsym_path, strip_debug_symbols, toolchain_path, consumer);
+    ProcessArgument(arg, developer_dir, sdk_root, cwd, canonical_cwd,
+                    linked_binary, dsym_path, strip_debug_symbols,
+                    toolchain_path, consumer);
   }
 
-  char *modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
+  char* modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
   std::unique_ptr<TempFile> vfs_overlay_file;
   if (modulemap != nullptr) {
     vfs_overlay_file = TempFile::Create("modules-vfs-overlay.XXXXXX");
@@ -473,8 +477,8 @@ int main(int argc, char *argv[]) {
 
   // Special mode that only prints the command. Used for testing.
   if (getenv("__WRAPPED_CLANG_LOG_ONLY")) {
-    for (const std::string &arg : invocation_args) std::cout << arg << ' ';
-    for (const std::string &arg : processed_args) std::cout << arg << ' ';
+    for (const std::string& arg : invocation_args) std::cout << arg << ' ';
+    for (const std::string& arg : processed_args) std::cout << arg << ' ';
     std::cout << "\n";
     return 0;
   }
@@ -486,7 +490,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const char *header_parsing_output = getenv("HEADER_PARSING_OUTPUT");
+  const char* header_parsing_output = getenv("HEADER_PARSING_OUTPUT");
   if (header_parsing_output != nullptr) {
     std::ofstream output(header_parsing_output);
     output.close();
