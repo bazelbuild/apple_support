@@ -11,6 +11,14 @@ x_defaults:
     test_flags:
       - "--test_tag_filters=-skipci"
 
+  common_toolchain_off: &common_toolchain_off
+    <<: *common
+    build_flags:
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_flags:
+      - "--test_tag_filters=-skipci"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+
   linux_common: &linux_common
     platform: ubuntu2004
     build_targets:
@@ -18,16 +26,39 @@ x_defaults:
     test_targets:
       - "//tools/http_dmg/..."
 
+  linux_common_toolchain_off: &linux_common_toolchain_off
+    <<: *linux_common
+    build_flags:
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_flags:
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+
   windows_common: &windows_common
     platform: windows
     test_targets:
       - "//tools/http_dmg/..."
+
+  windows_common_toolchain_off: &windows_common_toolchain_off
+    <<: *windows_common
+    build_flags:
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_flags:
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
 tasks:
   macos_7_lowest:
     name: "7.x lowest supported"
     bazel: "7.4.0"
     <<: *common
+    test_targets:
+      - "//..."
+      - "-//test:linking_generate_cpp_dsym_test"
+      - "-//doc/..."
+
+  macos_7_lowest_toolchain_off:
+    name: "7.x lowest supported (rules toolchain off)"
+    bazel: "7.4.0"
+    <<: *common_toolchain_off
     test_targets:
       - "//..."
       - "-//test:linking_generate_cpp_dsym_test"
@@ -42,20 +73,44 @@ tasks:
       - "-//test:linking_generate_cpp_dsym_test"
       - "-//doc/..."
 
+  macos_7_toolchain_off:
+    name: "7.x LTS (rules toolchain off)"
+    bazel: 7.x
+    <<: *common_toolchain_off
+    test_targets:
+      - "//..."
+      - "-//test:linking_generate_cpp_dsym_test"
+      - "-//doc/..."
+
   macos_8:
     name: "8.x LTS"
     bazel: 8.x
     <<: *common
+
+  macos_8_toolchain_off:
+    name: "8.x LTS (rules toolchain off)"
+    bazel: 8.x
+    <<: *common_toolchain_off
 
   macos_latest:
     name: "Current LTS"
     bazel: last_rc
     <<: *common
 
+  macos_latest_toolchain_off:
+    name: "Current LTS (rules toolchain off)"
+    bazel: last_rc
+    <<: *common_toolchain_off
+
   macos_rolling:
     name: "Latest Rolling"
     bazel: rolling
     <<: *common
+
+  macos_rolling_toolchain_off:
+    name: "Latest Rolling (rules toolchain off)"
+    bazel: rolling
+    <<: *common_toolchain_off
 
   macos_latest_shell_scripts:
     name: "Shell tests"
@@ -66,24 +121,53 @@ tasks:
       - test/shell/header_parsing_test.sh
       - test/shell/coverage_test.sh
 
+  macos_latest_shell_scripts_toolchain_off:
+    name: "Shell tests (rules toolchain off)"
+    platform: macos_arm64
+    bazel: latest
+    shell_commands:
+      - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/layering_check_test.sh'
+      - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/header_parsing_test.sh'
+      - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/coverage_test.sh'
+
   macos_last_green:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *common
+
+  macos_last_green_toolchain_off:
+    name: "Last Green Bazel (rules toolchain off)"
+    bazel: last_green
+    <<: *common_toolchain_off
 
   linux_latest:
     name: "Current LTS"
     bazel: latest
     <<: *linux_common
 
+  linux_latest_toolchain_off:
+    name: "Current LTS (rules toolchain off)"
+    bazel: latest
+    <<: *linux_common_toolchain_off
+
   linux_last_green:
     name: "Last Green Bazel"
     bazel: last_green
     <<: *linux_common
 
+  linux_last_green_toolchain_off:
+    name: "Last Green Bazel (rules toolchain off)"
+    bazel: last_green
+    <<: *linux_common_toolchain_off
+
   windows_latest:
     name: "Current LTS"
     bazel: latest
     <<: *windows_common
+
+  windows_latest_toolchain_off:
+    name: "Current LTS (rules toolchain off)"
+    bazel: latest
+    <<: *windows_common_toolchain_off
 
 buildifier: 8.5.1

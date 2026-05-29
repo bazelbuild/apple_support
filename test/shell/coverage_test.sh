@@ -5,13 +5,11 @@ set -euo pipefail
 script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_path"/unittest.bash
 
-bazel="${BAZEL:-bazel}"
-
 llvm_profdata=$(xcrun -f llvm-profdata)
 llvm_cov=$(xcrun -f llvm-cov)
 
 function test_llvm_lcov_coverage() {
-  "$bazel" coverage \
+  bazel_cmd coverage \
     --experimental_fetch_all_coverage_outputs \
     --experimental_generate_llvm_lcov \
     --features=llvm_coverage_map_format \
@@ -33,7 +31,7 @@ function test_llvm_lcov_coverage() {
 
 function test_llvm_profdata_coverage() {
   # experimental_split_coverage_postprocessing is required for the profdata to stick around
-  "$bazel" coverage \
+  bazel_cmd coverage \
     --experimental_fetch_all_coverage_outputs \
     --experimental_generate_llvm_lcov=false \
     --features=llvm_coverage_map_format \
