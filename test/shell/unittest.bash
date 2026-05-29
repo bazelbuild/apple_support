@@ -193,7 +193,11 @@ function bazel_cmd() {
       read -r -a bazel_extra_args <<< "${BAZEL_EXTRA_ARGS}"
     fi
 
-    "$bazel" "$command" "${bazel_extra_args[@]}" "$@"
+    if (( ${#bazel_extra_args[@]} )); then
+      "$bazel" "$command" "${bazel_extra_args[@]}" "$@"
+    else
+      "$bazel" "$command" "$@"
+    fi
 }
 
 # Usage: set_up
