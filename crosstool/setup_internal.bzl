@@ -25,7 +25,7 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
         repository_ctx.file(
             "BUILD",
             content = repository_ctx.read(
-                Label("@build_bazel_apple_support//crosstool:BUILD.toolchains"),
+                Label("@apple_support//crosstool:BUILD.toolchains"),
             ),
         )
 

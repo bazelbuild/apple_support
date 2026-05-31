@@ -23,7 +23,7 @@ make variables. This rule will only run on a Mac.
 Example of use:
 
 ```
-load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
+load("@apple_support//rules:apple_genrule.bzl", "apple_genrule")
 
 apple_genrule(
     name = "world",
@@ -92,7 +92,7 @@ target's attributes. Useful for passing custom tools to a compile or link.
 ### Example:
 
 ```bzl
-load("@build_bazel_apple_support//rules:toolchain_substitution.bzl", "toolchain_substitution")
+load("@apple_support//rules:toolchain_substitution.bzl", "toolchain_substitution")
 
 toolchain_substitution(
     name = "resource_rules",

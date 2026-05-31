@@ -33,7 +33,7 @@ target's attributes. Useful for passing custom tools to a compile or link.
 ### Example:
 
 ```bzl
-load("@build_bazel_apple_support//rules:toolchain_substitution.bzl", "toolchain_substitution")
+load("@apple_support//rules:toolchain_substitution.bzl", "toolchain_substitution")
 
 toolchain_substitution(
     name = "resource_rules",

@@ -150,7 +150,7 @@ make variables. This rule will only run on a Mac.
 Example of use:
 
 ```
-load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
+load("@apple_support//rules:apple_genrule.bzl", "apple_genrule")
 
 apple_genrule(
     name = "world",

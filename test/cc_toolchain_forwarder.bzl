@@ -136,10 +136,10 @@ cc_toolchain_forwarder = rule(
             default = Label("@platforms//cpu:x86_64"),
         ),
         "_apple_device_constraint": attr.label(
-            default = Label("@build_bazel_apple_support//constraints:device"),
+            default = Label("@apple_support//constraints:device"),
         ),
         "_apple_simulator_constraint": attr.label(
-            default = Label("@build_bazel_apple_support//constraints:simulator"),
+            default = Label("@apple_support//constraints:simulator"),
         ),
     },
     toolchains = use_cpp_toolchain(),

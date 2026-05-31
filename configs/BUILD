@@ -10,7 +10,7 @@ selects.config_setting_group(
         cpu
         for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
     ] + [
-        "@build_bazel_apple_support//constraints:apple",
+        "@apple_support//constraints:apple",
     ],
 )
 

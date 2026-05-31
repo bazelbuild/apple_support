@@ -94,7 +94,7 @@ def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir,
     return build_contents
 
 VERSION_CONFIG_STUB = """
-load("@build_bazel_apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
 xcode_config(name = 'host_xcodes')
 """
 
@@ -234,9 +234,9 @@ def _darwin_build_file(repository_ctx):
     default_xcode_target = ""
     target_names = []
     buildcontents = """
-load("@build_bazel_apple_support//xcode:xcode_config.bzl", "xcode_config")
-load("@build_bazel_apple_support//xcode:available_xcodes.bzl", "available_xcodes")
-load("@build_bazel_apple_support//xcode:xcode_version.bzl", "xcode_version")
+load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("@apple_support//xcode:available_xcodes.bzl", "available_xcodes")
+load("@apple_support//xcode:xcode_version.bzl", "xcode_version")
 """
 
     for toolchain in toolchains:

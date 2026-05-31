@@ -19,7 +19,7 @@ Apple platforms.
 To use these in your Starlark code, simply load the module; for example:
 
 ```build
-load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
@@ -232,7 +232,7 @@ def _action_required_attrs():
     """
     return {
         "_xcode_config": attr.label(
-            default = "@build_bazel_apple_support//xcode:version_config",
+            default = "@apple_support//xcode:version_config",
         ),
     }
 
@@ -274,7 +274,7 @@ def _platform_constraint_attrs():
             default = Label("@platforms//cpu:x86_64"),
         ),
         "_pointer_authentication_constraint": attr.label(
-            default = Label("@build_bazel_apple_support//constraints:pointer_authentication"),
+            default = Label("@apple_support//constraints:pointer_authentication"),
         ),
         "_apple_device_constraint": attr.label(
             default = Label("//constraints:device"),

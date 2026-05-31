@@ -162,8 +162,8 @@ def configure_osx_toolchain(repository_ctx):
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38
     # for more info
     xcode_locator = Label("@bazel_tools//tools/osx:xcode_locator.m")
-    cc_toolchain_config = Label("@build_bazel_apple_support//crosstool:cc_toolchain_config.bzl")
-    build_template = Label("@build_bazel_apple_support//crosstool:BUILD.tpl")
+    cc_toolchain_config = Label("@apple_support//crosstool:cc_toolchain_config.bzl")
+    build_template = Label("@apple_support//crosstool:BUILD.tpl")
 
     xcode_toolchains = []
     xcodeloc_err = ""
@@ -211,9 +211,9 @@ def configure_osx_toolchain(repository_ctx):
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
             "%{cxx_flags}": _get_starlark_list(cxx_opts),
             "%{features}": "\n".join(['            "{}",'.format(x) for x in features]),
-            "%{layering_check_modulemap}": "\"@build_bazel_apple_support//crosstool:exec_layering_check_modulemap\"," if enable_layering_check else "",
+            "%{layering_check_modulemap}": "\"@apple_support//crosstool:exec_layering_check_modulemap\"," if enable_layering_check else "",
             "%{link_flags}": _get_starlark_list(link_opts),
-            "%{placeholder_modulemap}": "\"@build_bazel_apple_support//crosstool:module.modulemap\"" if enable_layering_check else "None",
+            "%{placeholder_modulemap}": "\"@apple_support//crosstool:module.modulemap\"" if enable_layering_check else "None",
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],
             ),

@@ -15,7 +15,7 @@
 """Implementation of the `xcode_sdk_variant` build rule."""
 
 load(
-    "@build_bazel_apple_support//xcode:providers.bzl",
+    "@apple_support//xcode:providers.bzl",
     "XcodeSdkVariantInfo",
 )
 

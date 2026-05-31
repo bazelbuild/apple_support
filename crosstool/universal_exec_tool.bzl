@@ -1,6 +1,6 @@
 """Rules for creating exec-configured universal tools for repository rules."""
 
-load("@build_bazel_apple_support//rules:apple_genrule.bzl", "apple_genrule")
+load("@apple_support//rules:apple_genrule.bzl", "apple_genrule")
 
 def _force_exec_impl(ctx):
     default_into = ctx.attr.target[DefaultInfo]

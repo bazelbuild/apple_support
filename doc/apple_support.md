@@ -8,7 +8,7 @@ Apple platforms.
 To use these in your Starlark code, simply load the module; for example:
 
 ```build
-load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 On this page:
 
