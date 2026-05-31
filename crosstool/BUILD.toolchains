@@ -1,4 +1,4 @@
-load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
+load("@apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 
 _OSX_DEVELOPER_PLATFORM_CPUS = [
     "arm64",

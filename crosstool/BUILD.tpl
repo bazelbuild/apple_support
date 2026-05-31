@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_toolchain", "cc_toolchain_suite")
-load("@build_bazel_apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
+load("@apple_support//configs:platforms.bzl", "APPLE_PLATFORMS_CONSTRAINTS")
 load(":cc_toolchain_config.bzl", "cc_toolchain_config")
 
 _APPLE_ARCHS = APPLE_PLATFORMS_CONSTRAINTS.keys()
@@ -47,9 +47,9 @@ filegroup(
 filegroup(
     name = "tools",
     srcs = [
-        "@build_bazel_apple_support//crosstool:exec_libtool",
-        "@build_bazel_apple_support//crosstool:exec_wrapped_clang",
-        "@build_bazel_apple_support//crosstool:exec_wrapped_clang_pp",
+        "@apple_support//crosstool:exec_libtool",
+        "@apple_support//crosstool:exec_wrapped_clang",
+        "@apple_support//crosstool:exec_wrapped_clang_pp",
         ":modulemap",
     ],
 )
@@ -84,15 +84,15 @@ filegroup(
         cxx_builtin_include_directories = [
 %{cxx_builtin_include_directories}
         ],
-        libtool = "@build_bazel_apple_support//crosstool:exec_libtool",
+        libtool = "@apple_support//crosstool:exec_libtool",
         tool_paths_overrides = {%{tool_paths_overrides}},
         c_flags = [%{c_flags}],
         conly_flags = [%{conly_flags}],
         cxx_flags = [%{cxx_flags}],
         link_flags = [%{link_flags}],
         module_map = ":modulemap",
-        wrapped_clang = "@build_bazel_apple_support//crosstool:exec_wrapped_clang",
-        wrapped_clang_pp = "@build_bazel_apple_support//crosstool:exec_wrapped_clang_pp",
+        wrapped_clang = "@apple_support//crosstool:exec_wrapped_clang",
+        wrapped_clang_pp = "@apple_support//crosstool:exec_wrapped_clang_pp",
     )
     for arch in _APPLE_ARCHS
 ]

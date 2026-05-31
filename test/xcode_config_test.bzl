@@ -41,7 +41,7 @@ version_retriever = rule(
     implementation = _version_retriever_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = "@build_bazel_apple_support//xcode:version_config",
+            default = "@apple_support//xcode:version_config",
         ),
     },
     fragments = ["apple"],
@@ -54,7 +54,7 @@ provider_grabber = rule(
     implementation = _provider_grabber_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = "@build_bazel_apple_support//xcode:version_config",
+            default = "@apple_support//xcode:version_config",
         ),
     },
     fragments = ["apple"],
@@ -67,7 +67,7 @@ provider_grabber_aspect = aspect(
     implementation = _provider_grabber_aspect_impl,
     attrs = {
         "_xcode_config": attr.label(
-            default = "@build_bazel_apple_support//xcode:version_config",
+            default = "@apple_support//xcode:version_config",
         ),
     },
     fragments = ["apple"],

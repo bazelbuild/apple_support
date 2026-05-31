@@ -14,17 +14,17 @@
 
 """Implementation of the `xcode_config` build rule."""
 
-load("@bazel_features//:features.bzl", "bazel_features")
-load("@build_bazel_apple_support//build_settings:build_settings.bzl", "read_possibly_native_flag")
+load("@apple_support//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
-    "@build_bazel_apple_support//xcode:providers.bzl",
+    "@apple_support//xcode:providers.bzl",
     "XcodeVersionPropertiesInfo",
 )
 load(
-    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "@apple_support//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
     "XcodeVersionRuleInfo",
 )
+load("@bazel_features//:features.bzl", "bazel_features")
 
 visibility("public")
 
@@ -174,25 +174,25 @@ version. This may not be set if `versions` is set.
             providers = [[AvailableXcodesInfo]],
         ),
         "_xcode_version": attr.label(
-            default = "@build_bazel_apple_support//xcode:version",
+            default = "@apple_support//xcode:version",
         ),
         "_experimental_prefer_mutual_xcode": attr.label(
-            default = "@build_bazel_apple_support//xcode:experimental_prefer_mutual_xcode",
+            default = "@apple_support//xcode:experimental_prefer_mutual_xcode",
         ),
         "_include_xcode_exec_requirements": attr.label(
-            default = "@build_bazel_apple_support//xcode:include_xcode_exec_requirements",
+            default = "@apple_support//xcode:include_xcode_exec_requirements",
         ),
         "_ios_minimum_os": attr.label(
-            default = "@build_bazel_apple_support//xcode:ios_minimum_os",
+            default = "@apple_support//xcode:ios_minimum_os",
         ),
         "_macos_minimum_os": attr.label(
-            default = "@build_bazel_apple_support//xcode:macos_minimum_os",
+            default = "@apple_support//xcode:macos_minimum_os",
         ),
         "_tvos_minimum_os": attr.label(
-            default = "@build_bazel_apple_support//xcode:tvos_minimum_os",
+            default = "@apple_support//xcode:tvos_minimum_os",
         ),
         "_watchos_minimum_os": attr.label(
-            default = "@build_bazel_apple_support//xcode:watchos_minimum_os",
+            default = "@apple_support//xcode:watchos_minimum_os",
         ),
     },
     doc = """\

@@ -19,5 +19,5 @@ function print_message_and_exit() {
   echo "$1" >&2; exit 1;
 }
 
-source "$(rlocation build_bazel_apple_support/test/shell/unittest.bash)" \
+source "$(rlocation apple_support/test/shell/unittest.bash)" \
   || print_message_and_exit "unittest.bash not found!"

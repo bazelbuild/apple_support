@@ -15,11 +15,11 @@
 """Implementation of the `xcode_config_resolver` build rule."""
 
 load(
-    "@build_bazel_apple_support//build_settings:build_settings.bzl",
+    "@apple_support//build_settings:build_settings.bzl",
     "read_possibly_native_flag",
 )
 load(
-    "@build_bazel_apple_support//xcode:providers.bzl",
+    "@apple_support//xcode:providers.bzl",
     "XcodeVersionPropertiesInfo",
 )
 
@@ -93,12 +93,12 @@ def _properties_from_legacy_xcode_config(xcode_version_config):
 # field and the Starlark flag is handled automatically by the implementation of
 # this rule. When the native fragment is removed, it is assumed that an alias
 # will be in place to propagate the --xcode_version_config value to the Starlark
-# @build_bazel_apple_support//xcode:starlark_version_config flag.
+# @apple_support//xcode:starlark_version_config flag.
 xcode_config_resolver = rule(
     implementation = _xcode_config_resolver_impl,
     attrs = {
         "_xcode_version_config": attr.label(
-            default = "@build_bazel_apple_support//xcode:starlark_version_config",
+            default = "@apple_support//xcode:starlark_version_config",
         ),
         "_xcode_version_config_native": attr.label(
             default = configuration_field(
