@@ -387,9 +387,9 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
   }
 
   FindAndReplace("__BAZEL_EXECUTION_ROOT__", cwd, &new_arg);
-  if (!canonical_cwd.empty()) {  // empty if
-                                 // coverage_prefix_map_absolute_sources_non_hermetic_private_feature
-                                 // not requested
+  // empty if coverage_prefix_map_absolute_sources_non_hermetic_private_feature
+  // not requested
+  if (!canonical_cwd.empty()) {
     FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", canonical_cwd,
                    &new_arg);
   }
