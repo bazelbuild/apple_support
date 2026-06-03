@@ -1,5 +1,5 @@
 matrix:
-  bazel: ["7.x", "8.x", "9.x"]
+  bazel: ["7.x", "8.x", "9.x", "rolling"]
 
 tasks:
   verify_targets:
@@ -13,9 +13,7 @@ bcr_test_module:
   module_path: "."
 
   matrix:
-    # TODO: Enabling `rolling` releases when we fix
-    # transition outputs [//command_line_option:ios_signing_cert_name] do not correspond to valid settings
-    bazel: ["7.x", "8.x", "9.x"]
+    bazel: ["7.x", "8.x", "9.x", "rolling"]
 
   tasks:
     run_tests:
