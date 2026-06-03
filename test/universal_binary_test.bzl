@@ -104,9 +104,6 @@ A list of symbols that should appear in the binary file specified in
             doc = "The binary whose contents are to be verified.",
             cfg = universal_binary_test_transition,
         ),
-        "_allowlist_function_transition": attr.label(
-            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-        ),
     },
     fragments = ["apple"],
     implementation = _universal_binary_test_impl,
