@@ -86,4 +86,4 @@ tasks:
     bazel: latest
     <<: *windows_common
 
-buildifier: 8.2.1
+buildifier: 8.5.1
