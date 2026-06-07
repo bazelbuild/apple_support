@@ -76,9 +76,6 @@ starlark_apple_binary = rule(
             cfg = apple_platform_split_transition,
             default = "//test:default_cc_toolchain_forwarder",
         ),
-        "_allowlist_function_transition": attr.label(
-            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-        ),
     },
     fragments = ["apple", "objc", "cpp", "j2objc"],
     implementation = _starlark_apple_binary_impl,

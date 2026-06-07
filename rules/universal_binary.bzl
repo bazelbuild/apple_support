@@ -67,9 +67,6 @@ universal_binary = rule(
                     doc = "Target to generate a 'fat' binary from.",
                     mandatory = True,
                 ),
-                "_allowlist_function_transition": attr.label(
-                    default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-                ),
             },
     doc = """
 This rule produces a multi-architecture ("fat") binary targeting Apple macOS
