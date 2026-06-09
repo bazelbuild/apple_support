@@ -9,7 +9,7 @@ module(
 bazel_dep(name = "bazel_features", version = "1.27.0")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "0.0.9")
-bazel_dep(name = "rules_cc", version = "0.2.15")
+bazel_dep(name = "rules_cc", version = "0.2.19")
 
 apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
@@ -33,3 +33,7 @@ use_repo(
     "http_dmg_test_krita",
     "http_dmg_test_krita_strip_prefix",
 )
+
+toolchain_env = use_repo_rule("//toolchain:toolchain_env.bzl", "toolchain_env")
+
+toolchain_env(name = "apple_support_toolchain_env")

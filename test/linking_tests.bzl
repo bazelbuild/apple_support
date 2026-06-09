@@ -513,8 +513,20 @@ def linking_test_suite(name):
             "-S",
             "-o",
             "$(BIN_DIR)/test/test_data/cc_test_binary.stripped",
-            "-passed_arg",
             "$(BIN_DIR)/test/test_data/cc_test_binary",
+        ],
+        mnemonic = "CcStrip",
+        target_under_test = "//test/test_data:cc_test_binary",
+    )
+
+    # TODO: Not unified with above because ordering is different but doesn't
+    # matter between the 2 toolchains, remove when we only have 1
+    stripopt_test(
+        name = "{}_builtin_stripopt_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-S",
+            "-passed_arg",
         ],
         mnemonic = "CcStrip",
         target_under_test = "//test/test_data:cc_test_binary",

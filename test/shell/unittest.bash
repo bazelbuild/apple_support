@@ -183,6 +183,22 @@ function init_test() {
     :
 }
 
+function bazel_cmd() {
+    local bazel="${BAZEL:-bazel}"
+    local command="$1"
+    shift
+
+    local bazel_extra_args=()
+    if [[ -n "${BAZEL_EXTRA_ARGS:-}" ]]; then
+      read -r -a bazel_extra_args <<< "${BAZEL_EXTRA_ARGS}"
+    fi
+
+    if (( ${#bazel_extra_args[@]} )); then
+      "$bazel" "$command" "${bazel_extra_args[@]}" "$@"
+    else
+      "$bazel" "$command" "$@"
+    fi
+}
 
 # Usage: set_up
 # Called before every test function.  May be redefined by the test suite.
