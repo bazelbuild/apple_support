@@ -269,7 +269,7 @@ negatable_feature(
         "@rules_cc//cc/toolchains/actions:objcpp_compile",
     ],
     args = select({
-        "@build_bazel_apple_support//constraints:simulator": [
+        "//constraints:simulator": [
             "-fexceptions",
             "-fasm-blocks",
             "-fobjc-abi-version=2",

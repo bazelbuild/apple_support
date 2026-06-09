@@ -5,7 +5,7 @@ internal bazel APIs that we use to derive some flags must be exposed via custom
 rules.
 """
 
-load("@build_bazel_apple_support//lib:apple_support.bzl", "apple_support")
+load("@apple_support//lib:apple_support.bzl", "apple_support")
 load("@rules_cc//cc/toolchains:providers.bzl", "ExecutionRequirementsInfo")
 
 def _sdk_version_for_platform(xcode_config, platform_type):
@@ -126,7 +126,7 @@ dynamic_toolchain_info = rule(
         "_x86_64": attr.label(default = "@platforms//cpu:x86_64"),
         "_arm64_32": attr.label(default = "@platforms//cpu:arm64_32"),
         "_armv7k": attr.label(default = "@platforms//cpu:armv7k"),
-        "_simulator": attr.label(default = "@build_bazel_apple_support//constraints:simulator"),
+        "_simulator": attr.label(default = "@apple_support//constraints:simulator"),
         "_xcode_config": attr.label(default = configuration_field(
             fragment = "apple",
             name = "xcode_config_label",
