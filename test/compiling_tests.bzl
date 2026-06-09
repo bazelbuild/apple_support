@@ -360,7 +360,10 @@ def compiling_test_suite(name):
 
     extra_enabled_features_order_test(
         name = "{}_extra_enabled_features_order_test".format(name),
-        tags = [name],
+        tags = [
+            name,
+            "requires_rules_based_toolchain",
+        ],
         expected_argv = [
             "-DCOPTS_ENV=1",
             "-DFROM_EXTRA_ENABLED_FEATURE=1",
@@ -372,7 +375,10 @@ def compiling_test_suite(name):
 
     extra_known_features_test(
         name = "{}_extra_known_features_test".format(name),
-        tags = [name],
+        tags = [
+            name,
+            "requires_rules_based_toolchain",
+        ],
         expected_argv = [
             "-DFROM_EXTRA_KNOWN_FEATURE=1",
         ],

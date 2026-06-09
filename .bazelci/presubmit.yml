@@ -16,7 +16,7 @@ x_defaults:
     build_flags:
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
-      - "--test_tag_filters=-skipci"
+      - "--test_tag_filters=-skipci,-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
   linux_common: &linux_common
@@ -31,6 +31,7 @@ x_defaults:
     build_flags:
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
+      - "--test_tag_filters=-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
   windows_common: &windows_common
@@ -43,6 +44,7 @@ x_defaults:
     build_flags:
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
+      - "--test_tag_filters=-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
 tasks:
