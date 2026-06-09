@@ -5,6 +5,7 @@ load("@rules_cc//cc/toolchains:args_list.bzl", "cc_args_list")
 load("@rules_cc//cc/toolchains:artifacts.bzl", "cc_artifact_name_pattern")
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
+load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
@@ -33,6 +34,23 @@ ENABLED_MARKERS = [
     "set_soname",
 ] + (
     ["gcc_quoting_for_param_files"] if bazel_features.cc.fixed_dsym_path_quoting else []
+)
+
+cc_feature_set(
+    name = "_empty_feature_set",
+    all_of = [],
+)
+
+label_flag(
+    name = "extra_enabled_features",
+    build_setting_default = ":_empty_feature_set",
+    visibility = ["//visibility:public"],
+)
+
+label_flag(
+    name = "extra_known_features",
+    build_setting_default = ":_empty_feature_set",
+    visibility = ["//visibility:public"],
 )
 
 # TODO: See if we really need this one
@@ -856,6 +874,7 @@ cc_toolchain(
         ":dead_strip_wrapper",
         ":apply_implicit_frameworks",
         ":link_cocoa_wrapper",
+        ":extra_enabled_features",
         ":user_compile_flags",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
         ":unfiltered_compile_flags",
         ":__compiler_input_flags_without_header_parsing",
@@ -898,6 +917,7 @@ cc_toolchain(
         "//toolchain/pgo:autofdo",
         "//toolchain/pgo:fdo_optimize",
         "@apple_support_toolchain_env//:off_by_default_layering_check_known_features",
+        ":extra_known_features",
         "@rules_cc//cc/toolchains/args/layering_check:use_module_maps",  # TODO: https://github.com/bazelbuild/rules_cc/pull/657
     ] + select({
         "@platforms//os:macos": [
