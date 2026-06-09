@@ -1,6 +1,8 @@
 """Tests for compilation behavior."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
+load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
+load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load(
     "//test/rules:action_command_line_test.bzl",
     "make_action_command_line_test_rule",
@@ -15,6 +17,20 @@ copt_order_test = make_action_command_line_test_rule(
         "//command_line_option:cxxopt": ["-DFROM_CXX_FLAG=1"],
         "//command_line_option:objccopt": ["-DFROM_OBJCCOPTS_FLAG=1"],
         "//command_line_option:process_headers_in_dependencies": "true",
+    },
+)
+
+extra_enabled_features_order_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+        str(Label("//toolchain:extra_enabled_features")): str(Label("//test:compiling_extra_enabled_feature")),
+    },
+)
+
+extra_known_features_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:features": ["apple_support_test_extra_known_feature"],
+        str(Label("//toolchain:extra_known_features")): str(Label("//test:compiling_extra_known_feature")),
     },
 )
 
@@ -77,6 +93,32 @@ def compiling_test_suite(name):
     Args:
         name: The name to be included in test names and tags.
     """
+    cc_args(
+        name = "{}_extra_enabled_feature_args".format(name),
+        actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+        args = ["-DFROM_EXTRA_ENABLED_FEATURE=1"],
+    )
+
+    cc_feature(
+        name = "{}_extra_enabled_feature".format(name),
+        feature_name = "apple_support_test_extra_enabled_feature",
+        args = [":{}_extra_enabled_feature_args".format(name)],
+        visibility = ["//visibility:public"],
+    )
+
+    cc_args(
+        name = "{}_extra_known_feature_args".format(name),
+        actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+        args = ["-DFROM_EXTRA_KNOWN_FEATURE=1"],
+    )
+
+    cc_feature(
+        name = "{}_extra_known_feature".format(name),
+        feature_name = "apple_support_test_extra_known_feature",
+        args = [":{}_extra_known_feature_args".format(name)],
+        visibility = ["//visibility:public"],
+    )
+
     default_test(
         name = "{}_default_apple_macos_compile_test".format(name),
         tags = [name],
@@ -311,6 +353,34 @@ def compiling_test_suite(name):
             "-DFROM_COPTS_FLAG=1",
             "-DFROM_BUILD_COPTS=1",
             "-D__DATE__=\"redacted\"",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    extra_enabled_features_order_test(
+        name = "{}_extra_enabled_features_order_test".format(name),
+        tags = [
+            name,
+            "requires_rules_based_toolchain",
+        ],
+        expected_argv = [
+            "-DCOPTS_ENV=1",
+            "-DFROM_EXTRA_ENABLED_FEATURE=1",
+            "-DFROM_BUILD_COPTS=1",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
+    )
+
+    extra_known_features_test(
+        name = "{}_extra_known_features_test".format(name),
+        tags = [
+            name,
+            "requires_rules_based_toolchain",
+        ],
+        expected_argv = [
+            "-DFROM_EXTRA_KNOWN_FEATURE=1",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_lib",
