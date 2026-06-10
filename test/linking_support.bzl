@@ -3,7 +3,6 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
-load("@rules_cc//cc/common:objc_info.bzl", "ObjcInfo")
 load("@rules_cc//cc/private/rules_impl:objc_compilation_support.bzl", "compilation_support")  # buildifier: disable=bzl-visibility
 load(":cc_toolchain_forwarder.bzl", "CcWrapperInfo", "TestApplePlatformInfo")
 
