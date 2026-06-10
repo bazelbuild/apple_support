@@ -715,16 +715,10 @@ def link_multi_arch_static_library(*, ctx, cc_toolchains):
             deps = split_deps[split_transition_key],
         )
 
-        avoid_objc_providers = []
-        avoid_cc_providers = []
         avoid_cc_linking_contexts = []
-
         if len(split_avoid_deps.keys()):
             for dep in split_avoid_deps[split_transition_key]:
-                if ObjcInfo in dep:
-                    avoid_objc_providers.append(dep[ObjcInfo])
                 if CcInfo in dep:
-                    avoid_cc_providers.append(dep[CcInfo])
                     avoid_cc_linking_contexts.append(dep[CcInfo].linking_context)
 
         name = ctx.label.name + "-" + cc_toolchain.target_gnu_system_name + "-fl"
