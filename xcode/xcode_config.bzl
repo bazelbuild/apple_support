@@ -69,10 +69,15 @@ def _xcode_config_impl(ctx):
         )
         availability = "UNKNOWN"
 
-    ios_sdk_version = _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "8.4")
-    macos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "10.11")
-    tvos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "9.0")
-    watchos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "2.0")
+    # These default SDK versions correspond to the minimum supported versions of
+    # the OSes by Xcode 27. They won't often be used because nearly all builds
+    # will specify their own minimum OS version in a bundling target or on the
+    # command line, but these defaults are ensured to be high enough that they
+    # won't immediately cause build failures with modern toolchains.
+    ios_sdk_version = _dotted_version_or_default(xcode_version_properties.default_ios_sdk_version, "15.0")
+    macos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_macos_sdk_version, "12.0")
+    tvos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_tvos_sdk_version, "15.0")
+    watchos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_watchos_sdk_version, "9.0")
     visionos_sdk_version = _dotted_version_or_default(xcode_version_properties.default_visionos_sdk_version, "1.0")
 
     ios_minimum_os = read_possibly_native_flag(ctx, "ios_minimum_os") or ios_sdk_version
