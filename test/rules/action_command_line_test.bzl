@@ -53,7 +53,9 @@ def _action_command_line_test_impl(ctx):
                 if action.argv[0] not in [
                     "/usr/bin/ar",
                     "external/local_config_cc/libtool",
+                    "external/local_config_cc/apple-support-ar-wrapper",
                     "external/local_config_apple_cc/libtool",
+                    "external/local_config_apple_cc/apple-support-ar-wrapper",
                 ]
             ]
         if len(matching_actions) != 1 and ctx.attr.argv_filter:
