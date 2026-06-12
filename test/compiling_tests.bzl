@@ -408,6 +408,29 @@ def compiling_test_suite(name):
         target_under_test = "//test/header_parsing:valid_header",
     )
 
+    copt_order_test(
+        name = "{}_header_parsing_as_c_copt_order_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-xc-header",
+            "-fsyntax-only",
+            "-O2",  # From --compilation_mode=opt
+            "-isysroot",
+            "__BAZEL_XCODE_SDKROOT__",
+            "-DFROM_COPTS_FLAG=1",
+            "-D__DATE__=\"redacted\"",
+            "test/header_parsing/c_only_header.h",
+            "-o",
+            "$(BIN_DIR)/test/header_parsing/_objs/c_only_header/c_only_header.h.processed",
+        ],
+        not_expected_argv = [
+            "-c",  # Produces a clang warning since we don't compile anything in this action
+            "-xc++-header",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/header_parsing:c_only_header",
+    )
+
     default_test(
         name = "{}_dependency_file_test".format(name),
         tags = [name],

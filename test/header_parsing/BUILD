@@ -22,6 +22,19 @@ cc_library(
 )
 
 cc_library(
+    name = "c_only_header_without_parse_headers_as_c",
+    hdrs = ["c_only_header.h"],
+    tags = ["manual"],
+)
+
+cc_library(
+    name = "c_only_header",
+    hdrs = ["c_only_header.h"],
+    features = ["parse_headers_as_c"],
+    visibility = ["//test:__subpackages__"],
+)
+
+cc_library(
     name = "valid_header",
     hdrs = ["valid_header.h"],
     visibility = ["//test:__subpackages__"],
@@ -35,6 +48,7 @@ objc_library(
 build_test(
     name = "test",
     targets = [
+        ":c_only_header",
         ":invalid_header_feature_disabled",
         ":valid_header",
         ":valid_header_objc",

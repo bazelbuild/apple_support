@@ -208,15 +208,24 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            # Note: This treats all headers as C++ headers, which may lead to
-                            # parsing failures for C headers that are not valid C++.
-                            # For such headers, use features = ["-parse_headers"] to selectively
-                            # disable parsing.
                             "-xc++-header",
                             "-fsyntax-only",
                         ],
                     ),
                 ],
+                with_features = [with_feature_set(not_features = ["parse_headers_as_c"])],
+            ),
+            flag_set(
+                actions = [ACTION_NAMES.cpp_header_parsing],
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-xc-header",
+                            "-fsyntax-only",
+                        ],
+                    ),
+                ],
+                with_features = [with_feature_set(features = ["parse_headers_as_c"])],
             ),
         ],
         env_sets = [
@@ -1930,10 +1939,18 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 ] if ctx.attr.conly_flags else []),
             ),
             flag_set(
+                actions = [ACTION_NAMES.cpp_header_parsing],
+                flag_groups = ([
+                    flag_group(
+                        flags = ctx.attr.conly_flags,
+                    ),
+                ] if ctx.attr.conly_flags else []),
+                with_features = [with_feature_set(features = ["parse_headers_as_c"])],
+            ),
+            flag_set(
                 actions = [
                     ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
                     ACTION_NAMES.cpp_module_compile,
                 ],
                 flag_groups = ([
@@ -1941,6 +1958,15 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                         flags = ctx.attr.cxx_flags,
                     ),
                 ] if ctx.attr.cxx_flags else []),
+            ),
+            flag_set(
+                actions = [ACTION_NAMES.cpp_header_parsing],
+                flag_groups = ([
+                    flag_group(
+                        flags = ctx.attr.cxx_flags,
+                    ),
+                ] if ctx.attr.cxx_flags else []),
+                with_features = [with_feature_set(not_features = ["parse_headers_as_c"])],
             ),
             flag_set(
                 actions = [
@@ -2294,6 +2320,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "only_doth_headers_in_module_maps"),
         feature(name = "opt"),
         feature(name = "parse_headers"),
+        feature(name = "parse_headers_as_c"),
         feature(name = "no_dotd_file"),
         feature(name = "sanitize_pwd", enabled = True),
         feature(name = "set_soname", enabled = True),
