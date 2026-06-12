@@ -13,20 +13,30 @@
 // limitations under the License.
 
 #include <spawn.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <iomanip>
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <sstream>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 extern char** environ;
 
 const std::regex libRegex = std::regex(".*\\.a$");
 const std::regex singleArgFlags = std::regex("-arch_only|-o");
+const std::unordered_set<char> supportedArFlags = {
+    'c', 'r', 'q', 's', 'D',
+};
 
 // An RAII temporary directory.
 class TempDirectory {
@@ -201,10 +211,105 @@ bool hasDuplicateBasenames(const std::vector<std::string> files) {
   return false;
 }
 
+bool hasOnlyArFlags(const std::string& arg) {
+  if (arg.empty()) {
+    return false;
+  }
+  for (char flag : arg) {
+    if (supportedArFlags.find(flag) == supportedArFlags.end()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool isArTocOnlyInvocation(const std::vector<std::string>& args) {
+  return args.size() == 2 && args[0].find('s') != std::string::npos &&
+         args[0].find('c') == std::string::npos &&
+         args[0].find('r') == std::string::npos &&
+         args[0].find('q') == std::string::npos;
+}
+
+[[noreturn]] void processArTocOnlyArgsAndExit(
+    const std::vector<std::string>& args) {
+  const std::string archive = args[1];
+  if (!regex_match(archive, libRegex)) {
+    std::cerr << "error: expected archive file after ar flags '" << args[0]
+              << "', got '" << archive
+              << "'. Please report this to apple_support.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (!std::filesystem::exists(archive)) {
+    std::cerr << "error: attempted to create TOC but archive file '" << archive
+              << "' does not exist. Please report this to apple_support.\n";
+    exit(EXIT_FAILURE);
+  }
+  exit(EXIT_SUCCESS);
+}
+
+bool looksLikeArInvocation(const std::vector<std::string>& args) {
+  if (args.empty()) {
+    return false;
+  }
+  if (hasOnlyArFlags(args[0])) {
+    return true;
+  }
+  // If the first arg starts with a -, it's unlikely ar which is usually 'ar cr
+  // libfoo.a foo.o'
+  if (args[0].empty() || args[0][0] == '-') {
+    return false;
+  }
+  return args.size() >= 2 && regex_match(args[1], libRegex);
+}
+
+void processArCreateArgs(
+    const std::vector<std::string>& args,
+    std::function<void(const std::string&)> flags_consumer) {
+  if (!hasOnlyArFlags(args[0])) {
+    std::cerr << "error: unsupported ar flags '" << args[0]
+              << "'. Supported flag characters are 'c', 'r', 'q', 's', "
+              << "and 'D'. Please file an issue at "
+              << "https://github.com/bazelbuild/apple_support/issues if this "
+              << "needs to support another ar invocation.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (args.size() < 2) {
+    std::cerr << "error: expected output archive after ar flags '" << args[0]
+              << "'.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (!regex_match(args[1], libRegex)) {
+    std::cerr << "error: expected output archive after ar flags '" << args[0]
+              << "', got '" << args[1] << "'.\n";
+    exit(EXIT_FAILURE);
+  }
+  if (args.size() < 3) {
+    std::cerr
+        << "error: expected at least one input file after output archive '"
+        << args[1] << "'.\n";
+    exit(EXIT_FAILURE);
+  }
+
+  flags_consumer("-static");
+  flags_consumer("-D");  // NOTE: Always added for hermiticity
+  flags_consumer("-o");
+  flags_consumer(args[1]);
+}
+
 void processArgs(const std::vector<std::string> args,
                  std::function<void(const std::string&)> flags_consumer,
                  std::function<void(const std::string&)> files_consumer) {
-  for (auto it = args.begin(); it != args.end(); ++it) {
+  auto start = args.begin();
+  if (looksLikeArInvocation(args)) {
+    if (isArTocOnlyInvocation(args)) {
+      processArTocOnlyArgsAndExit(args);
+    }
+
+    processArCreateArgs(args, flags_consumer);
+    start += 2;
+  }
+
+  for (auto it = start; it != args.end(); ++it) {
     const std::string arg = *it;
     if (arg == "-filelist") {
       ++it;
@@ -234,6 +339,26 @@ void processArgs(const std::vector<std::string> args,
       files_consumer(arg);
     }
   }
+}
+
+void logInvocation(const std::vector<std::string>& invocation_args,
+                   const std::vector<std::string>& processed_args) {
+  bool first = true;
+  auto log_arg = [&](const std::string& arg) {
+    if (!first) {
+      std::cout << ' ';
+    }
+    std::cout << arg;
+    first = false;
+  };
+
+  for (const std::string& arg : invocation_args) {
+    log_arg(arg);
+  }
+  for (const std::string& arg : processed_args) {
+    log_arg(arg);
+  }
+  std::cout << "\n";
 }
 
 std::string hash(const std::string& input) {
@@ -295,6 +420,17 @@ int main(int argc, const char* argv[]) {
     processed_args.insert(processed_args.end(), files.begin(), files.end());
   }
 
+  std::vector<std::string> invocation_args = {
+      "/usr/bin/xcrun",
+      "libtool",
+  };
+
+  // Used for testing.
+  if (getenv("__LIBTOOL_LOG_ONLY")) {
+    logInvocation(invocation_args, processed_args);
+    return EXIT_SUCCESS;
+  }
+
   auto response_file = temp_directory->GetPath() / "bazel_libtool.params";
   std::ofstream response_file_stream(response_file);
   for (const auto& arg : processed_args) {
@@ -309,11 +445,7 @@ int main(int argc, const char* argv[]) {
   }
   response_file_stream.close();
 
-  std::vector<std::string> invocation_args = {
-      "/usr/bin/xcrun",
-      "libtool",
-      "@" + response_file.u8string(),
-  };
+  invocation_args.push_back("@" + response_file.u8string());
 
   if (!runSubProcess(invocation_args)) {
     return EXIT_FAILURE;
