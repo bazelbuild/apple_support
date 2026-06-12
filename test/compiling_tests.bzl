@@ -13,6 +13,7 @@ default_test = make_action_command_line_test_rule()
 copt_order_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "opt",
+        "//command_line_option:conlyopt": ["-DFROM_CONLY_FLAG=1"],
         "//command_line_option:copt": ["-DFROM_COPTS_FLAG=1"],
         "//command_line_option:cxxopt": ["-DFROM_CXX_FLAG=1"],
         "//command_line_option:objccopt": ["-DFROM_OBJCCOPTS_FLAG=1"],
@@ -395,7 +396,11 @@ def compiling_test_suite(name):
             "-O2",  # From --compilation_mode=opt
             "-isysroot",
             "__BAZEL_XCODE_SDKROOT__",
+            "-DCOPTS_ENV=1",
+            "-std=c++17",
+            "-DCXXOPTS_ENV=1",
             "-DFROM_COPTS_FLAG=1",
+            "-DFROM_CXX_FLAG=1",
             "-D__DATE__=\"redacted\"",
             "test/header_parsing/valid_header.h",
             "-o",
@@ -403,6 +408,8 @@ def compiling_test_suite(name):
         ],
         not_expected_argv = [
             "-c",  # Produces a clang warning since we don't compile anything in this action
+            "-DCONLY_ENV=1",
+            "-DFROM_CONLY_FLAG=1",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/header_parsing:valid_header",
@@ -417,6 +424,8 @@ def compiling_test_suite(name):
             "-O2",  # From --compilation_mode=opt
             "-isysroot",
             "__BAZEL_XCODE_SDKROOT__",
+            "-DCOPTS_ENV=1",
+            "-DCONLY_ENV=1",
             "-DFROM_COPTS_FLAG=1",
             "-D__DATE__=\"redacted\"",
             "test/header_parsing/c_only_header.h",
@@ -426,6 +435,8 @@ def compiling_test_suite(name):
         not_expected_argv = [
             "-c",  # Produces a clang warning since we don't compile anything in this action
             "-xc++-header",
+            "-std=c++17",
+            "-DCXXOPTS_ENV=1",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/header_parsing:c_only_header",
