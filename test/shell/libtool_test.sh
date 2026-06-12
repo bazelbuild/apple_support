@@ -44,7 +44,7 @@ fi
 # Load test environment
 source "$(rlocation "apple_support/test/shell/unittest.bash")" \
   || { echo "unittest.bash not found!" >&2; exit 1; }
-LIBTOOL=$(rlocation "apple_support/crosstool/libtool")
+LIBTOOL=$(rlocation "apple_support/crosstool/apple-support-ar-wrapper")
 
 
 # This env var tells libtool to log its command instead of running.

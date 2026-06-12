@@ -37,7 +37,7 @@ universal_exec_tool(
 universal_exec_tool(
     name = "exec_libtool",
     srcs = ["libtool.cc"],
-    out = "libtool",
+    out = "apple-support-ar-wrapper",
 )
 
 # TODO: Attempt to remove need for wrapper

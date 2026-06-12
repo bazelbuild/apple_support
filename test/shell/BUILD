@@ -26,7 +26,7 @@ sh_test(
     srcs = ["libtool_test.sh"],
     data = [
         ":bashunit",
-        "//crosstool:libtool",
+        "//crosstool:apple-support-ar-wrapper",
         "@bazel_tools//tools/bash/runfiles",
     ],
 )
