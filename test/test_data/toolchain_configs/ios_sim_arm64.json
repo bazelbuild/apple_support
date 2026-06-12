@@ -852,7 +852,38 @@
             }
           ],
           "type_name": "env_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "parse_headers_as_c"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "c++-header-parsing"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": "output_file",
+              "key": "HEADER_PARSING_OUTPUT",
+              "type_name": "env_entry",
+              "value": "%{output_file}"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": [
+            {
+              "features": [
+                "parse_headers_as_c"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "flag_sets": [
@@ -877,7 +908,46 @@
             }
           ],
           "type_name": "flag_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "parse_headers_as_c"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "c++-header-parsing"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": "output_file",
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-xc-header",
+                "-fsyntax-only"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "parse_headers_as_c"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "implies": [],
@@ -3751,8 +3821,37 @@
         },
         {
           "actions": [
+            "c++-header-parsing"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-DCONLY_ENV=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "parse_headers_as_c"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
             "c++-compile",
-            "c++-header-parsing",
             "c++-module-compile",
             "linkstamp-compile"
           ],
@@ -3774,6 +3873,37 @@
           ],
           "type_name": "flag_set",
           "with_features": []
+        },
+        {
+          "actions": [
+            "c++-header-parsing"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-std=c++17",
+                "-DCXXOPTS_ENV=1"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [],
+              "not_features": [
+                "parse_headers_as_c"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "implies": [],
@@ -4969,6 +5099,16 @@
       "flag_sets": [],
       "implies": [],
       "name": "parse_headers",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "parse_headers_as_c",
       "provides": [],
       "requires": [],
       "type_name": "feature"
