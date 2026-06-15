@@ -123,10 +123,12 @@ def _apple_support_test_impl(ctx):
 
     # Create one action per possible combination of inputs to the apple_support.run and
     # apple_support.run_shell helper methods.
+    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+
     apple_support.run(
         actions = ctx.actions,
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
-        apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
         outputs = [run_output],
         executable = test_tool,
         arguments = [run_output.path],
@@ -134,13 +136,13 @@ def _apple_support_test_impl(ctx):
     )
 
     platform_frameworks = apple_support.path_placeholders.platform_frameworks(
-        apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
     )
 
     apple_support.run(
         actions = ctx.actions,
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
-        apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
         outputs = [run_output_xcode_path_in_args],
         executable = test_tool,
         arguments = [
@@ -169,7 +171,7 @@ def _apple_support_test_impl(ctx):
     apple_support.run(
         actions = ctx.actions,
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
-        apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
         outputs = [run_output_xcode_path_in_file],
         executable = test_tool,
         arguments = [
@@ -183,7 +185,7 @@ def _apple_support_test_impl(ctx):
     apple_support.run_shell(
         actions = ctx.actions,
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
-        apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
         outputs = [run_shell_output],
         tools = [test_tool],
         command = ["/bin/bash", "-c", "{tool} {output}".format(
@@ -208,7 +210,7 @@ def _apple_support_test_impl(ctx):
     ), is_executable = True)
 
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    apple_platform = ctx.fragments.apple.single_arch_platform
+    apple_platform = apple_platform_info.platform
 
     test_env = {}
     test_env.update(apple_common.apple_host_system_env(xcode_config))
@@ -228,7 +230,7 @@ def _apple_support_test_impl(ctx):
 
 apple_support_test = rule(
     implementation = _apple_support_test_impl,
-    attrs = apple_support.action_required_attrs(),
+    attrs = apple_support.action_required_attrs() | apple_support.platform_constraint_attrs(),
     fragments = ["apple"],
     exec_groups = {
         "mac_exec_group": exec_group(
