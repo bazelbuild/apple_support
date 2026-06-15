@@ -16,12 +16,6 @@
 
 visibility("public")
 
-ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK = [
-    # keep sorted
-    "@build_bazel_rules_apple//apple:default_cc_toolchain_forwarder",
-    "@build_bazel_rules_apple//apple/internal:environment_plist_ios",
-    "@build_bazel_rules_apple//apple/internal:environment_plist_macos",
-    "@build_bazel_rules_apple//apple/internal:environment_plist_tvos",
-    "@build_bazel_rules_apple//apple/internal:environment_plist_visionos",
-    "@build_bazel_rules_apple//apple/internal:environment_plist_watchos",
-]
+# Allowlist of targets that are allowed to analyze Apple rules without active platform constraints.
+# For OSS, this list is empty by default. Populate it with your own targets if needed.
+ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK = []

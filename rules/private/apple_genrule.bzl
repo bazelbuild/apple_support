@@ -68,6 +68,8 @@ def _apple_genrule_impl(ctx):
         execution_requirements = xcode_config.execution_info(),
     )
 
+    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+
     message = ctx.attr.message or "Executing apple_genrule"
 
     extra_args = {}
@@ -78,6 +80,7 @@ def _apple_genrule_impl(ctx):
         actions = ctx.actions,
         xcode_config = xcode_config,
         apple_fragment = ctx.fragments.apple,
+        apple_platform_info = apple_platform_info,
         executable = argv[0],
         arguments = argv[1:],
         inputs = depset(resolved_inputs, transitive = [resolved_srcs]),
@@ -101,7 +104,7 @@ def _apple_genrule_impl(ctx):
 
 apple_genrule = rule(
     implementation = _apple_genrule_impl,
-    attrs = apple_support.action_required_attrs() | {
+    attrs = apple_support.action_required_attrs() | apple_support.platform_constraint_attrs() | {
         "cmd": attr.string(
             mandatory = True,
             doc = "The command to run. Subject the variable substitution.",
