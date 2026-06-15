@@ -24,6 +24,7 @@ MARKER_FEATURES = [
     "no_legacy_features",
     "only_doth_headers_in_module_maps",
     "parse_headers",
+    "parse_headers_as_c",
     "sanitize_pwd",
     "set_soname",
 ]
@@ -634,20 +635,50 @@ enableable_feature(
     }),
 )
 
-negatable_feature(
-    name = "__header_parsing_flags",
+cc_feature_constraint(
+    name = "parse_headers_as_c_enabled",
+    all_of = [":parse_headers_as_c"],
+    visibility = ["//visibility:public"],
+)
+
+cc_feature_constraint(
+    name = "not_parse_headers_as_c",
+    none_of = [":parse_headers_as_c"],
+    visibility = ["//visibility:public"],
+)
+
+cc_args(
+    name = "_header_parsing_flags_cpp_args",
     actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
     args = [
-        # Note: This treats all headers as C++ headers, which may lead to
-        # parsing failures for C headers that are not valid C++.
-        # For such headers, use features = ["-parse_headers"] to selectively
-        # disable parsing.
         "-xc++-header",
         "-fsyntax-only",
     ],
     env = {"HEADER_PARSING_OUTPUT": "{output_file}"},
     format = {"output_file": "@rules_cc//cc/toolchains/variables:output_file"},
+    requires_any_of = [":not_parse_headers_as_c"],
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_file",
+)
+
+cc_args(
+    name = "_header_parsing_flags_c_args",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
+    args = [
+        "-xc-header",
+        "-fsyntax-only",
+    ],
+    env = {"HEADER_PARSING_OUTPUT": "{output_file}"},
+    format = {"output_file": "@rules_cc//cc/toolchains/variables:output_file"},
+    requires_any_of = [":parse_headers_as_c_enabled"],
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_file",
+)
+
+negatable_feature(
+    name = "__header_parsing_flags",
+    custom_args = [
+        ":_header_parsing_flags_cpp_args",
+        ":_header_parsing_flags_c_args",
+    ],
 )
 
 cc_artifact_name_pattern(

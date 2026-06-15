@@ -151,7 +151,9 @@ cc_feature(
     args = [
         ":copts",
         ":conlyopts",
+        ":conlyopts_for_header_parsing",
         ":cxxopts",
+        ":cxxopts_for_header_parsing",
     ],
 )
 
@@ -168,15 +170,28 @@ cc_args(
 )
 
 cc_args(
+    name = "conlyopts_for_header_parsing",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
+    args = [{conly_opts}],
+    requires_any_of = ["@apple_support//toolchain:parse_headers_as_c_enabled"],
+)
+
+cc_args(
     name = "cxxopts",
     actions = [
         # TODO: Should more actions be here?
         "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_header_parsing",
         "@rules_cc//cc/toolchains/actions:cpp_module_compile",
         "@rules_cc//cc/toolchains/actions:linkstamp_compile",
     ],
     args = [{cxx_opts}],
+)
+
+cc_args(
+    name = "cxxopts_for_header_parsing",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
+    args = [{cxx_opts}],
+    requires_any_of = ["@apple_support//toolchain:not_parse_headers_as_c"],
 )
 
 cc_feature(
