@@ -625,14 +625,21 @@ def _apple_platform_info_from_rule_ctx(ctx):
     if not target_os:
         full_label = "//{package}:{name}".format(package = ctx.label.package, name = ctx.label.name)
         if full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK:
-            fail("ERROR: A valid Apple platform constraint could not be found for target " + full_label)
+            fail("""
+ERROR: A valid Apple platform constraint could not be found for target {full_label}
+
+Check that you are building this target for a supported Apple platform (ios, macos, tvos, \
+visionos, watchos) and that it is not accidentally being built with a default config, such as Linux.
+""".format(
+                full_label = full_label,
+            ))
 
         # Starlark-only default fallback when Apple constraints are missing (e.g. Linux host analysis)
         # buildifier: disable=print
         print("Warning: Target {} is analyzed without Apple platform constraints. Applying temporary macos fallback.".format(full_label))
         target_os = "macos"
         target_env = "device"
-        target_arch = "x86_64"
+        target_arch = "arm64"
     else:
         target_env = _target_environment_from_rule_ctx(ctx)
         target_arch = _target_arch_from_rule_ctx(ctx)
