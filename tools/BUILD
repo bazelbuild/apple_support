@@ -7,11 +7,3 @@ filegroup(
     # Public so other rules can add the dependencies via this group.
     visibility = ["//visibility:public"],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
-)

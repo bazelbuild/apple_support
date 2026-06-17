@@ -74,13 +74,3 @@ bzl_library(
     srcs = ["xcode_support.bzl"],
     deps = ["//xcode:providers"],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]) + [
-        "//lib/private:for_bazel_tests",
-    ],
-    visibility = ["//:__pkg__"],
-)

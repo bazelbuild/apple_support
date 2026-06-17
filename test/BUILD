@@ -102,14 +102,6 @@ universal_binary_test(
     target_under_test = "//test/test_data:multi_arch_cc_binary",
 )
 
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]),
-    visibility = ["//test/shell:__pkg__"],
-)
-
 cc_binary(
     name = "main_c",
     srcs = ["main.c"],

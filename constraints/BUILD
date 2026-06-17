@@ -61,11 +61,3 @@ constraint_value(
     name = "pointer_authentication",
     constraint_setting = ":pointer_authentication_setting",
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
-)

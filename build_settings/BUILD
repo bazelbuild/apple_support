@@ -12,10 +12,3 @@ bzl_library(
     srcs = ["build_settings.bzl"],
     deps = ["@bazel_skylib//rules:common_settings"],
 )
-
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
-)
