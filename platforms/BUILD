@@ -38,11 +38,3 @@ alias(
     )
     for platform in CPU_TO_DEFAULT_PLATFORM_NAME.values()
 ]
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
-)

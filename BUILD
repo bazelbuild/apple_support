@@ -17,26 +17,3 @@ bzl_library(
         "//rules:apple_genrule",
     ],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = [
-        "BUILD",
-        "LICENSE",
-        "//build_settings:for_bazel_tests",
-        "//configs:for_bazel_tests",
-        "//constraints:for_bazel_tests",
-        "//crosstool:for_bazel_tests",
-        "//lib:for_bazel_tests",
-        "//platforms:for_bazel_tests",
-        "//rules:for_bazel_tests",
-        "//tools:for_bazel_tests",
-        "//xcode:for_bazel_tests",
-    ],
-    # Exposed publicly just so other rules can use this if they set up
-    # integration tests that need to copy all the support files into
-    # a temporary workspace for the tests.
-    visibility = ["//visibility:public"],
-)

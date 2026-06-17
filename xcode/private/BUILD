@@ -119,11 +119,3 @@ xcode_sdk_variant(
     name = "empty_sdk",
     visibility = [":xcode_sdk_variant_config_setting_users"],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]),
-    visibility = ["//xcode:__pkg__"],
-)

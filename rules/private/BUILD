@@ -11,11 +11,3 @@ bzl_library(
     ],
     deps = ["//lib:apple_support"],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]),
-    visibility = ["//rules:__pkg__"],
-)

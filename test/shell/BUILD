@@ -7,15 +7,6 @@ exports_files([
     "verify_object_hashes.sh",
 ])
 
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = [
-        "//:for_bazel_tests",
-        "//test:for_bazel_tests",
-    ],
-)
-
 sh_library(
     name = "bashunit",
     testonly = True,

@@ -53,16 +53,6 @@ bzl_library(
     ],
 )
 
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]) + [
-        "//xcode/private:for_bazel_tests",
-    ],
-    visibility = ["//:__pkg__"],
-)
-
 string_flag(
     name = "version",
     build_setting_default = "",

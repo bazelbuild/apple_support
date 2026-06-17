@@ -41,13 +41,3 @@ bzl_library(
         "//rules/private:apple_genrule",
     ],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]) + [
-        "//rules/private:for_bazel_tests",
-    ],
-    visibility = ["//:__pkg__"],
-)
