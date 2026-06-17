@@ -5,8 +5,8 @@ internal bazel APIs that we use to derive some flags must be exposed via custom
 rules.
 """
 
-load("//lib:apple_support.bzl", "apple_support")
 load("@rules_cc//cc/toolchains:providers.bzl", "ExecutionRequirementsInfo")
+load("//lib:apple_support.bzl", "apple_support")
 
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:

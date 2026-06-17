@@ -14,6 +14,7 @@
 
 """Implementation of the `xcode_config` build rule."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
     "//xcode:providers.bzl",
@@ -24,7 +25,6 @@ load(
     "AvailableXcodesInfo",
     "XcodeVersionRuleInfo",
 )
-load("@bazel_features//:features.bzl", "bazel_features")
 
 visibility("public")
 
