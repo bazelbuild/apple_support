@@ -14,11 +14,3 @@ bzl_library(
         "//test:__pkg__",
     ],
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = 1,
-    srcs = glob(["**"]),
-    visibility = ["//lib:__pkg__"],
-)

@@ -76,11 +76,3 @@ force_exec(
     name = "exec_llvm_cov",
     target = ":exec_llvm_cov.target_config",
 )
-
-# Consumed by bazel tests.
-filegroup(
-    name = "for_bazel_tests",
-    testonly = True,
-    srcs = glob(["**"]),
-    visibility = ["//:__pkg__"],
-)
