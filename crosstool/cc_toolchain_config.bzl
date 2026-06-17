@@ -13,7 +13,7 @@
 # limitations under the License.
 """A C++ toolchain configuration rule for macOS."""
 
-load("@apple_support//lib:apple_support.bzl", "apple_support")
+load("//lib:apple_support.bzl", "apple_support")
 load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",

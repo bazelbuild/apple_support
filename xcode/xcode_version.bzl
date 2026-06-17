@@ -15,12 +15,12 @@
 """Implementation of the `xcode_version` build rule."""
 
 load(
-    "@apple_support//xcode:providers.bzl",
+    "//xcode:providers.bzl",
     "XcodeSdkVariantInfo",
     "XcodeVersionPropertiesInfo",
 )
 load(
-    "@apple_support//xcode/private:providers.bzl",
+    "//xcode/private:providers.bzl",
     "XcodeVersionRuleInfo",
 )
 load("@bazel_features//:features.bzl", "bazel_features")

@@ -25,7 +25,7 @@ load("@apple_support//lib:xcode_support.bzl", "xcode_support")
 """
 
 load(
-    "@apple_support//xcode:providers.bzl",
+    "//xcode:providers.bzl",
     "XcodeSdkVariantInfo",
 )
 

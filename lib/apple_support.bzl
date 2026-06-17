@@ -24,11 +24,11 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 """
 
 load(
-    "@apple_support//lib:missing_platform_fallback_users.bzl",
+    "//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
 )
 load(
-    "@apple_support//lib/private:providers.bzl",
+    "//lib/private:providers.bzl",
     "new_appleplatforminfo",
 )
 load("@bazel_skylib//lib:types.bzl", "types")
@@ -261,7 +261,7 @@ def _action_required_attrs():
     """
     return {
         "_xcode_config": attr.label(
-            default = "@apple_support//xcode:version_config",
+            default = "//xcode:version_config",
         ),
     }
 
@@ -303,7 +303,7 @@ def _platform_constraint_attrs():
             default = Label("@platforms//cpu:x86_64"),
         ),
         "_pointer_authentication_constraint": attr.label(
-            default = Label("@apple_support//constraints:pointer_authentication"),
+            default = Label("//constraints:pointer_authentication"),
         ),
         "_apple_device_constraint": attr.label(
             default = Label("//constraints:device"),

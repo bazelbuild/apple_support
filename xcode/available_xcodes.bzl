@@ -15,7 +15,7 @@
 """Implementation of the `available_xcodes` build rule."""
 
 load(
-    "@apple_support//xcode/private:providers.bzl",
+    "//xcode/private:providers.bzl",
     "AvailableXcodesInfo",
     "XcodeVersionRuleInfo",
 )
