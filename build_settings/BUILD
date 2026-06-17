@@ -8,7 +8,7 @@ package(
 licenses(["notice"])
 
 bzl_library(
-    name = "build_settings_bzl",
+    name = "build_settings",
     srcs = ["build_settings.bzl"],
     deps = ["@bazel_skylib//rules:common_settings"],
 )

@@ -68,7 +68,6 @@ bzl_library(
     srcs = ["transitions.bzl"],
 )
 
-# Public bzl_library for anything that needs to depend on xcode_support.bzl.
 bzl_library(
     name = "xcode_support",
     srcs = ["xcode_support.bzl"],

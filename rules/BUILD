@@ -33,7 +33,7 @@ bzl_library(
 )
 
 bzl_library(
-    name = "rules",
+    name = "rules.doc",
     srcs = ["rules.doc.bzl"],
     deps = [
         ":toolchain_substitution",
