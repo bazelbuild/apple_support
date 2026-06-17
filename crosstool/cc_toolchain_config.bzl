@@ -13,6 +13,7 @@
 # limitations under the License.
 """A C++ toolchain configuration rule for macOS."""
 
+load("@apple_support//lib:apple_support.bzl", "apple_support")
 load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
@@ -33,7 +34,6 @@ load(
 load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
-load("//lib:apple_support.bzl", "apple_support")
 
 _DYNAMIC_LINK_ACTIONS = ACTION_NAME_GROUPS.cc_link_executable_actions + ACTION_NAME_GROUPS.dynamic_library_link_actions
 _STATIC_LINK_ACTIONS = [
