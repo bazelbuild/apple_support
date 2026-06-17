@@ -25,11 +25,11 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load(
-    "@build_bazel_apple_support//lib:missing_platform_fallback_users.bzl",
+    "@apple_support//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
 )
 load(
-    "@build_bazel_apple_support//lib/private:providers.bzl",
+    "@apple_support//lib/private:providers.bzl",
     "new_appleplatforminfo",
 )
 
