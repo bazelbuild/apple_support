@@ -23,7 +23,6 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
-load("@bazel_skylib//lib:types.bzl", "types")
 load(
     "@apple_support//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
@@ -32,6 +31,7 @@ load(
     "@apple_support//lib/private:providers.bzl",
     "new_appleplatforminfo",
 )
+load("@bazel_skylib//lib:types.bzl", "types")
 
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
 # invocation.
