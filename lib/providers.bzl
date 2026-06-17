@@ -15,7 +15,7 @@
 """Providers used by the Apple platform support rules and their clients."""
 
 load(
-    "@apple_support//lib/private:providers.bzl",
+    "//lib/private:providers.bzl",
     _ApplePlatformInfo = "ApplePlatformInfo",
 )
 

@@ -15,11 +15,11 @@
 """Implementation of the `xcode_config_resolver` build rule."""
 
 load(
-    "@apple_support//build_settings:build_settings.bzl",
+    "//build_settings:build_settings.bzl",
     "read_possibly_native_flag",
 )
 load(
-    "@apple_support//xcode:providers.bzl",
+    "//xcode:providers.bzl",
     "XcodeVersionPropertiesInfo",
 )
 
