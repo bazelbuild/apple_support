@@ -15,8 +15,8 @@
 """Providers used internally by the Apple platform support rules not meant for client use."""
 
 visibility([
-    "@apple_support//lib/...",
-    "@apple_support//test/...",
+    "//lib/...",
+    "//test/...",
 ])
 
 def make_banned_init(*, preferred_public_factory = None, provider_name):
