@@ -6,18 +6,7 @@ load(
 
 licenses(["notice"])
 
-package(
-    default_visibility = ["//xcode:__subpackages__"],
-)
-
-bzl_library(
-    name = "providers",
-    srcs = ["providers.bzl"],
-    visibility = [
-        "//test:__pkg__",
-        "//xcode:__subpackages__",
-    ],
-)
+package(default_visibility = ["//:__subpackages__"])
 
 # The `config_setting`s below are NOT intended for general use. These specific
 # names have been chosen to simplify how references to them are constructed by
@@ -118,4 +107,9 @@ config_setting(
 xcode_sdk_variant(
     name = "empty_sdk",
     visibility = [":xcode_sdk_variant_config_setting_users"],
+)
+
+bzl_library(
+    name = "providers",
+    srcs = ["providers.bzl"],
 )

@@ -17,30 +17,20 @@ bzl_library(
 )
 
 bzl_library(
-    name = "providers",
-    srcs = ["providers.bzl"],
-)
-
-bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
     deps = [
-        "//build_settings:build_settings_bzl",
+        "//build_settings",
         "//xcode/private:providers",
     ],
 )
 
 bzl_library(
-    name = "xcode_configure",
-    srcs = ["xcode_configure.bzl"],
-)
-
-bzl_library(
-    name = "xcode_config_resolver_lib",
+    name = "xcode_config_resolver",
     srcs = ["xcode_config_resolver.bzl"],
     deps = [
         ":providers",
-        "//build_settings:build_settings_bzl",
+        "//build_settings",
     ],
 )
 
@@ -51,6 +41,12 @@ bzl_library(
         ":providers",
         "//xcode/private:providers",
     ],
+)
+
+bzl_library(
+    name = "xcode_sdk_variant",
+    srcs = ["xcode_sdk_variant.bzl"],
+    deps = [":providers"],
 )
 
 string_flag(
@@ -108,4 +104,14 @@ string_flag(
     name = "macos_minimum_os",
     build_setting_default = "",
     scope = "exec:--//xcode:host_macos_minimum_os",
+)
+
+bzl_library(
+    name = "providers",
+    srcs = ["providers.bzl"],
+)
+
+bzl_library(
+    name = "xcode_configure",
+    srcs = ["xcode_configure.bzl"],
 )

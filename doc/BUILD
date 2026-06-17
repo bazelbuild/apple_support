@@ -1,5 +1,6 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("@stardoc//stardoc:stardoc.bzl", "stardoc")
 
@@ -64,7 +65,7 @@ _DOC_SRCS = {
         symbol_names = symbols,
         tags = ["no-sandbox"],  # https://github.com/bazelbuild/stardoc/issues/112
         deps = [
-            "//rules",
+            "//rules:rules.doc",
             "//xcode:providers",
         ],
     )
@@ -112,4 +113,18 @@ sh_binary(
     name = "update",
     srcs = ["update.sh"],
     data = [file + ".md_" for file in _DOC_SRCS.keys()],
+)
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle_bin",
+    visibility = ["//visibility:private"],
+)
+
+gazelle_binary(
+    name = "gazelle_bin",
+    languages = [
+        "@bazel_skylib_gazelle_plugin//bzl",
+    ],
+    visibility = ["//visibility:private"],
 )

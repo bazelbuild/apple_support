@@ -10,7 +10,7 @@ selects.config_setting_group(
         cpu
         for cpu in APPLE_PLATFORMS_CONSTRAINTS.keys()
     ] + [
-        "@apple_support//constraints:apple",
+        "//constraints:apple",
     ],
 )
 
@@ -35,5 +35,4 @@ selects.config_setting_group(
 bzl_library(
     name = "platforms",
     srcs = ["platforms.bzl"],
-    visibility = ["//visibility:public"],
 )

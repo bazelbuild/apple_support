@@ -4,6 +4,11 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
+# gazelle:exclude test
+# gazelle:exclude tools/http_dmg/private/tests
+# gazelle:exclude crosstool
+# gazelle:exclude toolchain
+
 # An umbrella bzl_library for anything that needs it (like to then use stardoc),
 # but odds are using the specific sub bzl_library to with the public bzl files
 # are a better choice to get the proper subset of dependencies.
