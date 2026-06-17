@@ -18,11 +18,6 @@ bzl_library(
 )
 
 bzl_library(
-    name = "toolchain_substitution",
-    srcs = ["toolchain_substitution.bzl"],
-)
-
-bzl_library(
     name = "universal_binary",
     srcs = ["universal_binary.bzl"],
     deps = [
@@ -40,4 +35,9 @@ bzl_library(
         ":universal_binary",
         "//rules/private:apple_genrule",
     ],
+)
+
+bzl_library(
+    name = "toolchain_substitution",
+    srcs = ["toolchain_substitution.bzl"],
 )
