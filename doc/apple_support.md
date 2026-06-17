@@ -62,7 +62,7 @@ A `dict` object containing attributes to be added to rule implementations.
 <pre>
 load("@apple_support//lib:apple_support.bzl", "apple_support")
 
-apple_support.path_placeholders.platform_frameworks(*, <a href="#apple_support.path_placeholders.platform_frameworks-apple_fragment">apple_fragment</a>)
+apple_support.path_placeholders.platform_frameworks(*, <a href="#apple_support.path_placeholders.platform_frameworks-apple_platform_info">apple_platform_info</a>, <a href="#apple_support.path_placeholders.platform_frameworks-apple_fragment">apple_fragment</a>)
 </pre>
 
 Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
@@ -72,7 +72,8 @@ Returns the platform's frameworks directory, anchored to the Xcode path placehol
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="apple_support.path_placeholders.platform_frameworks-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+| <a id="apple_support.path_placeholders.platform_frameworks-apple_platform_info"></a>apple_platform_info |  An ApplePlatformInfo provider. Typically from `apple_support.platform_info_from_rule_ctx(ctx)`.   |  `None` |
+| <a id="apple_support.path_placeholders.platform_frameworks-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`. Deprecated: Use apple_platform_info instead.   |  `None` |
 
 **RETURNS**
 
@@ -156,7 +157,8 @@ A `dict` object containing attributes to be added to rule implementations.
 <pre>
 load("@apple_support//lib:apple_support.bzl", "apple_support")
 
-apple_support.run(*, <a href="#apple_support.run-actions">actions</a>, <a href="#apple_support.run-xcode_config">xcode_config</a>, <a href="#apple_support.run-apple_fragment">apple_fragment</a>, <a href="#apple_support.run-xcode_path_resolve_level">xcode_path_resolve_level</a>, <a href="#apple_support.run-kwargs">**kwargs</a>)
+apple_support.run(*, <a href="#apple_support.run-actions">actions</a>, <a href="#apple_support.run-xcode_config">xcode_config</a>, <a href="#apple_support.run-apple_platform_info">apple_platform_info</a>, <a href="#apple_support.run-apple_fragment">apple_fragment</a>,
+                  <a href="#apple_support.run-xcode_path_resolve_level">xcode_path_resolve_level</a>, <a href="#apple_support.run-kwargs">**kwargs</a>)
 </pre>
 
 Registers an action to run on an Apple machine.
@@ -204,7 +206,8 @@ If the `xcode_path_resolve_level` value is:
 | :------------- | :------------- | :------------- |
 | <a id="apple_support.run-actions"></a>actions |  The actions provider from ctx.actions.   |  none |
 | <a id="apple_support.run-xcode_config"></a>xcode_config |  The xcode_config as found in the current rule or aspect's context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.   |  none |
-| <a id="apple_support.run-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+| <a id="apple_support.run-apple_platform_info"></a>apple_platform_info |  An ApplePlatformInfo provider.   |  `None` |
+| <a id="apple_support.run-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`. Deprecated: Use apple_platform_info instead.   |  `None` |
 | <a id="apple_support.run-xcode_path_resolve_level"></a>xcode_path_resolve_level |  The level of Xcode path replacement required for the action.   |  `None` |
 | <a id="apple_support.run-kwargs"></a>kwargs |  See `ctx.actions.run` for the rest of the available arguments.   |  none |
 
@@ -216,7 +219,7 @@ If the `xcode_path_resolve_level` value is:
 <pre>
 load("@apple_support//lib:apple_support.bzl", "apple_support")
 
-apple_support.run_shell(*, <a href="#apple_support.run_shell-actions">actions</a>, <a href="#apple_support.run_shell-xcode_config">xcode_config</a>, <a href="#apple_support.run_shell-apple_fragment">apple_fragment</a>, <a href="#apple_support.run_shell-kwargs">**kwargs</a>)
+apple_support.run_shell(*, <a href="#apple_support.run_shell-actions">actions</a>, <a href="#apple_support.run_shell-xcode_config">xcode_config</a>, <a href="#apple_support.run_shell-apple_platform_info">apple_platform_info</a>, <a href="#apple_support.run_shell-apple_fragment">apple_fragment</a>, <a href="#apple_support.run_shell-kwargs">**kwargs</a>)
 </pre>
 
 Registers a shell action to run on an Apple machine.
@@ -242,7 +245,8 @@ please use `run` instead.
 | :------------- | :------------- | :------------- |
 | <a id="apple_support.run_shell-actions"></a>actions |  The actions provider from ctx.actions.   |  none |
 | <a id="apple_support.run_shell-xcode_config"></a>xcode_config |  The xcode_config as found in the current rule or aspect's context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.   |  none |
-| <a id="apple_support.run_shell-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`.   |  none |
+| <a id="apple_support.run_shell-apple_platform_info"></a>apple_platform_info |  An ApplePlatformInfo provider.   |  `None` |
+| <a id="apple_support.run_shell-apple_fragment"></a>apple_fragment |  A reference to the apple fragment. Typically from `ctx.fragments.apple`. Deprecated: Use apple_platform_info instead.   |  `None` |
 | <a id="apple_support.run_shell-kwargs"></a>kwargs |  See `ctx.actions.run_shell` for the rest of the available arguments.   |  none |
 
 

@@ -23,6 +23,14 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
+load(
+    "@apple_support//lib:missing_platform_fallback_users.bzl",
+    "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
+)
+load(
+    "@apple_support//lib/private:providers.bzl",
+    "new_appleplatforminfo",
+)
 load("@bazel_skylib//lib:types.bzl", "types")
 
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
@@ -135,18 +143,31 @@ done
 "$TOOLNAME" "${ARGS[@]}"
 """
 
-def _platform_frameworks_path_placeholder(*, apple_fragment):
+def _platform_frameworks_path_placeholder(
+        *,
+        apple_platform_info = None,
+        apple_fragment = None):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
     Args:
+        apple_platform_info: An ApplePlatformInfo provider.
+            Typically from `apple_support.platform_info_from_rule_ctx(ctx)`.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
+            Deprecated: Use apple_platform_info instead.
 
     Returns:
         Returns a string with the platform's frameworks directory, anchored to the Xcode path
         placeholder.
     """
+    if apple_platform_info:
+        platform_name = apple_platform_info.platform.name_in_plist
+    elif apple_fragment:
+        platform_name = apple_fragment.single_arch_platform.name_in_plist
+    else:
+        fail("Either apple_platform_info or apple_fragment must be provided.")
+
     return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
-        platform_name = apple_fragment.single_arch_platform.name_in_plist,
+        platform_name = platform_name,
         xcode_path = _xcode_path_placeholder(),
     )
 
@@ -178,11 +199,19 @@ def _xcode_path_placeholder():
 
 def _kwargs_for_apple_platform(
         *,
-        apple_fragment,
         xcode_config,
+        apple_platform_info = None,
+        apple_fragment = None,
         **kwargs):
     """Returns a modified dictionary with required arguments to run on Apple platforms."""
     processed_args = dict(kwargs)
+
+    if apple_platform_info:
+        platform = apple_platform_info.platform
+    elif apple_fragment:
+        platform = apple_fragment.single_arch_platform
+    else:
+        fail("Either apple_platform_info or apple_fragment must be provided.")
 
     merged_env = {}
     original_env = processed_args.get("env")
@@ -196,7 +225,7 @@ def _kwargs_for_apple_platform(
     # overriding these values.
     merged_env.update(apple_common.apple_host_system_env(xcode_config))
     merged_env.update(
-        apple_common.target_apple_env(xcode_config, apple_fragment.single_arch_platform),
+        apple_common.target_apple_env(xcode_config, platform),
     )
 
     merged_execution_requirements = {}
@@ -288,7 +317,8 @@ def _run(
         *,
         actions,
         xcode_config,
-        apple_fragment,
+        apple_platform_info = None,
+        apple_fragment = None,
         xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
         **kwargs):
     """Registers an action to run on an Apple machine.
@@ -333,13 +363,17 @@ def _run(
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+        apple_platform_info: An ApplePlatformInfo provider.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
+            Deprecated: Use apple_platform_info instead.
         xcode_path_resolve_level: The level of Xcode path replacement required for the action.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
+
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.none:
         actions.run(**_kwargs_for_apple_platform(
             xcode_config = xcode_config,
+            apple_platform_info = apple_platform_info,
             apple_fragment = apple_fragment,
             **kwargs
         ))
@@ -363,6 +397,7 @@ def _run(
 
     processed_kwargs = _kwargs_for_apple_platform(
         xcode_config = xcode_config,
+        apple_platform_info = apple_platform_info,
         apple_fragment = apple_fragment,
         **kwargs
     )
@@ -417,7 +452,8 @@ def _run_shell(
         *,
         actions,
         xcode_config,
-        apple_fragment,
+        apple_platform_info = None,
+        apple_fragment = None,
         **kwargs):
     """Registers a shell action to run on an Apple machine.
 
@@ -439,12 +475,15 @@ def _run_shell(
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+        apple_platform_info: An ApplePlatformInfo provider.
         apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
+            Deprecated: Use apple_platform_info instead.
         **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.
     """
 
     actions.run_shell(**_kwargs_for_apple_platform(
         xcode_config = xcode_config,
+        apple_platform_info = apple_platform_info,
         apple_fragment = apple_fragment,
         **kwargs
     ))
@@ -576,6 +615,78 @@ def _target_os_from_rule_ctx(
         return None
     fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")
 
+def _platform_from_info(*, apple_platform_info):
+    """Returns an apple_common.platform given the contents of an ApplePlatformInfo provider"""
+    if apple_platform_info.target_os == "ios":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.ios_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.ios_simulator
+    elif apple_platform_info.target_os == "macos":
+        return apple_common.platform.macos
+    elif apple_platform_info.target_os == "tvos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.tvos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.tvos_simulator
+    elif apple_platform_info.target_os == "visionos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.visionos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.visionos_simulator
+    elif apple_platform_info.target_os == "watchos":
+        if apple_platform_info.target_environment == "device":
+            return apple_common.platform.watchos_device
+        elif apple_platform_info.target_environment == "simulator":
+            return apple_common.platform.watchos_simulator
+    else:
+        fail("Internal Error: Found unrecognized target os of " + apple_platform_info.target_os)
+    fail(
+        """
+Internal Error: Found unrecognized target environment of {target_environment} for os {target_os}
+""".format(
+            target_environment = apple_platform_info.target_environment,
+            target_os = apple_platform_info.target_os,
+        ),
+    )
+
+def _apple_platform_info_from_rule_ctx(ctx):
+    """Returns an ApplePlatformInfo provider from a rule context, needed to resolve constraints."""
+    target_os = _target_os_from_rule_ctx(ctx, fail_on_missing_constraint = False)
+    if not target_os:
+        full_label = "//{package}:{name}".format(package = ctx.label.package, name = ctx.label.name)
+        if full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK:
+            fail("""
+ERROR: A valid Apple platform constraint could not be found for target {full_label}
+
+Check that you are building this target for a supported Apple platform (ios, macos, tvos, \
+visionos, watchos) and that it is not accidentally being built with a default config, such as Linux.
+""".format(
+                full_label = full_label,
+            ))
+
+        # Starlark-only default fallback when Apple constraints are missing (e.g. Linux host analysis)
+        # buildifier: disable=print
+        print("Warning: Target {} is analyzed without Apple platform constraints. Applying temporary macos fallback.".format(full_label))
+        target_os = "macos"
+        target_env = "device"
+        target_arch = "arm64"
+    else:
+        target_env = _target_environment_from_rule_ctx(ctx)
+        target_arch = _target_arch_from_rule_ctx(ctx)
+
+    platform = _platform_from_info(
+        apple_platform_info = struct(target_os = target_os, target_environment = target_env),
+    )
+
+    return new_appleplatforminfo(
+        target_arch = target_arch,
+        target_build_config = ctx.configuration,
+        target_environment = target_env,
+        target_os = target_os,
+        platform = platform,
+    )
+
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
     path_placeholders = struct(
@@ -584,6 +695,7 @@ apple_support = struct(
         xcode = _xcode_path_placeholder,
     ),
     platform_constraint_attrs = _platform_constraint_attrs,
+    platform_info_from_rule_ctx = _apple_platform_info_from_rule_ctx,
     run = _run,
     run_shell = _run_shell,
     target_arch_from_rule_ctx = _target_arch_from_rule_ctx,
