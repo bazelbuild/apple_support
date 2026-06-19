@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Allowlist of targets that analyze Apple rules without active platform constraints."""
+"""
+Allowlist of targets that analyze Apple rules without active platform constraints.
+
+Users that need to be on this allowlist need to have their configuration for the `build` or `test`
+command updated to specify an Apple platform, potentially via a config such as
+`--config=darwin_arm64` or directly through `--platforms` rather than relying on the defaults.
+"""
 
 visibility("public")
 

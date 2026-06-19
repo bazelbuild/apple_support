@@ -660,6 +660,10 @@ ERROR: A valid Apple platform constraint could not be found for target {full_lab
 
 Check that you are building this target for a supported Apple platform (ios, macos, tvos, \
 visionos, watchos) and that it is not accidentally being built with a default config, such as Linux.
+
+Specifically, you need to have your configuration for the `build` or `test` command updated to \
+specify an Apple platform, potentially via a config such as `--config=darwin_arm64` or directly \
+through `--platforms` rather than relying on the defaults.
 """.format(
                 full_label = full_label,
             ))
