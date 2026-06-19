@@ -11,6 +11,7 @@ bzl_library(
     srcs = ["providers.bzl"],
     visibility = [
         "//lib:__subpackages__",
+        "//rules:__subpackages__",
         "//test:__pkg__",
     ],
 )

@@ -15,6 +15,7 @@
 """Genrule which provides Apple's Xcode environment."""
 
 load("//lib:apple_support.bzl", "apple_support")
+load("//lib/private:providers.bzl", "new_appleplatforminfo")
 
 visibility("//rules")
 
@@ -70,7 +71,20 @@ def _apple_genrule_impl(ctx):
         execution_requirements = xcode_config.execution_info(),
     )
 
-    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+    if apple_support.target_os_from_rule_ctx(ctx, fail_on_missing_constraint = False):
+        apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+    else:
+        # Default fallback when the Apple OS constraint is missing (e.g. current target
+        # configuration is Linux). The target_build_config will still be the configuration of the
+        # machine executing the rule (e.g. Linux), but all other attributes will be set to values
+        # appropriate for Apple Silicon macOS.
+        apple_platform_info = new_appleplatforminfo(
+            target_arch = "arm64",
+            target_build_config = ctx.configuration,
+            target_environment = "device",
+            target_os = "macos",
+            platform = apple_common.platform.macos,
+        )
 
     message = ctx.attr.message or "Executing apple_genrule"
 
@@ -197,5 +211,4 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
     exec_compatible_with = ["@platforms//os:macos"],
     # To match `genrule`, output to genfiles instead of bin.
     output_to_genfiles = True,  # buildifier: disable=output-to-genfiles
-    fragments = ["apple"],
 )

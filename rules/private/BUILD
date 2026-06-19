@@ -9,7 +9,10 @@ bzl_library(
     visibility = [
         "//rules:__pkg__",
     ],
-    deps = ["//lib:apple_support"],
+    deps = [
+        "//lib:apple_support",
+        "//lib/private:providers",
+    ],
 )
 
 # Consumed by bazel tests.

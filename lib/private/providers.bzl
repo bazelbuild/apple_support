@@ -16,6 +16,7 @@
 
 visibility([
     "@build_bazel_apple_support//lib/...",
+    "@build_bazel_apple_support//rules/...",
     "@build_bazel_apple_support//test/...",
 ])
 
