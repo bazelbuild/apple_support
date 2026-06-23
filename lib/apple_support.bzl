@@ -650,12 +650,34 @@ Internal Error: Found unrecognized target environment of {target_environment} fo
         ),
     )
 
-def _apple_platform_info_from_rule_ctx(ctx):
-    """Returns an ApplePlatformInfo provider from a rule context, needed to resolve constraints."""
-    target_os = _target_os_from_rule_ctx(ctx, fail_on_missing_constraint = False)
+def _platform_info_from_rule_ctx(ctx, fail_on_missing_constraint = True):
+    """Returns `ApplePlatformInfo` from a rule context, required for Apple platform information.
+
+    In order to use `apple_support.platform_info_from_rule_ctx()`, you'll need to modify your rule
+    definition to add the following:
+
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib or via the `|` operator.
+
+    Args:
+        ctx: The context of the rule that has Apple platform constraint attributes.
+        fail_on_missing_constraint: Whether to fail if no constraint is found. If `False`, a
+            fallback platform of Apple Silicon macOS will be used if no Apple platform was found
+            from the current target configuration. If `True`, the function will fail if no Apple
+            platform is found and the target is not in the
+            `ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK` allowlist.
+
+    Returns:
+        An `ApplePlatformInfo` representing the resolved Apple platform.
+    """
+    target_os = _target_os_from_rule_ctx(
+        ctx,
+        fail_on_missing_constraint = False,
+    )
     if not target_os:
         full_label = "//{package}:{name}".format(package = ctx.label.package, name = ctx.label.name)
-        if full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK:
+        if (fail_on_missing_constraint and
+            full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK):
             fail("""
 ERROR: A valid Apple platform constraint could not be found for target {full_label}
 
@@ -665,9 +687,10 @@ visionos, watchos) and that it is not accidentally being built with a default co
                 full_label = full_label,
             ))
 
-        # Starlark-only default fallback when Apple constraints are missing (e.g. Linux host analysis)
-        # buildifier: disable=print
-        print("Warning: Target {} is analyzed without Apple platform constraints. Applying temporary macos fallback.".format(full_label))
+        if fail_on_missing_constraint:
+            # Starlark-only default fallback when Apple constraints are missing (e.g. Linux host analysis)
+            # buildifier: disable=print
+            print("Warning: Target {} is analyzed without Apple platform constraints. Applying temporary macos fallback.".format(full_label))
         target_os = "macos"
         target_env = "device"
         target_arch = "arm64"
@@ -695,7 +718,7 @@ apple_support = struct(
         xcode = _xcode_path_placeholder,
     ),
     platform_constraint_attrs = _platform_constraint_attrs,
-    platform_info_from_rule_ctx = _apple_platform_info_from_rule_ctx,
+    platform_info_from_rule_ctx = _platform_info_from_rule_ctx,
     run = _run,
     run_shell = _run_shell,
     target_arch_from_rule_ctx = _target_arch_from_rule_ctx,
