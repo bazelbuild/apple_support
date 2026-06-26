@@ -14,10 +14,14 @@
 
 """Providers used by the Xcode build rules and their clients."""
 
+load(
+    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    _XcodeVersionInfo = "XcodeVersionInfo",
+)
+
 visibility("public")
 
-# TODO: b/311385128 - Migrate the native implementation here.
-XcodeVersionInfo = apple_common.XcodeVersionConfig
+XcodeVersionInfo = _XcodeVersionInfo
 
 XcodeSdkVariantInfo = provider(
     doc = """\

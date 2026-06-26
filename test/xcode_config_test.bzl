@@ -30,6 +30,7 @@ load(
 )
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "XcodeVersionInfo",
     "XcodeVersionPropertiesInfo",
 )  # buildifier: disable=bzl-visibility
 load(
@@ -60,7 +61,7 @@ version_retriever = rule(
 )
 
 def _provider_grabber_impl(ctx):
-    return [ctx.attr._xcode_config[apple_common.XcodeVersionConfig]]
+    return [ctx.attr._xcode_config[XcodeVersionInfo]]
 
 provider_grabber = rule(
     implementation = _provider_grabber_impl,
@@ -73,7 +74,7 @@ provider_grabber = rule(
 )
 
 def _provider_grabber_aspect_impl(_target, ctx):
-    return [ctx.attr._xcode_config[apple_common.XcodeVersionConfig]]
+    return [ctx.attr._xcode_config[XcodeVersionInfo]]
 
 provider_grabber_aspect = aspect(
     implementation = _provider_grabber_aspect_impl,
@@ -86,7 +87,7 @@ provider_grabber_aspect = aspect(
 )
 
 def _provider_grabber_with_aspect_impl(ctx):
-    return [ctx.attr.deps[0][apple_common.XcodeVersionConfig]]
+    return [ctx.attr.deps[0][XcodeVersionInfo]]
 
 provider_grabber_with_aspect = rule(
     implementation = _provider_grabber_with_aspect_impl,
@@ -285,7 +286,7 @@ def _accepts_flag_for_mutually_available_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "both", xcode_version_info.availability())
@@ -327,7 +328,7 @@ def _prefers_flag_over_mutually_available_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "remote", xcode_version_info.availability())
@@ -375,7 +376,7 @@ def _warn_with_explicit_local_only_version_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
@@ -423,7 +424,7 @@ def _prefer_local_default_if_no_mutual_no_flag_different_main_version_test_impl(
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
@@ -470,7 +471,7 @@ def _prefer_local_default_if_no_mutual_no_flag_different_build_alias_test_impl(c
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "10.0.0.10C504", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
@@ -517,7 +518,7 @@ def _prefer_local_default_if_no_mutual_no_flag_different_full_version_test_impl(
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "10.0.0.10C504", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
@@ -568,7 +569,7 @@ def _choose_newest_mutual_xcode_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "10", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "both", xcode_version_info.availability())
@@ -635,7 +636,7 @@ def _apple_common_xcode_version_config_constructor_fails_on_bad_input(namer):
 
 def _apple_common_xcode_version_config_fails_on_bad_input_rule_impl(_ctx):
     return [
-        apple_common.XcodeVersionConfig(
+        XcodeVersionInfo(
             ios_sdk_version = "not a valid dotted version",
             ios_minimum_os_version = "1.2",
             watchos_sdk_version = "1.3",
@@ -684,7 +685,7 @@ def _apple_common_xcode_version_config_constructor(namer):
 
 def _apple_common_xcode_version_config_rule_impl(_ctx):
     return [
-        apple_common.XcodeVersionConfig(
+        XcodeVersionInfo(
             ios_sdk_version = "1.1",
             ios_minimum_os_version = "1.2",
             watchos_sdk_version = "1.3",
@@ -710,7 +711,7 @@ def _apple_common_xcode_version_config_constructor_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "1.1", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_device)))
     asserts.equals(env, "1.1", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
@@ -998,7 +999,7 @@ def _valid_version_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "unknown", xcode_version_info.availability())
@@ -1036,7 +1037,7 @@ def _valid_alias_dotted_version_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "unknown", xcode_version_info.availability())
@@ -1074,7 +1075,7 @@ def _valid_alias_nonnumerical_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "unknown", xcode_version_info.availability())
@@ -1251,7 +1252,7 @@ def _version_aliased_to_itself_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "unknown", xcode_version_info.availability())
@@ -1378,7 +1379,7 @@ def _default_ios_sdk_version_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "7.1", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
@@ -1443,7 +1444,7 @@ def _default_sdk_versions_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "101", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
@@ -1512,7 +1513,7 @@ def _default_sdk_versions_selected_xcode_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "6.4", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "43", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
@@ -1671,7 +1672,7 @@ def _configuration_field_for_rule_1_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "1.0", str(xcode_version_info.xcode_version()))
 
@@ -1688,7 +1689,7 @@ def _configuration_field_for_rule_2_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "2.0", str(xcode_version_info.xcode_version()))
 
@@ -1757,7 +1758,7 @@ def _configuration_field_for_aspect_1_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "1.0", str(xcode_version_info.xcode_version()))
 
@@ -1774,7 +1775,7 @@ def _configuration_field_for_aspect_2_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "2.0", str(xcode_version_info.xcode_version()))
 
@@ -1809,7 +1810,7 @@ def _explicit_xcodes_mode_no_flag_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
 
@@ -1844,7 +1845,7 @@ def _explicit_xcodes_mode_with_flag_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "6.4", str(xcode_version_info.xcode_version()))
 
@@ -1883,7 +1884,7 @@ def _available_xcodes_mode_no_flag_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "8.4", str(xcode_version_info.xcode_version()))
 
@@ -1955,7 +1956,7 @@ def _available_xcodes_mode_different_alias_fully_specified_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
     asserts.equals(env, "local", xcode_version_info.availability())
@@ -1995,7 +1996,7 @@ def _available_xcodes_mode_with_flag_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
 
@@ -2036,7 +2037,7 @@ def _xcode_config_resolver_with_fragment_removed_test_impl(ctx):
     env = analysistest.begin(ctx)
 
     target_under_test = analysistest.target_under_test(env)
-    xcode_version_info = target_under_test[apple_common.XcodeVersionConfig]
+    xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
 

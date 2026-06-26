@@ -17,6 +17,7 @@ bzl_library(
 bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],
+    deps = ["//xcode/private:providers"],
 )
 
 bzl_library(
@@ -44,6 +45,13 @@ bzl_library(
         ":providers",
         "//xcode/private:providers",
     ],
+)
+
+bzl_library(
+    name = "xcode_sdk_variant_bzl",
+    srcs = ["xcode_sdk_variant.bzl"],
+    visibility = ["//visibility:private"],
+    deps = [":providers"],
 )
 
 # Consumed by bazel tests.

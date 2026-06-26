@@ -20,6 +20,7 @@ load(
 )
 load(
     "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "XcodeVersionInfo",
     "XcodeVersionPropertiesInfo",
 )
 
@@ -36,6 +37,7 @@ def _xcode_config_resolver_impl(ctx):
 
     return [
         resolved_target[apple_common.XcodeVersionConfig],
+        resolved_target[XcodeVersionInfo],
         resolved_target[XcodeVersionPropertiesInfo],
     ]
 
