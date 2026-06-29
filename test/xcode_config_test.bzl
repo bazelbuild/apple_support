@@ -57,7 +57,6 @@ version_retriever = rule(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
-    fragments = ["apple"],
 )
 
 def _provider_grabber_impl(ctx):
@@ -70,7 +69,6 @@ provider_grabber = rule(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
-    fragments = ["apple"],
 )
 
 def _provider_grabber_aspect_impl(_target, ctx):
@@ -83,7 +81,6 @@ provider_grabber_aspect = aspect(
             default = "@build_bazel_apple_support//xcode:version_config",
         ),
     },
-    fragments = ["apple"],
 )
 
 def _provider_grabber_with_aspect_impl(ctx):
@@ -98,7 +95,6 @@ provider_grabber_with_aspect = rule(
             aspects = [provider_grabber_aspect],
         ),
     },
-    fragments = ["apple"],
 )
 
 # ------------------------------------------------------------------------------

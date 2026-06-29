@@ -27,8 +27,7 @@ def _create(
         actions,
         inputs,
         output,
-        apple_platform_info = None,
-        apple_fragment = None,
+        apple_platform_info,
         xcode_config):
     """Creates a universal binary by combining other binaries.
 
@@ -43,9 +42,6 @@ def _create(
             output of the action.
         apple_platform_info: The ApplePlatformInfo provider used to configure
             the action environment.
-        apple_fragment: The `apple` configuration fragment used to configure
-            the action environment.
-            Deprecated: Use apple_platform_info instead.
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to
             configure the action environment.
     """
@@ -72,15 +68,13 @@ def _create(
         inputs = inputs,
         outputs = [output],
         apple_platform_info = apple_platform_info,
-        apple_fragment = apple_fragment,
         xcode_config = xcode_config,
     )
 
 def _extract_or_thin(
         *,
         actions,
-        apple_platform_info = None,
-        apple_fragment = None,
+        apple_platform_info,
         archs,
         input_shell_expression = None,
         input_file = None,
@@ -91,8 +85,6 @@ def _extract_or_thin(
     Args:
         actions: The `Actions` object used to register actions.
         apple_platform_info: The ApplePlatformInfo provider used to configure the action environment.
-        apple_fragment: The `apple` configuration fragment used to configure the action environment.
-            Deprecated: Use apple_platform_info instead.
         archs: A list of strings that indicates the exact set of architectures we need to create the
             output binary. As with the `lipo` tool's `-extract` command, all of the selected
             architectures indicated by `archs` in the universal binary will be copied into the
@@ -145,7 +137,6 @@ Please use only `input_file` or `input_shell_expression` to express the intended
         mnemonic = "AppleLipoExtract",
         outputs = [output],
         apple_platform_info = apple_platform_info,
-        apple_fragment = apple_fragment,
         xcode_config = xcode_config,
         **extra_args
     )

@@ -230,8 +230,8 @@ def _apple_support_test_impl(ctx):
 
 apple_support_test = rule(
     implementation = _apple_support_test_impl,
-    attrs = apple_support.action_required_attrs() | apple_support.platform_constraint_attrs(),
-    fragments = ["apple"],
+    attrs = apple_support.action_required_attrs() |
+            apple_support.platform_constraint_attrs(),
     exec_groups = {
         "mac_exec_group": exec_group(
             exec_compatible_with = ["@platforms//os:macos"],

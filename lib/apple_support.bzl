@@ -135,29 +135,18 @@ done
 "$TOOLNAME" "${ARGS[@]}"
 """
 
-def _platform_frameworks_path_placeholder(
-        *,
-        apple_platform_info = None,
-        apple_fragment = None):
+def _platform_frameworks_path_placeholder(*, apple_platform_info):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
     Args:
-        apple_platform_info: An ApplePlatformInfo provider.
-            Typically from `apple_support.platform_info_from_rule_ctx(ctx)`.
-        apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Deprecated: Use apple_platform_info instead.
+        apple_platform_info: An ApplePlatformInfo provider. Typically from
+            `apple_support.platform_info_from_rule_ctx(ctx)`.
 
     Returns:
         Returns a string with the platform's frameworks directory, anchored to the Xcode path
         placeholder.
     """
-    if apple_platform_info:
-        platform_name = apple_platform_info.platform.name_in_plist
-    elif apple_fragment:
-        platform_name = apple_fragment.single_arch_platform.name_in_plist
-    else:
-        fail("Either apple_platform_info or apple_fragment must be provided.")
-
+    platform_name = apple_platform_info.platform.name_in_plist
     return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
         platform_name = platform_name,
         xcode_path = _xcode_path_placeholder(),
@@ -192,18 +181,12 @@ def _xcode_path_placeholder():
 def _kwargs_for_apple_platform(
         *,
         xcode_config,
-        apple_platform_info = None,
-        apple_fragment = None,
+        apple_platform_info,
         **kwargs):
     """Returns a modified dictionary with required arguments to run on Apple platforms."""
     processed_args = dict(kwargs)
 
-    if apple_platform_info:
-        platform = apple_platform_info.platform
-    elif apple_fragment:
-        platform = apple_fragment.single_arch_platform
-    else:
-        fail("Either apple_platform_info or apple_fragment must be provided.")
+    platform = apple_platform_info.platform
 
     merged_env = {}
     original_env = processed_args.get("env")
@@ -307,8 +290,7 @@ def _run(
         *,
         actions,
         xcode_config,
-        apple_platform_info = None,
-        apple_fragment = None,
+        apple_platform_info,
         xcode_path_resolve_level = _XCODE_PATH_RESOLVE_LEVEL.none,
         **kwargs):
     """Registers an action to run on an Apple machine.
@@ -316,9 +298,10 @@ def _run(
     In order to use `apple_support.run()`, you'll need to modify your rule definition to add the
     following:
 
-      * `fragments = ["apple"]`
       * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
-        can be done using the `dicts.add()` method from Skylib.
+        can be done using the `dicts.add()` method from Skylib or via the `|` operator.
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib or via the `|` operator.
 
     This method registers an action to run on an Apple machine, configuring it to ensure that the
     `DEVELOPER_DIR` and `SDKROOT` environment variables are set.
@@ -352,9 +335,8 @@ def _run(
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-        apple_platform_info: An ApplePlatformInfo provider.
-        apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Deprecated: Use apple_platform_info instead.
+        apple_platform_info: An ApplePlatformInfo provider. Typically from
+            `apple_support.platform_info_from_rule_ctx()`.
         xcode_path_resolve_level: The level of Xcode path replacement required for the action.
         **kwargs: See `ctx.actions.run` for the rest of the available arguments.
     """
@@ -363,7 +345,6 @@ def _run(
         actions.run(**_kwargs_for_apple_platform(
             xcode_config = xcode_config,
             apple_platform_info = apple_platform_info,
-            apple_fragment = apple_fragment,
             **kwargs
         ))
         return
@@ -387,7 +368,6 @@ def _run(
     processed_kwargs = _kwargs_for_apple_platform(
         xcode_config = xcode_config,
         apple_platform_info = apple_platform_info,
-        apple_fragment = apple_fragment,
         **kwargs
     )
 
@@ -441,17 +421,17 @@ def _run_shell(
         *,
         actions,
         xcode_config,
-        apple_platform_info = None,
-        apple_fragment = None,
+        apple_platform_info,
         **kwargs):
     """Registers a shell action to run on an Apple machine.
 
     In order to use `apple_support.run_shell()`, you'll need to modify your rule definition to add
     the following:
 
-      * `fragments = ["apple"]`
       * Add the `apple_support.action_required_attrs()` attributes to the `attrs` dictionary. This
-        can be done using the `dicts.add()` method from Skylib.
+        can be done using the `dicts.add()` method from Skylib or via the `|` operator.
+      * Add the `apple_support.platform_constraint_attrs()` attributes to the `attrs` dictionary.
+        This can be done using the `dicts.add()` method from Skylib or via the `|` operator.
 
     This method registers an action to run on an Apple machine, configuring it to ensure that the
     `DEVELOPER_DIR` and `SDKROOT` environment variables are set.
@@ -463,9 +443,8 @@ def _run_shell(
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
             context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
-        apple_platform_info: An ApplePlatformInfo provider.
-        apple_fragment: A reference to the apple fragment. Typically from `ctx.fragments.apple`.
-            Deprecated: Use apple_platform_info instead.
+        apple_platform_info: An ApplePlatformInfo provider. Typically from
+            `apple_support.platform_info_from_rule_ctx()`.
         **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.
     """
 
@@ -483,7 +462,6 @@ def _run_shell(
     actions.run_shell(**_kwargs_for_apple_platform(
         xcode_config = xcode_config,
         apple_platform_info = apple_platform_info,
-        apple_fragment = apple_fragment,
         **kwargs
     ))
 
