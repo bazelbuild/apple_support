@@ -123,7 +123,10 @@ def _apple_support_test_impl(ctx):
 
     # Create one action per possible combination of inputs to the apple_support.run and
     # apple_support.run_shell helper methods.
-    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+    apple_platform_info = apple_support.platform_info_from_rule_ctx(
+        ctx,
+        fail_on_missing_constraint = False,
+    )
 
     apple_support.run(
         actions = ctx.actions,
