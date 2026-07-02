@@ -9,18 +9,42 @@ default_test = make_action_command_line_test_rule()
 
 asan_test = make_action_command_line_test_rule(
     config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+        "//command_line_option:features": ["asan"],
+    },
+)
+
+asan_dbg_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "dbg",
         "//command_line_option:features": ["asan"],
     },
 )
 
 tsan_test = make_action_command_line_test_rule(
     config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+        "//command_line_option:features": ["tsan"],
+    },
+)
+
+tsan_dbg_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "dbg",
         "//command_line_option:features": ["tsan"],
     },
 )
 
 ubsan_test = make_action_command_line_test_rule(
     config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+        "//command_line_option:features": ["ubsan"],
+    },
+)
+
+ubsan_dbg_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "dbg",
         "//command_line_option:features": ["ubsan"],
     },
 )
@@ -60,6 +84,28 @@ def sanitizer_test_suite(name):
         ],
         not_expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-g",
+            "-g0",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_main",
+    )
+
+    asan_dbg_test(
+        name = "{}_asan_dbg_cc_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-O0",
+            "-DDEBUG",
+            "-g",
+            "-fsanitize=address",
+            "-fno-omit-frame-pointer",
+            "-fno-sanitize-recover=all",
+        ],
+        not_expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-gline-tables-only",
+            "-g0",
         ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
@@ -76,6 +122,8 @@ def sanitizer_test_suite(name):
         ],
         not_expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-g",
+            "-g0",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
@@ -111,6 +159,30 @@ def sanitizer_test_suite(name):
             "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
+        not_expected_argv = [
+            "-g",
+            "-g0",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_main",
+    )
+
+    tsan_dbg_test(
+        name = "{}_tsan_dbg_cc_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-O0",
+            "-DDEBUG",
+            "-g",
+            "-fsanitize=thread",
+            "-fno-omit-frame-pointer",
+            "-fno-sanitize-recover=all",
+        ],
+        not_expected_argv = [
+            "-gline-tables-only",
+            "-g0",
+        ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
     )
@@ -124,6 +196,10 @@ def sanitizer_test_suite(name):
             "-gline-tables-only",
             "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
+        ],
+        not_expected_argv = [
+            "-g",
+            "-g0",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
@@ -159,6 +235,30 @@ def sanitizer_test_suite(name):
             "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
+        not_expected_argv = [
+            "-g",
+            "-g0",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_main",
+    )
+
+    ubsan_dbg_test(
+        name = "{}_ubsan_dbg_cc_compile_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-D_FORTIFY_SOURCE=1",
+            "-O0",
+            "-DDEBUG",
+            "-g",
+            "-fsanitize=undefined",
+            "-fno-omit-frame-pointer",
+            "-fno-sanitize-recover=all",
+        ],
+        not_expected_argv = [
+            "-gline-tables-only",
+            "-g0",
+        ],
         mnemonic = "CppCompile",
         target_under_test = "//test/test_data:cc_main",
     )
@@ -172,6 +272,10 @@ def sanitizer_test_suite(name):
             "-gline-tables-only",
             "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
+        ],
+        not_expected_argv = [
+            "-g",
+            "-g0",
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
