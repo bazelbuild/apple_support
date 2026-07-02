@@ -4632,7 +4632,39 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
-                "-gline-tables-only",
+                "-gline-tables-only"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "fastbuild"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
+            "c++-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
                 "-fno-omit-frame-pointer",
                 "-fno-sanitize-recover=all"
               ],
