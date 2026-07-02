@@ -21,6 +21,13 @@ asan_dbg_test = make_action_command_line_test_rule(
     },
 )
 
+asan_copt_order_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:copt": ["-DFROM_COPTS_FLAG=1"],
+        "//command_line_option:features": ["asan"],
+    },
+)
+
 tsan_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "fastbuild",
@@ -127,6 +134,22 @@ def sanitizer_test_suite(name):
         ],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
+    )
+
+    asan_copt_order_test(
+        name = "{}_asan_copt_order_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-fsanitize=address",
+            "-gline-tables-only",
+            "-fno-omit-frame-pointer",
+            "-fno-sanitize-recover=all",
+            "-DCOPTS_ENV=1",
+            "-DFROM_COPTS_FLAG=1",
+            "-DFROM_BUILD_COPTS=1",
+        ],
+        mnemonic = "CppCompile",
+        target_under_test = "//test/test_data:cc_lib",
     )
 
     asan_test(
