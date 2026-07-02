@@ -73,16 +73,19 @@ _LIMITED_COMPILE_ACTIONS = [
 cc_feature(
     name = "dbg",
     overrides = "@rules_cc//cc/toolchains/features:dbg",
+    visibility = ["//visibility:public"],
 )
 
 cc_feature(
     name = "fastbuild",
     overrides = "@rules_cc//cc/toolchains/features:fastbuild",
+    visibility = ["//visibility:public"],
 )
 
 cc_feature(
     name = "opt",
     overrides = "@rules_cc//cc/toolchains/features:opt",
+    visibility = ["//visibility:public"],
 )
 
 cc_feature(

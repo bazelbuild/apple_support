@@ -2156,7 +2156,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "-gline-tables-only",
                             "-fno-omit-frame-pointer",
                             "-fno-sanitize-recover=all",
                         ],
@@ -2166,6 +2165,20 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     with_feature_set(features = ["asan"]),
                     with_feature_set(features = ["tsan"]),
                     with_feature_set(features = ["ubsan"]),
+                ],
+            ),
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [flag_group(flags = ["-gline-tables-only"])],
+                with_features = [
+                    with_feature_set(features = ["asan", "fastbuild"]),
+                    with_feature_set(features = ["tsan", "fastbuild"]),
+                    with_feature_set(features = ["ubsan", "fastbuild"]),
                 ],
             ),
         ],
