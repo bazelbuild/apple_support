@@ -4692,7 +4692,6 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
-                "-fno-omit-frame-pointer",
                 "-fno-sanitize-recover=all"
               ],
               "iterate_over": null,

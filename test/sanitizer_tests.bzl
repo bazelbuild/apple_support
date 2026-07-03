@@ -77,9 +77,9 @@ def sanitizer_test_suite(name):
         name = "{}_asan_cc_compile_test".format(name),
         tags = [name],
         expected_argv = [
+            "-fno-omit-frame-pointer",
             "-fsanitize=address",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -95,11 +95,11 @@ def sanitizer_test_suite(name):
         name = "{}_asan_dbg_cc_compile_test".format(name),
         tags = [name],
         expected_argv = [
+            "-fno-omit-frame-pointer",
             "-O0",
             "-DDEBUG",
             "-g",
             "-fsanitize=address",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -115,9 +115,9 @@ def sanitizer_test_suite(name):
         name = "{}_asan_objc_compile_test".format(name),
         tags = [name],
         expected_argv = [
+            "-fno-omit-frame-pointer",
             "-fsanitize=address",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -154,9 +154,9 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-fsanitize=thread",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -172,11 +172,11 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-O0",
             "-DDEBUG",
             "-g",
             "-fsanitize=thread",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -192,9 +192,9 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-fsanitize=thread",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -230,9 +230,9 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-fsanitize=undefined",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -248,11 +248,11 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-O0",
             "-DDEBUG",
             "-g",
             "-fsanitize=undefined",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [
@@ -268,9 +268,9 @@ def sanitizer_test_suite(name):
         tags = [name],
         expected_argv = [
             "-D_FORTIFY_SOURCE=1",
+            "-fno-omit-frame-pointer",
             "-fsanitize=undefined",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
         ],
         not_expected_argv = [

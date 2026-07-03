@@ -2153,18 +2153,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-fno-omit-frame-pointer",
-                            "-fno-sanitize-recover=all",
-                        ],
-                    ),
-                ],
+                flag_groups = [flag_group(flags = ["-gline-tables-only"])],
                 with_features = [
-                    with_feature_set(features = ["asan"]),
-                    with_feature_set(features = ["tsan"]),
-                    with_feature_set(features = ["ubsan"]),
+                    with_feature_set(features = ["asan", "fastbuild"]),
+                    with_feature_set(features = ["tsan", "fastbuild"]),
+                    with_feature_set(features = ["ubsan", "fastbuild"]),
                 ],
             ),
             flag_set(
@@ -2174,11 +2167,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                flag_groups = [flag_group(flags = ["-gline-tables-only"])],
+                flag_groups = [flag_group(flags = ["-fno-sanitize-recover=all"])],
                 with_features = [
-                    with_feature_set(features = ["asan", "fastbuild"]),
-                    with_feature_set(features = ["tsan", "fastbuild"]),
-                    with_feature_set(features = ["ubsan", "fastbuild"]),
+                    with_feature_set(features = ["asan"]),
+                    with_feature_set(features = ["tsan"]),
+                    with_feature_set(features = ["ubsan"]),
                 ],
             ),
         ],

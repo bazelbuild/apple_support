@@ -67,7 +67,6 @@ cc_args(
     name = "default_sanitizer_flags_args",
     actions = _LIMITED_COMPILE_ACTIONS,
     args = [
-        "-fno-omit-frame-pointer",
         "-fno-sanitize-recover=all",
     ],
 )
