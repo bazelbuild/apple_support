@@ -11,7 +11,6 @@ bzl_library(
     name = "apple_support",
     srcs = ["apple_support.bzl"],
     deps = [
-        ":missing_platform_fallback_users",
         ":providers",
         "//lib/private:providers",
         "@bazel_skylib//lib:types",

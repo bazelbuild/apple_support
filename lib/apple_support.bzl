@@ -15,10 +15,6 @@
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load(
-    "@build_bazel_apple_support//lib:missing_platform_fallback_users.bzl",
-    "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
-)
-load(
     "@build_bazel_apple_support//lib/private:providers.bzl",
     "new_appleplatforminfo",
 )
@@ -641,8 +637,7 @@ def _platform_info_from_rule_ctx(ctx, fail_on_missing_constraint = True):
         fail_on_missing_constraint: Whether to fail if no constraint is found. If `False`, a
             fallback platform of Apple Silicon macOS will be used if no Apple platform was found
             from the current target configuration. If `True`, the function will fail if no Apple
-            platform is found and the target is not in the
-            `ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK` allowlist.
+            platform is found.
 
     Returns:
         An `ApplePlatformInfo` representing the resolved Apple platform.
@@ -653,8 +648,7 @@ def _platform_info_from_rule_ctx(ctx, fail_on_missing_constraint = True):
     )
     if not target_os:
         full_label = "//{package}:{name}".format(package = ctx.label.package, name = ctx.label.name)
-        if (fail_on_missing_constraint and
-            full_label not in ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK):
+        if fail_on_missing_constraint:
             fail("""
 ERROR: A valid Apple platform constraint could not be found for target {full_label}
 
