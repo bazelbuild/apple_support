@@ -48,6 +48,21 @@ _CPP_DYNAMIC_LINK_ACTIONS = [
 _COMPILE_ACTIONS_WITHOUT_HEADER_PARSING = list(ACTION_NAME_GROUPS.all_cc_compile_actions)
 _COMPILE_ACTIONS_WITHOUT_HEADER_PARSING.remove(ACTION_NAMES.cpp_header_parsing)
 
+def _is_xcode_at_least_version(xcode_config, version):
+    """Returns True if the current Xcode version is at least the given version.
+
+    Mirrors `xcode_support.is_xcode_at_least_version`: when the Xcode version
+    is a path to a developer directory (used by hermetic toolchain setups), we
+    assume the user manages toolchain features themselves and treat it as the
+    latest Xcode.
+    """
+    current_version = xcode_config.xcode_version()
+    if not current_version:
+        return False
+    if str(current_version).startswith("/"):
+        return True
+    return current_version >= apple_common.dotted_version(version)
+
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
@@ -2208,9 +2223,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # As of Xcode 15, linker warnings are emitted if duplicate `-l` options are
     # present. Until such linkopts can be deduped by bazel itself, we disable
     # these warnings.
-    is_15_or_above = False
-    if xcode_config.xcode_version():
-        is_15_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
+    is_15_or_above = _is_xcode_at_least_version(xcode_config, "15.0")
     no_warn_duplicate_libraries_feature = feature(
         name = "no_warn_duplicate_libraries",
         enabled = "no_warn_duplicate_libraries" in ctx.features or
@@ -2230,9 +2243,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
-    is_26_or_above = False
-    if xcode_config.xcode_version():
-        is_26_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+    is_26_or_above = _is_xcode_at_least_version(xcode_config, "26.0")
 
     reproducible_linker_flag_feature = feature(
         name = "reproducible_linker_flag",

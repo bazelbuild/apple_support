@@ -147,11 +147,15 @@ def _succeeds(repository_ctx, *args):
 def _copy_file(repository_ctx, src, dest):
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
-def configure_osx_toolchain(repository_ctx):
+def configure_osx_toolchain(repository_ctx, extra_include_dirs = []):
     """Configure C++ toolchain on macOS.
 
     Args:
       repository_ctx: The repository context.
+      extra_include_dirs: Additional directories to allow builtin includes
+          from, for toolchains and SDKs that live outside of the standard
+          Xcode and Command Line Tools installation directories (for example
+          hermetic toolchains vendored into external repositories).
 
     Returns:
       Whether or not configuration was successful
@@ -191,6 +195,7 @@ def configure_osx_toolchain(repository_ctx):
         features.append("reproducible_linker_flag")
 
     escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains)
+    escaped_include_paths += [escape_string(directory) for directory in extra_include_dirs]
     escaped_cxx_include_directories = []
     for path in escaped_include_paths:
         escaped_cxx_include_directories.append(("            \"%s\"," % path))
