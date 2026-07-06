@@ -44,7 +44,10 @@ enableable_feature(
 
 cc_feature(
     name = "default_sanitizer_flags",
-    args = [":default_sanitizer_flags_args"],
+    args = [
+        ":default_sanitizer_fastbuild_flags_args",
+        ":default_sanitizer_flags_args",
+    ],
     feature_name = "default_sanitizer_flags",
     requires_any_of = [
         ":asan",
@@ -54,11 +57,16 @@ cc_feature(
 )
 
 cc_args(
+    name = "default_sanitizer_fastbuild_flags_args",
+    actions = _LIMITED_COMPILE_ACTIONS,
+    args = ["-gline-tables-only"],
+    requires_any_of = ["//toolchain:fastbuild"],
+)
+
+cc_args(
     name = "default_sanitizer_flags_args",
     actions = _LIMITED_COMPILE_ACTIONS,
     args = [
-        "-gline-tables-only",
-        "-fno-omit-frame-pointer",
         "-fno-sanitize-recover=all",
     ],
 )
