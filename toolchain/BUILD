@@ -13,6 +13,20 @@ load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
 load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "xcode_execution_info")
 load(":features.bzl", "enableable_feature", "negatable_feature")
 
+# Consumers can append an extra cc_args (for example with
+# allowlist_absolute_include_directories for hermetic Xcodes vendored into
+# external repositories) without modifying this toolchain:
+#   --@apple_support//toolchain:extra_include_directories=//your:cc_args
+label_flag(
+    name = "extra_include_directories",
+    build_setting_default = ":no_extra_include_directories",
+)
+
+cc_args(
+    name = "no_extra_include_directories",
+    actions = ["@rules_cc//cc/toolchains/actions:all_actions"],
+)
+
 MARKER_FEATURES = [
     "archive_param_file",
     "compile_all_modules",
@@ -848,6 +862,7 @@ cc_toolchain(
     name = "toolchain",
     args = [
         "@apple_support_toolchain_env//:include_directories_from_xcode",
+        ":extra_include_directories",
     ] + select({
         ":no_xcode_version": [":clt_env"],
         "//conditions:default": [":xcode_env"],
