@@ -140,9 +140,9 @@ def sanitizer_test_suite(name):
         name = "{}_asan_copt_order_test".format(name),
         tags = [name],
         expected_argv = [
+            "-fno-omit-frame-pointer",
             "-fsanitize=address",
             "-gline-tables-only",
-            "-fno-omit-frame-pointer",
             "-fno-sanitize-recover=all",
             "-DCOPTS_ENV=1",
             "-DFROM_COPTS_FLAG=1",
