@@ -26,11 +26,6 @@ bzl_library(
 )
 
 bzl_library(
-    name = "missing_platform_fallback_users",
-    srcs = ["missing_platform_fallback_users.bzl"],
-)
-
-bzl_library(
     name = "lipo",
     srcs = ["lipo.bzl"],
     deps = [
