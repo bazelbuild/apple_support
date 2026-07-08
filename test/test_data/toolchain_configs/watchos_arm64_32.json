@@ -4432,10 +4432,7 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
-                "-Xlinker",
-                "-install_name",
-                "-Xlinker",
-                "@rpath/%{runtime_solib_name}"
+                "-Wl,-install_name,@rpath/%{runtime_solib_name}"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -4446,7 +4443,7 @@
         }
       ],
       "implies": [],
-      "name": "set_install_name",
+      "name": "_soname_flags",
       "provides": [],
       "requires": [],
       "type_name": "feature"

@@ -711,21 +711,6 @@ cc_make_variable(
     variable_name = "STACK_FRAME_UNLIMITED",
 )
 
-# TODO: Use upstream's after https://github.com/bazelbuild/rules_cc/pull/651
-negatable_feature(
-    name = "set_install_name",
-    actions = ["@rules_cc//cc/toolchains/actions:dynamic_library_link_actions"],
-    args = [
-        "-Xlinker",
-        "-install_name",
-        "-Xlinker",
-        "@rpath/{runtime_solib_name}",
-    ],
-    format = {"runtime_solib_name": "@rules_cc//cc/toolchains/variables:runtime_solib_name"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:runtime_solib_name",
-    target_compatible_with = ["@rules_cc//cc/settings:apple_constraint"],
-)
-
 # TODO: Remove https://github.com/bazelbuild/rules_cc/pull/653
 negatable_feature(
     name = "user_compile_flags",
@@ -894,7 +879,7 @@ cc_toolchain(
         "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-        ":set_install_name",
+        "@rules_cc//cc/toolchains/args/soname_flags:feature",
         "//toolchain/sanitizers:asan_wrapper",
         "//toolchain/sanitizers:tsan_wrapper",
         "//toolchain/sanitizers:ubsan_wrapper",
