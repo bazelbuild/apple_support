@@ -4230,18 +4230,7 @@
           ],
           "type_name": "flag_set",
           "with_features": []
-        }
-      ],
-      "implies": [],
-      "name": "compiler_input_flags",
-      "provides": [],
-      "requires": [],
-      "type_name": "feature"
-    },
-    {
-      "enabled": true,
-      "env_sets": [],
-      "flag_sets": [
+        },
         {
           "actions": [
             "c++-header-parsing"
@@ -4266,7 +4255,7 @@
         }
       ],
       "implies": [],
-      "name": "__header_parsing_input_flags",
+      "name": "compiler_input_flags",
       "provides": [],
       "requires": [],
       "type_name": "feature"
@@ -5527,6 +5516,7 @@
             "cc-flags-make-variable",
             "clif-match",
             "gcov",
+            "generate-def-file",
             "ld_embed_data",
             "linkstamp-compile",
             "llvm-cov",

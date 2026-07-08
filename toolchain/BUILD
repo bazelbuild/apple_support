@@ -823,41 +823,6 @@ cc_legacy_tool(
     tool_name = "gcov",
 )
 
-# TODO: Remove once we can do this upstream https://github.com/bazelbuild/rules_cc/pull/686
-negatable_feature(
-    name = "__compiler_input_flags_without_header_parsing",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:assemble",
-        "@rules_cc//cc/toolchains/actions:assembly_actions",
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:c_compile_actions",
-        "@rules_cc//cc/toolchains/actions:clif_match",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_codegen",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:linkstamp_compile",
-        "@rules_cc//cc/toolchains/actions:lto_backend",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = [
-        "-c",
-        "{source_file}",
-    ],
-    format = {"source_file": "@rules_cc//cc/toolchains/variables:source_file"},
-    overrides = "@rules_cc//cc/toolchains/features/legacy:compiler_input_flags",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:source_file",
-)
-
-negatable_feature(
-    name = "__header_parsing_input_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
-    args = ["{source_file}"],  # Removes -c compared to normal compiler_input_flags
-    format = {"source_file": "@rules_cc//cc/toolchains/variables:source_file"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:source_file",
-)
-
 cc_toolchain(
     name = "toolchain",
     args = [
@@ -926,8 +891,7 @@ cc_toolchain(
         ":extra_enabled_features",
         ":user_compile_flags",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
         ":unfiltered_compile_flags",
-        ":__compiler_input_flags_without_header_parsing",
-        ":__header_parsing_input_flags",
+        "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
         ":set_install_name",
