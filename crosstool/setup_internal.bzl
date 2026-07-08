@@ -40,6 +40,10 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
             },
         )
 
+    if hasattr(repository_ctx, "repo_metadata"):
+        return repository_ctx.repo_metadata(reproducible = True)
+    return None
+
 apple_cc_autoconf_toolchains = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
@@ -64,6 +68,10 @@ def _apple_cc_autoconf_impl(repository_ctx):
         success, error = configure_osx_toolchain(repository_ctx)
         if not success:
             fail("Failed to configure Apple CC toolchain, if you only have the command line tools installed and not Xcode, you cannot use this toolchain. You should either remove it or temporarily set '{}=1' in the environment: {}".format(_DISABLE_ENV_VAR, error))
+
+    if hasattr(repository_ctx, "repo_metadata"):
+        return repository_ctx.repo_metadata(reproducible = True)
+    return None
 
 apple_cc_autoconf = repository_rule(
     environ = [

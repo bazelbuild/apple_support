@@ -240,6 +240,10 @@ cc_feature_set(
         ),
     )
 
+    if hasattr(repository_ctx, "repo_metadata"):
+        return repository_ctx.repo_metadata(reproducible = True)
+    return None
+
 toolchain_env = repository_rule(
     environ = [
         _DISABLE_ENV_VAR,
