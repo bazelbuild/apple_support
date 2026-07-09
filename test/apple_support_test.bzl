@@ -17,6 +17,10 @@ load(
     "@build_bazel_apple_support//lib:apple_support.bzl",
     "apple_support",
 )
+load(
+    "@build_bazel_apple_support//xcode:providers.bzl",
+    "XcodeVersionInfo",
+)
 
 visibility("private")
 
@@ -130,7 +134,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[XcodeVersionInfo],
         apple_platform_info = apple_platform_info,
         outputs = [run_output],
         executable = test_tool,
@@ -144,7 +148,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[XcodeVersionInfo],
         apple_platform_info = apple_platform_info,
         outputs = [run_output_xcode_path_in_args],
         executable = test_tool,
@@ -173,7 +177,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run(
         actions = ctx.actions,
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[XcodeVersionInfo],
         apple_platform_info = apple_platform_info,
         outputs = [run_output_xcode_path_in_file],
         executable = test_tool,
@@ -187,7 +191,7 @@ def _apple_support_test_impl(ctx):
 
     apple_support.run_shell(
         actions = ctx.actions,
-        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+        xcode_config = ctx.attr._xcode_config[XcodeVersionInfo],
         apple_platform_info = apple_platform_info,
         outputs = [run_shell_output],
         tools = [test_tool],
@@ -212,7 +216,7 @@ def _apple_support_test_impl(ctx):
         xcode_path_placeholder = apple_support.path_placeholders.xcode(),
     ), is_executable = True)
 
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_config = ctx.attr._xcode_config[XcodeVersionInfo]
     apple_platform = apple_platform_info.platform
 
     test_env = {}

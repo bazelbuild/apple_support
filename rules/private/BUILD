@@ -12,6 +12,7 @@ bzl_library(
     deps = [
         "//lib:apple_support",
         "//lib/private:providers",
+        "//xcode:providers",
     ],
 )
 

@@ -41,6 +41,7 @@ bzl_library(
         "//lib:apple_support",
         "//lib:xcode_support",
         "//xcode:available_xcodes",
+        "//xcode:providers",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
         "//xcode/private:providers",

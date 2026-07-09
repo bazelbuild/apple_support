@@ -216,10 +216,10 @@ def _action_required_attrs():
     maintainers to use:
 
      * `_xcode_config`: Attribute that references a target containing the single
-       `apple_common.XcodeVersionConfig` provider. This provider can be used to inspect Xcode-related
+       `XcodeVersionInfo` provider. This provider can be used to inspect Xcode-related
        properties about the Xcode being used for the build, as specified with the `--xcode_version`
        Bazel flag. The most common way to retrieve this provider is:
-       `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+       `ctx.attr._xcode_config[XcodeVersionInfo]`.
 
     The returned `dict` can be added to the rule's attributes using Skylib's `dicts.add()` method.
 
@@ -330,7 +330,7 @@ def _run(
     Args:
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
-            context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+            context. Typically from `ctx.attr._xcode_config[XcodeVersionInfo]`.
         apple_platform_info: An ApplePlatformInfo provider. Typically from
             `apple_support.platform_info_from_rule_ctx()`.
         xcode_path_resolve_level: The level of Xcode path replacement required for the action.
@@ -438,7 +438,7 @@ def _run_shell(
     Args:
         actions: The actions provider from ctx.actions.
         xcode_config: The xcode_config as found in the current rule or aspect's
-            context. Typically from `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`.
+            context. Typically from `ctx.attr._xcode_config[XcodeVersionInfo]`.
         apple_platform_info: An ApplePlatformInfo provider. Typically from
             `apple_support.platform_info_from_rule_ctx()`.
         **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.

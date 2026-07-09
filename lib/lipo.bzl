@@ -42,7 +42,7 @@ def _create(
             output of the action.
         apple_platform_info: The ApplePlatformInfo provider used to configure
             the action environment.
-        xcode_config: The `apple_common.XcodeVersionConfig` provider used to
+        xcode_config: The `XcodeVersionInfo` provider used to
             configure the action environment.
     """
     if not inputs:
@@ -96,7 +96,7 @@ def _extract_or_thin(
         input_file: A `File` that represents the universal binary to be extracted. Required if the
             `input_command` is not set.
         output: A `File` representing the universal binary that will be the output of the action.
-        xcode_config: The `apple_common.XcodeVersionConfig` provider used to configure the action
+        xcode_config: The `XcodeVersionInfo` provider used to configure the action
             environment.
     """
     if not input_file and not input_shell_expression:

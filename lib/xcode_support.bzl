@@ -17,6 +17,7 @@
 load(
     "@build_bazel_apple_support//xcode:providers.bzl",
     "XcodeSdkVariantInfo",
+    "XcodeVersionInfo",
 )
 
 visibility("public")
@@ -42,7 +43,7 @@ def _get_current_sdk(ctx):
     return xcode_config[XcodeSdkVariantInfo]
 
 def _get_current_xcode(ctx):
-    """Returns the `XcodeVersionConfig` provider for the current configuration.
+    """Returns the `XcodeVersionInfo` provider for the current configuration.
 
     Callers of this function must define the `_xcode_config` attribute in their
     rule or aspect. This is best done using the
@@ -52,26 +53,26 @@ def _get_current_xcode(ctx):
         ctx: The rule or aspect context.
 
     Returns:
-        The `XcodeVersionConfig` provider for the current configuration.
+        The `XcodeVersionInfo` provider for the current configuration.
     """
     xcode_config = ctx.attr._xcode_config
-    if not xcode_config or apple_common.XcodeVersionConfig not in xcode_config:
+    if not xcode_config or XcodeVersionInfo not in xcode_config:
         fail("Failed to read the Xcode configuration from the current " +
              "context. Does the calling rule or aspect correctly define the " +
              "`_xcode_config` attribute?")
-    return xcode_config[apple_common.XcodeVersionConfig]
+    return xcode_config[XcodeVersionInfo]
 
 def _is_xcode_at_least_version(xcode_config, version):
     """Returns True if Xcode version is at least a given version.
 
-    This method takes as input an `XcodeVersionConfig` provider, which can be obtained from the
-    `_xcode_config` attribute (e.g. `ctx.attr._xcode_config[apple_common.XcodeVersionConfig]`). This
+    This method takes as input an `XcodeVersionInfo` provider, which can be obtained from the
+    `_xcode_config` attribute (e.g. `ctx.attr._xcode_config[XcodeVersionInfo]`). This
     provider should contain the Xcode version parameters with which this rule is being built with.
     If you need to add this attribute to your rule implementation, please refer to
     `apple_support.action_required_attrs()`.
 
     Args:
-        xcode_config: The XcodeVersionConfig provider from the `_xcode_config` attribute's value.
+        xcode_config: The XcodeVersionInfo provider from the `_xcode_config` attribute's value.
         version: The minimum desired Xcode version, as a dotted version string.
 
     Returns:
