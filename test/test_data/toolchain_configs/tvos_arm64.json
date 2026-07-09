@@ -4230,18 +4230,7 @@
           ],
           "type_name": "flag_set",
           "with_features": []
-        }
-      ],
-      "implies": [],
-      "name": "compiler_input_flags",
-      "provides": [],
-      "requires": [],
-      "type_name": "feature"
-    },
-    {
-      "enabled": true,
-      "env_sets": [],
-      "flag_sets": [
+        },
         {
           "actions": [
             "c++-header-parsing"
@@ -4266,7 +4255,7 @@
         }
       ],
       "implies": [],
-      "name": "__header_parsing_input_flags",
+      "name": "compiler_input_flags",
       "provides": [],
       "requires": [],
       "type_name": "feature"
@@ -4443,10 +4432,7 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
-                "-Xlinker",
-                "-install_name",
-                "-Xlinker",
-                "@rpath/%{runtime_solib_name}"
+                "-Wl,-install_name,@rpath/%{runtime_solib_name}"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
@@ -4457,7 +4443,7 @@
         }
       ],
       "implies": [],
-      "name": "set_install_name",
+      "name": "_soname_flags",
       "provides": [],
       "requires": [],
       "type_name": "feature"
@@ -5527,6 +5513,7 @@
             "cc-flags-make-variable",
             "clif-match",
             "gcov",
+            "generate-def-file",
             "ld_embed_data",
             "linkstamp-compile",
             "llvm-cov",

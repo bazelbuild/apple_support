@@ -711,32 +711,6 @@ cc_make_variable(
     variable_name = "STACK_FRAME_UNLIMITED",
 )
 
-# TODO: Use upstream's after https://github.com/bazelbuild/rules_cc/pull/651
-negatable_feature(
-    name = "set_install_name",
-    actions = ["@rules_cc//cc/toolchains/actions:dynamic_library_link_actions"],
-    args = [
-        "-Xlinker",
-        "-install_name",
-        "-Xlinker",
-        "@rpath/{runtime_solib_name}",
-    ],
-    format = {"runtime_solib_name": "@rules_cc//cc/toolchains/variables:runtime_solib_name"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:runtime_solib_name",
-    target_compatible_with = ["@rules_cc//cc/settings:apple_constraint"],
-)
-
-# TODO: Remove https://github.com/bazelbuild/rules_cc/pull/653
-negatable_feature(
-    name = "user_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
-    args = ["{user_compile_flags}"],
-    format = {"user_compile_flags": "@rules_cc//cc/toolchains/variables:user_compile_flags"},
-    iterate_over = "@rules_cc//cc/toolchains/variables:user_compile_flags",
-    overrides = "@rules_cc//cc/toolchains/features/legacy:user_compile_flags",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:user_compile_flags",
-)
-
 negatable_feature(
     name = "__layering_check_modulemap",
     actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
@@ -823,41 +797,6 @@ cc_legacy_tool(
     tool_name = "gcov",
 )
 
-# TODO: Remove once we can do this upstream https://github.com/bazelbuild/rules_cc/pull/686
-negatable_feature(
-    name = "__compiler_input_flags_without_header_parsing",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:assemble",
-        "@rules_cc//cc/toolchains/actions:assembly_actions",
-        "@rules_cc//cc/toolchains/actions:c_compile",
-        "@rules_cc//cc/toolchains/actions:c_compile_actions",
-        "@rules_cc//cc/toolchains/actions:clif_match",
-        "@rules_cc//cc/toolchains/actions:cpp_compile",
-        "@rules_cc//cc/toolchains/actions:cpp_module_codegen",
-        "@rules_cc//cc/toolchains/actions:cpp_module_compile",
-        "@rules_cc//cc/toolchains/actions:linkstamp_compile",
-        "@rules_cc//cc/toolchains/actions:lto_backend",
-        "@rules_cc//cc/toolchains/actions:objc_compile",
-        "@rules_cc//cc/toolchains/actions:objcpp_compile",
-        "@rules_cc//cc/toolchains/actions:preprocess_assemble",
-    ],
-    args = [
-        "-c",
-        "{source_file}",
-    ],
-    format = {"source_file": "@rules_cc//cc/toolchains/variables:source_file"},
-    overrides = "@rules_cc//cc/toolchains/features/legacy:compiler_input_flags",
-    requires_not_none = "@rules_cc//cc/toolchains/variables:source_file",
-)
-
-negatable_feature(
-    name = "__header_parsing_input_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:cpp_header_parsing"],
-    args = ["{source_file}"],  # Removes -c compared to normal compiler_input_flags
-    format = {"source_file": "@rules_cc//cc/toolchains/variables:source_file"},
-    requires_not_none = "@rules_cc//cc/toolchains/variables:source_file",
-)
-
 cc_toolchain(
     name = "toolchain",
     args = [
@@ -924,13 +863,12 @@ cc_toolchain(
         ":apply_implicit_frameworks",
         ":link_cocoa_wrapper",
         ":extra_enabled_features",
-        ":user_compile_flags",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
+        "@rules_cc//cc/toolchains/args/compile_flags:user_compile_flags_feature",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
         ":unfiltered_compile_flags",
-        ":__compiler_input_flags_without_header_parsing",
-        ":__header_parsing_input_flags",
+        "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
         "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
         "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-        ":set_install_name",
+        "@rules_cc//cc/toolchains/args/soname_flags:feature",
         "//toolchain/sanitizers:asan_wrapper",
         "//toolchain/sanitizers:tsan_wrapper",
         "//toolchain/sanitizers:ubsan_wrapper",
