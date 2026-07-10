@@ -400,7 +400,6 @@
       "type_name": "artifact_name_pattern"
     }
   ],
-  "_exec_os_DO_NOT_USE": "DARWIN",
   "_features_DO_NOT_USE": [
     {
       "enabled": true,
@@ -4154,6 +4153,16 @@
       ],
       "implies": [],
       "name": "no_deduplicate",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "function_sections",
       "provides": [],
       "requires": [],
       "type_name": "feature"

@@ -2,7 +2,7 @@ load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("//toolchain:features.bzl", "enableable_feature", "negatable_feature")
 
-package(default_visibility = ["//toolchain:__pkg__"])
+package(default_visibility = ["//visibility:public"])
 
 _COVERAGE_COMPILE_ACTIONS = [
     # TODO: Should all compile actions be here?

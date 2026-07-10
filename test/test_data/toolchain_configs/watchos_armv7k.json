@@ -400,7 +400,6 @@
       "type_name": "artifact_name_pattern"
     }
   ],
-  "_exec_os_DO_NOT_USE": "DARWIN",
   "_features_DO_NOT_USE": [
     {
       "enabled": true,

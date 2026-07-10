@@ -1,7 +1,7 @@
 load("@rules_cc//cc/toolchains:mutually_exclusive_category.bzl", "cc_mutually_exclusive_category")
 load("//toolchain:features.bzl", "enableable_feature")
 
-package(default_visibility = ["//:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
 
 cc_mutually_exclusive_category(
     name = "profile",
