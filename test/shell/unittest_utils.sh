@@ -114,28 +114,13 @@ check_match ()
     die "Check failed: '$2' does not match regex '$1' ${3:+ ($3)}"
 }
 
-# Run command "$1" at exit. Like "trap" but multiple atexits don't
-# overwrite each other. Will break if someone does call trap
-# directly. So, don't do that.
-ATEXIT="${ATEXIT-}"
-atexit () {
-  if [[ -z "$ATEXIT" ]]; then
-      ATEXIT="$1"
-  else
-      ATEXIT="$1 ; $ATEXIT"
-  fi
-  trap "$ATEXIT" EXIT
-}
-
 ## TEST_TMPDIR
 if [[ -z "${TEST_TMPDIR:-}" ]]; then
-  export TEST_TMPDIR="$(mktemp -d ${TMPDIR:-/tmp}/bazel-test.XXXXXXXX)"
+  TEST_TMPDIR="$(mktemp -d ${TMPDIR:-/tmp}/bazel-test.XXXXXXXX)"
+  export TEST_TMPDIR
 fi
-if [[ ! -e "${TEST_TMPDIR}" ]]; then
-  mkdir -p -m 0700 "${TEST_TMPDIR}"
-  # Clean TEST_TMPDIR on exit
-  atexit "rm -fr ${TEST_TMPDIR}"
-fi
+# Clean TEST_TMPDIR on exit
+trap 'chmod -R 0700 "$TEST_TMPDIR"; rm -fr "$TEST_TMPDIR"' EXIT
 
 # Functions to compare the actual output of a test to the expected
 # (golden) output.
