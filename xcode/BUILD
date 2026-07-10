@@ -21,6 +21,15 @@ bzl_library(
 )
 
 bzl_library(
+    name = "selected_xcode_version_retriever",
+    srcs = ["selected_xcode_version_retriever.bzl"],
+    deps = [
+        ":providers",
+        "//xcode/private:providers",
+    ],
+)
+
+bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
     deps = [
