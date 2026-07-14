@@ -102,6 +102,11 @@ cc_feature(
     visibility = ["//visibility:public"],
 )
 
+config_setting(
+    name = "opt_mode",
+    values = {"compilation_mode": "opt"},
+)
+
 cc_feature(
     name = "dynamic_linking_mode",
     overrides = "@rules_cc//cc/toolchains/features:dynamic_linking_mode",
@@ -322,19 +327,9 @@ cc_args(
     requires_any_of = [":not_kernel_extension"],
 )
 
-cc_args(
-    name = "default_link_flags_opt_args",
-    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-dead_strip"],
-    requires_any_of = [":opt"],
-)
-
 negatable_feature(
     name = "default_link_flags",
-    custom_args = [
-        ":default_link_flags_base_args",
-        ":default_link_flags_opt_args",
-    ],
+    custom_args = [":default_link_flags_base_args"],
 )
 
 cc_args(
@@ -858,6 +853,10 @@ cc_toolchain(
         ":__apply_simulator_compiler_flags",
         "@apple_support_toolchain_env//:copts_from_env",
         ":default_link_flags",
+    ] + select({
+        ":opt_mode": [":dead_strip"],
+        "//conditions:default": [],
+    }) + [
         ":no_deduplicate",
         ":dead_strip_wrapper",
         ":apply_implicit_frameworks",
