@@ -20,7 +20,7 @@ x_defaults:
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
   linux_common: &linux_common
-    platform: ubuntu2004
+    platform: ubuntu2204
     build_targets:
       - "//test/test_data:multi_arch_cc_binary"
     test_targets:
