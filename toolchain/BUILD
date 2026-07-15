@@ -556,6 +556,18 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
 )
 
+enableable_feature(
+    name = "link_dylib",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-dynamiclib"],
+)
+
+enableable_feature(
+    name = "link_bundle",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = ["-bundle"],
+)
+
 # As of Xcode 15, linker warnings are emitted if duplicate `-l` options are
 # present. Until such linkopts can be deduped by bazel itself, we disable these
 # warnings.
@@ -844,6 +856,8 @@ cc_toolchain(
         "//toolchain/pgo:fdo_optimize_wrapper",
         "//toolchain/pgo:autofdo_wrapper",
         ":lto_object_path",
+        ":link_dylib_wrapper",
+        ":link_bundle_wrapper",
         "//toolchain/coverage:llvm_coverage_map_format_wrapper",
         "//toolchain/coverage:gcc_coverage_map_format_wrapper",
         "//toolchain/coverage:coverage_prefix_map",
@@ -895,6 +909,8 @@ cc_toolchain(
         "//toolchain/sanitizers:ubsan",
         ":generate_dsym_file",
         ":generate_linkmap",
+        ":link_dylib",
+        ":link_bundle",
         ":link_cocoa",
         ":dead_strip",
         ":suppress_warnings",

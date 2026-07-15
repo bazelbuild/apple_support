@@ -87,6 +87,15 @@ starlark_apple_binary(
     deps = [":cc_lib"],
 )
 
+starlark_apple_binary(
+    name = "macos_loadable_bundle",
+    binary_type = "loadable_bundle",
+    minimum_os_version = "13.0",
+    platform_type = "macos",
+    tags = TARGETS_UNDER_TEST_TAGS,
+    deps = [":cc_lib"],
+)
+
 objc_library(
     name = "objc_lib",
     srcs = ["objc_lib.m"],
