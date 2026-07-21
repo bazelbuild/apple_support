@@ -44,18 +44,6 @@ negatable_feature(
 )
 
 cc_args(
-    name = "objc_executable_non_kernel_extension_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
-    args = [
-        "-Xlinker",
-        "-objc_abi_version",
-        "-Xlinker",
-        "2",
-    ],
-    requires_any_of = ["//toolchain:not_kernel_extension"],
-)
-
-cc_args(
     name = "objc_executable_filelist_args",
     actions = ["@rules_cc//cc/toolchains/actions:objc_executable"],
     args = [
@@ -111,7 +99,6 @@ cc_args(
 negatable_feature(
     name = "__objc_executable_feature",
     custom_args = [
-        ":objc_executable_non_kernel_extension_flags",
         ":objc_executable_filelist_args",
         ":objc_executable_linked_binary_args",
         ":objc_executable_force_load_args",
