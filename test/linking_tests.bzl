@@ -121,10 +121,6 @@ def linking_test_suite(name):
         name = "{}_default_apple_macos_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
             "LINKED_BINARY",
             "-ObjC",
             "-framework",
@@ -143,10 +139,6 @@ def linking_test_suite(name):
         name = "{}_default_apple_ios_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
             "LINKED_BINARY",
             "-ObjC",
             "-framework",
@@ -168,10 +160,6 @@ def linking_test_suite(name):
         name = "{}_opt_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
             "-ObjC",
             "-dead_strip",
         ],
@@ -183,10 +171,6 @@ def linking_test_suite(name):
         name = "{}_dead_strip_requested_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
             "-ObjC",
             "-dead_strip",
         ],
@@ -198,10 +182,7 @@ def linking_test_suite(name):
         name = "{}_disable_objc_apple_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
+            "LINKED_BINARY",
             "-framework",
             "Foundation",
         ],
@@ -214,10 +195,7 @@ def linking_test_suite(name):
         name = "{}_disable_implicit_frameworks_apple_macos_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
+            "LINKED_BINARY",
             "-ObjC",
         ],
         not_expected_argv = [
@@ -232,10 +210,7 @@ def linking_test_suite(name):
         name = "{}_disable_implicit_frameworks_apple_ios_link_test".format(name),
         tags = [name],
         expected_argv = [
-            "-Xlinker",
-            "-objc_abi_version",
-            "-Xlinker",
-            "2",
+            "LINKED_BINARY",
             "-ObjC",
         ],
         not_expected_argv = [
