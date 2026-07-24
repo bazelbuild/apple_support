@@ -2284,7 +2284,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     env_entries = [
                         env_entry(
                             key = "APPLE_SUPPORT_MODULEMAP",
-                            value = modulemaps[0].path,
+                            value = "%{{path:{}}}".format(modulemaps[0].path),
                         ),
                     ],
                 ),
