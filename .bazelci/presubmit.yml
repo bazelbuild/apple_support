@@ -115,6 +115,44 @@ tasks:
     bazel: rolling
     <<: *common_toolchain_off
 
+  macos_path_stripping:
+    name: "Path stripping"
+    platform: macos_arm64
+    bazel: latest
+    build_targets:
+      - //test/header_parsing:valid_header
+      - //test/layering_check:good_layering_check_objc
+      - //test/test_data:cc_test_binary
+    build_flags:
+      - "--config=path-stripping"
+    test_targets:
+      - //test/layering_check:good_layering_check
+      - //test/rpaths:test
+      - //test:cc_test_with_objc_deps
+      - //test:linkstamp_test
+    test_flags:
+      - "--config=path-stripping"
+
+  macos_path_stripping_toolchain_off:
+    name: "Path stripping (rules toolchain off)"
+    platform: macos_arm64
+    bazel: latest
+    build_targets:
+      - //test/header_parsing:valid_header
+      - //test/layering_check:good_layering_check_objc
+      - //test/test_data:cc_test_binary
+    build_flags:
+      - "--config=path-stripping"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_targets:
+      - //test/layering_check:good_layering_check
+      - //test/rpaths:test
+      - //test:cc_test_with_objc_deps
+      - //test:linkstamp_test
+    test_flags:
+      - "--config=path-stripping"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+
   macos_latest_shell_scripts:
     name: "Shell tests"
     platform: macos_arm64
