@@ -596,3 +596,35 @@ def linking_test_suite(name):
         mnemonic = "CppArchive",
         target_under_test = "//test/test_data:static_lib",
     )
+
+    default_test(
+        name = "{}_dylib_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-dynamiclib",
+        ],
+        not_expected_argv = ["-bundle"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_dylib",
+    )
+
+    default_test(
+        name = "{}_loadable_bundle_test".format(name),
+        tags = [name],
+        expected_argv = [
+            "-Xlinker",
+            "-objc_abi_version",
+            "-Xlinker",
+            "2",
+            "-ObjC",
+            "-bundle",
+        ],
+        not_expected_argv = ["-dynamiclib"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_loadable_bundle",
+    )

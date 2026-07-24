@@ -415,12 +415,13 @@ def _register_configuration_specific_link_actions_with_objc_variables(
     else:
         return binary
 
-def _build_feature_configuration(common_variables):
+def _build_feature_configuration(common_variables, extra_requested_features):
     ctx = common_variables.ctx
 
     enabled_features = []
     enabled_features.extend(ctx.features)
     enabled_features.extend(common_variables.extra_enabled_features)
+    enabled_features.extend(extra_requested_features)
 
     disabled_features = []
     disabled_features.extend(ctx.disabled_features)
@@ -452,9 +453,13 @@ def _register_configuration_specific_link_actions(
         user_variable_extensions,
         additional_outputs,
         extra_link_inputs,
-        attr_linkopts):
+        attr_linkopts,
+        extra_requested_features):
     ctx = common_variables.ctx
-    feature_configuration = _build_feature_configuration(common_variables)
+    feature_configuration = _build_feature_configuration(
+        common_variables,
+        extra_requested_features,
+    )
 
     if _emit_builtin_objc_strip_action(ctx):
         binary = ctx.actions.declare_shareable_artifact(
@@ -501,13 +506,14 @@ def _register_configuration_specific_link_actions(
             attr_linkopts,
         )
 
-def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
+def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1, extra_requested_features):
     """Copied from rules_apple.
 
     Args:
         ctx: rule ctx
         cc_toolchains: split toolchain attr
         stamp: See upstream docs
+        extra_requested_features: Additional C++ toolchain features to request
 
     Returns:
         struct of linking info
@@ -623,6 +629,7 @@ def link_multi_arch_binary(*, ctx, cc_toolchains, stamp = -1):
                 additional_outputs = additional_outputs,
                 extra_link_inputs = [],
                 attr_linkopts = attr_linkopts,
+                extra_requested_features = extra_requested_features,
             )
 
         output = {
@@ -660,7 +667,10 @@ def _build_fully_linked_variable_extensions(*, archive, libs):
 
 def _register_fully_link_action(*, cc_linking_context, common_variables, name):
     ctx = common_variables.ctx
-    feature_configuration = _build_feature_configuration(common_variables)
+    feature_configuration = _build_feature_configuration(
+        common_variables,
+        extra_requested_features = [],
+    )
 
     libraries_to_link = _libraries_from_linking_context(cc_linking_context).to_list()
     libraries = _get_libraries_for_linking(libraries_to_link)
