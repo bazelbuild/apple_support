@@ -5,8 +5,8 @@ common --repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=1
 common --repo_env=BAZEL_CONLYOPTS=-DCONLY_ENV=1
 common --repo_env=BAZEL_COPTS=-DCOPTS_ENV=1
 common --repo_env=BAZEL_CXXOPTS="-std=c++17:-DCXXOPTS_ENV=1"
-# Platform specific linker flag
-common:macos --repo_env=BAZEL_LINKOPTS=-Wl,-prune_interval_lto,10
+# Cross-platform linker flag
+common --repo_env=BAZEL_LINKOPTS=-Wl,-v
 
 # Verify parse_headers works as the toolchain changes
 build --process_headers_in_dependencies

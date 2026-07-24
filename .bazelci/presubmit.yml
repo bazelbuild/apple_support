@@ -25,6 +25,7 @@ x_defaults:
       - "//test/test_data:multi_arch_cc_binary"
     test_targets:
       - "//tools/http_dmg/..."
+      - "//test/linux_toolchain/..."
 
   linux_common_toolchain_off: &linux_common_toolchain_off
     <<: *linux_common

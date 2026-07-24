@@ -36,6 +36,9 @@ def _strip_triple_version(triple):
          arm64-apple-ios26.2-simulator -> arm64-apple-iosVERSION-simulator
     """
     parts = triple.split("-")
+    if len(parts) < 3 or parts[1] != "apple":
+        return triple
+
     os_part = parts[2]
     stripped = ""
     for c in os_part.elems():
@@ -58,6 +61,7 @@ def _sanitize_env_entries(features):
 def _config_to_json(config_info):
     # convert struct to dict
     output = json.decode(json.encode(config_info))
+    output.pop("_exec_os_DO_NOT_USE")
     output["cxx_builtin_include_directories"] = [
         _sanitize_path(x)
         for x in config_info.cxx_builtin_include_directories
@@ -234,6 +238,24 @@ def toolchain_config_test_suite(name):
             platform = platform_label,
         )
         updates.append(update_name)
+
+    linux_test_name = name + "_linux_x86_64_test"
+    _toolchain_config_test(
+        name = linux_test_name,
+        toolchain_config = "@swift_linux_toolchain//:cc_toolchain",
+        golden = "//test/test_data/toolchain_configs:linux_x86_64.json",
+        platform = "//test/linux_toolchain:linux_x86_64",
+    )
+    tests.append(linux_test_name)
+
+    linux_update_name = name + "_linux_x86_64_update"
+    _toolchain_config_update(
+        name = linux_update_name,
+        toolchain_config = "@swift_linux_toolchain//:cc_toolchain",
+        golden = "//test/test_data/toolchain_configs:linux_x86_64.json",
+        platform = "//test/linux_toolchain:linux_x86_64",
+    )
+    updates.append(linux_update_name)
 
     native.test_suite(
         name = name,

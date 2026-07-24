@@ -9,9 +9,11 @@ load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:legacy_tool.bzl", "cc_legacy_tool")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:nested_args.bzl", "cc_nested_args")
-load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
+load(":cc_toolchain.bzl", "cc_toolchain")
 load(":dynamic_toolchain_info.bzl", "dynamic_toolchain_info", "xcode_execution_info")
 load(":features.bzl", "enableable_feature", "negatable_feature")
+
+package(default_visibility = ["//visibility:public"])
 
 # Consumers can append an extra cc_args (for example with
 # allowlist_absolute_include_directories for hermetic Xcodes vendored into
@@ -83,6 +85,27 @@ _LIMITED_COMPILE_ACTIONS = [
     )
     for name in MARKER_FEATURES
 ]
+
+cc_feature(
+    name = "supports_pic",
+    feature_name = "supports_pic",
+)
+
+cc_feature_set(
+    name = "_marker_features",
+    all_of = MARKER_FEATURES + select({
+        "//configs:apple": [],
+        "//conditions:default": [":supports_pic"],
+    }),
+)
+
+cc_feature_set(
+    name = "_enabled_markers",
+    all_of = ENABLED_MARKERS + select({
+        "//configs:apple": [],
+        "//conditions:default": [":supports_pic"],
+    }),
+)
 
 cc_feature(
     name = "dbg",
@@ -281,7 +304,7 @@ cc_args(
 
 dynamic_toolchain_info(
     name = "dynamic_toolchain_info",
-    visibility = ["//toolchain:__subpackages__"],
+    visibility = ["//:__subpackages__"],
 )
 
 xcode_execution_info(
@@ -297,10 +320,17 @@ negatable_feature(
     ],
     args = [
         "-no-canonical-prefixes",
-        "-target",
-        "{TARGET}",
-    ],
-    toolchains = [":dynamic_toolchain_info"],
+    ] + select({
+        "//configs:apple": [
+            "-target",
+            "{TARGET}",
+        ],
+        "//conditions:default": [],
+    }),
+    toolchains = select({
+        "//configs:apple": [":dynamic_toolchain_info"],
+        "//conditions:default": [],
+    }),
 )
 
 negatable_feature(
@@ -323,7 +353,14 @@ negatable_feature(
 cc_args(
     name = "default_link_flags_base_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-fobjc-link-runtime"],
+    args = select({
+        "//configs:apple": ["-fobjc-link-runtime"],
+        "//conditions:default": [
+            "-fuse-ld=lld",
+            "-Wl,-no-as-needed",
+            "-Wl,-z,relro,-z,now",
+        ],
+    }),
     requires_any_of = [":not_kernel_extension"],
 )
 
@@ -383,7 +420,10 @@ cc_args(
 cc_args(
     name = "treat_warnings_as_errors_link_args",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-Wl,-fatal_warnings"],
+    args = select({
+        "//configs:apple": ["-Wl,-fatal_warnings"],
+        "//conditions:default": ["-Wl,--fatal-warnings"],
+    }),
 )
 
 enableable_feature(
@@ -452,6 +492,14 @@ negatable_feature(
 config_setting(
     name = "no_xcode_version",
     flag_values = {"@bazel_tools//tools/osx:xcode_version_flag_major": "None"},
+)
+
+alias(
+    name = "apple_env",
+    actual = select({
+        ":no_xcode_version": ":clt_env",
+        "//conditions:default": ":xcode_env",
+    }),
 )
 
 selects.config_setting_group(
@@ -526,6 +574,18 @@ negatable_feature(
     requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
 )
 
+negatable_feature(
+    name = "linux_output_execpath_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
+    args = [
+        "-o",
+        "{output_execpath}",
+    ],
+    format = {"output_execpath": "@rules_cc//cc/toolchains/variables:output_execpath"},
+    overrides = "@rules_cc//cc/toolchains/features/legacy:output_execpath_flags",
+    requires_not_none = "@rules_cc//cc/toolchains/variables:output_execpath",
+)
+
 # We need to pass -object_path_lto in order to get debug symbols when building
 # with LTO. In a perfect world, we would only pass it when the thin_lto or
 # full_lto features are enabled. However, when these features are enabled,
@@ -569,10 +629,13 @@ negatable_feature(
 negatable_feature(
     name = "no_deduplicate",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = [
-        "-Xlinker",
-        "-no_deduplicate",
-    ],
+    args = select({
+        "//configs:apple": [
+            "-Xlinker",
+            "-no_deduplicate",
+        ],
+        "//conditions:default": [],
+    }),
     requires_any_of = [":not_opt_mode"],
 )
 
@@ -589,13 +652,34 @@ negatable_feature(
 negatable_feature(
     name = "headerpad",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-headerpad_max_install_names"],
+    args = select({
+        "//configs:apple": ["-headerpad_max_install_names"],
+        "//conditions:default": [],
+    }),
+)
+
+negatable_feature(
+    name = "function_sections",
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:link_actions",
+    ],
+    args = select({
+        "//configs:apple": [],
+        "//conditions:default": [
+            "-fdata-sections",
+            "-ffunction-sections",
+        ],
+    }),
 )
 
 enableable_feature(
     name = "dead_strip",
     actions = ["@rules_cc//cc/toolchains/actions:link_actions"],
-    args = ["-dead_strip"],
+    args = select({
+        "//configs:apple": ["-dead_strip"],
+        "//conditions:default": ["-Wl,--gc-sections"],
+    }),
 )
 
 negatable_feature(
@@ -794,132 +878,9 @@ cc_legacy_tool(
 
 cc_toolchain(
     name = "toolchain",
-    args = [
-        "@apple_support_toolchain_env//:include_directories_from_xcode",
-        ":extra_include_directories",
-    ] + select({
-        ":no_xcode_version": [":clt_env"],
-        "//conditions:default": [":xcode_env"],
-    }),
-    artifact_name_patterns = [":dylib_pattern"],
-    compiler = "clang",
-    # TODO: Use experimental_replace_legacy_action_config_features as long as ordering isn't an issue
-    enabled_features = ENABLED_MARKERS + [
-        # NOTE: ORDER MATTERS
-        "@rules_cc//cc/toolchains/args/layering_check:module_maps",  # NOTE: This is a marker feature
-        "@rules_cc//cc/toolchains/args/strip_flags:feature",
-        "//toolchain/objc:__objc_executable_feature",
-        "//toolchain/objc:__objc_fully_link_feature",
-        ":__header_parsing_flags",  # NOTE: Must come before input files
-        ":link_libc++",
-        ":default_compile_flags_feature",
-        ":ns_block_assertions",
-        ":debug_prefix_map_pwd_is_dot",
-        ":remap_xcode_path",
-        ":generate_dsym_file_wrapper",
-        ":generate_linkmap_wrapper",
-        ":oso_prefix_is_pwd",
-        ":strip_debug_symbols",
-        "@rules_cc//cc/toolchains/args/shared_flag:feature",
-        ":kernel_extension_wrapper",
-        ":output_execpath_flags",
-        "@rules_cc//cc/toolchains/args/runtime_library_search_directories:feature",
-        "@rules_cc//cc/toolchains/args/library_search_directories:feature",
-        "@rules_cc//cc/toolchains/args/libraries_to_link:feature",
-        "//toolchain/objc:objc_link_flag",
-        ":pch",
-        "//toolchain/objc:__apple_default_warnings",
-        ":__archiver_flags",
-        "@rules_cc//cc/toolchains/args/include_flags:feature",
-        "@rules_cc//cc/toolchains/args/dependency_file:feature",
-        ":serialized_diagnostics_file_wrapper",
-        "@rules_cc//cc/toolchains/args/pic_flags:feature",
-        "@rules_cc//cc/toolchains/args/preprocessor_defines:feature",
-        "//toolchain/pgo:fdo_instrument_wrapper",
-        "//toolchain/pgo:fdo_optimize_wrapper",
-        "//toolchain/pgo:autofdo_wrapper",
-        ":lto_object_path",
-        "//toolchain/coverage:llvm_coverage_map_format_wrapper",
-        "//toolchain/coverage:gcc_coverage_map_format_wrapper",
-        "//toolchain/coverage:coverage_prefix_map",
-        "//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic_wrapper",
-        "//toolchain/objc:__apple_default_compiler_flags",
-        ":sysroot_feature",
-        ":headerpad",
-        "@rules_cc//cc/toolchains/args/objc_arc_flags:feature",
-        ":user_link_flags",  # TODO: Switch to upstream feature
-        "@apple_support_toolchain_env//:linkopts_from_env",  # TODO: Join with the copts below
-        ":default_required_flags",
-        ":__apply_simulator_compiler_flags",
-        "//toolchain/sanitizers:asan_wrapper",
-        "//toolchain/sanitizers:tsan_wrapper",
-        "//toolchain/sanitizers:ubsan_wrapper",
-        "//toolchain/sanitizers:default_sanitizer_flags",
-        "@apple_support_toolchain_env//:copts_from_env",
-        ":default_link_flags",
-    ] + select({
-        ":opt_mode": [":dead_strip"],
-        "//conditions:default": [],
-    }) + [
-        ":no_deduplicate",
-        ":dead_strip_wrapper",
-        ":apply_implicit_frameworks",
-        ":link_cocoa_wrapper",
-        ":extra_enabled_features",
-        "@rules_cc//cc/toolchains/args/compile_flags:user_compile_flags_feature",  # TODO: Switch to compile_flags:feature if ordering isn't an issue
-        ":unfiltered_compile_flags",
-        "@rules_cc//cc/toolchains/args/compiler_input_flags:feature",
-        "@rules_cc//cc/toolchains/args/compiler_output_flags:feature",
-        "@rules_cc//cc/toolchains/args/linker_param_file:feature",
-        "@rules_cc//cc/toolchains/args/soname_flags:feature",
-        ":suppress_warnings_wrapper",
-        ":treat_warnings_as_errors_wrapper",
-        ":no_warn_duplicate_libraries",
-        ":reproducible_linker_flag",
-        ":external_include_paths_wrapper",
-        "@apple_support_toolchain_env//:off_by_default_layering_check_enabled_features",
-    ],
-    known_features = MARKER_FEATURES + [
-        ":opt",
-        ":dbg",
-        ":fastbuild",
-        "//toolchain/coverage",
-        ":kernel_extension",
-        ":serialized_diagnostics_file",
-        "//toolchain/coverage:llvm_coverage_map_format",
-        "//toolchain/coverage:gcc_coverage_map_format",
-        "//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic",
-        "//toolchain/sanitizers:asan",
-        "//toolchain/sanitizers:tsan",
-        "//toolchain/sanitizers:ubsan",
-        ":generate_dsym_file",
-        ":generate_linkmap",
-        ":link_cocoa",
-        ":dead_strip",
-        ":suppress_warnings",
-        ":treat_warnings_as_errors",
-        ":external_include_paths",
-        "//toolchain/pgo:fdo_instrument",
-        "//toolchain/pgo:autofdo",
-        "//toolchain/pgo:fdo_optimize",
-        "@apple_support_toolchain_env//:off_by_default_layering_check_known_features",
-        ":extra_known_features",
-        "@rules_cc//cc/toolchains/args/layering_check:use_module_maps",  # TODO: https://github.com/bazelbuild/rules_cc/pull/657
-    ] + select({
-        "@platforms//os:macos": [
-            ":dynamic_linking_mode",
-        ],
-        "//conditions:default": [],
-    }),
-    legacy_tools = [
-        ":gcov",
-    ],
-    make_variables = [":stack_frame_variable"],
     module_map = "//crosstool:module.modulemap",
     supports_header_parsing = True,
-    supports_param_files = True,
-    target_system_name = "$(TARGET)",
+    sysroot_feature = ":sysroot_feature",
+    target = "$(TARGET)",
     tool_map = "//toolchain/tools",
-    toolchains = [":dynamic_toolchain_info"],
-    visibility = ["//:__subpackages__"],
 )

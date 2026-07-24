@@ -45,6 +45,19 @@ def _sdk_name(platform_type, is_simulator):
         fail("Unhandled platform type: {}".format(platform_type))
 
 def _dynamic_toolchain_info_impl(ctx):
+    if ctx.target_platform_has_constraint(ctx.attr._arm64[platform_common.ConstraintValueInfo]):
+        triple_arch = "arm64"
+    elif ctx.target_platform_has_constraint(ctx.attr._arm64e[platform_common.ConstraintValueInfo]):
+        triple_arch = "arm64e"
+    elif ctx.target_platform_has_constraint(ctx.attr._x86_64[platform_common.ConstraintValueInfo]):
+        triple_arch = "x86_64"
+    elif ctx.target_platform_has_constraint(ctx.attr._arm64_32[platform_common.ConstraintValueInfo]):
+        triple_arch = "arm64_32"
+    elif ctx.target_platform_has_constraint(ctx.attr._armv7k[platform_common.ConstraintValueInfo]):
+        triple_arch = "armv7k"
+    else:
+        fail("Unknown CPU in target platform")
+
     if ctx.target_platform_has_constraint(ctx.attr._macos[platform_common.ConstraintValueInfo]):
         triple_os = "macosx"
         platform_type = apple_common.platform_type.macos
@@ -60,21 +73,10 @@ def _dynamic_toolchain_info_impl(ctx):
     elif ctx.target_platform_has_constraint(ctx.attr._visionos[platform_common.ConstraintValueInfo]):
         triple_os = "xros"
         platform_type = getattr(apple_common.platform_type, "visionos", None)
+    elif ctx.target_platform_has_constraint(ctx.attr._linux[platform_common.ConstraintValueInfo]):
+        return [platform_common.TemplateVariableInfo({"ARCH": triple_arch})]
     else:
         fail("Unknown OS in target platform")
-
-    if ctx.target_platform_has_constraint(ctx.attr._arm64[platform_common.ConstraintValueInfo]):
-        triple_arch = "arm64"
-    elif ctx.target_platform_has_constraint(ctx.attr._arm64e[platform_common.ConstraintValueInfo]):
-        triple_arch = "arm64e"
-    elif ctx.target_platform_has_constraint(ctx.attr._x86_64[platform_common.ConstraintValueInfo]):
-        triple_arch = "x86_64"
-    elif ctx.target_platform_has_constraint(ctx.attr._arm64_32[platform_common.ConstraintValueInfo]):
-        triple_arch = "arm64_32"
-    elif ctx.target_platform_has_constraint(ctx.attr._armv7k[platform_common.ConstraintValueInfo]):
-        triple_arch = "armv7k"
-    else:
-        fail("Unknown CPU in target platform")
 
     is_simulator = ctx.target_platform_has_constraint(ctx.attr._simulator[platform_common.ConstraintValueInfo])
     if is_simulator:
@@ -116,6 +118,7 @@ def _dynamic_toolchain_info_impl(ctx):
 dynamic_toolchain_info = rule(
     implementation = _dynamic_toolchain_info_impl,
     attrs = {
+        "_linux": attr.label(default = "@platforms//os:linux"),
         "_macos": attr.label(default = "@platforms//os:macos"),
         "_ios": attr.label(default = "@platforms//os:ios"),
         "_tvos": attr.label(default = "@platforms//os:tvos"),

@@ -3,7 +3,7 @@ load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_constraint.bzl", "cc_feature_constraint")
 load("//toolchain:features.bzl", "enableable_feature")
 
-package(default_visibility = ["//toolchain:__pkg__"])
+package(default_visibility = ["//visibility:public"])
 
 _LIMITED_COMPILE_ACTIONS = [
     "@rules_cc//cc/toolchains/actions:c_compile",

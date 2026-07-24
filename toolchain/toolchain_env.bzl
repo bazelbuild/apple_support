@@ -143,7 +143,7 @@ load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:feature_set.bzl", "cc_feature_set")
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 
-package(default_visibility = ["@apple_support//:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
 
 cc_feature(
     name = "copts_from_env",

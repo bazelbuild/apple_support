@@ -1,7 +1,7 @@
 load("@rules_cc//cc/toolchains:args.bzl", "cc_args")
 load("//toolchain:features.bzl", "negatable_feature")
 
-package(default_visibility = ["//toolchain:__pkg__"])
+package(default_visibility = ["//visibility:public"])
 
 negatable_feature(
     name = "__apple_default_warnings",
@@ -39,7 +39,7 @@ negatable_feature(
         "@platforms//os:ios": ["-DOS_IOS"],
         "@platforms//os:watchos": ["-DOS_IOS"],  # NOTE: This is weird
         "@platforms//os:tvos": ["-DOS_TVOS"],
-        "@platforms//os:visionos": [],
+        "//conditions:default": [],
     }) + ["-fno-autolink"],
 )
 
