@@ -3524,7 +3524,7 @@
               "expand_if_true": null,
               "flag_groups": [],
               "flags": [
-                "-Wl,-prune_interval_lto,10"
+                "-Wl,-v"
               ],
               "iterate_over": null,
               "type_name": "flag_group"
