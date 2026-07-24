@@ -66,3 +66,12 @@ register_toolchains(
 toolchain_env = use_repo_rule("//toolchain:toolchain_env.bzl", "toolchain_env")
 
 toolchain_env(name = "apple_support_toolchain_env")
+
+archive_override(
+    module_name = "rules_cc",
+    integrity = "sha256-IS01TfhY4HmNq2J32Zj0CDxssVe+nMcE37UO33EP/BY=",
+    strip_prefix = "rules_cc-0926ec42202e20871b13e8688af20d013d6073f8",
+    urls = [
+        "https://github.com/bazelbuild/rules_cc/archive/0926ec42202e20871b13e8688af20d013d6073f8.tar.gz",
+    ],
+)
