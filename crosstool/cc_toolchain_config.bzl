@@ -857,11 +857,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                 flag_groups = [flag_group(flags = ["-fobjc-link-runtime"])],
                 with_features = [with_feature_set(not_features = ["kernel_extension"])],
             ),
-            flag_set(
-                actions = _DYNAMIC_LINK_ACTIONS,
-                flag_groups = [flag_group(flags = ["-dead_strip"])],
-                with_features = [with_feature_set(features = ["opt"])],
-            ),
         ],
     )
 
@@ -1680,6 +1675,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     dead_strip_feature = feature(
         name = "dead_strip",
+        enabled = ctx.var["COMPILATION_MODE"] == "opt",
         flag_sets = [
             flag_set(
                 actions = _DYNAMIC_LINK_ACTIONS,

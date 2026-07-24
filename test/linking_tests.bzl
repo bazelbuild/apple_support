@@ -25,11 +25,26 @@ opt_test = make_action_command_line_test_rule(
     },
 )
 
+fastbuild_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "fastbuild",
+    },
+)
+
 dead_strip_requested_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:compilation_mode": "fastbuild",
         "//command_line_option:features": [
             "dead_strip",
+        ],
+    },
+)
+
+opt_dead_strip_disabled_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:compilation_mode": "opt",
+        "//command_line_option:features": [
+            "-dead_strip",
         ],
     },
 )
@@ -167,6 +182,14 @@ def linking_test_suite(name):
         target_under_test = "//test/test_data:macos_binary",
     )
 
+    fastbuild_test(
+        name = "{}_fastbuild_link_test".format(name),
+        tags = [name],
+        not_expected_argv = ["-dead_strip"],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
     dead_strip_requested_test(
         name = "{}_dead_strip_requested_test".format(name),
         tags = [name],
@@ -174,6 +197,14 @@ def linking_test_suite(name):
             "-ObjC",
             "-dead_strip",
         ],
+        mnemonic = "ObjcLink",
+        target_under_test = "//test/test_data:macos_binary",
+    )
+
+    opt_dead_strip_disabled_test(
+        name = "{}_opt_dead_strip_disabled_test".format(name),
+        tags = [name],
+        not_expected_argv = ["-dead_strip"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
