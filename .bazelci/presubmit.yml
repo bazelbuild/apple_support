@@ -140,26 +140,6 @@ tasks:
     bazel: rolling
     <<: *common_toolchain_off
 
-  macos_7_lowest_path_stripping:
-    name: "Path stripping (7.x lowest supported)"
-    bazel: "7.4.0"
-    <<: *path_stripping
-
-  macos_7_lowest_path_stripping_toolchain_off:
-    name: "Path stripping (7.x lowest supported, rules toolchain off)"
-    bazel: "7.4.0"
-    <<: *path_stripping_toolchain_off
-
-  macos_7_path_stripping:
-    name: "Path stripping (7.x LTS)"
-    bazel: 7.x
-    <<: *path_stripping
-
-  macos_7_path_stripping_toolchain_off:
-    name: "Path stripping (7.x LTS, rules toolchain off)"
-    bazel: 7.x
-    <<: *path_stripping_toolchain_off
-
   macos_8_path_stripping:
     name: "Path stripping (8.x LTS)"
     bazel: 8.x
