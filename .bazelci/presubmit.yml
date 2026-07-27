@@ -19,6 +19,31 @@ x_defaults:
       - "--test_tag_filters=-skipci,-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
+  path_stripping: &path_stripping
+    platform: macos_arm64
+    build_targets:
+      - //test/header_parsing:valid_header
+      - //test/layering_check:good_layering_check_objc
+      - //test/test_data:cc_test_binary
+    build_flags:
+      - "--config=path-stripping"
+    test_targets:
+      - //test/layering_check:good_layering_check
+      - //test/rpaths:test
+      - //test:cc_test_with_objc_deps
+      - //test:linkstamp_test
+    test_flags:
+      - "--config=path-stripping"
+
+  path_stripping_toolchain_off: &path_stripping_toolchain_off
+    <<: *path_stripping
+    build_flags:
+      - "--config=path-stripping"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_flags:
+      - "--config=path-stripping"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+
   linux_common: &linux_common
     platform: ubuntu2204
     build_targets:
@@ -115,43 +140,45 @@ tasks:
     bazel: rolling
     <<: *common_toolchain_off
 
-  macos_path_stripping:
-    name: "Path stripping"
-    platform: macos_arm64
-    bazel: latest
-    build_targets:
-      - //test/header_parsing:valid_header
-      - //test/layering_check:good_layering_check_objc
-      - //test/test_data:cc_test_binary
-    build_flags:
-      - "--config=path-stripping"
-    test_targets:
-      - //test/layering_check:good_layering_check
-      - //test/rpaths:test
-      - //test:cc_test_with_objc_deps
-      - //test:linkstamp_test
-    test_flags:
-      - "--config=path-stripping"
+  macos_7_lowest_path_stripping:
+    name: "Path stripping (7.x lowest supported)"
+    bazel: "7.4.0"
+    <<: *path_stripping
 
-  macos_path_stripping_toolchain_off:
-    name: "Path stripping (rules toolchain off)"
-    platform: macos_arm64
-    bazel: latest
-    build_targets:
-      - //test/header_parsing:valid_header
-      - //test/layering_check:good_layering_check_objc
-      - //test/test_data:cc_test_binary
-    build_flags:
-      - "--config=path-stripping"
-      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
-    test_targets:
-      - //test/layering_check:good_layering_check
-      - //test/rpaths:test
-      - //test:cc_test_with_objc_deps
-      - //test:linkstamp_test
-    test_flags:
-      - "--config=path-stripping"
-      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+  macos_7_lowest_path_stripping_toolchain_off:
+    name: "Path stripping (7.x lowest supported, rules toolchain off)"
+    bazel: "7.4.0"
+    <<: *path_stripping_toolchain_off
+
+  macos_7_path_stripping:
+    name: "Path stripping (7.x LTS)"
+    bazel: 7.x
+    <<: *path_stripping
+
+  macos_7_path_stripping_toolchain_off:
+    name: "Path stripping (7.x LTS, rules toolchain off)"
+    bazel: 7.x
+    <<: *path_stripping_toolchain_off
+
+  macos_8_path_stripping:
+    name: "Path stripping (8.x LTS)"
+    bazel: 8.x
+    <<: *path_stripping
+
+  macos_8_path_stripping_toolchain_off:
+    name: "Path stripping (8.x LTS, rules toolchain off)"
+    bazel: 8.x
+    <<: *path_stripping_toolchain_off
+
+  macos_latest_path_stripping:
+    name: "Path stripping (Current LTS)"
+    bazel: last_rc
+    <<: *path_stripping
+
+  macos_latest_path_stripping_toolchain_off:
+    name: "Path stripping (Current LTS, rules toolchain off)"
+    bazel: last_rc
+    <<: *path_stripping_toolchain_off
 
   macos_latest_shell_scripts:
     name: "Shell tests"
