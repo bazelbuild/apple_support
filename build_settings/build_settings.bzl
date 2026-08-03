@@ -19,9 +19,9 @@ load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 visibility("public")
 
 _POSSIBLY_NATIVE_FLAGS = {
-    "xcode_version": (lambda ctx: ctx.fragments.apple.xcode_version_flag, "starlark"),
-    "experimental_prefer_mutual_xcode": (lambda ctx: ctx.fragments.apple.prefer_mutual_xcode, "starlark"),
-    "include_xcode_exec_requirements": (lambda ctx: ctx.fragments.apple.include_xcode_exec_requirements, "starlark"),
+    "xcode_version": (lambda ctx: ctx.fragments.apple.xcode_version_flag, "native"),
+    "experimental_prefer_mutual_xcode": (lambda ctx: ctx.fragments.apple.prefer_mutual_xcode, "native"),
+    "include_xcode_exec_requirements": (lambda ctx: ctx.fragments.apple.include_xcode_exec_requirements, "native"),
     "ios_minimum_os": (lambda ctx: ctx.fragments.apple.ios_minimum_os_flag, "native"),
     "macos_minimum_os": (lambda ctx: ctx.fragments.apple.macos_minimum_os_flag, "native"),
     "tvos_minimum_os": (lambda ctx: ctx.fragments.apple.tvos_minimum_os_flag, "native"),
@@ -43,7 +43,7 @@ _LABEL_FLAGS = set([
     "xcode_version_config",
 ])
 
-def _should_use_native_def(ctx, mode):
+def _should_use_native_def(ctx, flag_name, mode):
     """Returns True if the native definition should be used."""
 
     # If the override to force the Starlark definition for testing/flipping flags one at
@@ -75,7 +75,7 @@ def read_possibly_native_flag(ctx, flag_name):
     """
     native_lambda, mode = _POSSIBLY_NATIVE_FLAGS[flag_name]
 
-    if _should_use_native_def(ctx, mode):
+    if _should_use_native_def(ctx, flag_name, mode):
         return native_lambda(ctx)
 
     # Starlark definition of "--foo" is assumed to be a label dependency named "_foo".
