@@ -1,5 +1,9 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+load(
+    "//xcode:repeatable_string_list_flag.bzl",
+    "repeatable_string_list_flag",
+)
 load("//xcode:xcode_config_resolver.bzl", "xcode_config_resolver")
 
 licenses(["notice"])
@@ -128,4 +132,46 @@ string_flag(
     name = "macos_minimum_os",
     build_setting_default = "",
     scope = "exec:--//xcode:host_macos_minimum_os",
+)
+
+string_flag(
+    name = "host_apple_platform_type",
+    build_setting_default = "macos",
+    scope = "universal",
+)
+
+string_flag(
+    name = "apple_platform_type",
+    build_setting_default = "macos",
+    scope = "exec:--//xcode:host_apple_platform_type",
+)
+
+string_flag(
+    name = "apple_split_cpu",
+    build_setting_default = "",
+)
+
+repeatable_string_list_flag(
+    name = "ios_multi_cpus",
+    build_setting_default = [],
+)
+
+repeatable_string_list_flag(
+    name = "visionos_cpus",
+    build_setting_default = [],
+)
+
+repeatable_string_list_flag(
+    name = "watchos_cpus",
+    build_setting_default = [],
+)
+
+repeatable_string_list_flag(
+    name = "tvos_cpus",
+    build_setting_default = [],
+)
+
+repeatable_string_list_flag(
+    name = "macos_cpus",
+    build_setting_default = [],
 )
