@@ -87,10 +87,10 @@ function rewrite_params_file {
   PARAMSFILE="$1"
   if grep -qe '__BAZEL_XCODE_\(DEVELOPER_DIR\|SDKROOT\)__' "$PARAMSFILE" ; then
     NEWFILE="$(mktemp "${TMPDIR%/}/bazel_xcode_wrapper_params.XXXXXXXXXX")"
-    sed \
-        -e "s#__BAZEL_XCODE_DEVELOPER_DIR__#$DEVELOPER_DIR#g" \
-        -e "s#__BAZEL_XCODE_SDKROOT__#$SDKROOT#g" \
-        "$PARAMSFILE" > "$NEWFILE"
+    IFS= read -r -d '' CONTENT < "$PARAMSFILE" || [[ -n "$CONTENT" ]]
+    CONTENT="${CONTENT//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
+    CONTENT="${CONTENT//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
+    printf '%s' "$CONTENT" > "$NEWFILE"
     echo "$NEWFILE"
   else
     # There were no placeholders to substitute, so just return the original
