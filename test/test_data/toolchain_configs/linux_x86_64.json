@@ -498,6 +498,16 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "module_map_without_extern_module",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": true,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "sanitize_pwd",
       "provides": [],
       "requires": [],

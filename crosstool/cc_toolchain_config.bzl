@@ -2304,6 +2304,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "exclude_private_headers_in_module_maps"),
         feature(name = "fastbuild"),
         feature(name = "module_maps", enabled = True),
+        feature(name = "module_map_without_extern_module", enabled = True),
         feature(name = "no_legacy_features"),
         feature(name = "only_doth_headers_in_module_maps"),
         feature(name = "opt"),

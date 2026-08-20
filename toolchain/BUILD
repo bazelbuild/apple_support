@@ -36,6 +36,7 @@ MARKER_FEATURES = [
     "compiler_param_file_on_demand",
     "exclude_private_headers_in_module_maps",
     "gcc_quoting_for_param_files",
+    "module_map_without_extern_module",
     "no_dotd_file",
     "no_legacy_features",
     "only_doth_headers_in_module_maps",
@@ -47,6 +48,7 @@ MARKER_FEATURES = [
 
 ENABLED_MARKERS = [
     "archive_param_file",
+    "module_map_without_extern_module",
     "sanitize_pwd",
     "set_soname",
 ] + (
