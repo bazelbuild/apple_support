@@ -33,7 +33,7 @@ env -i \
   xcrun \
     --sdk macosx \
     clang \
-    -mmacosx-version-min=10.15 \
+    -mmacosx-version-min=11.0 \
     -std=c++17 \
     -lc++ \
     -arch arm64 \
