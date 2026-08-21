@@ -19,7 +19,6 @@ def http_dmg_test_deps():
     http_dmg(
         name = "http_dmg_test_firefox",
         urls = [
-            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg",
             "https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg",
         ],
         integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
@@ -30,7 +29,6 @@ def http_dmg_test_deps():
     http_dmg(
         name = "http_dmg_test_firefox_strip_prefix",
         urls = [
-            "https://mirror.bazel.build/ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg",
             "https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg",
         ],
         integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
