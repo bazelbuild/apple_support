@@ -306,7 +306,10 @@ cc_args(
 
 dynamic_toolchain_info(
     name = "dynamic_toolchain_info",
-    visibility = ["//:__subpackages__"],
+    # The `cc_toolchain` macro references this from inside a select() on
+    # //configs:apple, so an external consumer of the macro that targets an
+    # Apple platform needs to be able to see it.
+    visibility = ["//visibility:public"],
 )
 
 xcode_execution_info(
@@ -333,6 +336,18 @@ negatable_feature(
         "//configs:apple": [":dynamic_toolchain_info"],
         "//conditions:default": [],
     }),
+)
+
+# As `default_required_flags`, but without the Xcode-derived `-target`, for a
+# toolchain that pins its own triple. Its consumer supplies `--target=` in its
+# own args, the way //test/linux_toolchain does.
+negatable_feature(
+    name = "plain_required_flags",
+    actions = [
+        "@rules_cc//cc/toolchains/actions:link_actions",
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+    ],
+    args = ["-no-canonical-prefixes"],
 )
 
 negatable_feature(
