@@ -63,6 +63,7 @@ def cc_toolchain(
             library to link when `static_link_cpp_runtimes` is enabled.
         static_runtime_lib: Passed through to `cc_toolchain`.
     """
+
     # -no_warn_duplicate_libraries and -reproducible are accepted by Xcode's
     # ld64 and by ld64.lld from LLVM 19 on; older ld64.lld rejects arguments
     # it does not know.
