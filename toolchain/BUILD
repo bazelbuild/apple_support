@@ -338,18 +338,6 @@ negatable_feature(
     }),
 )
 
-# As `default_required_flags`, but without the Xcode-derived `-target`, for a
-# toolchain that pins its own triple. Its consumer supplies `--target=` in its
-# own args, the way //test/linux_toolchain does.
-negatable_feature(
-    name = "plain_required_flags",
-    actions = [
-        "@rules_cc//cc/toolchains/actions:link_actions",
-        "@rules_cc//cc/toolchains/actions:compile_actions",
-    ],
-    args = ["-no-canonical-prefixes"],
-)
-
 negatable_feature(
     name = "__apply_simulator_compiler_flags",
     actions = [

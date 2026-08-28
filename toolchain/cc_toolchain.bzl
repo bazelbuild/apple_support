@@ -14,10 +14,9 @@ def cc_toolchain(
         sysroot_feature,
         supports_header_parsing,
         tool_map,
-        target_from_xcode = True,
         flags_from_env = True,
         coverage_instrumentation = True,
-        apple_linker_flags = True,
+        llvm_version = None,
         extra_enabled_features = None,
         extra_known_features = None,
         extra_include_directories = None,
@@ -39,52 +38,42 @@ def cc_toolchain(
             work the tool does around the compiler. A `tool_map` that does not
             drive `wrapped_clang` itself has to supply a tool that resolves the
             placeholders and acts on the sentinels the same way.
-        target_from_xcode: Whether to take the target triple from the Xcode
-            configuration on Apple platforms, which is what this repo's own
-            toolchain does and which ignores `target`. Set it to False to use
-            `target` on every platform, as a toolchain that pins its own triple
-            (and passes its own deployment-target flag) needs.
         flags_from_env: Whether to append the flags read from `BAZEL_COPTS`,
             `BAZEL_CONLYOPTS`, `BAZEL_CXXOPTS` and `BAZEL_LINKOPTS`. Defaults to
             True. Note that `BAZEL_CXXOPTS` defaults to `-std=c++17`, so a
             toolchain that sets its own C++ standard has to turn this off --
             the environment is read once per build, so it also cannot differ
             between two toolchains in the same workspace.
-        apple_linker_flags: Whether to pass the link flags that only Apple's
-            `ld64` accepts -- `-no_warn_duplicate_libraries` and
-            `-reproducible`. Defaults to True, which is right for a toolchain
-            that links with the `ld` from Xcode. `ld64.lld` rejects an argument
-            it does not know, so a toolchain linking with a bundled `ld64.lld`
-            has to turn this off for the LLVM versions that predate it.
         coverage_instrumentation: Whether to contribute the gcc and llvm
-            coverage-map-format instrumentation flags. Defaults to True. Set it
-            to False to instrument from the consumer's own args instead --
-            which format Bazel picks is otherwise up to Bazel, and the gcc one
-            is the default.
-        extra_enabled_features: A `cc_feature_set` of extra features to enable,
-            in addition to the `//toolchain:extra_enabled_features` flag. A
-            toolchain that is generated more than once per workspace needs this
-            as an attribute, since the flag is global and cannot differ between
-            two toolchains.
-        extra_known_features: A `cc_feature_set` of extra features to make
-            known, in addition to the `//toolchain:extra_known_features` flag.
-        extra_include_directories: A `cc_args` of extra include directories, in
-            addition to the `//toolchain:extra_include_directories` flag.
+            coverage-map-format instrumentation flags, letting Bazel pick the
+            format (the gcc one unless --experimental_use_llvm_covmap).
+            Defaults to True. Set it to False for a toolchain that instruments
+            from its own args -- e.g. one whose coverage tooling is llvm-only
+            and so always wants the llvm format.
+        llvm_version: The LLVM version of the tools in `tool_map`, e.g.
+            "17.0.6", when they come from a plain LLVM distribution rather
+            than from Xcode. Link flags that a distribution's `ld64.lld` only
+            accepts from some LLVM version on are dropped for the versions
+            before it; None (the default) means Xcode's tools, which accept
+            them all.
+        extra_enabled_features: A `cc_feature_set` of extra features to enable.
+        extra_known_features: A `cc_feature_set` of extra features to make known.
+        extra_include_directories: A `cc_args` of extra include directories.
         dynamic_runtime_lib: Passed through to `cc_toolchain`. The dynamic
-            library to link when `static_link_cpp_runtimes` is enabled, which
-            is how a sanitizer runtime dylib reaches a test's runfiles.
+            library to link when `static_link_cpp_runtimes` is enabled.
         static_runtime_lib: Passed through to `cc_toolchain`.
     """
+    # -no_warn_duplicate_libraries and -reproducible are accepted by Xcode's
+    # ld64 and by ld64.lld from LLVM 19 on; older ld64.lld rejects arguments
+    # it does not know.
+    linker_takes_apple_flags = (not llvm_version) or int(llvm_version.split(".")[0]) >= 19
+
     extra_enabled_features = [extra_enabled_features] if extra_enabled_features else []
     extra_known_features = [extra_known_features] if extra_known_features else []
     extra_include_directories = [extra_include_directories] if extra_include_directories else []
     _cc_toolchain(
         name = name,
         args = [
-            # An allowlist of the directories Xcode and the command line tools
-            # install into. It only widens what Bazel will accept as a builtin
-            # include, so it cannot break a build that does not need it, and
-            # any toolchain compiling against an Xcode SDK does need it.
             Label("@apple_support_toolchain_env//:include_directories_from_xcode"),
             Label("//toolchain:extra_include_directories"),
         ] + extra_include_directories + select({
@@ -165,7 +154,7 @@ def cc_toolchain(
         ] + ([
             Label("@apple_support_toolchain_env//:linkopts_from_env"),  # TODO: Join with the copts below
         ] if flags_from_env else []) + [
-            Label("//toolchain:default_required_flags") if target_from_xcode else Label("//toolchain:plain_required_flags"),
+            Label("//toolchain:default_required_flags"),
             Label("//toolchain:__apply_simulator_compiler_flags"),
             Label("//toolchain/sanitizers:asan_wrapper"),
             Label("//toolchain/sanitizers:tsan_wrapper"),
@@ -200,7 +189,7 @@ def cc_toolchain(
                 Label("//toolchain:reproducible_linker_flag"),
             ],
             "//conditions:default": [],
-        }) if apple_linker_flags else []) + [
+        }) if linker_takes_apple_flags else []) + [
             Label("//toolchain:external_include_paths_wrapper"),
         ] + select({
             Label("//configs:apple"): [
