@@ -15,7 +15,6 @@ def cc_toolchain(
         supports_header_parsing,
         tool_map,
         flags_from_env = True,
-        coverage_instrumentation = True,
         llvm_version = None,
         extra_enabled_features = None,
         extra_known_features = None,
@@ -44,12 +43,6 @@ def cc_toolchain(
             toolchain that sets its own C++ standard has to turn this off --
             the environment is read once per build, so it also cannot differ
             between two toolchains in the same workspace.
-        coverage_instrumentation: Whether to contribute the gcc and llvm
-            coverage-map-format instrumentation flags, letting Bazel pick the
-            format (the gcc one unless --experimental_use_llvm_covmap).
-            Defaults to True. Set it to False for a toolchain that instruments
-            from its own args -- e.g. one whose coverage tooling is llvm-only
-            and so always wants the llvm format.
         llvm_version: The LLVM version of the tools in `tool_map`, e.g.
             "17.0.6", when they come from a plain LLVM distribution rather
             than from Xcode. Link flags that a distribution's `ld64.lld` only
@@ -141,10 +134,9 @@ def cc_toolchain(
         ] + select({
             Label("//configs:apple"): [Label("//toolchain:lto_object_path")],
             "//conditions:default": [],
-        }) + ([
+        }) + [
             Label("//toolchain/coverage:llvm_coverage_map_format_wrapper"),
             Label("//toolchain/coverage:gcc_coverage_map_format_wrapper"),
-        ] if coverage_instrumentation else []) + [
             Label("//toolchain/coverage:coverage_prefix_map"),
             Label("//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic_wrapper"),
             Label("//toolchain/objc:__apple_default_compiler_flags"),
@@ -206,10 +198,8 @@ def cc_toolchain(
             Label("//toolchain/coverage"),
             Label("//toolchain:kernel_extension"),
             Label("//toolchain:serialized_diagnostics_file"),
-        ] + ([
             Label("//toolchain/coverage:llvm_coverage_map_format"),
             Label("//toolchain/coverage:gcc_coverage_map_format"),
-        ] if coverage_instrumentation else []) + [
             Label("//toolchain/coverage:_coverage_prefix_map_absolute_sources_non_hermetic"),
             Label("//toolchain/sanitizers:asan"),
             Label("//toolchain/sanitizers:tsan"),
