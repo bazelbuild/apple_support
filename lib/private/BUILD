@@ -12,7 +12,6 @@ bzl_library(
     visibility = [
         "//lib:__subpackages__",
         "//rules:__subpackages__",
-        "//test:__pkg__",
     ],
 )
 
