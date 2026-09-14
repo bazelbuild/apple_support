@@ -47,6 +47,18 @@ ios_simulator_test = make_action_command_line_test_rule(
     },
 )
 
+# The compiler wrappers must remain macOS-configured even when a Linux
+# execution platform is preferred. Analysis fails in apple_genrule otherwise.
+linux_first_ios_simulator_test = make_action_command_line_test_rule(
+    config_settings = {
+        "//command_line_option:platforms": str(Label("//platforms:ios_sim_arm64")),
+        "//command_line_option:extra_execution_platforms": [
+            str(Label("//test/linux_toolchain:linux_x86_64")),
+            str(Label("@bazel_tools//tools:host_platform")),
+        ],
+    },
+)
+
 ios_device_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:platforms": "@@//platforms:ios_arm64",  # buildifier: disable=canonical-repository
@@ -209,6 +221,15 @@ def compiling_test_suite(name):
         not_expected_argv = [
             "-DOS_MACOSX",
         ],
+        mnemonic = "ObjcCompile",
+        target_under_test = "//test/test_data:objc_lib",
+    )
+
+    linux_first_ios_simulator_test(
+        name = "{}_ios_simulator_linux_first_compile_test".format(name),
+        tags = [name],
+        expected_argv = ["-DOS_IOS"],
+        not_expected_argv = ["-DOS_MACOSX"],
         mnemonic = "ObjcCompile",
         target_under_test = "//test/test_data:objc_lib",
     )
