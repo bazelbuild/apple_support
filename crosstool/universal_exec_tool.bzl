@@ -11,6 +11,7 @@ def _force_exec_impl(ctx):
         ),
     ]
 
+# TODO: Remove once we drop bazel 8.x and the legacy toolchain
 force_exec = rule(
     attrs = {
         "target": attr.label(
