@@ -20,6 +20,7 @@ force_exec = rule(
         ),
     },
     implementation = _force_exec_impl,
+    exec_compatible_with = ["@platforms//os:macos"],
 )
 
 def universal_exec_tool(*, name, out, srcs):
