@@ -5,19 +5,21 @@ set -euo pipefail
 readonly binary="%{binary}s"
 output=$(ar t "$binary")
 
-# NOTE: The first character of the transition hash is enough to verify they're unique
-if ! echo "$output" | grep -q "duplicate_9.*.o"; then
-  echo "error: missing expected object 1: $output" >&2
+# The hash includes the full object path, including Bazel's configuration hash.
+# Ignore its value, but require distinct hashes for the two duplicate.cc sources.
+duplicate_object_names=$(echo "$output" | grep -E '^duplicate_[[:xdigit:]]{16}\.o$' | sort -u || true)
+if [[ $(echo "$duplicate_object_names" | grep -c . || true) -ne 2 ]]; then
+  echo "error: expected two distinct hashed duplicate objects: $output" >&2
   exit 1
 fi
 
-if ! echo "$output" | grep -q "duplicate_a.*.o"; then
-  echo "error: missing expected object 2: $output" >&2
+if [[ $(echo "$output" | grep -Ec '^cc_lib_[[:xdigit:]]{16}\.o$' || true) -ne 1 ]]; then
+  echo "error: expected one hashed cc_lib object: $output" >&2
   exit 1
 fi
 
-if ! echo "$output" | grep -q "cc_lib_6.*.o"; then
-  echo "error: missing expected object 3: $output" >&2
+if [[ $(echo "$output" | grep -c '\.o$' || true) -ne 3 ]]; then
+  echo "error: expected exactly three archive objects: $output" >&2
   exit 1
 fi
 
