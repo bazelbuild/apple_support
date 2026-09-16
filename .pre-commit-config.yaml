@@ -3,12 +3,12 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/keith/pre-commit-buildifier
-    rev: 8.5.1.1
+    rev: 10.0.1
     hooks:
       - id: buildifier
       - id: buildifier-lint
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v22.1.5
+    rev: v23.1.1
     hooks:
       - id: clang-format
