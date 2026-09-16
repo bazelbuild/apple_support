@@ -5,7 +5,7 @@ variable reading use cases.
 """
 
 load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
-load("@bazel_tools//tools/osx:xcode_configure.bzl", "run_xcode_locator")
+load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
