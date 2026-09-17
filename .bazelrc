@@ -1,5 +1,7 @@
 common --enable_platform_specific_config
 
+common --check_direct_dependencies=off
+
 common --repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=1
 
 common --repo_env=BAZEL_CONLYOPTS=-DCONLY_ENV=1
