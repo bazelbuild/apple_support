@@ -1075,6 +1075,45 @@
         },
         {
           "actions": [
+            "c++-compile",
+            "c++-header-parsing",
+            "c++-module-codegen",
+            "c++-module-compile",
+            "clif-match",
+            "linkstamp-compile",
+            "lto-backend",
+            "objc++-compile"
+          ],
+          "flag_groups": [
+            {
+              "expand_if_available": null,
+              "expand_if_equal": null,
+              "expand_if_false": null,
+              "expand_if_not_available": null,
+              "expand_if_true": null,
+              "flag_groups": [],
+              "flags": [
+                "-Xclang",
+                "-fno-cxx-modules",
+                "-Wno-module-import-in-extern-c"
+              ],
+              "iterate_over": null,
+              "type_name": "flag_group"
+            }
+          ],
+          "type_name": "flag_set",
+          "with_features": [
+            {
+              "features": [
+                "use_module_maps"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            }
+          ]
+        },
+        {
+          "actions": [
             "assemble",
             "c++-compile",
             "c++-header-parsing",
