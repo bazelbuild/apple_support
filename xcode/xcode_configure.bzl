@@ -94,7 +94,8 @@ def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir,
     return build_contents
 
 VERSION_CONFIG_STUB = """
-load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("@apple_support//xcode:xcode_config.bzl", "detected_xcodes", "xcode_config")
+detected_xcodes(name = 'detected_xcodes')
 xcode_config(name = 'host_xcodes')
 """
 
@@ -222,6 +223,9 @@ def _darwin_build_file(repository_ctx):
     if xcodeloc_err:
         return VERSION_CONFIG_STUB + "\n# Error: " + xcodeloc_err + "\n"
 
+    if not toolchains:
+        return VERSION_CONFIG_STUB
+
     default_xcode_version = ""
     default_xcode_build_version = ""
     if xcodebuild_result.return_code == 0:
@@ -234,10 +238,14 @@ def _darwin_build_file(repository_ctx):
     default_xcode_target = ""
     target_names = []
     buildcontents = """
-load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("@apple_support//xcode:xcode_config.bzl", "detected_xcodes", "xcode_config")
 load("@apple_support//xcode:available_xcodes.bzl", "available_xcodes")
 load("@apple_support//xcode:xcode_version.bzl", "xcode_version")
 """
+    buildcontents += "detected_xcodes(name = 'detected_xcodes', versions = %s)\n" % repr([
+        toolchain.version
+        for toolchain in toolchains
+    ])
 
     for toolchain in toolchains:
         version = toolchain.version
