@@ -47,7 +47,7 @@ sh_test(
     name = "apple_genrule_test",
     size = "small",
     srcs = ["apple_genrule_test.sh"],
-    args = ["$(location simple_genrule.txt)"],
+    args = ["$(rootpath simple_genrule.txt)"],
     data = ["simple_genrule.txt"],
 )
 

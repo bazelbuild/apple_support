@@ -11,7 +11,7 @@ exports_files(glob(
 apple_genrule(
     name = "generate_layering_check_modulemap",
     outs = ["layering_check.modulemap"],
-    cmd = "$(location generate-modulemap.sh) > $(OUTS)",
+    cmd = "$(execpath generate-modulemap.sh) > $(OUTS)",
     tags = ["manual"],
     tools = ["generate-modulemap.sh"],
 )
