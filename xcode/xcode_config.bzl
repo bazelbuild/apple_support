@@ -166,7 +166,7 @@ preserved, and an empty string omits the hint.
         ),
         "detected_versions": attr.label(
             default = "@local_config_xcode//:detected_xcodes",
-            providers = [[_DetectedXcodesInfo]],
+            providers = [_DetectedXcodesInfo],
             doc = """\
 Locally detected Xcode versions used only in diagnostics. These do not affect
 which versions are supported or selected.
