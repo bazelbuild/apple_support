@@ -15,6 +15,7 @@
 """Implementation of the `xcode_config` build rule."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
+load("@bazel_features//private:util.bzl", "ge")
 load("//build_settings:build_settings.bzl", "read_possibly_native_flag")
 load(
     "//xcode:providers.bzl",
@@ -285,6 +286,13 @@ def _aliases_to_xcode_version(versions):
                 version_map[version_string] = version
     return version_map
 
+def _fail_xcode_selection(message):
+    # stack_trace was added in Bazel 9.0.1.
+    # https://github.com/bazelbuild/bazel/pull/28817
+    if ge("9.0.1"):
+        fail(message, stack_trace = False)
+    fail(message)
+
 def _display_xcode_version(version, known_versions = [], detected_versions = []):
     # A build number can appear in version metadata without being a registered
     # alias. Resolve it for display only; do not change version selection.
@@ -389,7 +397,7 @@ def _resolve_xcode_from_local_and_remote(
             return remote_version_from_flag.xcode_version_properties, availability
 
         else:  # fail if we can't find any version to match
-            fail(
+            _fail_xcode_selection(
                 ("\n\033[1;31mXcode {0} was not found.\033[0m\n\n" +
                  "  Detected locally: {1}\n" +
                  "  Available remotely: {2}\n\n" +
@@ -398,7 +406,6 @@ def _resolve_xcode_from_local_and_remote(
                     ", ".join([_display_xcode_version(version.xcode_version_properties.xcode_version) for version in local_versions]) or "none",
                     ", ".join([_display_xcode_version(version.xcode_version_properties.xcode_version) for version in remote_versions]) or "none",
                 ),
-                stack_trace = False,
             )
 
     # --xcode_version is not set
@@ -488,7 +495,7 @@ def _resolve_explicitly_defined_version(
                 detected_message = "\033[1mDetected locally:\033[0m\n  {}\n\n".format(
                     "\n  ".join(sorted({_format_xcode_version(version): True for version in detected_versions})),
                 )
-            fail(
+            _fail_xcode_selection(
                 ("\n\033[1;31mBazel couldn’t match the selected Xcode to this project’s supported versions:\033[0m\n" +
                  "  {0}\n\n" +
                  "\033[1mSupported versions:\033[0m\n  {1}\n\n" +
@@ -499,7 +506,6 @@ def _resolve_explicitly_defined_version(
                     detected_message,
                     xcode_selection_hint + "\n" if xcode_selection_hint else "",
                 ),
-                stack_trace = False,
             )
     return alias_to_versions.get(explicit_default_version.xcode_version_properties.xcode_version).xcode_version_properties
 
