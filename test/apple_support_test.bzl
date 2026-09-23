@@ -94,6 +94,23 @@ for file in "${{FILES[@]}}"; do
     assert_not_contains "$file" "{sdkroot_path_placeholder}"
 done
 
+for file in "{args_file}" "{args_and_files_file}"; do
+    assert_contains_line "$file" "XCODE_PATH_ARG=$DEVELOPER_DIR"
+    assert_contains_line "$file" "SDKROOT_PATH_ARG=$SDKROOT"
+    assert_contains_line "$file" "COMBINED_PATH_ARG=$DEVELOPER_DIR:$SDKROOT:$DEVELOPER_DIR:$SDKROOT"
+done
+
+(
+    export DEVELOPER_DIR='/Applications/Xcode & # \\ test.app/Contents/Developer'
+    export SDKROOT='/SDKs/MacOSX & # \\ test.sdk'
+    params="$TEST_TMPDIR/special_chars.params"
+    output="$TEST_TMPDIR/special_chars.out"
+    printf '%s\\n' '{xcode_path_placeholder}' '{sdkroot_path_placeholder}' > "$params"
+    "{params_processor}" /bin/bash -c 'cat "${{1#@}}"' _ "@$params" > "$output"
+    assert_contains_line "$output" "$DEVELOPER_DIR"
+    assert_contains_line "$output" "$SDKROOT"
+)
+
 echo "Test passed"
 
 exit 0
@@ -136,6 +153,10 @@ def _apple_support_test_impl(ctx):
     platform_frameworks = apple_support.path_placeholders.platform_frameworks(
         apple_platform_info = apple_platform_info,
     )
+    combined_placeholders = "{xcode}:{sdkroot}:{xcode}:{sdkroot}".format(
+        sdkroot = apple_support.path_placeholders.sdkroot(),
+        xcode = apple_support.path_placeholders.xcode(),
+    )
 
     apple_support.run(
         actions = ctx.actions,
@@ -148,6 +169,7 @@ def _apple_support_test_impl(ctx):
             "XCODE_PATH_ARG={}".format(apple_support.path_placeholders.xcode()),
             "FRAMEWORKS_PATH_ARG={}".format(platform_frameworks),
             "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
+            "COMBINED_PATH_ARG={}".format(combined_placeholders),
         ],
         xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
         exec_group = "mac_exec_group",
@@ -163,11 +185,25 @@ def _apple_support_test_impl(ctx):
     action_args.add(
         "SDKROOT_PATH_ARG={}".format(apple_support.path_placeholders.sdkroot()),
     )
+    action_args.add(
+        "COMBINED_PATH_ARG={}".format(combined_placeholders),
+    )
     action_args.set_param_file_format("multiline")
     action_args.use_param_file("@%s", use_always = True)
 
+    params_processors = []
+
+    def write_params_processor(output, content, **kwargs):
+        ctx.actions.write(output, content, **kwargs)
+        params_processors.append(output)
+
     apple_support.run(
-        actions = ctx.actions,
+        actions = struct(
+            args = ctx.actions.args,
+            declare_file = ctx.actions.declare_file,
+            run = ctx.actions.run,
+            write = write_params_processor,
+        ),
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
         apple_platform_info = apple_platform_info,
         outputs = [run_output_xcode_path_in_file],
@@ -202,7 +238,10 @@ def _apple_support_test_impl(ctx):
 
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.write(test_script, _TEST_SCRIPT_CONTENTS.format(
+        args_and_files_file = run_output_xcode_path_in_file.short_path,
+        args_file = run_output_xcode_path_in_args.short_path,
         file_paths = "\n    ".join([x.short_path for x in test_files]),
+        params_processor = params_processors[0].short_path,
         sdkroot_path_placeholder = apple_support.path_placeholders.sdkroot(),
         xcode_path_placeholder = apple_support.path_placeholders.xcode(),
     ), is_executable = True)
@@ -221,7 +260,7 @@ def _apple_support_test_impl(ctx):
             executable = test_script,
             files = depset([run_output_xcode_path_in_args]),
             runfiles = ctx.runfiles(
-                files = test_files,
+                files = test_files + params_processors,
             ),
         ),
     ]
