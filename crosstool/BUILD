@@ -76,3 +76,15 @@ force_exec(
     name = "exec_llvm_cov",
     target = ":exec_llvm_cov.target_config",
 )
+
+genrule(
+    name = "exec_gcov.target_config",
+    srcs = ["gcov.sh"],
+    outs = ["gcov"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+force_exec(
+    name = "exec_gcov",
+    target = ":exec_gcov.target_config",
+)

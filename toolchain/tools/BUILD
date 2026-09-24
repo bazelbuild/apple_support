@@ -19,6 +19,7 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:strip": ":strip_tool",
         "@rules_cc//cc/toolchains/actions:llvm_profdata": ":llvm_profdata_tool",
         "@rules_cc//cc/toolchains/actions:llvm_cov": ":llvm_cov_tool",
+        "@rules_cc//cc/toolchains/actions:gcov": ":gcov_tool",
     },
     visibility = ["//:__subpackages__"],
 )
@@ -56,5 +57,11 @@ cc_tool(
 cc_tool(
     name = "llvm_cov_tool",
     src = "//crosstool:exec_llvm_cov",
+    execution_requirements = ["//toolchain:xcode_execution_info"],
+)
+
+cc_tool(
+    name = "gcov_tool",
+    src = "//crosstool:exec_gcov",
     execution_requirements = ["//toolchain:xcode_execution_info"],
 )
