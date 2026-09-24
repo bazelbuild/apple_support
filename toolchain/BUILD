@@ -183,12 +183,28 @@ cc_args_list(
     name = "default_compile_flags",
     args = [
         ":objcpp_default_flags",
+        ":no_cxx_modules_flags",
         "//toolchain/sanitizers:no_asan_compile_flags",
         ":always_compile_flags",
         ":fastbuild_compile_flags",
         ":opt_compile_flags",
         ":dbg_compile_flags",
     ],
+)
+
+# Bazel's layering_check is built on Clang module maps, which -std=c++20
+# breaks: from Clang 14 on the driver switches to C++20 modules semantics
+# unless told otherwise, and Bazel does not support C++20 modules yet.
+# https://github.com/llvm/llvm-project/commit/0556138624edf48621dd49a463dbe12e7101f17d
+cc_args(
+    name = "no_cxx_modules_flags",
+    actions = ["@rules_cc//cc/toolchains/actions:cpp_compile_actions"],
+    args = [
+        "-Xclang",
+        "-fno-cxx-modules",
+        "-Wno-module-import-in-extern-c",
+    ],
+    requires_any_of = ["@rules_cc//cc/toolchains/args/layering_check:use_module_maps"],
 )
 
 cc_args(
@@ -306,7 +322,10 @@ cc_args(
 
 dynamic_toolchain_info(
     name = "dynamic_toolchain_info",
-    visibility = ["//:__subpackages__"],
+    # The `cc_toolchain` macro references this from inside a select() on
+    # //configs:apple, so an external consumer of the macro that targets an
+    # Apple platform needs to be able to see it.
+    visibility = ["//visibility:public"],
 )
 
 xcode_execution_info(

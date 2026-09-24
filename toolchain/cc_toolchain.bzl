@@ -13,7 +13,14 @@ def cc_toolchain(
         module_map,
         sysroot_feature,
         supports_header_parsing,
-        tool_map):
+        tool_map,
+        flags_from_env = True,
+        llvm_version = None,
+        extra_enabled_features = None,
+        extra_known_features = None,
+        extra_include_directories = None,
+        dynamic_runtime_lib = None,
+        static_runtime_lib = None):
     """Defines a C/C++ toolchain with Apple defaults on Apple platforms.
 
     Args:
@@ -22,14 +29,48 @@ def cc_toolchain(
         module_map: Module map artifact for modular builds.
         supports_header_parsing: Whether header parsing actions are supported.
         sysroot_feature: The enabled feature that supplies the toolchain's sysroot.
-        tool_map: The `cc_tool_map` that supplies the toolchain's tools.
+        tool_map: The `cc_tool_map` that supplies the toolchain's tools. On
+            Apple platforms some of the toolchain's args are not compiler flags
+            but part of `wrapped_clang`'s protocol -- the `__BAZEL_*` path
+            placeholders, and the sentinel args `STRIP_DEBUG_SYMBOLS`,
+            `LINKED_BINARY=...` and `DSYM_HINT_DSYM_PATH=...` that stand for
+            work the tool does around the compiler. A `tool_map` that does not
+            drive `wrapped_clang` itself has to supply a tool that resolves the
+            placeholders and acts on the sentinels the same way.
+        flags_from_env: Whether to append the flags read from `BAZEL_COPTS`,
+            `BAZEL_CONLYOPTS`, `BAZEL_CXXOPTS` and `BAZEL_LINKOPTS`. Defaults to
+            True. Note that `BAZEL_CXXOPTS` defaults to `-std=c++17`, so a
+            toolchain that sets its own C++ standard has to turn this off --
+            the environment is read once per build, so it also cannot differ
+            between two toolchains in the same workspace.
+        llvm_version: The LLVM version of the tools in `tool_map`, e.g.
+            "17.0.6", when they come from a plain LLVM distribution rather
+            than from Xcode. Link flags that a distribution's `ld64.lld` only
+            accepts from some LLVM version on are dropped for the versions
+            before it; None (the default) means Xcode's tools, which accept
+            them all.
+        extra_enabled_features: A `cc_feature_set` of extra features to enable.
+        extra_known_features: A `cc_feature_set` of extra features to make known.
+        extra_include_directories: A `cc_args` of extra include directories.
+        dynamic_runtime_lib: Passed through to `cc_toolchain`. The dynamic
+            library to link when `static_link_cpp_runtimes` is enabled.
+        static_runtime_lib: Passed through to `cc_toolchain`.
     """
+
+    # -no_warn_duplicate_libraries and -reproducible are accepted by Xcode's
+    # ld64 and by ld64.lld from LLVM 19 on; older ld64.lld rejects arguments
+    # it does not know.
+    linker_takes_apple_flags = (not llvm_version) or int(llvm_version.split(".")[0]) >= 19
+
+    extra_enabled_features = [extra_enabled_features] if extra_enabled_features else []
+    extra_known_features = [extra_known_features] if extra_known_features else []
+    extra_include_directories = [extra_include_directories] if extra_include_directories else []
     _cc_toolchain(
         name = name,
         args = [
             Label("@apple_support_toolchain_env//:include_directories_from_xcode"),
             Label("//toolchain:extra_include_directories"),
-        ] + select({
+        ] + extra_include_directories + select({
             Label("//configs:apple"): [Label("//toolchain:apple_env")],
             "//conditions:default": [],
         }),
@@ -103,14 +144,18 @@ def cc_toolchain(
             Label("//toolchain:headerpad"),
             Label("@rules_cc//cc/toolchains/args/objc_arc_flags:feature"),
             Label("//toolchain:user_link_flags"),  # TODO: Switch to upstream feature
+        ] + ([
             Label("@apple_support_toolchain_env//:linkopts_from_env"),  # TODO: Join with the copts below
+        ] if flags_from_env else []) + [
             Label("//toolchain:default_required_flags"),
             Label("//toolchain:__apply_simulator_compiler_flags"),
             Label("//toolchain/sanitizers:asan_wrapper"),
             Label("//toolchain/sanitizers:tsan_wrapper"),
             Label("//toolchain/sanitizers:ubsan_wrapper"),
             Label("//toolchain/sanitizers:default_sanitizer_flags"),
+        ] + ([
             Label("@apple_support_toolchain_env//:copts_from_env"),
+        ] if flags_from_env else []) + [
             Label("//toolchain:default_link_flags"),
         ] + select({
             Label("//toolchain:opt_mode"): [Label("//toolchain:dead_strip")],
@@ -122,6 +167,7 @@ def cc_toolchain(
             Label("//toolchain:apply_implicit_frameworks"),
             Label("//toolchain:link_cocoa_wrapper"),
             Label("//toolchain:extra_enabled_features"),
+        ] + extra_enabled_features + [
             Label("@rules_cc//cc/toolchains/args/compile_flags:user_compile_flags_feature"),  # TODO: Switch to compile_flags:feature if ordering isn't an issue
             Label("//toolchain:unfiltered_compile_flags"),
             Label("@rules_cc//cc/toolchains/args/compiler_input_flags:feature"),
@@ -130,13 +176,13 @@ def cc_toolchain(
             Label("@rules_cc//cc/toolchains/args/soname_flags:feature"),
             Label("//toolchain:suppress_warnings_wrapper"),
             Label("//toolchain:treat_warnings_as_errors_wrapper"),
-        ] + select({
+        ] + (select({
             Label("//configs:apple"): [
                 Label("//toolchain:no_warn_duplicate_libraries"),
                 Label("//toolchain:reproducible_linker_flag"),
             ],
             "//conditions:default": [],
-        }) + [
+        }) if linker_takes_apple_flags else []) + [
             Label("//toolchain:external_include_paths_wrapper"),
         ] + select({
             Label("//configs:apple"): [
@@ -169,6 +215,7 @@ def cc_toolchain(
             Label("//toolchain/pgo:autofdo"),
             Label("//toolchain/pgo:fdo_optimize"),
             Label("@apple_support_toolchain_env//:off_by_default_layering_check_known_features"),
+        ] + extra_known_features + [
             Label("//toolchain:extra_known_features"),
             Label("@rules_cc//cc/toolchains/args/layering_check:use_module_maps"),  # TODO: https://github.com/bazelbuild/rules_cc/pull/657
         ] + select({
@@ -184,6 +231,8 @@ def cc_toolchain(
             Label("//configs:apple"): [Label("//toolchain:stack_frame_variable")],
             "//conditions:default": [],
         }),
+        dynamic_runtime_lib = dynamic_runtime_lib,
+        static_runtime_lib = static_runtime_lib,
         module_map = module_map,
         supports_header_parsing = supports_header_parsing,
         supports_param_files = True,
