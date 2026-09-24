@@ -1,5 +1,6 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "objc_library")
+load(":compile_without_module_maps.bzl", "compile_without_module_maps")
 
 package(features = ["layering_check"])
 
@@ -74,4 +75,15 @@ objc_library(
 build_test(
     name = "good_layering_check_objc_test",
     targets = [":good_layering_check_objc"],
+)
+
+# layering_check is requested for the whole package, but must be dropped for rules that declare
+# module_maps as unsupported instead of failing on the missing module map variables.
+compile_without_module_maps(
+    name = "compile_without_module_maps",
+)
+
+build_test(
+    name = "compile_without_module_maps_test",
+    targets = [":compile_without_module_maps"],
 )

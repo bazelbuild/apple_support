@@ -2234,12 +2234,44 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         ],
     )
 
+    # Same layout as rules_cc's unix toolchain: `use_module_maps` carries the module map flags and
+    # requires the `module_maps` marker feature. `layering_check` implies `use_module_maps`, so it is
+    # automatically disabled for rules that declare `module_maps` as unsupported (e.g. cgo in
+    # rules_go) instead of failing on the missing `module_name` variable.
+    use_module_maps_feature = feature(
+        name = "use_module_maps",
+        requires = [feature_set(features = ["module_maps"])],
+        flag_sets = [
+            flag_set(
+                actions = [
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_header_parsing,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-Xclang",
+                            "-fmodule-name=%{module_name}",
+                            "-Xclang",
+                            "-fmodule-map-file=%{module_map_file}",
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
     modulemaps = ctx.attr.module_map[DefaultInfo].files.to_list()
     if modulemaps:
         if len(modulemaps) != 1:
             fail("internal error: expected 1 modulemap got:", modulemaps)
         layering_check_feature = feature(
             name = "layering_check",
+            implies = ["use_module_maps"],
             flag_sets = [
                 flag_set(
                     actions = [
@@ -2255,10 +2287,6 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                             flags = [
                                 "-fmodules-strict-decluse",
                                 "-Wprivate-header",
-                                "-Xclang",
-                                "-fmodule-name=%{module_name}",
-                                "-Xclang",
-                                "-fmodule-map-file=%{module_map_file}",
                             ],
                         ),
                         flag_group(
@@ -2381,6 +2409,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         treat_warnings_as_errors_feature,
         no_warn_duplicate_libraries_feature,
         reproducible_linker_flag_feature,
+        use_module_maps_feature,
         layering_check_feature,
         external_include_paths_feature,
     ]
