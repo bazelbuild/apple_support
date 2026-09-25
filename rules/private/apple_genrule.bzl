@@ -54,7 +54,7 @@ def _apple_genrule_impl(ctx):
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
 
     resolved_inputs, argv, _runfiles_manifests = ctx.resolve_command(
-        command = ctx.attr.cmd,
+        command = "source %s; %s" % (ctx.file._genrule_setup.path, ctx.attr.cmd),
         attribute = "cmd",
         expand_locations = True,
         make_variables = _compute_make_variables(
@@ -83,7 +83,7 @@ def _apple_genrule_impl(ctx):
         apple_platform_info = apple_platform_info,
         executable = argv[0],
         arguments = argv[1:],
-        inputs = depset(resolved_inputs, transitive = [resolved_srcs]),
+        inputs = depset(resolved_inputs + [ctx.file._genrule_setup], transitive = [resolved_srcs]),
         outputs = files_to_build,
         env = ctx.configuration.default_shell_env,
         progress_message = "%s %s" % (message, ctx.label),
@@ -142,6 +142,10 @@ action is run.
         ),
         "no_sandbox": attr.bool(
             doc = "If the sandbox should be disabled when the action is run.",
+        ),
+        "_genrule_setup": attr.label(
+            allow_single_file = True,
+            default = Label("@bazel_tools//tools/genrule:genrule-setup.sh"),
         ),
     },
     doc = """\
