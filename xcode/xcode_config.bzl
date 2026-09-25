@@ -28,7 +28,26 @@ load(
 
 visibility("public")
 
-unavailable_xcode_message = "'bazel fetch --configure'"
+xcode_config_message_templates = struct(
+    local_version_located_but_conflicts_with_remote_version = """\
+Xcode version {version} was selected, either because --xcode_version was passed, or \
+because xcode-select points to this version locally. This corresponds to \
+local Xcode version {local_version}. That build of version {version} is not available \
+remotely, but there is a different build of version {remote_version}, which has \
+version {remote_version} and aliases {remote_version_aliases}. You probably meant to use this version. \
+Please download it *and delete version {local_version}, then run `bazel shutdown` \
+to continue using dynamic execution. If you really did intend to use \
+local version {local_version}, please specify it fully with --xcode_version={local_version}.""",
+    explicit_version_with_local_and_remote_versions_unavailable = """\
+--xcode_version={version} specified, but '{version}' is not an available Xcode version. \
+Locally available versions: [{local_versions}]. Remotely available versions: [{remote_versions}]. If \
+you believe you have '{version}' installed, try running {command}, and then \
+re-run your command.""",
+    explicit_version_unavailable = """\
+--xcode_version={version} specified, but '{version}' is not an available Xcode version. \
+If you believe you have '{version}' installed, try running "bazel shutdown", and then \
+re-run your command.""",
+)
 
 def _xcode_config_impl(ctx):
     # TODO: remove when we test with Bazel 8+
@@ -68,11 +87,14 @@ def _xcode_config_impl(ctx):
             read_possibly_native_flag(ctx, "xcode_version"),
             read_possibly_native_flag(ctx, "experimental_prefer_mutual_xcode"),
             local_default_version,
+            ctx.attr.explicit_version_with_local_and_remote_versions_unavailable_message,
+            ctx.attr.local_version_located_but_conflicts_with_remote_version_message,
         )
     else:
         xcode_version_properties = _resolve_explicitly_defined_version(
             explicit_versions,
             explicit_default_version,
+            ctx.attr.explicit_version_unavailable_message,
             read_possibly_native_flag(ctx, "xcode_version"),
         )
         availability = "UNKNOWN"
@@ -178,6 +200,44 @@ version. This may not be set if `versions` is set.
 """,
             providers = [[AvailableXcodesInfo]],
         ),
+        # Message templates
+        "explicit_version_with_local_and_remote_versions_unavailable_message": attr.string(
+            default = xcode_config_message_templates.explicit_version_with_local_and_remote_versions_unavailable,
+            doc = """\
+Template string. Contains the following named fields:
+
+- `version`: the provided Xcode version
+- `command`: a command to suggest running to reconfigure your Bazel client
+- `local_versions`: a comma-separated list of allowed Xcode versions for local execution defined in the xcode_config
+- `remote_versions`: a comma-separated list of allowed Xcode versions for remote execution defined in the xcode_config
+
+Emitted when either `local_versions` or `remote_versions` are set in the xcode_config,
+but a provided explicitly-defined Xcode version is unavailable under neither of them.""",
+        ),
+        "explicit_version_unavailable_message": attr.string(
+            default = xcode_config_message_templates.explicit_version_unavailable,
+            doc = """\
+Template string. Contains the following named fields:
+
+- `version`: the provided Xcode version
+
+Emitted when a provided explicitly-defined Xcode version is unavailable under the xcode_config.""",
+        ),
+        "local_version_located_but_conflicts_with_remote_version_message": attr.string(
+            default = xcode_config_message_templates.local_version_located_but_conflicts_with_remote_version,
+            doc = """\
+Template string. Contains the following named fields:
+
+- `version`: the provided Xcode version
+- `local_version`: the resolved local Xcode version that differs from the remote version
+- `remote_version`: the resolved remote Xcode version that differs from the local version
+- `remote_version_aliases`: any configured aliases the remote version is available under
+
+Emitted when a provided explicitly-defined Xcode version is resolved to a local version
+that conflicts with the remote_versions configuration.""",
+        ),
+
+        # Private settings
         "_xcode_version": attr.label(
             default = "@apple_support//xcode:version",
         ),
@@ -205,6 +265,11 @@ A single target of this rule can be referenced by the `--xcode_version_config`
 build flag to translate the `--xcode_version` flag into an accepted official
 Xcode version. This allows selection of an official Xcode version from a number
 of registered aliases.
+
+Template string messages abide by the semantics of Starlark. A provided string can
+contain any of the named values described by the given attribute's docstring,
+but cannot contain any fields beyond those described, any positional fields,
+or printf-style conversion specifications (%).
 """,
     fragments = ["apple", "cpp"],
     implementation = _xcode_config_impl,
@@ -225,17 +290,17 @@ def _use_available_xcodes(
         return True
     return False
 
-def _duplicate_alias_error(alias, versions):
-    labels_containing_alias = []
-    for version in versions:
-        if alias in version.aliases or (version.xcode_version_properties.xcode_version == alias):
-            labels_containing_alias.append(str(version.label))
-    return "'{}' is registered to multiple labels ({}) in a single xcode_config rule".format(
-        alias,
-        ", ".join(labels_containing_alias),
-    )
-
 def _aliases_to_xcode_version(versions):
+    def _duplicate_alias_error(alias, versions):
+        labels_containing_alias = []
+        for version in versions:
+            if alias in version.aliases or (version.xcode_version_properties.xcode_version == alias):
+                labels_containing_alias.append(str(version.label))
+        return "'{alias}' is registered to multiple labels ({labels}) in a single xcode_config rule".format(
+            alias = alias,
+            labels = ", ".join(labels_containing_alias),
+        )
+
     version_map = {}
     if not versions:
         return version_map
@@ -258,7 +323,9 @@ def _resolve_xcode_from_local_and_remote(
         remote_versions,
         xcode_version_flag,
         prefer_mutual_xcode,
-        local_default_version):
+        local_default_version,
+        explicit_version_with_local_and_remote_versions_unavailable_message,
+        local_version_located_but_conflicts_with_remote_version_message):
     local_alias_to_version_map = _aliases_to_xcode_version(local_versions)
     remote_alias_to_version_map = _aliases_to_xcode_version(remote_versions)
 
@@ -279,6 +346,7 @@ def _resolve_xcode_from_local_and_remote(
         remote_version_from_flag = remote_alias_to_version_map.get(xcode_version_flag)
         local_version_from_flag = local_alias_to_version_map.get(xcode_version_flag)
         availability = "BOTH"
+        unavailable_xcode_message = "'bazel fetch --configure'"
 
         if remote_version_from_flag and local_version_from_flag:
             local_version_from_remote_versions = remote_alias_to_version_map.get(local_version_from_flag.xcode_version_properties.xcode_version)
@@ -286,31 +354,21 @@ def _resolve_xcode_from_local_and_remote(
                 return remote_version_from_flag.xcode_version_properties, availability
             else:
                 fail(
-                    ("Xcode version {0} was selected, either because --xcode_version was passed, or" +
-                     " because xcode-select points to this version locally. This corresponds to" +
-                     " local Xcode version {1}. That build of version {0} is not available" +
-                     " remotely, but there is a different build of version {2}, which has" +
-                     " version {2} and aliases {3}. You probably meant to use this version." +
-                     " Please download it *and delete version {1}, then run `bazel shutdown`" +
-                     " to continue using dynamic execution. If you really did intend to use" +
-                     " local version {1}, please specify it fully with --xcode_version={1}.").format(
-                        xcode_version_flag,
-                        local_version_from_flag.xcode_version_properties.xcode_version,
-                        remote_version_from_flag.xcode_version_properties.xcode_version,
-                        remote_version_from_flag.aliases,
+                    local_version_located_but_conflicts_with_remote_version_message.format(
+                        version = xcode_version_flag,
+                        local_version = local_version_from_flag.xcode_version_properties.xcode_version,
+                        remote_version = remote_version_from_flag.xcode_version_properties.xcode_version,
+                        remote_version_aliases = remote_version_from_flag.aliases,
                     ),
                 )
 
         elif local_version_from_flag:
-            error = (
-                " --xcode_version={} specified, but it is not available remotely. Actions " +
-                "requiring Xcode will be run locally, which could make your build slower."
-            ).format(
-                xcode_version_flag,
-            )
-            if (mutually_available_versions):
-                error += " Consider using one of [{}].".format(
-                    ", ".join([version for version in mutually_available_versions]),
+            error = """\
+--xcode_version={version} specified, but it is not available remotely. Actions \
+requiring Xcode will be run locally, which could make your build slower.""".format(version = xcode_version_flag)
+            if mutually_available_versions:
+                error += " Consider using one of [{available_versions}].".format(
+                    available_versions = ", ".join([version for version in mutually_available_versions]),
                 )
 
             # buildifier: disable=print
@@ -319,29 +377,28 @@ def _resolve_xcode_from_local_and_remote(
 
         elif remote_version_from_flag:
             # buildifier: disable=print
-            print(("--xcode_version={version} specified, but it is not available locally. " +
-                   "Your build will fail if any actions require a local Xcode. " +
-                   "If you believe you have '{version}' installed, try running {command}," +
-                   "and then re-run your command. Locally available versions: {local_versions}. ")
-                .format(
-                version = xcode_version_flag,
-                command = unavailable_xcode_message,
-                local_versions = ", ".join([version for version in local_alias_to_version_map.keys()]),
-            ))
+            print(
+                """\
+--xcode_version={version} specified, but it is not available locally. \
+Your build will fail if any actions require a local Xcode. \
+If you believe you have '{version}' installed, try running {command}, \
+and then re-run your command. Locally available versions: {local_versions}.""".format(
+                    version = xcode_version_flag,
+                    command = unavailable_xcode_message,
+                    local_versions = ", ".join([version for version in local_alias_to_version_map.keys()]),
+                ),
+            )
             availability = "REMOTE"
 
             return remote_version_from_flag.xcode_version_properties, availability
 
         else:  # fail if we can't find any version to match
             fail(
-                ("--xcode_version={0} specified, but '{0}' is not an available Xcode version." +
-                 " Locally available versions: [{2}]. Remotely available versions: [{3}]. If" +
-                 " you believe you have '{0}' installed, try running {1}, and then" +
-                 " re-run your command.").format(
-                    xcode_version_flag,
-                    unavailable_xcode_message,
-                    ", ".join([version.xcode_version_properties.xcode_version for version in local_versions]),
-                    ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions]),
+                explicit_version_with_local_and_remote_versions_unavailable_message.format(
+                    version = xcode_version_flag,
+                    command = unavailable_xcode_message,
+                    local_versions = ", ".join([version.xcode_version_properties.xcode_version for version in local_versions]),
+                    remote_versions = ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions]),
                 ),
             )
 
@@ -353,14 +410,18 @@ def _resolve_xcode_from_local_and_remote(
     if not mutually_available_versions:
         # buildifier: disable=print
         print(
-            ("Using a local Xcode version, '{}', since there are no" +
-             " remotely available Xcodes on this machine. Consider downloading one of the" +
-             " remotely available Xcode versions ({}) in order to get the best build" +
-             " performance.").format(local_default_version.xcode_version_properties.xcode_version, ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions])),
+            """\
+Using a local Xcode version, '{local_version}', since there are no \
+remotely available Xcodes on this machine. Consider downloading one of the \
+remotely available Xcode versions ({remote_versions}) in order to get the best build \
+performance.""".format(
+                local_version = local_default_version.xcode_version_properties.xcode_version,
+                remote_versions = ", ".join([version.xcode_version_properties.xcode_version for version in remote_versions]),
+            ),
         )
         local_version = local_default_version
         availability = "LOCAL"
-    elif (local_default_version.xcode_version_properties.xcode_version in remote_alias_to_version_map):
+    elif local_default_version.xcode_version_properties.xcode_version in remote_alias_to_version_map:
         #  If the local default version is also available remotely, use it.
         availability = "BOTH"
         local_version = remote_alias_to_version_map.get(local_default_version.xcode_version_properties.xcode_version)
@@ -401,15 +462,14 @@ def _sdk_version_flag(apple_fragment, name):
 def _resolve_explicitly_defined_version(
         explicit_versions,
         explicit_default_version,
+        explicit_version_unavailable_message,
         xcode_version_flag):
     if explicit_default_version and explicit_default_version.label not in [
         version.label
         for version in explicit_versions
     ]:
         fail(
-            "default label '{}' must be contained in versions attribute".format(
-                explicit_default_version.label,
-            ),
+            "default label '{label}' must be contained in versions attribute".format(label = explicit_default_version.label),
         )
     if not explicit_versions:
         if explicit_default_version:
@@ -422,14 +482,9 @@ def _resolve_explicitly_defined_version(
     alias_to_versions = _aliases_to_xcode_version(explicit_versions)
     if xcode_version_flag:
         flag_version = alias_to_versions.get(str(xcode_version_flag))
-        if flag_version:
-            return flag_version.xcode_version_properties
-        else:
-            fail(
-                ("--xcode_version={0} specified, but '{0}' is not an available Xcode version. " +
-                 "If you believe you have '{0}' installed, try running \"bazel shutdown\", and then " +
-                 "re-run your command.").format(xcode_version_flag),
-            )
+        if not flag_version:
+            fail(explicit_version_unavailable_message.format(version = xcode_version_flag))
+        return flag_version.xcode_version_properties
     return alias_to_versions.get(explicit_default_version.xcode_version_properties.xcode_version).xcode_version_properties
 
 def _dotted_version_or_default(field, default):
