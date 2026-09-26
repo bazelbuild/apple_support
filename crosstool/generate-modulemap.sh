@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-cd "$(xcode-select -p)"
+cd "${DEVELOPER_DIR:-/Library/Developer/CommandLineTools}"
 
 echo 'module "crosstool" [system] {'
 
