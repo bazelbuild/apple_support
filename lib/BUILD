@@ -6,6 +6,11 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+exports_files([
+    "processor_script_args.sh",
+    "processor_script_args_and_files.sh",
+])
+
 # Public bzl_library for anything that needs to depend on apple_support.bzl.
 bzl_library(
     name = "apple_support",

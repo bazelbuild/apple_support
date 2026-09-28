@@ -29,6 +29,10 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
+# TODO: b/564915597 - Remove _XCODE_PROCESSOR__ARGS and _XCODE_PROCESSOR__ARGS_AND_FILES
+# once all apple_support.run callers migrate from apple_common.XcodeVersionConfig to
+# XcodeVersionInfo.
+# LINT.IfChange(xcode_processor_args)
 _XCODE_PROCESSOR__ARGS = r"""#!/bin/bash
 
 set -eu
@@ -57,7 +61,9 @@ done
 
 exec "$TOOLNAME" "${ARGS[@]}"
 """
+# LINT.ThenChange(processor_script_args.sh)
 
+# LINT.IfChange(xcode_processor_args_and_files)
 _XCODE_PROCESSOR__ARGS_AND_FILES = r"""#!/bin/bash
 
 set -eu
@@ -145,6 +151,7 @@ done
 # afterward.
 "$TOOLNAME" "${ARGS[@]}"
 """
+# LINT.ThenChange(processor_script_args_and_files.sh)
 
 def _platform_frameworks_path_placeholder(*, apple_platform_info):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
@@ -360,21 +367,27 @@ def _run(
         ))
         return
 
-    # Since a label/name isn't passed in, use the first output to derive a name
-    # that will hopefully be unique.
-    output0 = kwargs.get("outputs")[0]
-    if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
-        script = _XCODE_PROCESSOR__ARGS
-        suffix = "args"
+    if hasattr(xcode_config, "processor_script_args"):
+        if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
+            processor_script = xcode_config.processor_script_args()
+        else:
+            processor_script = xcode_config.processor_script_args_and_files()
     else:
-        script = _XCODE_PROCESSOR__ARGS_AND_FILES
-        suffix = "args_and_files"
-    processor_script = actions.declare_file("{}_{}_processor_script_{}.sh".format(
-        output0.basename,
-        hash(output0.short_path),
-        suffix,
-    ))
-    actions.write(processor_script, script, is_executable = True)
+        # TODO: b/564915597 - Remove legacy per-action declare_file fallback once all
+        # callers migrate from apple_common.XcodeVersionConfig to XcodeVersionInfo.
+        output0 = kwargs.get("outputs")[0]
+        if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
+            script = _XCODE_PROCESSOR__ARGS
+            suffix = "args"
+        else:
+            script = _XCODE_PROCESSOR__ARGS_AND_FILES
+            suffix = "args_and_files"
+        processor_script = actions.declare_file("{}_{}_processor_script_{}.sh".format(
+            output0.basename,
+            hash(output0.short_path),
+            suffix,
+        ))
+        actions.write(processor_script, script, is_executable = True)
 
     processed_kwargs = _kwargs_for_apple_platform(
         xcode_config = xcode_config,

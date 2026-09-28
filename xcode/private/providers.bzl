@@ -130,7 +130,9 @@ def _xcode_version_info_init(
         xcode_version,
         availability,
         xcode_version_flag,
-        include_xcode_execution_info):
+        include_xcode_execution_info,
+        processor_script_args = None,
+        processor_script_args_and_files = None):
     execution_requirements = {
         "requires-darwin": "",
         "supports-xcode-requirements-set": "",
@@ -228,6 +230,8 @@ def _xcode_version_info_init(
         "sdk_version_for_platform": _sdk_version_for_platform,
         "availability": lambda: availability.lower(),
         "execution_info": lambda: execution_requirements,
+        "processor_script_args": lambda: processor_script_args,
+        "processor_script_args_and_files": lambda: processor_script_args_and_files,
     }
 
 XcodeVersionInfo, _new_xcode_version_info = provider(
@@ -264,6 +268,14 @@ determined.
         "execution_info": """\
 A zero-argument function that returns the execution requirements for actions
 that use this Xcode configuration.
+""",
+        "processor_script_args": """\
+A zero-argument function that returns the shared executable wrapper script File
+for resolving Xcode placeholders in arguments.
+""",
+        "processor_script_args_and_files": """\
+A zero-argument function that returns the shared executable wrapper script File
+for resolving Xcode placeholders in arguments and response files.
 """,
     },
     init = _xcode_version_info_init,

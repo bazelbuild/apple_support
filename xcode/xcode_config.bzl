@@ -125,6 +125,8 @@ def _xcode_config_impl(ctx):
         availability = availability,
         xcode_version_flag = read_possibly_native_flag(ctx, "xcode_version"),
         include_xcode_execution_info = read_possibly_native_flag(ctx, "include_xcode_exec_requirements"),
+        processor_script_args = ctx.file._xcode_processor_args,
+        processor_script_args_and_files = ctx.file._xcode_processor_args_and_files,
     )
 
     providers = [
@@ -202,6 +204,14 @@ version. This may not be set if `versions` is set.
         ),
         "_watchos_minimum_os": attr.label(
             default = "@build_bazel_apple_support//xcode:watchos_minimum_os",
+        ),
+        "_xcode_processor_args": attr.label(
+            allow_single_file = True,
+            default = "@build_bazel_apple_support//lib:processor_script_args.sh",
+        ),
+        "_xcode_processor_args_and_files": attr.label(
+            allow_single_file = True,
+            default = "@build_bazel_apple_support//lib:processor_script_args_and_files.sh",
         ),
     },
     doc = """\
