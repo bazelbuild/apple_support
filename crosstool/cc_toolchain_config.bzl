@@ -771,6 +771,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     gcc_coverage_map_format_feature = feature(
         name = "gcc_coverage_map_format",
+        env_sets = [
+            env_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}")],
+            ),
+        ],
         flag_sets = [
             flag_set(
                 actions = [
