@@ -3283,7 +3283,28 @@
     },
     {
       "enabled": true,
-      "env_sets": [],
+      "env_sets": [
+        {
+          "actions": [
+            "c++-compile",
+            "c++-module-compile",
+            "c-compile",
+            "objc++-compile",
+            "objc-compile",
+            "preprocess-assemble"
+          ],
+          "env_entries": [
+            {
+              "expand_if_available": null,
+              "key": "GCOV_GCNO_FILE",
+              "type_name": "env_entry",
+              "value": "%{gcov_gcno_file}"
+            }
+          ],
+          "type_name": "env_set",
+          "with_features": []
+        }
+      ],
       "flag_sets": [
         {
           "actions": [
