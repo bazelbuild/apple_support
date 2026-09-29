@@ -467,6 +467,14 @@ int main(int argc, char* argv[]) {
                     toolchain_path, consumer);
   }
 
+  const char* gcno_file = getenv("GCOV_GCNO_FILE");
+  if (gcno_file != nullptr && gcno_file[0] != '\0') {
+    auto gcda_file =
+        std::filesystem::path(gcno_file).replace_extension(".gcda");
+    consumer("-Xclang");
+    consumer("-coverage-data-file=" + gcda_file.string());
+  }
+
   char* modulemap = getenv("APPLE_SUPPORT_MODULEMAP");
   std::unique_ptr<TempFile> vfs_overlay_file;
   if (modulemap != nullptr) {
