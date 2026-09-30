@@ -19,6 +19,40 @@
 
 OSX_EXECUTE_TIMEOUT = 600
 
+def _watch_xcode_version_files(repository_ctx, developer_dir):
+    # xcode-select and xcode-locator return the normalized Contents/Developer path. Command Line Tools is not an Xcode bundle.
+    developer_path = repository_ctx.path(developer_dir)
+    if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
+        return
+
+    # The locator reads the release version from Info.plist and the build
+    # number from version.plist. Watch even missing files so that restoring an 
+    # installation invalidates the repository, and keep the logical path to track symlink replacements.
+    for filename in ["Info.plist", "version.plist"]:
+        repository_ctx.watch(developer_path.dirname.get_child(filename))
+
+def watch_selected_xcode(repository_ctx):
+    """Tracks in-place upgrades of the Xcode used by repository-time tools.
+
+    This does not discover new installations or track xcode-select switches;
+    callers still need the existing environment-based invalidation for those.
+
+    Args:
+      repository_ctx: The repository context.
+    """
+    if not repository_ctx.os.name.startswith("mac os"):
+        return
+
+    result = repository_ctx.execute([
+        "/usr/bin/env",
+        "-i",
+        "DEVELOPER_DIR={}".format(repository_ctx.getenv("DEVELOPER_DIR", "")),
+        "/usr/bin/xcode-select",
+        "--print-path",
+    ])
+    if result.return_code == 0 and result.stdout.strip():
+        _watch_xcode_version_files(repository_ctx, result.stdout.strip())
+
 def _search_string(fullstring, prefix, suffix):
     """Returns the substring between two given substrings of a larger string.
 
@@ -121,6 +155,10 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
       err: An error string describing the error that occurred when attempting
           to build and run xcode-locator, or None if the run was successful.
     """
+
+    # Register this before compiling the locator, including when compilation
+    # fails and the caller caches an empty Xcode configuration.
+    watch_selected_xcode(repository_ctx)
     repository_ctx.report_progress("Building xcode-locator")
     xcodeloc_src_path = str(repository_ctx.path(xcode_locator_src_label))
     env = repository_ctx.os.environ
@@ -192,6 +230,7 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
                 aliases = infosplit[1].split(","),
                 developer_dir = infosplit[2],
             )
+            _watch_xcode_version_files(repository_ctx, toolchain.developer_dir)
             xcode_toolchains.append(toolchain)
     return (xcode_toolchains, None)
 
