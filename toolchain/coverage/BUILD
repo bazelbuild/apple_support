@@ -30,6 +30,13 @@ cc_args(
 )
 
 cc_args(
+    name = "gcc_coverage_data_file",
+    actions = _COVERAGE_COMPILE_ACTIONS,
+    env = {"GCOV_GCNO_FILE": "{gcov_gcno_file}"},
+    format = {"gcov_gcno_file": "@rules_cc//cc/toolchains/variables:gcov_gcno_file"},
+)
+
+cc_args(
     name = "gcc_coverage_map_format_link_args",
     actions = [
         "@rules_cc//cc/toolchains/actions:cpp_link_executable",
@@ -43,6 +50,7 @@ enableable_feature(
     custom_args = [
         ":gcc_coverage_map_format_compile_args",
         ":gcc_coverage_map_format_link_args",
+        ":gcc_coverage_data_file",
     ],
     overrides = "@rules_cc//cc/toolchains/features/legacy:gcc_coverage_map_format",
     requires_any_of = [":coverage"],
