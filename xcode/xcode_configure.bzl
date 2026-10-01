@@ -20,24 +20,15 @@
 OSX_EXECUTE_TIMEOUT = 600
 
 def _watch_xcode_version_files(repository_ctx, developer_dir):
-    # Only Xcode's Contents/Developer directory identifies bundle metadata.
-    # Command Line Tools is not an Xcode bundle.
     developer_path = repository_ctx.path(developer_dir)
     if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
         return
 
-    # The locator reads the release version from Info.plist and the build
-    # number from version.plist. Watch even missing files so that restoring an
-    # installation invalidates the repository. Keep logical paths so the
-    # watches follow symlink replacements.
     for filename in ["Info.plist", "version.plist"]:
         repository_ctx.watch(developer_path.dirname.get_child(filename))
 
 def watch_selected_xcode(repository_ctx):
-    """Tracks in-place upgrades of the Xcode used by repository-time tools.
-
-    Uses DEVELOPER_DIR when set, otherwise the system selection symlink.
-    Switching the system selection still requires environment-based invalidation.
+    """Watches the selected Xcode's version files.
 
     Args:
       repository_ctx: The repository context.
@@ -48,17 +39,13 @@ def watch_selected_xcode(repository_ctx):
     developer_dir = repository_ctx.getenv("DEVELOPER_DIR", "")
     selected_path = repository_ctx.path(developer_dir or "/var/db/xcode_select_link")
 
-    # Track missing installations and selection links being created or removed.
-    # Watching a directory does not track its children or symlink destination.
     repository_ctx.watch(selected_path)
     if not selected_path.exists:
         return
 
-    # Resolve the symlink before taking the parent: path normalization would
-    # turn xcode_select_link/../version.plist into /var/db/version.plist.
+    # Resolve first; ".." would be normalized before following the symlink.
     resolved_path = selected_path.realpath
     if resolved_path.basename.endswith(".app"):
-        # Keep the logical path so the plist watches follow bundle replacements.
         developer_path = selected_path.get_child("Contents", "Developer")
     elif developer_dir:
         developer_path = selected_path

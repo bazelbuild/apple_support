@@ -56,4 +56,18 @@ toolchain works. Here are some of the more commonly useful ones:
   `/Applications` is the standard directory, and this improves toolchain
   setup performance.
 
+### Detecting Xcode upgrades
+
+When Xcode is upgraded at the same path, `apple_support` reruns discovery
+on the next build to update the Xcode version and SDK defaults. It watches
+`Contents/Info.plist` and `Contents/version.plist` in each discovered Xcode.
+The legacy C++ toolchain watches the selected Xcode before its linker checks.
+
+`DEVELOPER_DIR` takes precedence over `/var/db/xcode_select_link`. Changing
+`DEVELOPER_DIR` invalidates the repository. For `xcode-select` switches,
+new installations at other paths, and Bazel's cached Xcode paths, follow
+the [Xcode selection and invalidation instructions][xcode_invalidation].
+Xcode remains a host dependency.
+
 [rules_apple]: https://github.com/bazelbuild/rules_apple
+[xcode_invalidation]: https://github.com/bazelbuild/rules_apple/blob/main/doc/common_info.md#xcode-version-selection-and-invalidation
