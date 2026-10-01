@@ -2326,6 +2326,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "no_dotd_file"),
         feature(name = "sanitize_pwd", enabled = True),
         feature(name = "set_soname", enabled = True),
+        feature(name = "skip_virtual_includes"),
 
         # Features with more configuration
         strip_args_feature,
