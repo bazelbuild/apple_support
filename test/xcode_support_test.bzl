@@ -21,6 +21,10 @@ load(
     "@build_bazel_apple_support//lib:xcode_support.bzl",
     "xcode_support",
 )
+load(
+    "@build_bazel_apple_support//xcode:providers.bzl",
+    "XcodeVersionInfo",
+)
 
 visibility("private")
 
@@ -46,7 +50,7 @@ def _xcode_support_test_impl(ctx):
     """Implementation of the xcode_support_test rule."""
 
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_config = ctx.attr._xcode_config[XcodeVersionInfo]
     ctx.actions.write(test_script, _TEST_SCRIPT_CONTENTS.format(
         past_version_is_true = str(xcode_support.is_xcode_at_least_version(xcode_config, "1.0")),
         future_version_is_false = str(xcode_support.is_xcode_at_least_version(xcode_config, "999")),
