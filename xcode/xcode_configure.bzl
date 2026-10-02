@@ -24,6 +24,8 @@ def _watch_xcode_version_files(repository_ctx, developer_dir):
     if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
         return
 
+    # The locator reads CFBundleShortVersionString from Info.plist and
+    # ProductBuildVersion from version.plist, including build-only updates.
     for filename in ["Info.plist", "version.plist"]:
         repository_ctx.watch(developer_path.dirname.get_child(filename))
 
@@ -39,19 +41,18 @@ def watch_selected_xcode(repository_ctx):
     developer_dir = repository_ctx.getenv("DEVELOPER_DIR", "")
     selected_path = repository_ctx.path(developer_dir or "/var/db/xcode_select_link")
 
+    # Watch existence changes too, so installing Xcode after a missing
+    # selection invalidates the repository. This must precede the early return.
     repository_ctx.watch(selected_path)
     if not selected_path.exists:
         return
 
     # Resolve first; ".." would be normalized before following the symlink.
-    resolved_path = selected_path.realpath
-    if resolved_path.basename.endswith(".app"):
-        developer_path = selected_path.get_child("Contents", "Developer")
-    elif developer_dir:
-        developer_path = selected_path
-    else:
-        developer_path = resolved_path
-    _watch_xcode_version_files(repository_ctx, developer_path)
+    if selected_path.realpath.basename.endswith(".app"):
+        selected_path = selected_path.get_child("Contents", "Developer")
+    elif not developer_dir:
+        selected_path = selected_path.realpath
+    _watch_xcode_version_files(repository_ctx, selected_path)
 
 def _search_string(fullstring, prefix, suffix):
     """Returns the substring between two given substrings of a larger string.
