@@ -11,11 +11,29 @@ x_defaults:
     test_flags:
       - "--test_tag_filters=-skipci"
 
+  modern_common: &modern_common
+    <<: *common
+    build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
+    test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
+      - "--test_tag_filters=-skipci"
+
   common_toolchain_off: &common_toolchain_off
     <<: *common
     build_flags:
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
+      - "--test_tag_filters=-skipci,-requires_rules_based_toolchain"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+
+  modern_common_toolchain_off: &modern_common_toolchain_off
+    <<: *modern_common
+    build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
+      - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
+    test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--test_tag_filters=-skipci,-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
@@ -27,24 +45,39 @@ x_defaults:
       - "//tools/http_dmg/..."
       - "//test/linux_toolchain/..."
 
-  linux_common_toolchain_off: &linux_common_toolchain_off
+  modern_linux_common: &modern_linux_common
     <<: *linux_common
     build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
+    test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
+
+  modern_linux_common_toolchain_off: &modern_linux_common_toolchain_off
+    <<: *modern_linux_common
+    build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--test_tag_filters=-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
-  windows_common: &windows_common
+  modern_windows_common: &modern_windows_common
     platform: windows
+    build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
     test_targets:
       - "//tools/http_dmg/..."
+    test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
 
-  windows_common_toolchain_off: &windows_common_toolchain_off
-    <<: *windows_common
+  modern_windows_common_toolchain_off: &modern_windows_common_toolchain_off
+    <<: *modern_windows_common
     build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--test_tag_filters=-requires_rules_based_toolchain"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
@@ -88,32 +121,32 @@ tasks:
   macos_8:
     name: "8.x LTS"
     bazel: 8.x
-    <<: *common
+    <<: *modern_common
 
   macos_8_toolchain_off:
     name: "8.x LTS (rules toolchain off)"
     bazel: 8.x
-    <<: *common_toolchain_off
+    <<: *modern_common_toolchain_off
 
   macos_latest:
     name: "Current LTS"
     bazel: last_rc
-    <<: *common
+    <<: *modern_common
 
   macos_latest_toolchain_off:
     name: "Current LTS (rules toolchain off)"
     bazel: last_rc
-    <<: *common_toolchain_off
+    <<: *modern_common_toolchain_off
 
   macos_rolling:
     name: "Latest Rolling"
     bazel: rolling
-    <<: *common
+    <<: *modern_common
 
   macos_rolling_toolchain_off:
     name: "Latest Rolling (rules toolchain off)"
     bazel: rolling
-    <<: *common_toolchain_off
+    <<: *modern_common_toolchain_off
 
   macos_path_stripping:
     name: "Path stripping"
@@ -124,6 +157,7 @@ tasks:
       - //test/layering_check:good_layering_check_objc
       - //test/test_data:cc_test_binary
     build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--config=path-stripping"
     test_targets:
       - //test/layering_check:good_layering_check
@@ -131,6 +165,7 @@ tasks:
       - //test:cc_test_with_objc_deps
       - //test:linkstamp_test
     test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--config=path-stripping"
 
   macos_path_stripping_toolchain_off:
@@ -142,6 +177,7 @@ tasks:
       - //test/layering_check:good_layering_check_objc
       - //test/test_data:cc_test_binary
     build_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--config=path-stripping"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
     test_targets:
@@ -150,6 +186,7 @@ tasks:
       - //test:cc_test_with_objc_deps
       - //test:linkstamp_test
     test_flags:
+      - "--module_mirrors=https://bcr.cloudflaremirrors.com"
       - "--config=path-stripping"
       - "--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0"
 
@@ -174,42 +211,42 @@ tasks:
   macos_last_green:
     name: "Last Green Bazel"
     bazel: last_green
-    <<: *common
+    <<: *modern_common
 
   macos_last_green_toolchain_off:
     name: "Last Green Bazel (rules toolchain off)"
     bazel: last_green
-    <<: *common_toolchain_off
+    <<: *modern_common_toolchain_off
 
   linux_latest:
     name: "Current LTS"
     bazel: latest
-    <<: *linux_common
+    <<: *modern_linux_common
 
   linux_latest_toolchain_off:
     name: "Current LTS (rules toolchain off)"
     bazel: latest
-    <<: *linux_common_toolchain_off
+    <<: *modern_linux_common_toolchain_off
 
   linux_last_green:
     name: "Last Green Bazel"
     bazel: last_green
-    <<: *linux_common
+    <<: *modern_linux_common
 
   linux_last_green_toolchain_off:
     name: "Last Green Bazel (rules toolchain off)"
     bazel: last_green
-    <<: *linux_common_toolchain_off
+    <<: *modern_linux_common_toolchain_off
 
   windows_latest:
     name: "Current LTS"
     bazel: latest
-    <<: *windows_common
+    <<: *modern_windows_common
 
   windows_latest_toolchain_off:
     name: "Current LTS (rules toolchain off)"
     bazel: latest
-    <<: *windows_common_toolchain_off
+    <<: *modern_windows_common_toolchain_off
 
   gazelle_check:
     name: "Gazelle up-to-date"
