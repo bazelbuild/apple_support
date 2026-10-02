@@ -1,4 +1,5 @@
 common --enable_platform_specific_config
+common --module_mirrors=https://bcr.cloudflaremirrors.com
 
 common --repo_env=BAZEL_CONLYOPTS=-DCONLY_ENV=1
 common --repo_env=BAZEL_COPTS=-DCOPTS_ENV=1
