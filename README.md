@@ -60,7 +60,7 @@ toolchain works. Here are some of the more commonly useful ones:
 
 When Xcode is upgraded at the same path, `apple_support` reruns discovery
 on the next build to update the Xcode version and SDK defaults. It watches
-`Contents/Info.plist` and `Contents/version.plist` in each discovered Xcode.
+`Contents/version.plist` in each discovered Xcode.
 The legacy C++ toolchain watches the selected Xcode before its linker checks.
 
 `DEVELOPER_DIR` takes precedence over `/var/db/xcode_select_link`. Changing

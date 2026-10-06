@@ -24,13 +24,10 @@ def _watch_xcode_version_files(repository_ctx, developer_dir):
     if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
         return
 
-    # The locator reads CFBundleShortVersionString from Info.plist and
-    # ProductBuildVersion from version.plist, including build-only updates.
-    for filename in ["Info.plist", "version.plist"]:
-        repository_ctx.watch(developer_path.dirname.get_child(filename))
+    repository_ctx.watch(developer_path.dirname.get_child("version.plist"))
 
 def watch_selected_xcode(repository_ctx):
-    """Watches the selected Xcode's version files.
+    """Watches the selected Xcode's version.plist.
 
     Args:
       repository_ctx: The repository context.
