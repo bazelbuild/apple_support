@@ -148,6 +148,7 @@ cc_args(
     name = "sysroot_args",
     actions = [
         "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
         # TODO: Should all link actions be here?
         "@rules_cc//cc/toolchains/actions:objc_executable",
     ],
@@ -163,7 +164,10 @@ cc_args(
 # TODO: This is overriding a magic name from the default feature set but isn't reading the upstream variable
 negatable_feature(
     name = "unfiltered_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-Wno-builtin-macro-redefined",
         "-D__DATE__=\"redacted\"",
@@ -218,7 +222,10 @@ cc_args(
 
 cc_args(
     name = "always_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-fstack-protector",
         "-fcolor-diagnostics",
@@ -231,7 +238,10 @@ cc_args(
 
 cc_args(
     name = "fastbuild_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-O0",
         "-DDEBUG",
@@ -241,7 +251,10 @@ cc_args(
 
 cc_args(
     name = "opt_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-g0",
         "-O2",
@@ -257,7 +270,10 @@ cc_feature_constraint(
 
 cc_args(
     name = "dbg_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-O0",
         "-DDEBUG",
@@ -268,20 +284,29 @@ cc_args(
 
 negatable_feature(
     name = "ns_block_assertions",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = ["-DNS_BLOCK_ASSERTIONS=1"],
     requires_any_of = [":opt"],
 )
 
 negatable_feature(
     name = "debug_prefix_map_pwd_is_dot",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = ["-fdebug-prefix-map=__BAZEL_EXECUTION_ROOT__=."],
 )
 
 negatable_feature(
     name = "remap_xcode_path",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [
         "-fdebug-prefix-map=__BAZEL_XCODE_DEVELOPER_DIR__=/PLACEHOLDER_DEVELOPER_DIR",
     ],
@@ -338,6 +363,7 @@ negatable_feature(
     actions = [
         "@rules_cc//cc/toolchains/actions:link_actions",
         "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
     ],
     args = [
         "-no-canonical-prefixes",
@@ -683,6 +709,7 @@ negatable_feature(
     name = "function_sections",
     actions = [
         "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
         "@rules_cc//cc/toolchains/actions:link_actions",
     ],
     args = select({
@@ -813,7 +840,10 @@ cc_make_variable(
 
 negatable_feature(
     name = "__layering_check_modulemap",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     data = ["//crosstool:generate_layering_check_modulemap"],
     env = {"APPLE_SUPPORT_MODULEMAP": "{modulemap}"},
     format = {"modulemap": "//crosstool:generate_layering_check_modulemap"},
