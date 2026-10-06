@@ -10,6 +10,7 @@ load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
 load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
+load(":coverage_tests.bzl", "coverage_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
 load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
@@ -29,6 +30,8 @@ available_xcodes_test(name = "available_xcodes_test")
 binary_test_suite(name = "binary")
 
 compiling_test_suite(name = "compiling")
+
+coverage_test_suite(name = "coverage")
 
 linking_test_suite(name = "linking")
 
