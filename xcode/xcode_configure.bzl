@@ -19,6 +19,38 @@
 
 OSX_EXECUTE_TIMEOUT = 600
 
+def _watch_xcode_version_files(repository_ctx, developer_dir):
+    developer_path = repository_ctx.path(developer_dir)
+    if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
+        return
+
+    repository_ctx.watch(developer_path.dirname.get_child("version.plist"))
+
+def watch_selected_xcode(repository_ctx):
+    """Watches the selected Xcode's version.plist.
+
+    Args:
+      repository_ctx: The repository context.
+    """
+    if not repository_ctx.os.name.startswith("mac os"):
+        return
+
+    developer_dir = repository_ctx.getenv("DEVELOPER_DIR", "")
+    selected_path = repository_ctx.path(developer_dir or "/var/db/xcode_select_link")
+
+    # Watch existence changes too, so installing Xcode after a missing
+    # selection invalidates the repository. This must precede the early return.
+    repository_ctx.watch(selected_path)
+    if not selected_path.exists:
+        return
+
+    # Resolve first; ".." would be normalized before following the symlink.
+    if selected_path.realpath.basename.endswith(".app"):
+        selected_path = selected_path.get_child("Contents", "Developer")
+    elif not developer_dir:
+        selected_path = selected_path.realpath
+    _watch_xcode_version_files(repository_ctx, selected_path)
+
 def _search_string(fullstring, prefix, suffix):
     """Returns the substring between two given substrings of a larger string.
 
@@ -121,6 +153,10 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
       err: An error string describing the error that occurred when attempting
           to build and run xcode-locator, or None if the run was successful.
     """
+
+    # Register this before compiling the locator, including when compilation
+    # fails and the caller caches an empty Xcode configuration.
+    watch_selected_xcode(repository_ctx)
     repository_ctx.report_progress("Building xcode-locator")
     xcodeloc_src_path = str(repository_ctx.path(xcode_locator_src_label))
     env = repository_ctx.os.environ
@@ -192,6 +228,7 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
                 aliases = infosplit[1].split(","),
                 developer_dir = infosplit[2],
             )
+            _watch_xcode_version_files(repository_ctx, toolchain.developer_dir)
             xcode_toolchains.append(toolchain)
     return (xcode_toolchains, None)
 

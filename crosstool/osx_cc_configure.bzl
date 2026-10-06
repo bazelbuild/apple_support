@@ -18,7 +18,7 @@ load(
     "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
     "escape_string",
 )
-load("//xcode:xcode_configure.bzl", "run_xcode_locator")
+load("//xcode:xcode_configure.bzl", "run_xcode_locator", "watch_selected_xcode")
 
 def _get_copts_env_var(repository_ctx, name, default = ""):
     """Get an environment variable and split it on ":" to be used as copts.
@@ -169,9 +169,12 @@ def configure_osx_toolchain(repository_ctx):
     xcodeloc_err = ""
     allow_non_applications_xcode = "BAZEL_ALLOW_NON_APPLICATIONS_XCODE" in repository_ctx.os.environ and repository_ctx.os.environ["BAZEL_ALLOW_NON_APPLICATIONS_XCODE"] == "1"
     if allow_non_applications_xcode:
+        # The locator watches version metadata for every discovered Xcode.
         (xcode_toolchains, xcodeloc_err) = run_xcode_locator(repository_ctx, xcode_locator)
         if not xcode_toolchains:
             return False, xcodeloc_err
+    else:
+        watch_selected_xcode(repository_ctx)
 
     _copy_file(repository_ctx, cc_toolchain_config, "cc_toolchain_config.bzl")
 
