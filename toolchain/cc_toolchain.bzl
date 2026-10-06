@@ -196,6 +196,8 @@ def cc_toolchain(
             Label("//toolchain:dbg"),
             Label("//toolchain:fastbuild"),
             Label("//toolchain/coverage"),
+            Label("//toolchain/coverage:coverage_enabled"),
+            Label("//toolchain/coverage:coverage_instrumented"),
             Label("//toolchain:kernel_extension"),
             Label("//toolchain:serialized_diagnostics_file"),
             Label("//toolchain/coverage:llvm_coverage_map_format"),
