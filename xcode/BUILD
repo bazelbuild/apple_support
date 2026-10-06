@@ -57,6 +57,12 @@ bzl_library(
 )
 
 bzl_library(
+    name = "xcode_version_at_least",
+    srcs = ["xcode_version_at_least.bzl"],
+    deps = [":providers"],
+)
+
+bzl_library(
     name = "xcode_sdk_variant_bzl",
     srcs = ["xcode_sdk_variant.bzl"],
     visibility = ["//visibility:private"],

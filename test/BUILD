@@ -5,6 +5,7 @@ load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":selected_xcode_version_retriever_test.bzl", "selected_xcode_version_retriever_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
+load(":xcode_version_at_least_test.bzl", "xcode_version_at_least_test")
 load(":xcode_version_test.bzl", "xcode_version_test")
 
 licenses(["notice"])
@@ -19,6 +20,8 @@ selected_xcode_version_retriever_test(name = "selected_xcode_version_retriever_t
 xcode_config_test(name = "xcode_config_test")
 
 xcode_support_test(name = "xcode_support_test")
+
+xcode_version_at_least_test(name = "xcode_version_at_least_test")
 
 xcode_version_test(name = "xcode_version_test")
 
@@ -48,6 +51,7 @@ bzl_library(
         "//xcode:selected_xcode_version_retriever",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
+        "//xcode:xcode_version_at_least",
         "//xcode/private:providers",
         "@bazel_skylib//lib:unittest",
     ],
