@@ -18,6 +18,7 @@ load(":toolchains_test.bzl", "toolchain_config_test_suite")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
+load(":xcode_version_at_least_test.bzl", "xcode_version_at_least_test")
 load(":xcode_version_test.bzl", "xcode_version_test")
 
 licenses(["notice"])
@@ -42,6 +43,8 @@ toolchain_config_test_suite(name = "toolchain_config")
 xcode_config_test(name = "xcode_config_test")
 
 xcode_support_test(name = "xcode_support_test")
+
+xcode_version_at_least_test(name = "xcode_version_at_least_test")
 
 xcode_version_test(name = "xcode_version_test")
 
@@ -80,6 +83,7 @@ bzl_library(
         "//xcode:available_xcodes",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
+        "//xcode:xcode_version_at_least",
         "//xcode/private:providers",
         "@bazel_skylib//lib:unittest",
     ],
