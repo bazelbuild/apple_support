@@ -44,6 +44,7 @@ MARKER_FEATURES = [
     "parse_headers_as_c",
     "sanitize_pwd",
     "set_soname",
+    "skip_virtual_includes",
 ]
 
 ENABLED_MARKERS = [

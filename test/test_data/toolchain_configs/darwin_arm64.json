@@ -5363,6 +5363,16 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "skip_virtual_includes",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "opt",
       "provides": [],
       "requires": [],
