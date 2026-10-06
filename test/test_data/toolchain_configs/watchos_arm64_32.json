@@ -3254,7 +3254,24 @@
             }
           ],
           "type_name": "flag_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [
+                "coverage_instrumented"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         },
         {
           "actions": [
@@ -3319,7 +3336,24 @@
             }
           ],
           "type_name": "env_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [
+                "coverage_instrumented"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "flag_sets": [
@@ -3350,7 +3384,24 @@
             }
           ],
           "type_name": "flag_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [
+                "coverage_instrumented"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         },
         {
           "actions": [
@@ -3421,9 +3472,18 @@
           "with_features": [
             {
               "features": [
-                "coverage"
+                "coverage_instrumented"
               ],
               "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
               "type_name": "with_feature_set"
             }
           ]
@@ -3456,7 +3516,24 @@
             }
           ],
           "type_name": "env_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [
+                "coverage_instrumented"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "flag_sets": [
@@ -3485,7 +3562,24 @@
             }
           ],
           "type_name": "flag_set",
-          "with_features": []
+          "with_features": [
+            {
+              "features": [
+                "coverage_instrumented"
+              ],
+              "not_features": [],
+              "type_name": "with_feature_set"
+            },
+            {
+              "features": [
+                "coverage"
+              ],
+              "not_features": [
+                "coverage_enabled"
+              ],
+              "type_name": "with_feature_set"
+            }
+          ]
         }
       ],
       "implies": [],
@@ -5239,6 +5333,26 @@
       "env_sets": [],
       "flag_sets": [],
       "implies": [],
+      "name": "coverage_enabled",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
+      "name": "coverage_instrumented",
+      "provides": [],
+      "requires": [],
+      "type_name": "feature"
+    },
+    {
+      "enabled": false,
+      "env_sets": [],
+      "flag_sets": [],
+      "implies": [],
       "name": "kernel_extension",
       "provides": [],
       "requires": [],
@@ -5264,6 +5378,12 @@
       "requires": [
         {
           "features": [
+            "coverage_enabled"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
             "coverage"
           ],
           "type_name": "feature_set"
@@ -5281,6 +5401,12 @@
       "requires": [
         {
           "features": [
+            "coverage_enabled"
+          ],
+          "type_name": "feature_set"
+        },
+        {
+          "features": [
             "coverage"
           ],
           "type_name": "feature_set"
@@ -5296,6 +5422,12 @@
       "name": "_coverage_prefix_map_absolute_sources_non_hermetic",
       "provides": [],
       "requires": [
+        {
+          "features": [
+            "coverage_enabled"
+          ],
+          "type_name": "feature_set"
+        },
         {
           "features": [
             "coverage"
