@@ -166,6 +166,9 @@ action is run.
             allow_single_file = True,
             default = Label("@bazel_tools//tools/genrule:genrule-setup.sh"),
         ),
+        # Keep tools and the optional macOS toolchain on the same execution
+        # platform, including when automatic execution groups are enabled.
+        "_use_auto_exec_groups": attr.bool(default = False),
     },
     doc = """\
 Genrule which provides make variables and an Apple environment on macOS.
