@@ -16,6 +16,8 @@ use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_too
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
 
+register_toolchains("//rules/private:macos_apple_genrule_toolchain")
+
 xcode_configure = use_extension("//xcode:xcode_configure.bzl", "xcode_configure_extension")
 use_repo(xcode_configure, "local_config_xcode")
 

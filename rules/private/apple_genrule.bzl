@@ -16,23 +16,13 @@
 
 load("//lib:apple_support.bzl", "apple_support")
 
-_ExecutionPlatformInfo = provider(
-    doc = "Whether the selected execution platform is macOS.",
-    fields = {"is_macos": "Whether the platform has the macOS OS constraint."},
-)
+_APPLE_GENRULE_TOOLCHAIN_TYPE = Label("//rules/private:apple_genrule_toolchain_type")
 
-def _execution_platform_info_impl(ctx):
-    return [_ExecutionPlatformInfo(
-        is_macos = ctx.target_platform_has_constraint(
-            ctx.attr._macos_constraint[platform_common.ConstraintValueInfo],
-        ),
-    )]
+def _apple_genrule_toolchain_impl(_ctx):
+    return [platform_common.ToolchainInfo()]
 
-execution_platform_info = rule(
-    implementation = _execution_platform_info_impl,
-    attrs = {
-        "_macos_constraint": attr.label(default = Label("@platforms//os:macos")),
-    },
+apple_genrule_toolchain = rule(
+    implementation = _apple_genrule_toolchain_impl,
 )
 
 def _compute_make_variables(
@@ -73,7 +63,7 @@ def _apple_genrule_impl(ctx):
     execution_requirements = {}
     extra_args = {}
     run = ctx.actions.run
-    if ctx.attr._execution_platform[_ExecutionPlatformInfo].is_macos:
+    if ctx.toolchains[_APPLE_GENRULE_TOOLCHAIN_TYPE] != None:
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
         execution_requirements.update(xcode_config.execution_info())
         extra_args = {
@@ -176,18 +166,14 @@ action is run.
             allow_single_file = True,
             default = Label("@bazel_tools//tools/genrule:genrule-setup.sh"),
         ),
-        "_execution_platform": attr.label(
-            cfg = "exec",
-            default = Label("//rules/private:execution_platform"),
-            providers = [_ExecutionPlatformInfo],
-        ),
     },
     doc = """\
 Genrule which provides make variables and an Apple environment on macOS.
 
 This mirrors the native genrule except that it provides a different set of
-make variables. This rule can run on any execution platform. When running on
-macOS, it also provides the Xcode environment and execution requirements.
+make variables. This rule can run on any execution platform and prefers macOS
+when available. When running on macOS, it also provides the Xcode environment
+and execution requirements.
 
 Example of use:
 
@@ -233,4 +219,5 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
       syntax (i.e. using `$$`). Example: ```cmd = "xcrun --sdkroot $$SDKROOT clang...```
 """,
     fragments = ["apple"],
+    toolchains = [config_common.toolchain_type(_APPLE_GENRULE_TOOLCHAIN_TYPE, mandatory = False)],
 )

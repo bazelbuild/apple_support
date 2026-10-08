@@ -44,7 +44,6 @@ env -i \
     -o $@ \
     $(SRCS)
 """,
-        exec_compatible_with = ["@platforms//os:macos"],
     )
 
     force_exec(

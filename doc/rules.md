@@ -18,8 +18,9 @@ apple_genrule(<a href="#apple_genrule-name">name</a>, <a href="#apple_genrule-sr
 Genrule which provides make variables and an Apple environment on macOS.
 
 This mirrors the native genrule except that it provides a different set of
-make variables. This rule can run on any execution platform. When running on
-macOS, it also provides the Xcode environment and execution requirements.
+make variables. This rule can run on any execution platform and prefers macOS
+when available. When running on macOS, it also provides the Xcode environment
+and execution requirements.
 
 Example of use:
 
