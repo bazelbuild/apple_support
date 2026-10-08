@@ -12,6 +12,7 @@ apple_genrule(
     name = "generate_layering_check_modulemap",
     outs = ["layering_check.modulemap"],
     cmd = "$(execpath generate-modulemap.sh) > $(OUTS)",
+    exec_compatible_with = ["@platforms//os:macos"],
     tags = ["manual"],
     tools = ["generate-modulemap.sh"],
 )

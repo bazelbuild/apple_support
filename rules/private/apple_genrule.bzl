@@ -16,6 +16,25 @@
 
 load("//lib:apple_support.bzl", "apple_support")
 
+_ExecutionPlatformInfo = provider(
+    doc = "Whether the selected execution platform is macOS.",
+    fields = {"is_macos": "Whether the platform has the macOS OS constraint."},
+)
+
+def _execution_platform_info_impl(ctx):
+    return [_ExecutionPlatformInfo(
+        is_macos = ctx.target_platform_has_constraint(
+            ctx.attr._macos_constraint[platform_common.ConstraintValueInfo],
+        ),
+    )]
+
+execution_platform_info = rule(
+    implementation = _execution_platform_info_impl,
+    attrs = {
+        "_macos_constraint": attr.label(default = Label("@platforms//os:macos")),
+    },
+)
+
 def _compute_make_variables(
         genfiles_dir,
         label,
@@ -51,7 +70,25 @@ def _apple_genrule_impl(ctx):
     resolved_srcs = depset(transitive = [dep[DefaultInfo].files for dep in ctx.attr.srcs])
     label_dict = {dep.label: dep[DefaultInfo].files.to_list() for dep in ctx.attr.srcs}
 
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    execution_requirements = {}
+    extra_args = {}
+    run = ctx.actions.run
+    if ctx.attr._execution_platform[_ExecutionPlatformInfo].is_macos:
+        xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+        execution_requirements.update(xcode_config.execution_info())
+        extra_args = {
+            "actions": ctx.actions,
+            "xcode_config": xcode_config,
+            "apple_fragment": ctx.fragments.apple,
+            "apple_platform_info": apple_support.platform_info_from_rule_ctx(
+                ctx,
+                fail_on_missing_constraint = False,
+            ),
+        }
+        run = apple_support.run
+
+    if ctx.attr.no_sandbox:
+        execution_requirements["no-sandbox"] = "1"
 
     resolved_inputs, argv, _runfiles_manifests = ctx.resolve_command(
         command = "source %s; %s" % (ctx.file._genrule_setup.path, ctx.attr.cmd),
@@ -65,27 +102,19 @@ def _apple_genrule_impl(ctx):
         ),
         tools = ctx.attr.tools,
         label_dict = label_dict,
-        execution_requirements = xcode_config.execution_info(),
+        execution_requirements = execution_requirements,
     )
-
-    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
 
     message = ctx.attr.message or "Executing apple_genrule"
 
-    extra_args = {}
-    if ctx.attr.no_sandbox:
-        extra_args["execution_requirements"] = {"no-sandbox": "1"}
-
-    apple_support.run(
-        actions = ctx.actions,
-        xcode_config = xcode_config,
-        apple_fragment = ctx.fragments.apple,
-        apple_platform_info = apple_platform_info,
+    run(
         executable = argv[0],
         arguments = argv[1:],
         inputs = depset(resolved_inputs + [ctx.file._genrule_setup], transitive = [resolved_srcs]),
         outputs = files_to_build,
         env = ctx.configuration.default_shell_env,
+        use_default_shell_env = True,
+        execution_requirements = execution_requirements,
         progress_message = "%s %s" % (message, ctx.label),
         mnemonic = "Genrule",
         **extra_args
@@ -147,12 +176,18 @@ action is run.
             allow_single_file = True,
             default = Label("@bazel_tools//tools/genrule:genrule-setup.sh"),
         ),
+        "_execution_platform": attr.label(
+            cfg = "exec",
+            default = Label("//rules/private:execution_platform"),
+            providers = [_ExecutionPlatformInfo],
+        ),
     },
     doc = """\
-Genrule which provides Apple specific environment and make variables.
+Genrule which provides make variables and an Apple environment on macOS.
 
 This mirrors the native genrule except that it provides a different set of
-make variables. This rule will only run on a Mac.
+make variables. This rule can run on any execution platform. When running on
+macOS, it also provides the Xcode environment and execution requirements.
 
 Example of use:
 
@@ -185,7 +220,7 @@ The set of make variables that are supported for this rule:
         root directory in the genfiles tree, even if all the generated
         files belong to the same subdirectory.
 
-The following environment variables are defined when the rule is executed:
+The following environment variables are defined when the rule runs on macOS:
 
 * `DEVELOPER_DIR`: The base developer directory as defined on Apple
                    architectures, most commonly used in invoking Apple
@@ -197,6 +232,5 @@ NOTE: `DEVELOPER_DIR` and `SDKROOT` are environment variables and *not* make
       variables. To refer to them in `cmd` you must use environment variable
       syntax (i.e. using `$$`). Example: ```cmd = "xcrun --sdkroot $$SDKROOT clang...```
 """,
-    exec_compatible_with = ["@platforms//os:macos"],
     fragments = ["apple"],
 )

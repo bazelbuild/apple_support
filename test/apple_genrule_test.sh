@@ -18,19 +18,19 @@ set -eu
 
 # Integration test for apple_genrule.
 
-# This test checks that the first argument contains a file that contains
-# Xcode environment variables. Since the file was generated using an
-# apple_genrule using `printenv`, we enforce that the contract of providing the
-# DEVELOPER_DIR and SDKROOT environment variables is maintained.
+# The first line records the action's execution OS; the remaining lines contain
+# its environment. Xcode environment variables should only be added on macOS.
 
 INPUT_FILE="$1"
 
-if ! grep -Fq DEVELOPER_DIR "$INPUT_FILE"; then
-  echo "FAILURE: DEVELOPER_DIR not found."
-  exit 1
-fi
-
-if ! grep -Fq SDKROOT "$INPUT_FILE"; then
-  echo "FAILURE: SDKROOT not found."
-  exit 1
-fi
+for variable in DEVELOPER_DIR SDKROOT; do
+  if [[ "$(head -n 1 "$INPUT_FILE")" == Darwin ]]; then
+    if ! grep -q "^${variable}=" "$INPUT_FILE"; then
+      echo "FAILURE: $variable not found on macOS."
+      exit 1
+    fi
+  elif grep -q "^${variable}=" "$INPUT_FILE"; then
+    echo "FAILURE: $variable found on a non-macOS execution platform."
+    exit 1
+  fi
+done

@@ -48,7 +48,7 @@ ios_simulator_test = make_action_command_line_test_rule(
 )
 
 # The compiler wrappers must remain macOS-configured even when a Linux
-# execution platform is preferred. Analysis fails in apple_genrule otherwise.
+# execution platform is preferred, and their Xcode commands must run on macOS.
 linux_first_ios_simulator_test = make_action_command_line_test_rule(
     config_settings = {
         "//command_line_option:platforms": str(Label("//platforms:ios_sim_arm64")),

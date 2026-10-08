@@ -42,6 +42,9 @@ x_defaults:
     build_targets:
       - "//test/test_data:multi_arch_cc_binary"
     test_targets:
+      - "//test:apple_genrule_platform_tests"
+      - "//test:apple_genrule_test"
+      - "//test:touched_test"
       - "//tools/http_dmg/..."
       - "//test/linux_toolchain/..."
 
