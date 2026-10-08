@@ -165,7 +165,7 @@ bool SetArgIfFlagPresent(const std::string& arg, const std::string& flagname,
   return false;
 }
 
-// Returns the DEVELOPER_DIR environment variable in the current process
+// Returns the value of the given environment variable in the current process
 // environment. Aborts if this variable is unset.
 std::string GetMandatoryEnvVar(const std::string& var_name) {
   char* env_value = getenv(var_name.c_str());
@@ -174,6 +174,15 @@ std::string GetMandatoryEnvVar(const std::string& var_name) {
     exit(EXIT_FAILURE);
   }
   return env_value;
+}
+
+// Replaces all instances of placeholder in str with the value of the given
+// environment variable, which only has to be set if placeholder occurs in str.
+void ReplaceWithEnvVar(const std::string& placeholder,
+                       const std::string& var_name, std::string* str) {
+  if (str->find(placeholder) != std::string::npos) {
+    FindAndReplace(placeholder, GetMandatoryEnvVar(var_name), str);
+  }
 }
 
 // Returns true if `str` starts with the specified `prefix`.
@@ -254,15 +263,13 @@ static std::unique_ptr<TempFile> WriteResponseFile(
   return response_file;
 }
 
-void ProcessArgument(const std::string arg, const std::string developer_dir,
-                     const std::string sdk_root, const std::string cwd,
+void ProcessArgument(const std::string arg, const std::string cwd,
                      const std::string canonical_cwd,
                      std::string& linked_binary, std::string& dsym_path,
                      bool& strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string&)> consumer);
 
-bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
-                         const std::string sdk_root, const std::string cwd,
+bool ProcessResponseFile(const std::string arg, const std::string cwd,
                          const std::string canonical_cwd,
                          std::string& linked_binary, std::string& dsym_path,
                          bool& strip_debug_symbols, std::string toolchain_path,
@@ -278,9 +285,8 @@ bool ProcessResponseFile(const std::string arg, const std::string developer_dir,
   while (std::getline(original_file, arg_from_file)) {
     // Arguments in response files might be quoted/escaped, so we need to
     // unescape them ourselves.
-    ProcessArgument(Unescape(arg_from_file), developer_dir, sdk_root, cwd,
-                    canonical_cwd, linked_binary, dsym_path,
-                    strip_debug_symbols, toolchain_path, consumer);
+    ProcessArgument(Unescape(arg_from_file), cwd, canonical_cwd, linked_binary,
+                    dsym_path, strip_debug_symbols, toolchain_path, consumer);
   }
 
   return true;
@@ -360,17 +366,15 @@ std::string GetToolchainPath(const std::string& toolchain_id) {
   return toolchain_path.parent_path().parent_path().parent_path();
 }
 
-void ProcessArgument(const std::string arg, const std::string developer_dir,
-                     const std::string sdk_root, const std::string cwd,
+void ProcessArgument(const std::string arg, const std::string cwd,
                      const std::string canonical_cwd,
                      std::string& linked_binary, std::string& dsym_path,
                      bool& strip_debug_symbols, std::string toolchain_path,
                      std::function<void(const std::string&)> consumer) {
   auto new_arg = arg;
   if (arg[0] == '@') {
-    if (ProcessResponseFile(arg, developer_dir, sdk_root, cwd, canonical_cwd,
-                            linked_binary, dsym_path, strip_debug_symbols,
-                            toolchain_path, consumer)) {
+    if (ProcessResponseFile(arg, cwd, canonical_cwd, linked_binary, dsym_path,
+                            strip_debug_symbols, toolchain_path, consumer)) {
       return;
     }
   }
@@ -393,8 +397,8 @@ void ProcessArgument(const std::string arg, const std::string developer_dir,
     FindAndReplace("__BAZEL_EXECUTION_ROOT_CANONICAL__", canonical_cwd,
                    &new_arg);
   }
-  FindAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
-  FindAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
+  ReplaceWithEnvVar("__BAZEL_XCODE_DEVELOPER_DIR__", "DEVELOPER_DIR", &new_arg);
+  ReplaceWithEnvVar("__BAZEL_XCODE_SDKROOT__", "SDKROOT", &new_arg);
   if (!toolchain_path.empty()) {
     FindAndReplace("__BAZEL_CUSTOM_XCODE_TOOLCHAIN_PATH__", toolchain_path,
                    &new_arg);
@@ -442,8 +446,14 @@ int main(int argc, char* argv[]) {
     toolchain_path = GetToolchainPath(toolchain_id);
   }
 
-  std::string developer_dir = GetMandatoryEnvVar("DEVELOPER_DIR");
-  std::string sdk_root = GetMandatoryEnvVar("SDKROOT");
+  // Bazel derives DEVELOPER_DIR and SDKROOT from XCODE_VERSION_OVERRIDE, which
+  // is set for all actions of the C++ toolchain. When invoked in any other way,
+  // e.g. via $(CC) in a genrule, xcrun uses the default Xcode and the variables
+  // are only required if an argument refers to them.
+  if (getenv("XCODE_VERSION_OVERRIDE") != nullptr) {
+    GetMandatoryEnvVar("DEVELOPER_DIR");
+    GetMandatoryEnvVar("SDKROOT");
+  }
   std::string linked_binary, dsym_path;
   bool strip_debug_symbols = false;
 
@@ -462,9 +472,8 @@ int main(int argc, char* argv[]) {
   for (int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
 
-    ProcessArgument(arg, developer_dir, sdk_root, cwd, canonical_cwd,
-                    linked_binary, dsym_path, strip_debug_symbols,
-                    toolchain_path, consumer);
+    ProcessArgument(arg, cwd, canonical_cwd, linked_binary, dsym_path,
+                    strip_debug_symbols, toolchain_path, consumer);
   }
 
   const char* gcno_file = getenv("GCOV_GCNO_FILE");
@@ -479,8 +488,8 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<TempFile> vfs_overlay_file;
   if (modulemap != nullptr) {
     vfs_overlay_file = TempFile::Create("modules-vfs-overlay.XXXXXX");
-    AddLayeringCheckVFS(vfs_overlay_file->GetPath(), modulemap, developer_dir,
-                        consumer);
+    AddLayeringCheckVFS(vfs_overlay_file->GetPath(), modulemap,
+                        GetMandatoryEnvVar("DEVELOPER_DIR"), consumer);
   }
 
   // Special mode that only prints the command. Used for testing.

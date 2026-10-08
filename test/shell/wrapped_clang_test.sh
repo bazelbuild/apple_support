@@ -96,4 +96,28 @@ function test_relative_gcov_data_file() {
   expect_log "-Xclang -coverage-data-file=bazel-out/config/bin/test.pic.gcda"
 }
 
+# Test that DEVELOPER_DIR and SDKROOT aren't required outside of actions of the
+# C++ toolchain, e.g. when invoked via $(CC) in a genrule.
+function test_no_xcode_env() {
+  env -u DEVELOPER_DIR -u SDKROOT -u XCODE_VERSION_OVERRIDE \
+      "${WRAPPED_CLANG}" "-c" "foo.c" \
+      >"$TEST_log" 2>&1 || fail "wrapped_clang failed"
+  expect_log "/usr/bin/xcrun clang -c foo.c"
+}
+
+function test_placeholder_without_xcode_env() {
+  env -u DEVELOPER_DIR -u SDKROOT -u XCODE_VERSION_OVERRIDE \
+      "${WRAPPED_CLANG}" "sdkroot=__BAZEL_XCODE_SDKROOT__" \
+      >"$TEST_log" 2>&1 && fail "wrapped_clang succeeded unexpectedly"
+  expect_log "SDKROOT not set"
+}
+
+# Test that actions of the C++ toolchain still require DEVELOPER_DIR and SDKROOT.
+function test_xcode_version_override_without_xcode_env() {
+  env -u DEVELOPER_DIR -u SDKROOT XCODE_VERSION_OVERRIDE=16.0 \
+      "${WRAPPED_CLANG}" "-c" "foo.c" \
+      >"$TEST_log" 2>&1 && fail "wrapped_clang succeeded unexpectedly"
+  expect_log "DEVELOPER_DIR not set"
+}
+
 run_suite "Wrapped clang tests"

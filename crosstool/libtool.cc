@@ -64,7 +64,7 @@ class TempDirectory {
   std::string path_;
 };
 
-// Returns the DEVELOPER_DIR environment variable in the current process
+// Returns the value of the given environment variable in the current process
 // environment. Aborts if this variable is unset.
 std::string getMandatoryEnvVar(const std::string& var_name) {
   char* env_value = getenv(var_name.c_str());
@@ -181,11 +181,19 @@ void findAndReplace(const std::string& oldsub, const std::string& newsub,
   }
 }
 
-std::string rewriteArg(const std::string arg, const std::string developer_dir,
-                       const std::string sdk_root) {
+// Replaces all instances of placeholder in str with the value of the given
+// environment variable, which only has to be set if placeholder occurs in str.
+void replaceWithEnvVar(const std::string& placeholder,
+                       const std::string& var_name, std::string* str) {
+  if (str->find(placeholder) != std::string::npos) {
+    findAndReplace(placeholder, getMandatoryEnvVar(var_name), str);
+  }
+}
+
+std::string rewriteArg(const std::string arg) {
   auto new_arg = arg;
-  findAndReplace("__BAZEL_XCODE_DEVELOPER_DIR__", developer_dir, &new_arg);
-  findAndReplace("__BAZEL_XCODE_SDKROOT__", sdk_root, &new_arg);
+  replaceWithEnvVar("__BAZEL_XCODE_DEVELOPER_DIR__", "DEVELOPER_DIR", &new_arg);
+  replaceWithEnvVar("__BAZEL_XCODE_SDKROOT__", "SDKROOT", &new_arg);
   return new_arg;
 }
 
@@ -272,18 +280,24 @@ int main(int argc, const char* argv[]) {
     args.push_back(argv[i]);
   }
 
-  std::string developer_dir = getMandatoryEnvVar("DEVELOPER_DIR");
-  std::string sdk_root = getMandatoryEnvVar("SDKROOT");
+  // Bazel derives DEVELOPER_DIR and SDKROOT from XCODE_VERSION_OVERRIDE, which
+  // is set for all actions of the C++ toolchain. When invoked in any other way,
+  // e.g. via $(AR) in a genrule, xcrun uses the default Xcode and the variables
+  // are only required if an argument refers to them.
+  if (getenv("XCODE_VERSION_OVERRIDE") != nullptr) {
+    getMandatoryEnvVar("DEVELOPER_DIR");
+    getMandatoryEnvVar("SDKROOT");
+  }
 
   // NOTE: Order of libtool flags interspersed with files does not matter, but
   // maintaining file order might?
   std::vector<std::string> processed_args = {};
   std::vector<std::string> files = {};
   auto flags_consumer = [&](const std::string& arg) {
-    processed_args.push_back(rewriteArg(arg, developer_dir, sdk_root));
+    processed_args.push_back(rewriteArg(arg));
   };
   auto files_consumer = [&](const std::string& arg) {
-    files.push_back(rewriteArg(arg, developer_dir, sdk_root));
+    files.push_back(rewriteArg(arg));
   };
 
   processArgs(args, flags_consumer, files_consumer);
