@@ -21,7 +21,7 @@ load(
 
 # buildozer: disable=function-docstring-args
 def apple_genrule(name, **kwargs):
-    """Genrule which provides Apple specific environment and make variables."""
+    """Genrule which provides make variables and an Apple environment on macOS."""
 
     # This split/indirection traces back to cl/128714692 and b/30413353.
     if kwargs.get("executable", False):

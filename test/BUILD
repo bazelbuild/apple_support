@@ -5,6 +5,7 @@ load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_libra
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load("//xcode:xcode_config.bzl", "xcode_config")
+load(":apple_genrule_tests.bzl", "apple_genrule_test_suite")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
@@ -48,6 +49,8 @@ xcode_version_at_least_test(name = "xcode_version_at_least_test")
 
 xcode_version_test(name = "xcode_version_test")
 
+apple_genrule_test_suite(name = "apple_genrule_platform_tests")
+
 # Test to ensure the environment variable contract of apple_genrule.
 sh_test(
     name = "apple_genrule_test",
@@ -65,7 +68,7 @@ build_test(
 apple_genrule(
     name = "simple_genrule",
     outs = ["simple_genrule.txt"],
-    cmd = "printenv | grep \"^\\(DEVELOPER_DIR\\|SDKROOT\\)\" > $(@)",
+    cmd = "(uname -s; printenv) > $(@)",
 )
 
 apple_genrule(
@@ -80,6 +83,7 @@ bzl_library(
     deps = [
         "//lib:apple_support",
         "//lib:xcode_support",
+        "//rules:apple_genrule",
         "//xcode:available_xcodes",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
