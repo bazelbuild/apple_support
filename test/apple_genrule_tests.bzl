@@ -14,6 +14,7 @@
 
 """Tests that apple_genrule configures actions for their execution platform."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load("//xcode:xcode_config.bzl", "xcode_config")
@@ -68,12 +69,14 @@ def apple_genrule_test_suite(name):
     Args:
         name: The name of the test suite.
     """
-    xcode_version(
+    xcode_version_rule = xcode_version if bazel_features.apple.xcode_config_migrated else native.xcode_version
+    xcode_config_rule = xcode_config if bazel_features.apple.xcode_config_migrated else native.xcode_config
+    xcode_version_rule(
         name = "apple_genrule_xcode_version",
         version = "16.0",
         tags = FIXTURE_TAGS,
     )
-    xcode_config(
+    xcode_config_rule(
         name = "apple_genrule_xcode_config",
         default = ":apple_genrule_xcode_version",
         versions = [":apple_genrule_xcode_version"],
