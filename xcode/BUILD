@@ -8,7 +8,10 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-exports_files(["xcode_configure.bzl"])
+exports_files([
+    "xcode_configure.bzl",
+    "xcode_version_at_least.bzl",
+])
 
 bzl_library(
     name = "available_xcodes",
