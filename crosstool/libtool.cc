@@ -296,6 +296,26 @@ void processArCreateArgs(
   flags_consumer(args[1]);
 }
 
+std::vector<std::string> expandResponseFiles(
+    const std::vector<std::string>& args) {
+  std::vector<std::string> expanded_args;
+  for (const auto& arg : args) {
+    if (!arg.empty() && arg[0] == '@') {
+      std::ifstream params_file(arg.substr(1));
+      std::vector<std::string> params_file_args;
+      for (std::string line; std::getline(params_file, line);) {
+        params_file_args.push_back(line);
+      }
+      auto expanded_params = expandResponseFiles(params_file_args);
+      expanded_args.insert(expanded_args.end(), expanded_params.begin(),
+                           expanded_params.end());
+    } else {
+      expanded_args.push_back(arg);
+    }
+  }
+  return expanded_args;
+}
+
 void processArgs(const std::vector<std::string> args,
                  std::function<void(const std::string&)> flags_consumer,
                  std::function<void(const std::string&)> files_consumer) {
@@ -317,15 +337,6 @@ void processArgs(const std::vector<std::string> args,
       for (std::string line; std::getline(list, line);) {
         files_consumer(line);
       }
-    } else if (arg[0] == '@') {
-      std::string paramsFilePath(arg.substr(1));
-      std::ifstream params_file(paramsFilePath);
-
-      std::vector<std::string> params_file_args = {};
-      for (std::string line; std::getline(params_file, line);) {
-        params_file_args.push_back(line);
-      }
-      processArgs(params_file_args, flags_consumer, files_consumer);
     } else if (regex_match(arg, singleArgFlags)) {
       flags_consumer(arg);
       ++it;
@@ -411,7 +422,9 @@ int main(int argc, const char* argv[]) {
     files.push_back(rewriteArg(arg, developer_dir, sdk_root));
   };
 
-  processArgs(args, flags_consumer, files_consumer);
+  // Detect the invocation mode once, after expanding all response files. An
+  // input-only response file may contain archives without being an ar command.
+  processArgs(expandResponseFiles(args), flags_consumer, files_consumer);
 
   std::unique_ptr<TempDirectory> temp_directory = TempDirectory::Create();
   if (hasDuplicateBasenames(files)) {

@@ -104,6 +104,38 @@ function test_ar_args_require_output_archive() {
   expect_log "expected output archive after ar flags 'crs'"
 }
 
+function test_libtool_args_with_archive_in_input_params_file() {
+  local params="${TEST_TMPDIR}/inputs.params"
+  printf '%s\n' a.o dep.a > "${params}"
+
+  env DEVELOPER_DIR=developer SDKROOT=sdk \
+      "${LIBTOOL}" -static -o output.a "@${params}" \
+      >"${TEST_log}" || fail "libtool failed";
+  assert_command "/usr/bin/xcrun libtool -static -o output.a dep.a a.o"
+}
+
+function test_ar_args_with_archive_in_input_params_file() {
+  local params="${TEST_TMPDIR}/inputs.params"
+  printf '%s\n' a.o dep.a > "${params}"
+
+  env DEVELOPER_DIR=developer SDKROOT=sdk \
+      "${LIBTOOL}" crs output.a "@${params}" \
+      >"${TEST_log}" || fail "libtool failed";
+  assert_command "/usr/bin/xcrun libtool -static -D -o output.a dep.a a.o"
+}
+
+function test_ar_args_with_nested_params_files() {
+  local inputs="${TEST_TMPDIR}/inputs.params"
+  local params="${TEST_TMPDIR}/archive.params"
+  printf '%s\n' a.o dep.a > "${inputs}"
+  printf '%s\n' output.a "@${inputs}" > "${params}"
+
+  env DEVELOPER_DIR=developer SDKROOT=sdk \
+      "${LIBTOOL}" crs "@${params}" \
+      >"${TEST_log}" || fail "libtool failed";
+  assert_command "/usr/bin/xcrun libtool -static -D -o output.a dep.a a.o"
+}
+
 function test_ar_args_require_archive_extension() {
   env DEVELOPER_DIR=developer SDKROOT=sdk \
       "${LIBTOOL}" crs output.o input.o \
