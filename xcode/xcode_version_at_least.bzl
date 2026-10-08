@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A rule and macro that allow `select()` to match minimum Xcode versions."""
+"""# Minimum Xcode version conditions
+
+Use `xcode_version_at_least` in BUILD files to configure attributes based on the
+selected Xcode version.
+"""
 
 load(
     "//xcode:providers.bzl",
@@ -162,6 +166,62 @@ def xcode_version_at_least(
         visibility = None,
         **kwargs):
     """Creates a `config_setting` target that matches when Xcode is at least `minimum_xcode_version`.
+
+    The condition compares the resolved Xcode version, including when Xcode is
+    selected by default without an explicit `--xcode_version` flag. It does not
+    match if the resolved configuration has no Xcode version.
+
+    For example, enable a definition with Xcode 26.4 or newer:
+
+    ```starlark
+    load("@apple_support//xcode:xcode_version_at_least.bzl", "xcode_version_at_least")
+    load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+    xcode_version_at_least(
+        name = "xcode_26_4_or_newer",
+        minimum_xcode_version = "26.4",
+    )
+
+    cc_library(
+        name = "example",
+        srcs = ["example.cc"],
+        defines = select({
+            ":xcode_26_4_or_newer": ["HAS_XCODE_26_4"],
+            "//conditions:default": [],
+        }),
+    )
+    ```
+
+    When multiple thresholds appear in the same `select()`, use `after` to make
+    the higher threshold specialize the lower one. Continuing the example above:
+
+    ```starlark
+    xcode_version_at_least(
+        name = "xcode_27_or_newer",
+        minimum_xcode_version = "27",
+        after = [":xcode_26_4_or_newer"],
+    )
+
+    cc_library(
+        name = "versioned_example",
+        srcs = ["example.cc"],
+        defines = select({
+            ":xcode_27_or_newer": ["XCODE_LEVEL=27"],
+            ":xcode_26_4_or_newer": ["XCODE_LEVEL=26"],
+            "//conditions:default": ["XCODE_LEVEL=0"],
+        }),
+    )
+    ```
+
+    With Xcode 27 or newer, both conditions match, but the more specialized
+    `xcode_27_or_newer` branch wins. Without `after`, different values for these
+    overlapping conditions would make the `select()` ambiguous.
+
+    Declare lower thresholds before higher thresholds and use local target names
+    or `:name` labels to inherit a same-package `after` chain transitively. For
+    cross-package or fully qualified references, list every lower threshold in
+    the chain explicitly. Each threshold must be strictly higher than those in
+    its `after` list.
 
     Args:
         name: The name of the `config_setting` target to create. A companion
