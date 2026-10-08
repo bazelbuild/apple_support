@@ -101,4 +101,19 @@ def apple_genrule_test_suite(name):
                 macos_execution = execution_os == "macos",
             )
             tests.append(test_name)
+
+    # These commands need Xcode even when Linux is the preferred execution
+    # platform. Check the actual crosstool actions, not only their consumers.
+    for tool, target in [
+        ("wrapped_clang", "//crosstool:exec_wrapped_clang.target_config"),
+        ("modulemap", "//crosstool:generate_layering_check_modulemap"),
+    ]:
+        test_name = name + "_" + tool + "_linux_first_test"
+        _macos_target_test(
+            name = test_name,
+            target_under_test = target,
+            macos_execution = True,
+        )
+        tests.append(test_name)
+
     native.test_suite(name = name, tests = tests)
