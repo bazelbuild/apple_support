@@ -20,6 +20,10 @@
 OSX_EXECUTE_TIMEOUT = 600
 
 def _watch_xcode_version_files(repository_ctx, developer_dir):
+    # Module extensions cannot watch paths outside the workspace.
+    if type(repository_ctx) != "repository_ctx":
+        return
+
     developer_path = repository_ctx.path(developer_dir)
     if developer_path.basename != "Developer" or developer_path.dirname.basename != "Contents":
         return
@@ -27,11 +31,15 @@ def _watch_xcode_version_files(repository_ctx, developer_dir):
     repository_ctx.watch(developer_path.dirname.get_child("version.plist"))
 
 def watch_selected_xcode(repository_ctx):
-    """Watches the selected Xcode's version.plist.
+    """Watches the selected Xcode's version.plist for repository rules.
 
     Args:
-      repository_ctx: The repository context.
+      repository_ctx: The repository or module context. Module contexts are
+          ignored because they cannot watch paths outside the workspace.
     """
+    if type(repository_ctx) != "repository_ctx":
+        return
+
     if not repository_ctx.os.name.startswith("mac os"):
         return
 
@@ -142,7 +150,8 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
     otherwise.
 
     Args:
-      repository_ctx: The repository context.
+      repository_ctx: The repository or module context. Xcode version metadata
+          is watched only for repository contexts.
       xcode_locator_src_label: The label of the source file for xcode-locator.
     Returns:
       A 2-tuple containing:
