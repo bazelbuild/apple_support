@@ -2211,7 +2211,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # these warnings.
     is_15_or_above = False
     if xcode_config.xcode_version():
-        is_15_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
+        # A path can't be compared, so assume a recent Xcode.
+        is_15_or_above = (
+            str(xcode_config.xcode_version()).startswith("/") or
+            xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
+        )
     no_warn_duplicate_libraries_feature = feature(
         name = "no_warn_duplicate_libraries",
         enabled = "no_warn_duplicate_libraries" in ctx.features or
@@ -2233,7 +2237,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     is_26_or_above = False
     if xcode_config.xcode_version():
-        is_26_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+        is_26_or_above = (
+            str(xcode_config.xcode_version()).startswith("/") or
+            xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+        )
 
     reproducible_linker_flag_feature = feature(
         name = "reproducible_linker_flag",
