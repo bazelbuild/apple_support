@@ -9,12 +9,14 @@ module(
 bazel_dep(name = "bazel_features", version = "1.27.0")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "0.0.9")
-bazel_dep(name = "rules_cc", version = "0.2.20")
+bazel_dep(name = "rules_cc", version = "0.2.26")
 
 apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
 
 register_toolchains("@local_config_apple_cc_toolchains//:all")
+
+register_toolchains("//rules/private:macos_apple_genrule_toolchain")
 
 xcode_configure = use_extension("//xcode:xcode_configure.bzl", "xcode_configure_extension")
 use_repo(xcode_configure, "local_config_xcode")

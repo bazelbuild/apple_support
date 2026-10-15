@@ -1,0 +1,149 @@
+# Copyright 2026 The Bazel Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Tests that apple_genrule configures actions for their execution platform."""
+
+load("@bazel_features//:features.bzl", "bazel_features")
+load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
+load("//rules:apple_genrule.bzl", "apple_genrule")
+load("//xcode:xcode_config.bzl", "xcode_config")
+load("//xcode:xcode_version.bzl", "xcode_version")
+load(":test_helpers.bzl", "FIXTURE_TAGS", "find_action")
+
+def _apple_genrule_platform_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    action = find_action(env, "Genrule")
+    if not action:
+        return analysistest.end(env)
+
+    for variable in [
+        "APPLE_SDK_PLATFORM",
+        "APPLE_SDK_VERSION_OVERRIDE",
+        "XCODE_VERSION_OVERRIDE",
+    ]:
+        asserts.equals(env, ctx.attr.macos_execution, variable in action.env, variable)
+
+    return analysistest.end(env)
+
+def _make_platform_test(target_platform, macos_available = True):
+    execution_platforms = [str(Label("//test:apple_genrule_linux_platform"))]
+    if macos_available:
+        execution_platforms.append(str(Label("//test:apple_genrule_macos_platform")))
+    config_settings = {
+        "//command_line_option:platforms": str(Label(target_platform)),
+        "//command_line_option:extra_execution_platforms": execution_platforms,
+        "//command_line_option:xcode_version_config": str(Label("//test:apple_genrule_xcode_config")),
+        str(Label("//xcode:starlark_version_config")): str(Label("//test:apple_genrule_xcode_config")),
+    }
+    if not macos_available:
+        # Bazel also considers the host platform for execution. Replace it so
+        # this test has no macOS candidate, even when run on a Mac.
+        config_settings["//command_line_option:host_platform"] = str(Label("//test:apple_genrule_linux_platform"))
+
+    return analysistest.make(
+        _apple_genrule_platform_test_impl,
+        attrs = {
+            "macos_execution": attr.bool(),
+        },
+        config_settings = config_settings,
+    )
+
+_linux_target_test = _make_platform_test("//test:apple_genrule_linux_platform")
+_macos_target_test = _make_platform_test("//platforms:darwin_arm64")
+_linux_only_test = _make_platform_test("//test:apple_genrule_linux_platform", macos_available = False)
+
+def apple_genrule_test_suite(name):
+    """Tests Linux and macOS execution independently of the target platform.
+
+    Args:
+        name: The name of the test suite.
+    """
+    xcode_version_rule = xcode_version if bazel_features.apple.xcode_config_migrated else native.xcode_version
+    xcode_config_rule = xcode_config if bazel_features.apple.xcode_config_migrated else native.xcode_config
+    xcode_version_rule(
+        name = "apple_genrule_xcode_version",
+        version = "16.0",
+        tags = FIXTURE_TAGS,
+    )
+    xcode_config_rule(
+        name = "apple_genrule_xcode_config",
+        default = ":apple_genrule_xcode_version",
+        versions = [":apple_genrule_xcode_version"],
+        tags = FIXTURE_TAGS,
+    )
+    tests = []
+    for execution_os in ["linux", "macos"]:
+        native.platform(
+            name = "apple_genrule_" + execution_os + "_platform",
+            constraint_values = [
+                "@platforms//cpu:arm64",
+                "@platforms//os:" + execution_os,
+            ],
+        )
+        fixture_name = name + "_" + execution_os
+        apple_genrule(
+            name = fixture_name,
+            srcs = ["main.c"],
+            outs = [fixture_name + ".txt"],
+            cmd = "cat $(SRCS) > $@",
+            exec_compatible_with = ["@platforms//os:" + execution_os],
+            tags = FIXTURE_TAGS,
+        )
+        for target_os, test_rule in [
+            ("linux", _linux_target_test),
+            ("macos", _macos_target_test),
+        ]:
+            test_name = fixture_name + "_target_" + target_os + "_test"
+            test_rule(
+                name = test_name,
+                target_under_test = ":" + fixture_name,
+                macos_execution = execution_os == "macos",
+            )
+            tests.append(test_name)
+
+    fixture_name = name + "_unconstrained"
+    apple_genrule(
+        name = fixture_name,
+        srcs = ["main.c"],
+        outs = [fixture_name + ".txt"],
+        cmd = "cat $(SRCS) > $@",
+        tags = FIXTURE_TAGS,
+    )
+    for suffix, test_rule, macos_execution in [
+        ("prefers_macos", _linux_target_test, True),
+        ("linux_only", _linux_only_test, False),
+    ]:
+        test_name = name + "_" + suffix + "_test"
+        test_rule(
+            name = test_name,
+            target_under_test = ":" + fixture_name,
+            macos_execution = macos_execution,
+        )
+        tests.append(test_name)
+
+    # These commands need Xcode even when Linux is the preferred execution
+    # platform. Check the actual crosstool actions, not only their consumers.
+    for tool, target in [
+        ("wrapped_clang", "//crosstool:exec_wrapped_clang.target_config"),
+        ("modulemap", "//crosstool:generate_layering_check_modulemap"),
+    ]:
+        test_name = name + "_" + tool + "_linux_first_test"
+        _macos_target_test(
+            name = test_name,
+            target_under_test = target,
+            macos_execution = True,
+        )
+        tests.append(test_name)
+
+    native.test_suite(name = name, tests = tests)

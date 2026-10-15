@@ -1,0 +1,7 @@
+// A module map whose header is *not* textual, like the umbrella-directory
+// system module maps a hermetic toolchain generates for its own headers --
+// unlike the all-textual maps wrapped_clang injects and Bazel writes per
+// target, which C++20 modules semantics leave alone.
+module "cxx20_modular" [system] {
+  header "modular.h"
+}

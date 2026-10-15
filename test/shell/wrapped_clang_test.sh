@@ -89,4 +89,11 @@ function test_params_expansion() {
   expect_log "/usr/bin/xcrun clang first -rpath @loader_path sdkroot=mysdkroot developer_dir=dummy"
 }
 
+function test_relative_gcov_data_file() {
+  env DEVELOPER_DIR=dummy SDKROOT=mysdkroot \
+      GCOV_GCNO_FILE=bazel-out/config/bin/test.pic.gcno \
+      "${WRAPPED_CLANG}" >"$TEST_log" || fail "wrapped_clang failed"
+  expect_log "-Xclang -coverage-data-file=bazel-out/config/bin/test.pic.gcda"
+}
+
 run_suite "Wrapped clang tests"

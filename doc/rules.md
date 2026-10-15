@@ -15,10 +15,12 @@ On this page:
 apple_genrule(<a href="#apple_genrule-name">name</a>, <a href="#apple_genrule-srcs">srcs</a>, <a href="#apple_genrule-outs">outs</a>, <a href="#apple_genrule-cmd">cmd</a>, <a href="#apple_genrule-executable">executable</a>, <a href="#apple_genrule-message">message</a>, <a href="#apple_genrule-no_sandbox">no_sandbox</a>, <a href="#apple_genrule-tools">tools</a>)
 </pre>
 
-Genrule which provides Apple specific environment and make variables.
+Genrule which provides make variables and an Apple environment on macOS.
 
 This mirrors the native genrule except that it provides a different set of
-make variables. This rule will only run on a Mac.
+make variables. This rule can run on any execution platform and prefers macOS
+when available. When running on macOS, it also provides the Xcode environment
+and execution requirements.
 
 Example of use:
 
@@ -51,7 +53,7 @@ The set of make variables that are supported for this rule:
         root directory in the genfiles tree, even if all the generated
         files belong to the same subdirectory.
 
-The following environment variables are defined when the rule is executed:
+The following environment variables are defined when the rule runs on macOS:
 
 * `DEVELOPER_DIR`: The base developer directory as defined on Apple
                    architectures, most commonly used in invoking Apple

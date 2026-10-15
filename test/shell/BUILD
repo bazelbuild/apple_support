@@ -21,6 +21,17 @@ sh_library(
 )
 
 sh_test(
+    name = "libtool_test",
+    size = "small",
+    srcs = ["libtool_test.sh"],
+    data = [
+        ":bashunit",
+        "//crosstool:apple-support-ar-wrapper",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+)
+
+sh_test(
     name = "wrapped_clang_test",
     size = "small",
     srcs = ["wrapped_clang_test.sh"],

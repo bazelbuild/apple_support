@@ -17,7 +17,7 @@ def _apple_cc_autoconf_toolchains_impl(repository_ctx):
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
     old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
-    use_new_toolchain = _NEW_TOOLCHAIN_VAR in env and env[_NEW_TOOLCHAIN_VAR] == "1"
+    use_new_toolchain = env.get(_NEW_TOOLCHAIN_VAR, "1") == "1"
 
     if should_disable or old_should_disable:
         repository_ctx.file("BUILD", "# Apple CC toolchain autoconfiguration was disabled by {} env variable.".format(
@@ -58,7 +58,7 @@ def _apple_cc_autoconf_impl(repository_ctx):
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
     old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"
-    use_new_toolchain = _NEW_TOOLCHAIN_VAR in env and env[_NEW_TOOLCHAIN_VAR] == "1"
+    use_new_toolchain = env.get(_NEW_TOOLCHAIN_VAR, "1") == "1"
 
     if should_disable or old_should_disable or use_new_toolchain:
         repository_ctx.file("BUILD", "# Apple CC autoconfiguration was disabled by {} env variable.".format(

@@ -28,6 +28,23 @@ is required when targeting those platforms.
 The toolchain supports using a full Xcode installation or the Xcode
 Command Line Tools.
 
+## Supported Xcode versions
+
+`apple_support` is heavily tied to Xcode / `clang`'s current feature
+set. We have the ability to add / remove flags based on the current
+versions, but overtime we like to reduce the maintenance cost of this
+type of branch and remove support for older versions. We attempt to do
+this conservatively and are open to supporting more versions if there is
+a need. These versions roughly correspond to the versions of the
+separate Xcode Command Line Tools releases, but those are not versioned
+in the same way.
+
+| Xcode release | Minimum supported rules version | Final supported rules version|
+|:-------------------:|:-------------------:|:-------------------------:|
+| 27.x | unknown | current |
+| 26.x | unknown | current |
+| 16.x | unknown | current |
+
 ### Bazel 7+ Setup
 
 For Bazel 7+ the only setup that is required is to have `apple_support`

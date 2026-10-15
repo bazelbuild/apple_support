@@ -771,6 +771,19 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     gcc_coverage_map_format_feature = feature(
         name = "gcc_coverage_map_format",
+        env_sets = [
+            env_set(
+                actions = [
+                    ACTION_NAMES.preprocess_assemble,
+                    ACTION_NAMES.c_compile,
+                    ACTION_NAMES.cpp_compile,
+                    ACTION_NAMES.cpp_module_compile,
+                    ACTION_NAMES.objc_compile,
+                    ACTION_NAMES.objcpp_compile,
+                ],
+                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}")],
+            ),
+        ],
         flag_sets = [
             flag_set(
                 actions = [
@@ -2198,7 +2211,11 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
     # these warnings.
     is_15_or_above = False
     if xcode_config.xcode_version():
-        is_15_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
+        # A path can't be compared, so assume a recent Xcode.
+        is_15_or_above = (
+            str(xcode_config.xcode_version()).startswith("/") or
+            xcode_config.xcode_version() >= apple_common.dotted_version("15.0")
+        )
     no_warn_duplicate_libraries_feature = feature(
         name = "no_warn_duplicate_libraries",
         enabled = "no_warn_duplicate_libraries" in ctx.features or
@@ -2220,7 +2237,10 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
 
     is_26_or_above = False
     if xcode_config.xcode_version():
-        is_26_or_above = xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+        is_26_or_above = (
+            str(xcode_config.xcode_version()).startswith("/") or
+            xcode_config.xcode_version() >= apple_common.dotted_version("26.0")
+        )
 
     reproducible_linker_flag_feature = feature(
         name = "reproducible_linker_flag",
@@ -2313,6 +2333,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
         feature(name = "no_dotd_file"),
         feature(name = "sanitize_pwd", enabled = True),
         feature(name = "set_soname", enabled = True),
+        feature(name = "skip_virtual_includes"),
 
         # Features with more configuration
         strip_args_feature,

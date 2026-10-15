@@ -5,11 +5,13 @@ load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test", "objc_libra
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//rules:apple_genrule.bzl", "apple_genrule")
 load("//xcode:xcode_config.bzl", "xcode_config")
+load(":apple_genrule_tests.bzl", "apple_genrule_test_suite")
 load(":apple_support_test.bzl", "apple_support_test")
 load(":available_xcodes_test.bzl", "available_xcodes_test")
 load(":binary_tests.bzl", "binary_test_suite")
 load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
+load(":coverage_tests.bzl", "coverage_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
 load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
@@ -17,6 +19,7 @@ load(":toolchains_test.bzl", "toolchain_config_test_suite")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
 load(":xcode_support_test.bzl", "xcode_support_test")
+load(":xcode_version_at_least_test.bzl", "xcode_version_at_least_test")
 load(":xcode_version_test.bzl", "xcode_version_test")
 
 licenses(["notice"])
@@ -30,6 +33,8 @@ binary_test_suite(name = "binary")
 
 compiling_test_suite(name = "compiling")
 
+coverage_test_suite(name = "coverage")
+
 linking_test_suite(name = "linking")
 
 sanitizer_test_suite(name = "sanitizer")
@@ -40,7 +45,11 @@ xcode_config_test(name = "xcode_config_test")
 
 xcode_support_test(name = "xcode_support_test")
 
+xcode_version_at_least_test(name = "xcode_version_at_least_test")
+
 xcode_version_test(name = "xcode_version_test")
+
+apple_genrule_test_suite(name = "apple_genrule_platform_tests")
 
 # Test to ensure the environment variable contract of apple_genrule.
 sh_test(
@@ -59,7 +68,7 @@ build_test(
 apple_genrule(
     name = "simple_genrule",
     outs = ["simple_genrule.txt"],
-    cmd = "printenv | grep \"^\\(DEVELOPER_DIR\\|SDKROOT\\)\" > $(@)",
+    cmd = "(uname -s; printenv) > $(@)",
 )
 
 apple_genrule(
@@ -74,9 +83,11 @@ bzl_library(
     deps = [
         "//lib:apple_support",
         "//lib:xcode_support",
+        "//rules:apple_genrule",
         "//xcode:available_xcodes",
         "//xcode:xcode_config",
         "//xcode:xcode_version",
+        "//xcode:xcode_version_at_least",
         "//xcode/private:providers",
         "@bazel_skylib//lib:unittest",
     ],
