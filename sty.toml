@@ -1,2 +1,13 @@
 [type-interfaces]
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
+
+[rules]
+# Action wrappers and native Apple platform helpers lack complete signatures.
+missing-parameter-annotation = "ignore"
+missing-return-annotation = "ignore"
+missing-type-argument = "error"
+unsound-assignment = "error"
+unsound-return-statement = "error"
+explicit-any = "error"
+# Native Bazel types and unannotated helpers remain gradual.
+non-static-type = "ignore"
