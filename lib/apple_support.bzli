@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Apple platform constraints, attributes and action path placeholders."""
+"""Apple platform constraints, attributes and action helpers."""
 
 load("//lib/private:providers.bzl", "ApplePlatformInfo")
 
@@ -55,23 +55,102 @@ def _platform_frameworks_path_placeholder(
 
 def _platform_from_info(*, apple_platform_info: _PlatformSelection) -> apple_platform: ...
 
-def _run(
+# Forwarded keywords of Bazel 9.3 actions.run and actions.run_shell APIs.
+# Keep these closed so misspelled action keywords are rejected at the wrapper.
+type _ActionTools = Sequence[File | FilesToRunProvider | depset[File]] | depset[File | FilesToRunProvider | depset[File]]
+type _ResourceSet[K: str, N: float] = dict[K, N] | Callable[[str, int], dict[K, N]]
+
+type _RunArgs[K: str, N: float] = dict[{
+    "outputs": Sequence[File],
+    "inputs": NotRequired[Sequence[File] | depset[File]],
+    "unused_inputs_list": NotRequired[File | None],
+    "executable": File | str | FilesToRunProvider,
+    "tools": NotRequired[_ActionTools],
+    "arguments": NotRequired[Sequence[str | Args]],
+    "mnemonic": NotRequired[str | None],
+    "progress_message": NotRequired[str | None],
+    "use_default_shell_env": NotRequired[bool],
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "input_manifests": NotRequired[Sequence[object] | None],
+    "exec_group": NotRequired[str | None],
+    "shadowed_action": NotRequired[Action],
+    "resource_set": NotRequired[_ResourceSet[K, N] | None],
+    "toolchain": NotRequired[Label | str | None],
+}]
+
+type _RunShellArgs[K: str, N: float] = dict[{
+    "outputs": Sequence[File],
+    "inputs": NotRequired[Sequence[File] | depset[File]],
+    "tools": NotRequired[_ActionTools],
+    "arguments": NotRequired[Sequence[str | Args]],
+    "mnemonic": NotRequired[str | None],
+    "command": str | Sequence[str],
+    "progress_message": NotRequired[str | None],
+    "use_default_shell_env": NotRequired[bool],
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "input_manifests": NotRequired[Sequence[object] | None],
+    "exec_group": NotRequired[str | None],
+    "shadowed_action": NotRequired[Action],
+    "resource_set": NotRequired[_ResourceSet[K, N] | None],
+    "toolchain": NotRequired[Label | str | None],
+}]
+
+type _AppleActionSettings = dict[{
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "use_default_shell_env": NotRequired[bool],
+}, ...]
+
+def _set_apple_platform_kwargs(
+        kwargs: _AppleActionSettings,
         *,
-        actions: actions,
-        xcode_config,
+        xcode_config: XcodeVersionConfig,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,
-        xcode_path_resolve_level: str = ...,
-        **kwargs,
 ) -> None: ...
 
-def _run_shell(
+class _WriteScript(Protocol):
+    def __call__(self, output: File, content: str, *, is_executable: bool) -> None: ...
+
+class _RunAction(Protocol):
+    def __call__[K: str = str, N: float = float](self, **kwargs: Unpack[_RunArgs[K, N]]) -> None: ...
+
+class _RunShellAction(Protocol):
+    def __call__[K: str = str, N: float = float](self, **kwargs: Unpack[_RunShellArgs[K, N]]) -> None: ...
+
+class _RunActions(Protocol):
+    @property
+    def args(self) -> Callable[[], Args]: ...
+    @property
+    def declare_file(self) -> Callable[[str], File]: ...
+    @property
+    def write(self) -> _WriteScript: ...
+    @property
+    def run(self) -> _RunAction: ...
+
+class _RunShellActions(Protocol):
+    @property
+    def run_shell(self) -> _RunShellAction: ...
+
+def _run[K: str = str, N: float = float](
         *,
-        actions: actions,
-        xcode_config,
+        actions: _RunActions,
+        xcode_config: XcodeVersionConfig,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,
-        **kwargs,
+        xcode_path_resolve_level: str | None = ...,
+        **kwargs: Unpack[_RunArgs[K, N]],
+) -> None: ...
+
+def _run_shell[K: str = str, N: float = float](
+        *,
+        actions: _RunShellActions,
+        xcode_config: XcodeVersionConfig,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        **kwargs: Unpack[_RunShellArgs[K, N]],
 ) -> None: ...
 
 def _platform_info_from_rule_ctx(
