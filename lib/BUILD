@@ -39,7 +39,6 @@ bzl_library(
         ":missing_platform_fallback_users",
         ":providers",
         "//lib/private:providers",
-        "@bazel_skylib//lib:types",
     ],
 )
 
