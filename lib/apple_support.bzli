@@ -19,24 +19,53 @@ def _sdkroot_path_placeholder() -> str: ...
 
 def _xcode_path_placeholder() -> str: ...
 
-def _action_required_attrs() -> dict[str, Attribute]: ...
+def _action_required_attrs() -> dict[{"_xcode_config": Attribute[Target]}]: ...
 
-def _platform_constraint_attrs() -> dict[str, Attribute]: ...
+def _platform_constraint_attrs() -> dict[{
+    "_ios_constraint": Attribute[Target],
+    "_macos_constraint": Attribute[Target],
+    "_tvos_constraint": Attribute[Target],
+    "_visionos_constraint": Attribute[Target],
+    "_watchos_constraint": Attribute[Target],
+    "_arm64_constraint": Attribute[Target],
+    "_arm64e_constraint": Attribute[Target],
+    "_arm64_32_constraint": Attribute[Target],
+    "_x86_64_constraint": Attribute[Target],
+    "_pointer_authentication_constraint": Attribute[Target],
+    "_apple_device_constraint": Attribute[Target],
+    "_apple_simulator_constraint": Attribute[Target],
+}]: ...
+
+# Installed by platform_constraint_attrs() for the context helpers below.
+type _PlatformAttrs = struct[{
+    "_ios_constraint": Target,
+    "_macos_constraint": Target,
+    "_tvos_constraint": Target,
+    "_visionos_constraint": Target,
+    "_watchos_constraint": Target,
+    "_arm64_constraint": Target,
+    "_arm64e_constraint": Target,
+    "_arm64_32_constraint": Target,
+    "_x86_64_constraint": Target,
+    "_pointer_authentication_constraint": Target,
+    "_apple_device_constraint": Target,
+    "_apple_simulator_constraint": Target,
+}, ...]
 
 def _target_arch_from_rule_ctx(
-        ctx: ctx,
+        ctx: ctx[object, _PlatformAttrs],
         *,
         fail_on_missing_constraint: bool = ...,
 ) -> str | None: ...
 
 def _target_environment_from_rule_ctx(
-        ctx: ctx,
+        ctx: ctx[object, _PlatformAttrs],
         *,
         fail_on_missing_constraint: bool = ...,
 ) -> str | None: ...
 
 def _target_os_from_rule_ctx(
-        ctx: ctx,
+        ctx: ctx[object, _PlatformAttrs],
         *,
         fail_on_missing_constraint: bool = ...,
 ) -> str | None: ...
@@ -154,6 +183,6 @@ def _run_shell[K: str = str, N: float = float](
 ) -> None: ...
 
 def _platform_info_from_rule_ctx(
-        ctx: ctx,
+        ctx: ctx[object, _PlatformAttrs],
         fail_on_missing_constraint: bool = ...,
 ) -> ApplePlatformInfo: ...
