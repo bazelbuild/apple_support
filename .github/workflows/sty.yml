@@ -26,3 +26,4 @@ jobs:
           bazel-version: '9.3.0'
           files: |
             lib/apple_support.bzl
+            lib/private/providers.bzl

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Apple platform constraints, attributes and action path placeholders."""
 
+load("//lib/private:providers.bzl", "ApplePlatformInfo")
+
 def _sdkroot_path_placeholder() -> str: ...
 
 def _xcode_path_placeholder() -> str: ...
@@ -38,3 +40,41 @@ def _target_os_from_rule_ctx(
         *,
         fail_on_missing_constraint: bool = ...,
 ) -> str | None: ...
+
+class _PlatformSelection(Protocol):
+    @property
+    def target_os(self) -> str: ...
+    @property
+    def target_environment(self) -> str | None: ...
+
+def _platform_frameworks_path_placeholder(
+        *,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+) -> str: ...
+
+def _platform_from_info(*, apple_platform_info: _PlatformSelection) -> apple_platform: ...
+
+def _run(
+        *,
+        actions: actions,
+        xcode_config,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        xcode_path_resolve_level: str = ...,
+        **kwargs,
+) -> None: ...
+
+def _run_shell(
+        *,
+        actions: actions,
+        xcode_config,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        **kwargs,
+) -> None: ...
+
+def _platform_info_from_rule_ctx(
+        ctx: ctx,
+        fail_on_missing_constraint: bool = ...,
+) -> ApplePlatformInfo: ...
