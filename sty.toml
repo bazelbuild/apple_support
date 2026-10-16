@@ -1,9 +1,11 @@
 [type-interfaces]
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
+"lib/private/providers.bzl" = "lib/private/providers.bzli"
 
 [rules]
-# Action wrappers and native Apple platform helpers lack complete signatures.
+# Action wrappers still lack Xcode provider and forwarded keyword contracts.
 missing-parameter-annotation = "ignore"
+# _kwargs_for_apple_platform preserves the forwarded native action schema.
 missing-return-annotation = "ignore"
 missing-type-argument = "error"
 unsound-assignment = "error"
