@@ -3,13 +3,11 @@
 "lib/private/providers.bzl" = "lib/private/providers.bzli"
 
 [rules]
-# Action wrappers still lack Xcode provider and forwarded keyword contracts.
-missing-parameter-annotation = "ignore"
-# _kwargs_for_apple_platform preserves the forwarded native action schema.
-missing-return-annotation = "ignore"
+missing-parameter-annotation = "error"
+missing-return-annotation = "error"
 missing-type-argument = "error"
 unsound-assignment = "error"
 unsound-return-statement = "error"
 explicit-any = "error"
-# Native Bazel types and unannotated helpers remain gradual.
+# Native attr/Args contracts and platform_type values remain gradual.
 non-static-type = "ignore"
