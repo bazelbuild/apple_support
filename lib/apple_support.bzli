@@ -1,0 +1,188 @@
+# Copyright 2026 The Bazel Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Apple platform constraints, attributes and action helpers."""
+
+load("//lib/private:providers.bzl", "ApplePlatformInfo")
+
+def _sdkroot_path_placeholder() -> str: ...
+
+def _xcode_path_placeholder() -> str: ...
+
+def _action_required_attrs() -> dict[{"_xcode_config": Attribute[Target]}]: ...
+
+def _platform_constraint_attrs() -> dict[{
+    "_ios_constraint": Attribute[Target],
+    "_macos_constraint": Attribute[Target],
+    "_tvos_constraint": Attribute[Target],
+    "_visionos_constraint": Attribute[Target],
+    "_watchos_constraint": Attribute[Target],
+    "_arm64_constraint": Attribute[Target],
+    "_arm64e_constraint": Attribute[Target],
+    "_arm64_32_constraint": Attribute[Target],
+    "_x86_64_constraint": Attribute[Target],
+    "_pointer_authentication_constraint": Attribute[Target],
+    "_apple_device_constraint": Attribute[Target],
+    "_apple_simulator_constraint": Attribute[Target],
+}]: ...
+
+# Installed by platform_constraint_attrs() for the context helpers below.
+type _PlatformAttrs = struct[{
+    "_ios_constraint": Target,
+    "_macos_constraint": Target,
+    "_tvos_constraint": Target,
+    "_visionos_constraint": Target,
+    "_watchos_constraint": Target,
+    "_arm64_constraint": Target,
+    "_arm64e_constraint": Target,
+    "_arm64_32_constraint": Target,
+    "_x86_64_constraint": Target,
+    "_pointer_authentication_constraint": Target,
+    "_apple_device_constraint": Target,
+    "_apple_simulator_constraint": Target,
+}, ...]
+
+def _target_arch_from_rule_ctx(
+        ctx: ctx[object, _PlatformAttrs],
+        *,
+        fail_on_missing_constraint: bool = ...,
+) -> str | None: ...
+
+def _target_environment_from_rule_ctx(
+        ctx: ctx[object, _PlatformAttrs],
+        *,
+        fail_on_missing_constraint: bool = ...,
+) -> str | None: ...
+
+def _target_os_from_rule_ctx(
+        ctx: ctx[object, _PlatformAttrs],
+        *,
+        fail_on_missing_constraint: bool = ...,
+) -> str | None: ...
+
+class _PlatformSelection(Protocol):
+    @property
+    def target_os(self) -> str: ...
+    @property
+    def target_environment(self) -> str | None: ...
+
+def _platform_frameworks_path_placeholder(
+        *,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+) -> str: ...
+
+def _platform_from_info(*, apple_platform_info: _PlatformSelection) -> apple_platform: ...
+
+# Forwarded keywords of Bazel 9.3 actions.run and actions.run_shell APIs.
+# Keep these closed so misspelled action keywords are rejected at the wrapper.
+type _ActionTools = Sequence[File | FilesToRunProvider | depset[File]] | depset[File | FilesToRunProvider | depset[File]]
+type _ResourceSet[K: str, N: float] = dict[K, N] | Callable[[str, int], dict[K, N]]
+
+type _RunArgs[K: str, N: float] = dict[{
+    "outputs": Sequence[File],
+    "inputs": NotRequired[Sequence[File] | depset[File]],
+    "unused_inputs_list": NotRequired[File | None],
+    "executable": File | str | FilesToRunProvider,
+    "tools": NotRequired[_ActionTools],
+    "arguments": NotRequired[Sequence[str | Args]],
+    "mnemonic": NotRequired[str | None],
+    "progress_message": NotRequired[str | None],
+    "use_default_shell_env": NotRequired[bool],
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "input_manifests": NotRequired[Sequence[object] | None],
+    "exec_group": NotRequired[str | None],
+    "shadowed_action": NotRequired[Action],
+    "resource_set": NotRequired[_ResourceSet[K, N] | None],
+    "toolchain": NotRequired[Label | str | None],
+}]
+
+type _RunShellArgs[K: str, N: float] = dict[{
+    "outputs": Sequence[File],
+    "inputs": NotRequired[Sequence[File] | depset[File]],
+    "tools": NotRequired[_ActionTools],
+    "arguments": NotRequired[Sequence[str | Args]],
+    "mnemonic": NotRequired[str | None],
+    "command": str | Sequence[str],
+    "progress_message": NotRequired[str | None],
+    "use_default_shell_env": NotRequired[bool],
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "input_manifests": NotRequired[Sequence[object] | None],
+    "exec_group": NotRequired[str | None],
+    "shadowed_action": NotRequired[Action],
+    "resource_set": NotRequired[_ResourceSet[K, N] | None],
+    "toolchain": NotRequired[Label | str | None],
+}]
+
+type _AppleActionSettings = dict[{
+    "env": NotRequired[dict[str, str] | None],
+    "execution_requirements": NotRequired[dict[str, str] | None],
+    "use_default_shell_env": NotRequired[bool],
+}, ...]
+
+def _set_apple_platform_kwargs(
+        kwargs: _AppleActionSettings,
+        *,
+        xcode_config: XcodeVersionConfig,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+) -> None: ...
+
+class _WriteScript(Protocol):
+    def __call__(self, output: File, content: str, *, is_executable: bool) -> None: ...
+
+class _RunAction(Protocol):
+    def __call__[K: str = str, N: float = float](self, **kwargs: Unpack[_RunArgs[K, N]]) -> None: ...
+
+class _RunShellAction(Protocol):
+    def __call__[K: str = str, N: float = float](self, **kwargs: Unpack[_RunShellArgs[K, N]]) -> None: ...
+
+class _RunActions(Protocol):
+    @property
+    def args(self) -> Callable[[], Args]: ...
+    @property
+    def declare_file(self) -> Callable[[str], File]: ...
+    @property
+    def write(self) -> _WriteScript: ...
+    @property
+    def run(self) -> _RunAction: ...
+
+class _RunShellActions(Protocol):
+    @property
+    def run_shell(self) -> _RunShellAction: ...
+
+def _run[K: str = str, N: float = float](
+        *,
+        actions: _RunActions,
+        xcode_config: XcodeVersionConfig,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        xcode_path_resolve_level: str | None = ...,
+        **kwargs: Unpack[_RunArgs[K, N]],
+) -> None: ...
+
+def _run_shell[K: str = str, N: float = float](
+        *,
+        actions: _RunShellActions,
+        xcode_config: XcodeVersionConfig,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        **kwargs: Unpack[_RunShellArgs[K, N]],
+) -> None: ...
+
+def _platform_info_from_rule_ctx(
+        ctx: ctx[object, _PlatformAttrs],
+        fail_on_missing_constraint: bool = ...,
+) -> ApplePlatformInfo: ...
