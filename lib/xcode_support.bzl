@@ -89,7 +89,8 @@ def _is_xcode_at_least_version(xcode_config, version):
     """
     current_version = xcode_config.xcode_version()
 
-    if str(current_version).startswith("/"):
+    # XcodeVersionConfig returns strings only for absolute developer directory paths.
+    if type(current_version) == "string":
         return True
 
     if not current_version:
