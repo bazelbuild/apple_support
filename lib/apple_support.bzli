@@ -159,7 +159,7 @@ class _RunActions(Protocol):
     @property
     def run(self) -> _RunAction: ...
 
-class _RunShellActions(Protocol):
+class RunShellActions(Protocol):
     @property
     def run_shell(self) -> _RunShellAction: ...
 
@@ -175,7 +175,7 @@ def _run[K: str = str, N: float = float](
 
 def _run_shell[K: str = str, N: float = float](
         *,
-        actions: _RunShellActions,
+        actions: RunShellActions,
         xcode_config: XcodeVersionConfig,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,

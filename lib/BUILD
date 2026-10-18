@@ -9,7 +9,11 @@ package(
 
 exports_files(glob(["*.bzl"]))
 
-exports_files(["apple_support.bzli"])
+exports_files([
+    "apple_support.bzli",
+    "lipo.bzli",
+    "xcode_support.bzli",
+])
 
 # This target is mainly for use by rules_apple and rules_swift.
 # When this target is linked into an XCTest binary, and the

@@ -13,7 +13,7 @@ load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
 load(":coverage_tests.bzl", "coverage_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
-load(":lipo_test.bzl", "create_from_depset_test")
+load(":lipo_test.bzl", "create_from_depset_test", "extract_or_thin_test")
 load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":toolchains_test.bzl", "toolchain_config_test_suite")
@@ -57,6 +57,8 @@ missing_xcode_version_test(
 )
 
 create_from_depset_test(name = "lipo_create_from_depset_test")
+
+extract_or_thin_test(name = "lipo_extract_or_thin_test")
 
 xcode_version_at_least_test(name = "xcode_version_at_least_test")
 

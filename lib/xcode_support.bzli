@@ -1,0 +1,11 @@
+"""Configured Xcode providers and version comparisons."""
+
+load("//xcode:providers.bzl", "XcodeSdkVariantInfo")
+
+type _Context = ctx[object, struct[{"_xcode_config": Target | None}, ...]]
+
+def _get_current_sdk(ctx: _Context) -> XcodeSdkVariantInfo: ...
+
+def _get_current_xcode(ctx: _Context) -> XcodeVersionConfig: ...
+
+def _is_xcode_at_least_version(xcode_config: XcodeVersionConfig, version: str) -> bool: ...

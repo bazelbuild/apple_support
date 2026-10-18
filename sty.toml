@@ -4,6 +4,8 @@ strict-generic-narrowing = true
 [type-interfaces]
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
 "lib/private/providers.bzl" = "lib/private/providers.bzli"
+"lib/lipo.bzl" = "lib/lipo.bzli"
+"lib/xcode_support.bzl" = "lib/xcode_support.bzli"
 
 [rules]
 missing-parameter-annotation = "error"
@@ -13,3 +15,9 @@ unsound-assignment = "error"
 unsound-return-statement = "error"
 explicit-any = "error"
 non-static-type = "error"
+blanket-ignore-comment = "error"
+possibly-unresolved-reference = "error"
+division-by-zero = "error"
+
+[[stub-packages]]
+manifest = "@bazel_skylib//:stubs.toml"
