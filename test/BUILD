@@ -19,7 +19,7 @@ load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":toolchains_test.bzl", "toolchain_config_test_suite")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
-load(":xcode_support_test.bzl", "missing_xcode_version", "missing_xcode_version_test", "xcode_support_test")
+load(":xcode_support_test.bzl", "missing_xcode_version_test", "xcode_support_test")
 load(":xcode_version_at_least_test.bzl", "xcode_version_at_least_test")
 load(":xcode_version_test.bzl", "xcode_version_test")
 
@@ -46,15 +46,7 @@ xcode_config_test(name = "xcode_config_test")
 
 xcode_support_test(name = "xcode_support_test")
 
-missing_xcode_version(
-    name = "missing_xcode_version",
-    tags = ["manual"],
-)
-
-missing_xcode_version_test(
-    name = "missing_xcode_version_test",
-    target_under_test = ":missing_xcode_version",
-)
+missing_xcode_version_test(name = "missing_xcode_version_test")
 
 create_from_depset_test(name = "lipo_create_from_depset_test")
 
@@ -105,6 +97,7 @@ bzl_library(
         "//xcode:xcode_version",
         "//xcode:xcode_version_at_least",
         "//xcode/private:providers",
+        "@bazel_features//:features",
         "@bazel_skylib//lib:unittest",
     ],
 )

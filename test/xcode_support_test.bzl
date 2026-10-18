@@ -13,6 +13,7 @@
 # limitations under the License.
 """Definition of a test rule to test xcode_support."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("//lib:apple_support.bzl", "apple_support")
 load("//lib:xcode_support.bzl", "xcode_support")
@@ -58,12 +59,13 @@ def _xcode_config(version):
 def _xcode_support_test_impl(ctx):
     """Implementation of the xcode_support_test rule."""
 
-    for version, minimum, expected in [
+    cases = [
         ("15.1", "15.0", True),
         ("15.1", "15.1", True),
         ("15.1", "16.0", False),
         ("/Applications/Xcode.app/Contents/Developer", "999", True),
-    ]:
+    ] if bazel_features.apple.xcode_config_migrated else []
+    for version, minimum, expected in cases:
         actual = xcode_support.is_xcode_at_least_version(_xcode_config(version), minimum)
         if actual != expected:
             fail("Expected Xcode %s >= %s to be %s, got %s" % (version, minimum, expected, actual))
@@ -87,11 +89,17 @@ def _missing_xcode_version_impl(_ctx):
     xcode_support.is_xcode_at_least_version(_xcode_config(""), "15.0")
     return []
 
-missing_xcode_version = rule(implementation = _missing_xcode_version_impl)
+_missing_xcode_version = rule(implementation = _missing_xcode_version_impl)
 
 def _missing_xcode_version_test_impl(ctx):
     env = analysistest.begin(ctx)
     asserts.expect_failure(env, "Could not determine Xcode version at all.")
     return analysistest.end(env)
 
-missing_xcode_version_test = analysistest.make(_missing_xcode_version_test_impl, expect_failure = True)
+_missing_xcode_version_test = analysistest.make(_missing_xcode_version_test_impl, expect_failure = True)
+
+def missing_xcode_version_test(name):
+    """Tests the missing version supported by the Starlark Xcode provider."""
+    if bazel_features.apple.xcode_config_migrated:
+        _missing_xcode_version(name = name + "_subject", tags = ["manual"])
+        _missing_xcode_version_test(name = name, target_under_test = ":" + name + "_subject")
