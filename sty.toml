@@ -1,5 +1,6 @@
 [analysis]
 strict-generic-narrowing = true
+require-valid-suppressions = true
 
 [type-interfaces]
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
