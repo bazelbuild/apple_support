@@ -1724,6 +1724,51 @@ _default_sdk_versions_selected_xcode_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
+def _native_xcode_properties(namer):
+    xcode_config(
+        name = "native_xcode_properties__foo",
+        default = namer(":version512"),
+        versions = [namer(":version512")],
+        tags = FIXTURE_TAGS,
+    )
+    xcode_version(
+        name = namer("version512"),
+        default_ios_sdk_version = "101",
+        version = "5.1.2",
+        tags = FIXTURE_TAGS,
+    )
+
+    _native_xcode_properties_test(
+        name = "native_xcode_properties",
+        target_under_test = "native_xcode_properties__foo",
+    )
+    return ["native_xcode_properties"]
+
+def _native_xcode_properties_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    xcode_properties = target_under_test[apple_common.XcodeProperties]
+
+    asserts.equals(env, "5.1.2", xcode_properties.xcode_version)
+    asserts.equals(env, "101", xcode_properties.default_ios_sdk_version)
+
+    return analysistest.end(env)
+
+_native_xcode_properties_test = analysistest.make(
+    _native_xcode_properties_test_impl,
+    config_settings = {
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:native_xcode_properties__foo",
+        )),
+        str(Label("//xcode:starlark_version_config")): str(Label(
+            "//test:native_xcode_properties__foo",
+        )),
+    },
+)
+
+# ------------------------------------------------------------------------------
+
 def _default_without_version(namer):
     xcode_config(
         name = "default_without_version__foo",
@@ -2424,7 +2469,10 @@ def xcode_config_test(name):
             _available_xcodes_mode_with_flag,
         ] + ([
             _xcode_config_resolver_with_fragment_removed,
-        ] if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else [])) if bazel_features.apple.xcode_config_migrated else [],
+        ] if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else []) + ([
+            # TODO: Remove once we no longer support Bazel 8.
+            _native_xcode_properties,
+        ] if getattr(apple_common, "XcodeProperties", None) else [])) if bazel_features.apple.xcode_config_migrated else [],
     )
 
     # TODO: b/311385128 - The following tests from `XcodeConfigTest.java`
