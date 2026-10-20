@@ -24,3 +24,4 @@ jobs:
         with:
           audit-loads: true
           bazel-version: '9.3.0'
+          files: lib/providers.bzl

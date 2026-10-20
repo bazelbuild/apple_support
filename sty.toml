@@ -6,6 +6,7 @@ require-valid-suppressions = true
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
 "lib/private/providers.bzl" = "lib/private/providers.bzli"
 "lib/lipo.bzl" = "lib/lipo.bzli"
+"lib/missing_platform_fallback_users.bzl" = "lib/missing_platform_fallback_users.bzli"
 "lib/xcode_support.bzl" = "lib/xcode_support.bzli"
 
 [rules]

@@ -12,6 +12,7 @@ exports_files(glob(["*.bzl"]))
 exports_files([
     "apple_support.bzli",
     "lipo.bzli",
+    "missing_platform_fallback_users.bzli",
     "xcode_support.bzli",
 ])
 
