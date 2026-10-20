@@ -55,6 +55,7 @@ dmg_arc_test_deps = use_extension("//tools/http_dmg/private/tests:http_dmg_test_
 use_repo(
     dmg_arc_test_deps,
     "http_dmg_test_firefox",
+    "http_dmg_test_firefox_patched",
     "http_dmg_test_firefox_strip_prefix",
     "http_dmg_test_krita",
     "http_dmg_test_krita_strip_prefix",

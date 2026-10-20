@@ -39,6 +39,20 @@ def http_dmg_test_deps():
     )
 
     http_dmg(
+        name = "http_dmg_test_firefox_patched",
+        # Explicitly test `url`.
+        url = "https://ftp.mozilla.org/pub/firefox/releases/141.0.3/mac/en-US/Firefox%20141.0.3.dmg",
+        integrity = "sha256-u5Is2mkFQ73aofvDs8ulCMYHdIMmQ0UrwmZZUzH0LbE=",
+        strip_prefix = "Firefox.app",
+        add_prefix = "firefox",
+        patches = [Label("//tools/http_dmg/private/tests:firefox_info.patch")],
+        patch_strip = 1,
+        build_file_content = _BUILD_FILE_CONTENT.format(
+            file = "firefox/Contents/Info.plist",
+        ),
+    )
+
+    http_dmg(
         name = "http_dmg_test_krita",
         urls = [
             "https://mirror.bazel.build/download.kde.org/Attic/krita/5.2.6/krita-5.2.6-release.dmg",
@@ -65,6 +79,7 @@ def http_dmg_test_deps():
 
     return [
         "http_dmg_test_firefox",
+        "http_dmg_test_firefox_patched",
         "http_dmg_test_firefox_strip_prefix",
         "http_dmg_test_krita",
         "http_dmg_test_krita_strip_prefix",
