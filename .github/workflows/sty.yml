@@ -24,4 +24,8 @@ jobs:
         with:
           audit-loads: true
           bazel-version: '9.3.0'
-          files: lib/providers.bzl
+          files: |
+            configs/platforms.bzl
+            lib/providers.bzl
+            rules/rules.doc.bzl
+            xcode/private/providers.bzl
