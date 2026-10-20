@@ -195,4 +195,30 @@ function test_ar_toc_only_requires_existing_archive() {
   expect_log "archive file '${archive}' does not exist"
 }
 
+function test_ar_append_preserves_previous_batches() (
+  unset __LIBTOOL_LOG_ONLY
+  export DEVELOPER_DIR="$(/usr/bin/xcode-select -p)"
+  export SDKROOT="$(/usr/bin/xcrun --show-sdk-path)"
+  local first="${TEST_TMPDIR}/first.o"
+  local second="${TEST_TMPDIR}/second.o"
+
+  printf 'int first(void) { return 1; }\n' |
+      /usr/bin/xcrun clang -x c -c - -o "${first}" || fail "compile first"
+  printf 'int second(void) { return 2; }\n' |
+      /usr/bin/xcrun clang -x c -c - -o "${second}" || fail "compile second"
+
+  local flags
+  for flags in cq cqD; do
+    local archive="${TEST_TMPDIR}/batched-${flags}.a"
+    local binary="${TEST_TMPDIR}/batched-${flags}"
+    "${LIBTOOL}" "${flags}" "${archive}" "${first}" || fail "create archive (${flags})"
+    "${LIBTOOL}" "${flags}" "${archive}" "${second}" || fail "append archive (${flags})"
+    "${LIBTOOL}" s "${archive}" || fail "index archive (${flags})"
+    printf 'int first(void); int second(void); int main(void) { return first() + second() != 3; }\n' |
+        /usr/bin/xcrun clang -x c - -x none "${archive}" -o "${binary}" ||
+        fail "link both batches (${flags})"
+    "${binary}" || fail "run both batches (${flags})"
+  done
+)
+
 run_suite "libtool tests"
