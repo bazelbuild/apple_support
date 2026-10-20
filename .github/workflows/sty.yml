@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: tamird/sty@3e6e9b0b54ce2455218b7634b9b89197f701041a
+      - uses: tamird/sty@66ba37a5d8a0e9b35da9c7aa071c1285c3a88f93
         with:
           audit-loads: true
           bazel-version: '9.3.0'
@@ -28,4 +28,7 @@ jobs:
             configs/platforms.bzl
             lib/providers.bzl
             rules/rules.doc.bzl
+            xcode/available_xcodes.bzl
             xcode/private/providers.bzl
+            xcode/xcode_sdk_variant.bzl
+            xcode/xcode_version.bzl
