@@ -8,6 +8,7 @@ require-valid-suppressions = true
 "lib/lipo.bzl" = "lib/lipo.bzli"
 "lib/missing_platform_fallback_users.bzl" = "lib/missing_platform_fallback_users.bzli"
 "lib/xcode_support.bzl" = "lib/xcode_support.bzli"
+"xcode/providers.bzl" = "xcode/providers.bzli"
 
 [rules]
 missing-parameter-annotation = "error"
