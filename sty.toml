@@ -10,6 +10,7 @@ require-valid-suppressions = true
 "lib/transitions.bzl" = "lib/transitions.bzli"
 "lib/xcode_support.bzl" = "lib/xcode_support.bzli"
 "xcode/providers.bzl" = "xcode/providers.bzli"
+"xcode/xcode_configure.bzl" = "xcode/xcode_configure.bzli"
 
 [rules]
 missing-parameter-annotation = "error"

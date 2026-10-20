@@ -1,0 +1,9 @@
+"""Discovered Xcode installations."""
+
+type _XcodeInstallation = struct[{"version": str, "aliases": list[str], "developer_dir": str}]
+
+def run_xcode_locator(repository_ctx: repository_ctx | module_ctx, xcode_locator_src_label: str | Label | path) -> tuple[list[_XcodeInstallation], str | None]: ...
+
+type _XcodeRepositoryAttrs = struct[{"xcode_locator": str, "remote_xcode": str}, ...]
+
+def _darwin_build_file(repository_ctx: repository_ctx[_XcodeRepositoryAttrs]) -> str: ...
