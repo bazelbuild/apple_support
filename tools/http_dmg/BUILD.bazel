@@ -5,6 +5,7 @@ bzl_library(
     srcs = ["http_dmg.bzl"],
     visibility = ["//visibility:public"],
     deps = [
+        "//tools/http_dmg/private:zip7",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )

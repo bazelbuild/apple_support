@@ -7,6 +7,12 @@ diff_test(
 )
 
 diff_test(
+    name = "firefox_patched_diff_test",
+    file1 = "@http_dmg_test_firefox_patched//:info_plist",
+    file2 = "firefox_info_patched.plist",
+)
+
+diff_test(
     name = "firefox_strip_prefix_diff_test",
     file1 = "@http_dmg_test_firefox_strip_prefix//:info_plist",
     file2 = "firefox_info.plist",
