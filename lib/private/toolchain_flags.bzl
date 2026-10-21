@@ -99,9 +99,9 @@ def _split_escaped(string, delimiter):
 def get_starlark_list(values):
     # type: (list[str]) -> str
     """Convert a list of string into a string that can be passed to a rule attribute."""
+    return ",\n    ".join([quote_starlark_string(value) for value in values])
 
+def quote_starlark_string(value):
+    # type: (str) -> str
     # Bazel's repr can emit \x escapes, which BUILD files do not accept.
-    return ",\n    ".join([
-        '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
-        for value in values
-    ])
+    return '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")

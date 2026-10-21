@@ -4,8 +4,7 @@ This does much less than in the past but is still required for a few environment
 variable reading use cases.
 """
 
-load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
-load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list")
+load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list", _quote_starlark_string = "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
@@ -32,9 +31,9 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
 
     # Include extra Xcode paths in case they're installed on other volumes
     for toolchain in xcode_toolchains:
-        include_dirs.append(escape_string(toolchain.developer_dir))
+        include_dirs.append(toolchain.developer_dir)
 
-    return ["            \"%s\"," % x for x in include_dirs]
+    return ["            %s," % _quote_starlark_string(path) for path in include_dirs]
 
 def _toolchain_env_impl(repository_ctx):
     # All Label resolutions done at the top of the function to avoid issues

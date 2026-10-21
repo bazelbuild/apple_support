@@ -14,14 +14,10 @@
 # limitations under the License.
 """Configuring the C++ toolchain on macOS."""
 
-load(
-    "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
-    "escape_string",
-)
-load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list")
+load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list", _quote_starlark_string = "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator", "watch_selected_xcode")
 
-def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
+def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
 
     Args:
@@ -46,7 +42,7 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 
     # Include extra Xcode paths in case they're installed on other volumes
     for toolchain in xcode_toolchains:
-        include_dirs.append(escape_string(toolchain.developer_dir))
+        include_dirs.append(toolchain.developer_dir)
 
     return include_dirs
 
@@ -113,10 +109,9 @@ def configure_osx_toolchain(repository_ctx):
     if _succeeds(repository_ctx, "ld", "-reproducible", "-v"):
         features.append("reproducible_linker_flag")
 
-    escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains)
     escaped_cxx_include_directories = []
-    for path in escaped_include_paths:
-        escaped_cxx_include_directories.append(("            \"%s\"," % path))
+    for path in _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
+        escaped_cxx_include_directories.append("            %s," % _quote_starlark_string(path))
     if xcodeloc_err:
         escaped_cxx_include_directories.append("            # Error: " + xcodeloc_err)
 
