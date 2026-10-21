@@ -27,6 +27,7 @@ jobs:
           files: |
             configs/platforms.bzl
             crosstool/setup.bzl
+            lib/private/toolchain_flags.bzl
             lib/providers.bzl
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl
