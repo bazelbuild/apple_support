@@ -201,6 +201,7 @@ tasks:
       - test/shell/layering_check_test.sh
       - test/shell/header_parsing_test.sh
       - test/shell/coverage_test.sh
+      - test/shell/toolchain_flags_test.sh
 
   macos_latest_shell_scripts_toolchain_off:
     name: "Shell tests (rules toolchain off)"
@@ -210,6 +211,7 @@ tasks:
       - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/layering_check_test.sh'
       - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/header_parsing_test.sh'
       - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/coverage_test.sh'
+      - 'BAZEL_EXTRA_ARGS="--repo_env=APPLE_SUPPORT_RULES_BASED_TOOLCHAIN=0" test/shell/toolchain_flags_test.sh'
 
   macos_last_green:
     name: "Last Green Bazel"
