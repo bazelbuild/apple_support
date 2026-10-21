@@ -112,9 +112,11 @@ def _split_escaped(string, delimiter):
     return result
 
 def _get_starlark_list(values):
-    if not values:
-        return ""
-    return "\"" + "\",\n    \"".join(values) + "\""
+    # Bazel's repr can emit \x escapes, which BUILD files do not accept.
+    return ",\n    ".join([
+        '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
+        for value in values
+    ])
 
 def _toolchain_env_impl(repository_ctx):
     # All Label resolutions done at the top of the function to avoid issues
