@@ -26,6 +26,7 @@ jobs:
           bazel-version: '9.3.0'
           files: |
             configs/platforms.bzl
+            crosstool/osx_cc_configure.bzl
             crosstool/setup.bzl
             crosstool/setup_internal.bzl
             lib/private/toolchain_flags.bzl
@@ -34,6 +35,7 @@ jobs:
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl
             rules/universal_binary.bzl
+            toolchain/toolchain_env.bzl
             xcode/available_xcodes.bzl
             xcode/private/providers.bzl
             xcode/xcode_sdk_variant.bzl

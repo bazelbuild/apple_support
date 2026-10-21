@@ -47,6 +47,7 @@ def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     return include_dirs
 
 def _succeeds(repository_ctx, *args):
+    # type: (repository_ctx, *str) -> bool
     env = repository_ctx.os.environ
     result = repository_ctx.execute([
         "env",
@@ -60,6 +61,7 @@ def _succeeds(repository_ctx, *args):
     return result.return_code == 0
 
 def _copy_file(repository_ctx, src, dest):
+    # type: (repository_ctx, str | Label | path, str | path) -> None
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
 def configure_osx_toolchain(repository_ctx):
@@ -81,7 +83,7 @@ def configure_osx_toolchain(repository_ctx):
     cc_toolchain_config = Label("@apple_support//crosstool:cc_toolchain_config.bzl")
     build_template = Label("@apple_support//crosstool:BUILD.tpl")
 
-    xcode_toolchains = []
+    xcode_toolchains = []  # type: Iterable[_DeveloperDirectory]
     xcodeloc_err = ""
     allow_non_applications_xcode = "BAZEL_ALLOW_NON_APPLICATIONS_XCODE" in repository_ctx.os.environ and repository_ctx.os.environ["BAZEL_ALLOW_NON_APPLICATIONS_XCODE"] == "1"
     if allow_non_applications_xcode:

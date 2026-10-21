@@ -3,6 +3,7 @@ strict-generic-narrowing = true
 require-valid-suppressions = true
 
 [type-interfaces]
+"crosstool/osx_cc_configure.bzl" = "crosstool/osx_cc_configure.bzli"
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
 "lib/private/providers.bzl" = "lib/private/providers.bzli"
 "lib/lipo.bzl" = "lib/lipo.bzli"
