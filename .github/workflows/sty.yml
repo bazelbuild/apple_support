@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: tamird/sty@b2ea62bb0d14a5c50711e96d588d851173063773
+      - uses: tamird/sty@d42f2215bbd0f27a4820f256757d60c612874dcb
         with:
           audit-loads: true
           bazel-version: '9.3.0'
@@ -29,6 +29,7 @@ jobs:
             crosstool/setup.bzl
             lib/private/toolchain_flags.bzl
             lib/providers.bzl
+            rules/private/apple_genrule.bzl
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl
             rules/universal_binary.bzl
