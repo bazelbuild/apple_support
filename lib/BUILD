@@ -37,6 +37,7 @@ bzl_library(
         ":missing_platform_fallback_users",
         ":providers",
         "//lib/private:providers",
+        "//lib/private:xcode_paths",
         "@bazel_skylib//lib:types",
     ],
 )

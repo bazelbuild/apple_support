@@ -1,6 +1,7 @@
 """Test framework for diffing cc_toolchain config against checked-in golden files."""
 
 load("@bazel_features//private:util.bzl", bazel_version_ge = "ge")
+load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load(
     "@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl",
     "CcToolchainConfigInfo",
@@ -199,6 +200,21 @@ _toolchain_config_update = rule(
     },
 )
 
+def _dynamic_toolchain_info_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    variables = analysistest.target_under_test(env)[platform_common.TemplateVariableInfo].variables
+    asserts.equals(
+        env,
+        "__BAZEL_XCODE_DEVELOPER_DIR__/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks",
+        variables["PLATFORM_FRAMEWORKS"],
+    )
+    return analysistest.end(env)
+
+_dynamic_toolchain_info_test = analysistest.make(
+    _dynamic_toolchain_info_test_impl,
+    config_settings = {"//command_line_option:platforms": str(Label("//platforms:ios_sim_arm64"))},
+)
+
 _is_bazel_9_or_later = bazel_version_ge("9.0.0")
 
 def toolchain_config_test_suite(name):
@@ -215,7 +231,12 @@ def toolchain_config_test_suite(name):
 
     platforms = APPLE_PLATFORMS_CONSTRAINTS.keys()
     toolchain_config = "//toolchain"
-    tests = []
+    dynamic_toolchain_info_test = name + "_ios_simulator_frameworks_test"
+    _dynamic_toolchain_info_test(
+        name = dynamic_toolchain_info_test,
+        target_under_test = "//toolchain:dynamic_toolchain_info",
+    )
+    tests = [dynamic_toolchain_info_test]
     updates = []
     for platform in platforms:
         golden = "//test/test_data/toolchain_configs:" + platform + ".json"
