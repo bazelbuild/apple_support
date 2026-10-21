@@ -5,6 +5,7 @@ variable reading use cases.
 """
 
 load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
+load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
@@ -34,87 +35,6 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
         include_dirs.append(escape_string(toolchain.developer_dir))
 
     return ["            \"%s\"," % x for x in include_dirs]
-
-def _get_copts_env_var(repository_ctx, name, default = ""):
-    """Get an environment variable and split it on ":" to be used as copts.
-
-    Args:
-      repository_ctx: The repository context.
-      name: Name of the environment variable.
-      default: Default value to be used when the environment variable is not present.
-    Returns:
-      Escaped value of the environment variable or default.
-    """
-
-    if name in repository_ctx.os.environ:
-        return _split_escaped(repository_ctx.os.environ[name], ":")
-    return _split_escaped(default, ":")
-
-def _split_escaped(string, delimiter):
-    """Split string on the delimiter unless %-escaped.
-
-    Examples:
-      Basic usage:
-        split_escaped("a:b:c", ":") -> [ "a", "b", "c" ]
-
-      Delimiter that is not supposed to be splitten on has to be %-escaped:
-        split_escaped("a%:b", ":") -> [ "a:b" ]
-
-      Literal % can be represented by escaping it as %%:
-        split_escaped("a%%b", ":") -> [ "a%b" ]
-
-      Consecutive delimiters produce empty strings:
-        split_escaped("a::b", ":") -> [ "a", "", "", "b" ]
-
-    Args:
-      string: The string to be split.
-      delimiter: Non-empty string not containing %-sign to be used as a
-          delimiter.
-
-    Returns:
-      A list of substrings.
-    """
-    if delimiter == "":
-        fail("Delimiter cannot be empty")
-    if delimiter.find("%") != -1:
-        fail("Delimiter cannot contain %-sign")
-
-    i = 0
-    result = []
-    accumulator = []
-    length = len(string)
-    delimiter_length = len(delimiter)
-
-    if not string:
-        return []
-
-    # Iterate over the length of string since Starlark doesn't have while loops
-    for _ in range(length):
-        if i >= length:
-            break
-        if i + 2 <= length and string[i:i + 2] == "%%":
-            accumulator.append("%")
-            i += 2
-        elif (i + 1 + delimiter_length <= length and
-              string[i:i + 1 + delimiter_length] == "%" + delimiter):
-            accumulator.append(delimiter)
-            i += 1 + delimiter_length
-        elif i + delimiter_length <= length and string[i:i + delimiter_length] == delimiter:
-            result.append("".join(accumulator))
-            accumulator = []
-            i += delimiter_length
-        else:
-            accumulator.append(string[i])
-            i += 1
-
-    # Append the last group still in accumulator
-    result.append("".join(accumulator))
-    return result
-
-def _get_starlark_list(values):
-    if not values:
-        return ""
-    return "\"" + "\",\n    \"".join(values) + "\""
 
 def _toolchain_env_impl(repository_ctx):
     # All Label resolutions done at the top of the function to avoid issues
