@@ -27,6 +27,7 @@ jobs:
           files: |
             configs/platforms.bzl
             crosstool/setup.bzl
+            crosstool/setup_internal.bzl
             lib/private/toolchain_flags.bzl
             lib/providers.bzl
             rules/private/apple_genrule.bzl

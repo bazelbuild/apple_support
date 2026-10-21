@@ -67,6 +67,7 @@ def _copy_file(repository_ctx, src, dest):
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
 def configure_osx_toolchain(repository_ctx):
+    # type: (repository_ctx) -> tuple[bool, str | None]
     """Configure C++ toolchain on macOS.
 
     Args:
