@@ -146,13 +146,15 @@ or `"27.0.0.27A5228h"`.
 
 def _flag_target_label(label):
     """Returns the `_flag` target label corresponding to an `xcode_version_at_least` target."""
+    if type(label) == "Label":
+        return label.same_package_label(label.name + "_flag")
     if not label.startswith(":") and not label.startswith("//") and not label.startswith("@"):
         label = ":" + label
     return label + "_flag"
 
 def _local_target_name(label):
-    """Returns the local target name if `label` refers to the current package, or `None`."""
-    if label.startswith("//") or label.startswith("@"):
+    """Returns the local target name for a relative string reference, or `None`."""
+    if type(label) == "Label" or label.startswith("//") or label.startswith("@"):
         return None
     if label.startswith(":"):
         return label[1:]
@@ -230,8 +232,8 @@ def xcode_version_at_least(
             such as `"26.4"`, `"26.4.1"`, or `"27.0.0.27A5228h"`.
         after: An optional list of lower-version `xcode_version_at_least` target
             names or labels that this condition should refine when used together
-            in the same `select()` expression. If a referenced target is in the
-            same package, any lower thresholds it already refines are inherited
+            in the same `select()` expression. Relative target-name and `:name`
+            string references inherit the referenced target's lower thresholds
             transitively.
         visibility: The visibility of the generated targets.
         **kwargs: Additional keyword arguments (such as `tags` or

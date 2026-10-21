@@ -84,7 +84,7 @@ its `after` list.
 | :------------- | :------------- | :------------- |
 | <a id="xcode_version_at_least-name"></a>name |  The name of the `config_setting` target to create. A companion feature flag target named `<name>_flag` will also be created.   |  none |
 | <a id="xcode_version_at_least-minimum_xcode_version"></a>minimum_xcode_version |  The minimum Xcode version to match (inclusive), such as `"26.4"`, `"26.4.1"`, or `"27.0.0.27A5228h"`.   |  none |
-| <a id="xcode_version_at_least-after"></a>after |  An optional list of lower-version `xcode_version_at_least` target names or labels that this condition should refine when used together in the same `select()` expression. If a referenced target is in the same package, any lower thresholds it already refines are inherited transitively.   |  `None` |
+| <a id="xcode_version_at_least-after"></a>after |  An optional list of lower-version `xcode_version_at_least` target names or labels that this condition should refine when used together in the same `select()` expression. Relative target-name and `:name` string references inherit the referenced target's lower thresholds transitively.   |  `None` |
 | <a id="xcode_version_at_least-visibility"></a>visibility |  The visibility of the generated targets.   |  `None` |
 | <a id="xcode_version_at_least-kwargs"></a>kwargs |  Additional keyword arguments (such as `tags` or `constraint_values`) forwarded to `native.config_setting`. `tags` is also forwarded to the companion `<name>_flag` target.   |  none |
 

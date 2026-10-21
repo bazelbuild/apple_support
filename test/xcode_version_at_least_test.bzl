@@ -313,11 +313,21 @@ def _test_qualified_labels_in_after(namer):
         minimum_xcode_version = "26.4",
         tags = FIXTURE_TAGS,
     )
+    xcode_version_at_least(
+        name = namer("qual_27_0"),
+        after = [
+            Label("@apple_support//test:" + namer("qual_26_2")),
+            "@apple_support//test:" + namer("qual_26_4"),
+        ],
+        minimum_xcode_version = "27.0",
+        tags = FIXTURE_TAGS,
+    )
     _select_holder(
         name = namer("qual_holder"),
         selected_value = select({
             namer(":qual_26_2"): "xcode_26_2_or_newer",
             namer(":qual_26_4"): "xcode_26_4_or_newer",
+            namer(":qual_27_0"): "xcode_27_0_or_newer",
             "//conditions:default": "older_than_26_2",
         }),
         tags = FIXTURE_TAGS,
@@ -328,8 +338,16 @@ def _test_qualified_labels_in_after(namer):
         target_under_test = namer(":qual_holder"),
         expected_value = "xcode_26_4_or_newer",
     )
+    _select_xcode_27_0_beta_test(
+        name = "label_objects_in_after_match_refined",
+        target_under_test = namer(":qual_holder"),
+        expected_value = "xcode_27_0_or_newer",
+    )
 
-    return ["qualified_labels_in_after_matches_refined"]
+    return [
+        "qualified_labels_in_after_matches_refined",
+        "label_objects_in_after_match_refined",
+    ]
 
 def _expect_failure_message_test_impl(ctx):
     env = analysistest.begin(ctx)
