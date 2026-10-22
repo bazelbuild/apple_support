@@ -3,6 +3,7 @@
 load(":http_dmg_test_deps.bzl", "http_dmg_test_deps")
 
 def _http_dmg_test_impl(module_ctx):
+    # type: (module_ctx) -> extension_metadata
     return module_ctx.extension_metadata(
         reproducible = True,
         root_module_direct_deps = [],

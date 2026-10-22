@@ -37,6 +37,8 @@ jobs:
             rules/universal_binary.bzl
             toolchain/dynamic_toolchain_info.bzl
             toolchain/toolchain_env.bzl
+            tools/http_dmg/private/tests/http_dmg_test_deps.bzl
+            tools/http_dmg/private/tests/http_dmg_test_extensions.bzl
             xcode/available_xcodes.bzl
             xcode/private/providers.bzl
             xcode/xcode_sdk_variant.bzl
