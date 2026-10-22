@@ -37,8 +37,10 @@ jobs:
             crosstool/osx_cc_configure.bzl
             crosstool/setup.bzl
             crosstool/setup_internal.bzl
+            crosstool/universal_exec_tool.bzl
             lib/private/toolchain_flags.bzl
             lib/providers.bzl
+            rules/apple_genrule.bzl
             rules/private/apple_genrule.bzl
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl

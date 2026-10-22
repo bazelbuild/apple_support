@@ -4,12 +4,14 @@ require-valid-suppressions = true
 
 [type-interfaces]
 "crosstool/osx_cc_configure.bzl" = "crosstool/osx_cc_configure.bzli"
+"crosstool/universal_exec_tool.bzl" = "crosstool/universal_exec_tool.bzli"
 "lib/apple_support.bzl" = "lib/apple_support.bzli"
 "lib/private/providers.bzl" = "lib/private/providers.bzli"
 "lib/lipo.bzl" = "lib/lipo.bzli"
 "lib/missing_platform_fallback_users.bzl" = "lib/missing_platform_fallback_users.bzli"
 "lib/transitions.bzl" = "lib/transitions.bzli"
 "lib/xcode_support.bzl" = "lib/xcode_support.bzli"
+"rules/apple_genrule.bzl" = "rules/apple_genrule.bzli"
 "test/rules/apple_verification_test.bzl" = "test/rules/apple_verification_test.bzli"
 "tools/http_dmg/http_dmg.bzl" = "tools/http_dmg/http_dmg.bzli"
 "xcode/providers.bzl" = "xcode/providers.bzli"
