@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: tamird/sty@bf80124aa55c50e1ad51288e4a2986b646fe0139
+      - uses: tamird/sty@362769985b685cd34077b4736018170f295a896f
         with:
           audit-loads: true
           bazel-version: '9.3.0'
@@ -35,6 +35,7 @@ jobs:
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl
             rules/universal_binary.bzl
+            test/apple_support_test.bzl
             test/binary_tests.bzl
             test/universal_binary_test.bzl
             toolchain/dynamic_toolchain_info.bzl
