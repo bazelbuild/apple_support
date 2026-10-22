@@ -70,11 +70,11 @@ With Xcode 27 or newer, both conditions match, but the more specialized
 `xcode_27_or_newer` branch wins. Without `after`, different values for these
 overlapping conditions would make the `select()` ambiguous.
 
-Declare lower thresholds before higher thresholds and use local target names
-or `:name` labels to inherit a same-package `after` chain transitively. For
-cross-package or fully qualified references, list every lower threshold in
-the chain explicitly. Each threshold must be strictly higher than those in
-its `after` list.
+Declare lower thresholds before higher thresholds to inherit a same-package
+`after` chain transitively, whether references are strings or `Label` objects.
+For cross-package references, list every lower threshold in the chain
+explicitly. Each threshold must be strictly higher than those in its `after`
+list.
 
 
 **PARAMETERS**
@@ -84,7 +84,7 @@ its `after` list.
 | :------------- | :------------- | :------------- |
 | <a id="xcode_version_at_least-name"></a>name |  The name of the `config_setting` target to create. A companion feature flag target named `<name>_flag` will also be created.   |  none |
 | <a id="xcode_version_at_least-minimum_xcode_version"></a>minimum_xcode_version |  The minimum Xcode version to match (inclusive), such as `"26.4"`, `"26.4.1"`, or `"27.0.0.27A5228h"`.   |  none |
-| <a id="xcode_version_at_least-after"></a>after |  An optional list of lower-version `xcode_version_at_least` target names or labels that this condition should refine when used together in the same `select()` expression. If a referenced target is in the same package, any lower thresholds it already refines are inherited transitively.   |  `None` |
+| <a id="xcode_version_at_least-after"></a>after |  An optional list of lower-version `xcode_version_at_least` target names or labels that this condition should refine when used together in the same `select()` expression. If a referenced target is in the same package, any lower thresholds it already refines are inherited transitively, whether the reference is a string or a `Label` object.   |  `None` |
 | <a id="xcode_version_at_least-visibility"></a>visibility |  The visibility of the generated targets.   |  `None` |
 | <a id="xcode_version_at_least-kwargs"></a>kwargs |  Additional keyword arguments (such as `tags` or `constraint_values`) forwarded to `native.config_setting`. `tags` is also forwarded to the companion `<name>_flag` target.   |  none |
 

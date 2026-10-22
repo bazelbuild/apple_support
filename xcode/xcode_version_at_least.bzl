@@ -146,17 +146,15 @@ or `"27.0.0.27A5228h"`.
 
 def _flag_target_label(label):
     """Returns the `_flag` target label corresponding to an `xcode_version_at_least` target."""
-    if not label.startswith(":") and not label.startswith("//") and not label.startswith("@"):
-        label = ":" + label
-    return label + "_flag"
+    label = native.package_relative_label(label)
+    return label.same_package_label(label.name + "_flag")
 
 def _local_target_name(label):
     """Returns the local target name if `label` refers to the current package, or `None`."""
-    if label.startswith("//") or label.startswith("@"):
-        return None
-    if label.startswith(":"):
-        return label[1:]
-    return label
+    label = native.package_relative_label(label)
+    if label == native.package_relative_label(":" + label.name):
+        return label.name
+    return None
 
 def xcode_version_at_least(
         *,
@@ -217,11 +215,11 @@ def xcode_version_at_least(
     `xcode_27_or_newer` branch wins. Without `after`, different values for these
     overlapping conditions would make the `select()` ambiguous.
 
-    Declare lower thresholds before higher thresholds and use local target names
-    or `:name` labels to inherit a same-package `after` chain transitively. For
-    cross-package or fully qualified references, list every lower threshold in
-    the chain explicitly. Each threshold must be strictly higher than those in
-    its `after` list.
+    Declare lower thresholds before higher thresholds to inherit a same-package
+    `after` chain transitively, whether references are strings or `Label` objects.
+    For cross-package references, list every lower threshold in the chain
+    explicitly. Each threshold must be strictly higher than those in its `after`
+    list.
 
     Args:
         name: The name of the `config_setting` target to create. A companion
@@ -232,7 +230,7 @@ def xcode_version_at_least(
             names or labels that this condition should refine when used together
             in the same `select()` expression. If a referenced target is in the
             same package, any lower thresholds it already refines are inherited
-            transitively.
+            transitively, whether the reference is a string or a `Label` object.
         visibility: The visibility of the generated targets.
         **kwargs: Additional keyword arguments (such as `tags` or
             `constraint_values`) forwarded to `native.config_setting`. `tags` is
@@ -240,7 +238,10 @@ def xcode_version_at_least(
     """
     flag_name = name + "_flag"
     tags = kwargs.get("tags")
-    flag_values = dict(kwargs.pop("flag_values", None) or {})
+    flag_values = {
+        native.package_relative_label(flag): value
+        for flag, value in (kwargs.pop("flag_values", None) or {}).items()
+    }
     after_flag_labels = []
 
     if after:
@@ -259,7 +260,7 @@ def xcode_version_at_least(
                 continue
 
             for inherited_flag, inherited_value in existing_setting.get("flag_values").items():
-                flag_values[inherited_flag] = inherited_value
+                flag_values[native.package_relative_label(inherited_flag)] = inherited_value
 
     _xcode_version_at_least_flag(
         name = flag_name,
@@ -271,7 +272,7 @@ def xcode_version_at_least(
         visibility = visibility,
     )
 
-    flag_values[":" + flag_name] = "True"
+    flag_values[native.package_relative_label(":" + flag_name)] = "True"
 
     native.config_setting(
         name = name,
