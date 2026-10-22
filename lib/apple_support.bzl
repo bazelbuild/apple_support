@@ -396,7 +396,7 @@ def _run(
 
     # Since a label/name isn't passed in, use the first output to derive a name
     # that will hopefully be unique.
-    output0 = kwargs.get("outputs")[0]
+    output0 = kwargs["outputs"][0]
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
         script = _XCODE_PROCESSOR__ARGS
         suffix = "args"
