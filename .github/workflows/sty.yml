@@ -20,6 +20,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      # Use 0.2.26 with C++ compilation context contracts while bazelbuild/rules_cc#940 is in review.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: tamird/rules_cc
+          ref: 64691a26df458f40a5922a79550682562f688ac5
+          path: .sty-rules-cc
+          persist-credentials: false
+      - run: echo 'common --override_module=rules_cc=.sty-rules-cc' > user.bazelrc
       - uses: tamird/sty@cbf686498b3bfa0ddb6db2dd5269c1e5da2349a3
         with:
           audit-loads: true
@@ -37,6 +45,7 @@ jobs:
             rules/universal_binary.bzl
             test/apple_support_test.bzl
             test/binary_tests.bzl
+            test/test_data/framework_includes_provider.bzl
             test/universal_binary_test.bzl
             toolchain/dynamic_toolchain_info.bzl
             toolchain/toolchain_env.bzl
