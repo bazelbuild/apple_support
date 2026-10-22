@@ -349,6 +349,58 @@ def _test_qualified_labels_in_after(namer):
         "label_objects_in_after_match_refined",
     ]
 
+def _test_same_package_label_inheritance(namer):
+    xcode_version_at_least(
+        name = namer("base"),
+        minimum_xcode_version = "26.2",
+        tags = FIXTURE_TAGS,
+    )
+    xcode_version_at_least(
+        name = namer("middle"),
+        after = [namer(":base")],
+        minimum_xcode_version = "26.4",
+        tags = FIXTURE_TAGS,
+    )
+
+    base_label = Label("//test:" + namer("base"))
+    middle_label = Label("//test:" + namer("middle"))
+    cases = [
+        ("package_qualified", ["//test:" + namer("middle")], {}),
+        ("repo_qualified", ["@apple_support//test:" + namer("middle")], {}),
+        ("canonical", [str(middle_label)], {}),
+        ("label_object", [middle_label], {}),
+        ("mixed_references", [base_label, namer(":middle")], {}),
+        ("explicit_flag_values", [middle_label], {namer(":middle") + "_flag": "True"}),
+    ]
+    test_names = []
+    for suffix, after, flag_values in cases:
+        xcode_version_at_least(
+            name = namer(suffix),
+            after = after,
+            flag_values = flag_values,
+            minimum_xcode_version = "27.0",
+            tags = FIXTURE_TAGS,
+        )
+        _select_holder(
+            name = namer(suffix + "_holder"),
+            selected_value = select({
+                namer(":base"): "base",
+                namer(":middle"): "middle",
+                namer(":" + suffix): "highest",
+                "//conditions:default": "default",
+            }),
+            tags = FIXTURE_TAGS,
+        )
+        test_name = "same_package_inheritance_" + suffix
+        _select_xcode_27_0_beta_test(
+            name = test_name,
+            target_under_test = namer(":" + suffix + "_holder"),
+            expected_value = "highest",
+        )
+        test_names.append(test_name)
+
+    return test_names
+
 def _expect_failure_message_test_impl(ctx):
     env = analysistest.begin(ctx)
     for expected_substring in ctx.attr.expected_messages:
@@ -449,6 +501,7 @@ def xcode_version_at_least_test(name):
             _test_padded_versions,
             _test_chained_select_refinement,
             _test_qualified_labels_in_after,
+            _test_same_package_label_inheritance,
             _test_after_conflicts,
         ] if bazel_features.apple.xcode_config_migrated else [],  # TODO: Remove once we test with Bazel 8+
     )
