@@ -35,6 +35,7 @@ jobs:
             rules/rules.doc.bzl
             rules/toolchain_substitution.bzl
             rules/universal_binary.bzl
+            test/universal_binary_test.bzl
             toolchain/dynamic_toolchain_info.bzl
             toolchain/toolchain_env.bzl
             tools/http_dmg/private/tests/http_dmg_test_deps.bzl
