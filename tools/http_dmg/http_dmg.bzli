@@ -1,0 +1,31 @@
+"""Inputs and results for the HTTP DMG repository rule."""
+
+type _ZipData = struct[{"urls": list[str], "integrity": str, "bin_path": str | None}]
+type _HttpDmgAttrs = struct[{
+    "auth_patterns": dict[str, str],
+    "build_file": Label | None,
+    "build_file_content": str,
+    "integrity": str,
+    "name": str,
+    "netrc": str,
+    "sha256": str,
+    "strip_prefix": str,
+    "urls": list[str],
+}, ...]
+type _HttpDmgCtx = repository_ctx[_HttpDmgAttrs]
+
+def _zip7_data(*, urls: list[str], integrity: str, bin_path: str | None = ...) -> _ZipData: ...
+def _host_arch(repository_ctx: repository_ctx) -> str: ...
+def _7z_readdir(path: path, is_dmg: bool) -> list[path]: ...
+def _move(repository_ctx: repository_ctx, src: path, dst: path) -> None: ...
+def _extract_7z(
+        *,
+        repository_ctx: repository_ctx,
+        z7_bin: path,
+        archive: path,
+        output: str | path | None = ...,
+        strip_prefix: str | None = ...,
+) -> None: ...
+def _urls_have_suffix(urls: list[str], suffix: str) -> bool: ...
+def _download_and_extract_7zip_binary(repository_ctx: _HttpDmgCtx, host_arch: str) -> tuple[path, path]: ...
+def _http_dmg_impl(repository_ctx: _HttpDmgCtx) -> dict[str, object]: ...
