@@ -3686,7 +3686,7 @@
                 "-isysroot",
                 "__BAZEL_XCODE_SDKROOT__",
                 "-F__BAZEL_XCODE_SDKROOT__/System/Library/Frameworks",
-                "-F__BAZEL_XCODE_DEVELOPER_DIR__/Platforms/MacOSX.platform/Developer/Library/Frameworks"
+                "-F__BAZEL_XCODE_DEVELOPER_DIR__/Platforms/WatchOS.platform/Developer/Library/Frameworks"
               ],
               "iterate_over": null,
               "type_name": "flag_group"

@@ -6,7 +6,7 @@ rules.
 """
 
 load("@rules_cc//cc/toolchains:providers.bzl", "ExecutionRequirementsInfo")
-load("//lib:apple_support.bzl", "apple_support")
+load("//lib/private:xcode_paths.bzl", _platform_frameworks_path = "platform_frameworks_path")
 
 def _sdk_version_for_platform(xcode_config, platform_type):
     if platform_type == apple_common.platform_type.ios:
@@ -95,6 +95,7 @@ def _dynamic_toolchain_info_impl(ctx):
         triple_suffix,
     )
 
+    sdk_name = _sdk_name(platform_type, is_simulator)
     xcode_env = {
         "APPLE_SDK_PLATFORM": "INVALID",
         "APPLE_SDK_VERSION_OVERRIDE": "INVALID",
@@ -102,7 +103,7 @@ def _dynamic_toolchain_info_impl(ctx):
     }
     if xcode_config.xcode_version():
         xcode_env = {
-            "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
+            "APPLE_SDK_PLATFORM": sdk_name,
             "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),  # TODO: Remove once we drop bazel 7.x support
             "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
         }
@@ -110,7 +111,7 @@ def _dynamic_toolchain_info_impl(ctx):
     return [platform_common.TemplateVariableInfo(
         xcode_env | {
             "ARCH": triple_arch,
-            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple),
+            "PLATFORM_FRAMEWORKS": _platform_frameworks_path(sdk_name),
             "TARGET": target,
         },
     )]

@@ -32,6 +32,7 @@ load(
     "//lib/private:providers.bzl",
     "new_appleplatforminfo",
 )
+load("//lib/private:xcode_paths.bzl", _XCODE_PATH_PLACEHOLDER = "XCODE_PATH_PLACEHOLDER", _platform_frameworks_path = "platform_frameworks_path")
 
 # Options to declare the level of Xcode path resolving needed in an `apple_support.run()`
 # invocation.
@@ -181,10 +182,7 @@ def _platform_frameworks_path_placeholder(
     else:
         fail("Either apple_platform_info or apple_fragment must be provided.")
 
-    return "{xcode_path}/Platforms/{platform_name}.platform/Developer/Library/Frameworks".format(
-        platform_name = platform_name,
-        xcode_path = _xcode_path_placeholder(),
-    )
+    return _platform_frameworks_path(platform_name)
 
 def _sdkroot_path_placeholder():
     """Returns a placeholder value to be replaced with SDKROOT during action execution.
@@ -210,7 +208,7 @@ def _xcode_path_placeholder():
     Returns:
         Returns a placeholder value to be replaced with DEVELOPER_DIR during action execution.
     """
-    return "__BAZEL_XCODE_DEVELOPER_DIR__"
+    return _XCODE_PATH_PLACEHOLDER
 
 def _kwargs_for_apple_platform(
         *,
