@@ -14,95 +14,10 @@
 # limitations under the License.
 """Configuring the C++ toolchain on macOS."""
 
-load(
-    "@bazel_tools//tools/cpp:lib_cc_configure.bzl",
-    "escape_string",
-)
+load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list", _quote_starlark_string = "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator", "watch_selected_xcode")
 
-def _get_copts_env_var(repository_ctx, name, default = ""):
-    """Get an environment variable and split it on ":" to be used as copts.
-
-    Args:
-      repository_ctx: The repository context.
-      name: Name of the environment variable.
-      default: Default value to be used when the environment variable is not present.
-    Returns:
-      Escaped value of the environment variable or default.
-    """
-
-    if name in repository_ctx.os.environ:
-        return _split_escaped(repository_ctx.os.environ[name], ":")
-    return _split_escaped(default, ":")
-
-def _split_escaped(string, delimiter):
-    """Split string on the delimiter unless %-escaped.
-
-    Examples:
-      Basic usage:
-        split_escaped("a:b:c", ":") -> [ "a", "b", "c" ]
-
-      Delimiter that is not supposed to be splitten on has to be %-escaped:
-        split_escaped("a%:b", ":") -> [ "a:b" ]
-
-      Literal % can be represented by escaping it as %%:
-        split_escaped("a%%b", ":") -> [ "a%b" ]
-
-      Consecutive delimiters produce empty strings:
-        split_escaped("a::b", ":") -> [ "a", "", "", "b" ]
-
-    Args:
-      string: The string to be split.
-      delimiter: Non-empty string not containing %-sign to be used as a
-          delimiter.
-
-    Returns:
-      A list of substrings.
-    """
-    if delimiter == "":
-        fail("Delimiter cannot be empty")
-    if delimiter.find("%") != -1:
-        fail("Delimiter cannot contain %-sign")
-
-    i = 0
-    result = []
-    accumulator = []
-    length = len(string)
-    delimiter_length = len(delimiter)
-
-    if not string:
-        return []
-
-    # Iterate over the length of string since Starlark doesn't have while loops
-    for _ in range(length):
-        if i >= length:
-            break
-        if i + 2 <= length and string[i:i + 2] == "%%":
-            accumulator.append("%")
-            i += 2
-        elif (i + 1 + delimiter_length <= length and
-              string[i:i + 1 + delimiter_length] == "%" + delimiter):
-            accumulator.append(delimiter)
-            i += 1 + delimiter_length
-        elif i + delimiter_length <= length and string[i:i + delimiter_length] == delimiter:
-            result.append("".join(accumulator))
-            accumulator = []
-            i += delimiter_length
-        else:
-            accumulator.append(string[i])
-            i += 1
-
-    # Append the last group still in accumulator
-    result.append("".join(accumulator))
-    return result
-
-def _get_starlark_list(values):
-    """Convert a list of string into a string that can be passed to a rule attribute."""
-    if not values:
-        return ""
-    return "\"" + "\",\n    \"".join(values) + "\""
-
-def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
+def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
 
     Args:
@@ -127,11 +42,14 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 
     # Include extra Xcode paths in case they're installed on other volumes
     for toolchain in xcode_toolchains:
-        include_dirs.append(escape_string(toolchain.developer_dir))
+        include_dirs.append(toolchain.developer_dir)
 
     return include_dirs
 
 def _succeeds(repository_ctx, *args):
+    # type: (repository_ctx, *str) -> bool
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     env = repository_ctx.os.environ
     result = repository_ctx.execute([
         "env",
@@ -145,9 +63,15 @@ def _succeeds(repository_ctx, *args):
     return result.return_code == 0
 
 def _copy_file(repository_ctx, src, dest):
+    # type: (repository_ctx, str | Label | path, str | path) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): annotate repository_ctx
+    # when supported Bazel versions expose a repository context type.
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
 def configure_osx_toolchain(repository_ctx):
+    # type: (repository_ctx) -> tuple[bool, str | None]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     """Configure C++ toolchain on macOS.
 
     Args:
@@ -165,7 +89,7 @@ def configure_osx_toolchain(repository_ctx):
     cc_toolchain_config = Label("@apple_support//crosstool:cc_toolchain_config.bzl")
     build_template = Label("@apple_support//crosstool:BUILD.tpl")
 
-    xcode_toolchains = []
+    xcode_toolchains = []  # type: Collection[_DeveloperDirectory]
     xcodeloc_err = ""
     allow_non_applications_xcode = "BAZEL_ALLOW_NON_APPLICATIONS_XCODE" in repository_ctx.os.environ and repository_ctx.os.environ["BAZEL_ALLOW_NON_APPLICATIONS_XCODE"] == "1"
     if allow_non_applications_xcode:
@@ -193,10 +117,9 @@ def configure_osx_toolchain(repository_ctx):
     if _succeeds(repository_ctx, "ld", "-reproducible", "-v"):
         features.append("reproducible_linker_flag")
 
-    escaped_include_paths = _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains)
     escaped_cxx_include_directories = []
-    for path in escaped_include_paths:
-        escaped_cxx_include_directories.append(("            \"%s\"," % path))
+    for path in _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
+        escaped_cxx_include_directories.append("            %s," % _quote_starlark_string(path))
     if xcodeloc_err:
         escaped_cxx_include_directories.append("            # Error: " + xcodeloc_err)
 

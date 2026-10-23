@@ -117,6 +117,7 @@ exit 0
 """
 
 def _apple_support_test_impl(ctx):
+    # type: (...) -> list[DefaultInfo | ExecutionInfo | RunEnvironmentInfo]
     """Implementation of the apple_support_test rule."""
 
     # Declare all the action outputs
@@ -191,10 +192,11 @@ def _apple_support_test_impl(ctx):
     action_args.set_param_file_format("multiline")
     action_args.use_param_file("@%s", use_always = True)
 
-    params_processors = []
+    params_processors = []  # type: list[File]
 
-    def write_params_processor(output, content, **kwargs):
-        ctx.actions.write(output, content, **kwargs)
+    def write_params_processor(output, content, *, is_executable):
+        # type: (File, str, bool) -> None
+        ctx.actions.write(output, content, is_executable = is_executable)
         params_processors.append(output)
 
     apple_support.run(
@@ -229,12 +231,33 @@ def _apple_support_test_impl(ctx):
         exec_group = "mac_exec_group",
     )
 
+    # A string executable names a host tool; only the declared tools are inputs.
+    string_executable_outputs = []
+    for kind, tools in [
+        ("list", [test_tool]),
+        ("tuple", (test_tool,)),
+        ("depset", depset([test_tool])),
+    ]:
+        output = ctx.actions.declare_file("{}_string_executable_{}".format(ctx.label.name, kind))
+        apple_support.run(
+            actions = ctx.actions,
+            xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+            apple_platform_info = apple_platform_info,
+            outputs = [output],
+            executable = "/bin/bash",
+            tools = tools,
+            arguments = [test_tool.path, output.path],
+            xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
+            exec_group = "mac_exec_group",
+        )
+        string_executable_outputs.append(output)
+
     test_files = [
         run_output,
         run_output_xcode_path_in_args,
         run_output_xcode_path_in_file,
         run_shell_output,
-    ]
+    ] + string_executable_outputs
 
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.write(test_script, _TEST_SCRIPT_CONTENTS.format(
@@ -249,9 +272,10 @@ def _apple_support_test_impl(ctx):
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     apple_platform = apple_platform_info.platform
 
-    test_env = {}
-    test_env.update(apple_common.apple_host_system_env(xcode_config))
-    test_env.update(apple_common.target_apple_env(xcode_config, apple_platform))
+    test_env = (
+        apple_common.apple_host_system_env(xcode_config) |
+        apple_common.target_apple_env(xcode_config, apple_platform)
+    )
 
     return [
         testing.ExecutionInfo(xcode_config.execution_info()),

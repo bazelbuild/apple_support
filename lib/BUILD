@@ -9,6 +9,14 @@ package(
 
 exports_files(glob(["*.bzl"]))
 
+exports_files([
+    "apple_support.bzli",
+    "lipo.bzli",
+    "missing_platform_fallback_users.bzli",
+    "transitions.bzli",
+    "xcode_support.bzli",
+])
+
 # This target is mainly for use by rules_apple and rules_swift.
 # When this target is linked into an XCTest binary, and the
 # `BUILD_WORKSPACE_DIRECTORY` environment variable is set, the relative paths of
@@ -37,7 +45,6 @@ bzl_library(
         ":missing_platform_fallback_users",
         ":providers",
         "//lib/private:providers",
-        "@bazel_skylib//lib:types",
     ],
 )
 

@@ -9,6 +9,9 @@ _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 _NEW_TOOLCHAIN_VAR = "APPLE_SUPPORT_RULES_BASED_TOOLCHAIN"
 
 def _apple_cc_autoconf_toolchains_impl(repository_ctx):
+    # type: (...) -> repo_metadata | None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose metadata types.
     """Generate BUILD file with 'toolchain' targets for the local host C++ toolchain.
 
     Args:
@@ -55,6 +58,9 @@ apple_cc_autoconf_toolchains = repository_rule(
 )
 
 def _apple_cc_autoconf_impl(repository_ctx):
+    # type: (...) -> repo_metadata | None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose metadata types.
     env = repository_ctx.os.environ
     should_disable = _DISABLE_ENV_VAR in env and env[_DISABLE_ENV_VAR] == "1"
     old_should_disable = _OLD_DISABLE_ENV_VAR in env and env[_OLD_DISABLE_ENV_VAR] == "1"

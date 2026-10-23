@@ -23,7 +23,6 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
-load("@bazel_skylib//lib:types.bzl", "types")
 load(
     "//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
@@ -212,14 +211,13 @@ def _xcode_path_placeholder():
     """
     return "__BAZEL_XCODE_DEVELOPER_DIR__"
 
-def _kwargs_for_apple_platform(
+def _set_apple_platform_kwargs(
+        kwargs,
         *,
         xcode_config,
         apple_platform_info = None,
-        apple_fragment = None,
-        **kwargs):
-    """Returns a modified dictionary with required arguments to run on Apple platforms."""
-    processed_args = dict(kwargs)
+        apple_fragment = None):
+    """Updates action keyword arguments with the required Apple environment."""
 
     if apple_platform_info:
         platform = apple_platform_info.platform
@@ -229,12 +227,12 @@ def _kwargs_for_apple_platform(
         fail("Either apple_platform_info or apple_fragment must be provided.")
 
     merged_env = {}
-    original_env = processed_args.get("env")
+    original_env = kwargs.get("env")
     if original_env:
         merged_env.update(original_env)
 
-    if "use_default_shell_env" not in processed_args:
-        processed_args["use_default_shell_env"] = True
+    if "use_default_shell_env" not in kwargs:
+        kwargs["use_default_shell_env"] = True
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding these values.
@@ -244,16 +242,15 @@ def _kwargs_for_apple_platform(
     )
 
     merged_execution_requirements = {}
-    original_execution_requirements = processed_args.get("execution_requirements")
+    original_execution_requirements = kwargs.get("execution_requirements")
     if original_execution_requirements:
         merged_execution_requirements.update(original_execution_requirements)
 
     # Add the Xcode execution requirements last to avoid clients overriding these values.
     merged_execution_requirements.update(xcode_config.execution_info())
 
-    processed_args["env"] = merged_env
-    processed_args["execution_requirements"] = merged_execution_requirements
-    return processed_args
+    kwargs["env"] = merged_env
+    kwargs["execution_requirements"] = merged_execution_requirements
 
 def _action_required_attrs():
     """Returns a dictionary with required attributes for registering actions on Apple platforms.
@@ -386,12 +383,13 @@ def _run(
     """
 
     if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.none:
-        actions.run(**_kwargs_for_apple_platform(
+        _set_apple_platform_kwargs(
+            kwargs,
             xcode_config = xcode_config,
             apple_platform_info = apple_platform_info,
             apple_fragment = apple_fragment,
-            **kwargs
-        ))
+        )
+        actions.run(**kwargs)
         return
 
     # Since a label/name isn't passed in, use the first output to derive a name
@@ -410,11 +408,11 @@ def _run(
     ))
     actions.write(processor_script, script, is_executable = True)
 
-    processed_kwargs = _kwargs_for_apple_platform(
+    _set_apple_platform_kwargs(
+        kwargs,
         xcode_config = xcode_config,
         apple_platform_info = apple_platform_info,
         apple_fragment = apple_fragment,
-        **kwargs
     )
 
     all_arguments = []
@@ -424,7 +422,7 @@ def _run(
     # Note: Bounce through an actions.args() incase the executable was a `File`, this allows it
     # to then work within the arguments list.
     executable_args = actions.args()
-    original_executable = processed_kwargs.pop("executable")
+    original_executable = kwargs["executable"]
 
     # actions.run supports multiple executable types. (File; or string; or FilesToRunProvider)
     # If the passed in executable is a FilesToRunProvider, only add the main executable to the
@@ -436,32 +434,30 @@ def _run(
     all_arguments.append(executable_args)
 
     # Append the original arguments to the full list of arguments, after the original executable.
-    original_args_list = processed_kwargs.pop("arguments", [])
+    original_args_list = kwargs.get("arguments", [])
     if not original_args_list:
         fail("Error: Does not make sense to request args processing without any `arguments`.")
     all_arguments.extend(original_args_list)
 
     # We also need to include the user executable in the "tools" argument of the action, since it
     # won't be referenced by "executable" anymore.
-    original_tools = processed_kwargs.pop("tools", None)
-    if types.is_list(original_tools):
-        all_tools = [original_executable] + original_tools
-    elif types.is_depset(original_tools):
-        all_tools = depset([original_executable], transitive = [original_tools])
+    all_tools = []
+    if type(original_executable) != "string":
+        all_tools.append(original_executable)
+
+    original_tools = kwargs.get("tools")
+    if type(original_tools) == "depset":
+        # Top-level depsets can contain providers; a nested depset must contain files.
+        all_tools.extend(original_tools.to_list())
+    elif type(original_tools) in ("list", "tuple"):
+        all_tools.extend(original_tools)
     elif original_tools:
         fail("'tools' argument must be a sequence or depset.")
-    elif not types.is_string(original_executable):
-        # Only add the user_executable to the "tools" list if it's a File, not a string.
-        all_tools = [original_executable]
-    else:
-        all_tools = []
 
-    actions.run(
-        executable = processor_script,
-        arguments = all_arguments,
-        tools = all_tools,
-        **processed_kwargs
-    )
+    kwargs["executable"] = processor_script
+    kwargs["arguments"] = all_arguments
+    kwargs["tools"] = all_tools
+    actions.run(**kwargs)
 
 def _run_shell(
         *,
@@ -496,12 +492,13 @@ def _run_shell(
         **kwargs: See `ctx.actions.run_shell` for the rest of the available arguments.
     """
 
-    actions.run_shell(**_kwargs_for_apple_platform(
+    _set_apple_platform_kwargs(
+        kwargs,
         xcode_config = xcode_config,
         apple_platform_info = apple_platform_info,
         apple_fragment = apple_fragment,
-        **kwargs
-    ))
+    )
+    actions.run_shell(**kwargs)
 
 def _target_arch_from_rule_ctx(
         ctx,

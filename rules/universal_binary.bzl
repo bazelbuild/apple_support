@@ -19,6 +19,7 @@ load("//lib:lipo.bzl", "lipo")
 load("//lib:transitions.bzl", "macos_universal_transition")
 
 def _universal_binary_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     inputs = [
         binary[DefaultInfo].files.to_list()[0]
         for binary in ctx.split_attr.binary.values()

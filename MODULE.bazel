@@ -11,6 +11,20 @@ bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "0.0.9")
 bazel_dep(name = "rules_cc", version = "0.2.26")
 
+# Use shell contracts while bazelbuild/bazel-skylib#641 is in review.
+git_override(
+    module_name = "bazel_skylib",
+    commit = "c0108ada4fedbdfc5164cfa657867fba4e9669dc",
+    remote = "https://github.com/tamird/bazel-skylib.git",
+)
+
+# Use version-matched C++ contracts while bazelbuild/rules_cc#940 is in review.
+git_override(
+    module_name = "rules_cc",
+    commit = "825d33543bbb9464228bb473b0db50161ad11607",
+    remote = "https://github.com/tamird/rules_cc.git",
+)
+
 apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
 
@@ -31,6 +45,14 @@ bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
 bazel_dep(name = "protobuf", version = "33.0", dev_dependency = True)
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "sty_bazel_tools",
+    dev_dependency = True,
+    integrity = "sha256-J7cWLmz5rVFQFXd9GurgaDkxKnEaJrdPMy7fOJGmN4k=",
+    strip_prefix = "sty-12d39f5d3b0338766e8776c8bdb5173e32338bbf/crates/starpls_bazel/data/bazel_tools",
+    urls = ["https://github.com/tamird/sty/archive/12d39f5d3b0338766e8776c8bdb5173e32338bbf.tar.gz"],
+)
 
 http_archive(
     name = "swift_linux_toolchain",

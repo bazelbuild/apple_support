@@ -19,6 +19,7 @@ load("//lib:apple_support.bzl", "apple_support")
 _APPLE_GENRULE_TOOLCHAIN_TYPE = Label("//rules/private:apple_genrule_toolchain_type")
 
 def _apple_genrule_toolchain_impl(_ctx):
+    # type: (...) -> list[ToolchainInfo]
     return [platform_common.ToolchainInfo()]
 
 apple_genrule_toolchain = rule(
@@ -30,6 +31,9 @@ def _compute_make_variables(
         label,
         resolved_srcs,
         files_to_build):
+    # type: (root, Label, depset[File], list[File]) -> dict[str, str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32021): annotate resolved_srcs
+    # when supported Bazel versions expose element-typed depsets.
     resolved_srcs_list = resolved_srcs.to_list()
     variables = {
         "OUTS": " ".join([x.path for x in files_to_build]),
@@ -45,6 +49,7 @@ def _compute_make_variables(
     return variables
 
 def _apple_genrule_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     if not ctx.outputs.outs:
         fail("apple_genrule must have one or more outputs", attr = "outs")
     files_to_build = ctx.outputs.outs
@@ -61,21 +66,15 @@ def _apple_genrule_impl(ctx):
     label_dict = {dep.label: dep[DefaultInfo].files.to_list() for dep in ctx.attr.srcs}
 
     execution_requirements = {}
-    extra_args = {}
-    run = ctx.actions.run
+    xcode_config = None
+    apple_platform_info = None
     if ctx.toolchains[_APPLE_GENRULE_TOOLCHAIN_TYPE] != None:
         xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
         execution_requirements.update(xcode_config.execution_info())
-        extra_args = {
-            "actions": ctx.actions,
-            "xcode_config": xcode_config,
-            "apple_fragment": ctx.fragments.apple,
-            "apple_platform_info": apple_support.platform_info_from_rule_ctx(
-                ctx,
-                fail_on_missing_constraint = False,
-            ),
-        }
-        run = apple_support.run
+        apple_platform_info = apple_support.platform_info_from_rule_ctx(
+            ctx,
+            fail_on_missing_constraint = False,
+        )
 
     if ctx.attr.no_sandbox:
         execution_requirements["no-sandbox"] = "1"
@@ -97,7 +96,7 @@ def _apple_genrule_impl(ctx):
 
     message = ctx.attr.message or "Executing apple_genrule"
 
-    run(
+    action_args = dict(
         executable = argv[0],
         arguments = argv[1:],
         inputs = depset(resolved_inputs + [ctx.file._genrule_setup], transitive = [resolved_srcs]),
@@ -107,8 +106,17 @@ def _apple_genrule_impl(ctx):
         execution_requirements = execution_requirements,
         progress_message = "%s %s" % (message, ctx.label),
         mnemonic = "Genrule",
-        **extra_args
     )
+    if xcode_config != None:
+        apple_support.run(
+            actions = ctx.actions,
+            xcode_config = xcode_config,
+            apple_fragment = ctx.fragments.apple,
+            apple_platform_info = apple_platform_info,
+            **action_args
+        )
+    else:
+        ctx.actions.run(**action_args)
 
     return [
         DefaultInfo(

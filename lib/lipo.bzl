@@ -47,6 +47,8 @@ def _create(
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to
             configure the action environment.
     """
+    if type(inputs) == "depset":
+        inputs = inputs.to_list()
     if not inputs:
         fail("lipo.create requires at least one input file.")
 
@@ -105,15 +107,17 @@ def _extract_or_thin(
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to configure the action
             environment.
     """
-    if not input_file and not input_shell_expression:
-        fail("""\
-lipo.extract_or_thin needs a universal binary in `input_file` or `input_shell_expression`.""")
-    if input_file and input_shell_expression:
-        fail("""
+    if input_file:
+        if input_shell_expression:
+            fail("""
 lipo.extract_or_thin cannot use `input_file` along with `input_shell_expression` simultaneously.
 
 Please use only `input_file` or `input_shell_expression` to express the intended input.
 """)
+        input_shell_expression = shell.quote(input_file.path)
+    elif not input_shell_expression:
+        fail("""\
+lipo.extract_or_thin needs a universal binary in `input_file` or `input_shell_expression`.""")
     if not archs:
         fail("lipo.extract_or_thin requires at least one arch.")
 
@@ -122,11 +126,8 @@ Please use only `input_file` or `input_shell_expression` to express the intended
     command = [
         "mkdir -p {} &&".format(shell.quote(output.dirname)),
         "/usr/bin/lipo",
+        input_shell_expression,
     ]
-    if input_file:
-        command.append(shell.quote(input_file.path))
-    else:
-        command.append(input_shell_expression)
     if len(archs) == 1:
         command.extend(["-thin", archs[0]])
     else:

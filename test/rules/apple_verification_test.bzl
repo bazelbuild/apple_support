@@ -14,6 +14,8 @@
 
 """Test rule to perform generic bundle verification tests."""
 
+load("//lib:xcode_support.bzl", "xcode_support")
+
 _supports_visionos = hasattr(apple_common.platform_type, "visionos")
 
 def _transition_impl(_, attr):
@@ -66,6 +68,7 @@ _transition = transition(
 )
 
 def _apple_verification_test_impl(ctx):
+    # type: (...) -> list[ExecutionInfo | RunEnvironmentInfo | DefaultInfo]
     binary = ctx.attr.target_under_test[0][DefaultInfo].files.to_list()[0]
     output_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.expand_template(
@@ -89,7 +92,7 @@ def _apple_verification_test_impl(ctx):
             cpu = cpu[4:]
         test_env["CPU"] = cpu
 
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_config = xcode_support.get_current_xcode(ctx)
 
     return [
         testing.ExecutionInfo(xcode_config.execution_info()),

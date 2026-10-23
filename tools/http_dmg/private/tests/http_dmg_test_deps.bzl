@@ -11,6 +11,7 @@ alias(
 """
 
 def http_dmg_test_deps():
+    # type: () -> list[str]
     """Download test dependencies for the `http_dmg` repository rule
 
     Returns:

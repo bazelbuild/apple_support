@@ -4,13 +4,16 @@ This does much less than in the past but is still required for a few environment
 variable reading use cases.
 """
 
-load("@bazel_tools//tools/cpp:lib_cc_configure.bzl", "escape_string")
+load("//lib/private:toolchain_flags.bzl", _get_copts_env_var = "get_copts_env_var", _get_starlark_list = "get_starlark_list", _quote_starlark_string = "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
+    # type: (repository_ctx, Label) -> list[str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
         "/Applications/",
@@ -24,99 +27,20 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
             "/Users/{}/Library/Developer/".format(user),  # Custom Swift toolchains, user only installation of CLT
         ])
 
-    xcode_toolchains = []
     allow_non_applications_xcode = repository_ctx.os.environ.get("BAZEL_ALLOW_NON_APPLICATIONS_XCODE") == "1"
     if allow_non_applications_xcode:
-        (xcode_toolchains, _) = run_xcode_locator(repository_ctx, xcode_locator)
+        xcode_toolchains, _ = run_xcode_locator(repository_ctx, xcode_locator)
 
-    # Include extra Xcode paths in case they're installed on other volumes
-    for toolchain in xcode_toolchains:
-        include_dirs.append(escape_string(toolchain.developer_dir))
+        # Include extra Xcode paths in case they're installed on other volumes
+        for toolchain in xcode_toolchains:
+            include_dirs.append(toolchain.developer_dir)
 
-    return ["            \"%s\"," % x for x in include_dirs]
-
-def _get_copts_env_var(repository_ctx, name, default = ""):
-    """Get an environment variable and split it on ":" to be used as copts.
-
-    Args:
-      repository_ctx: The repository context.
-      name: Name of the environment variable.
-      default: Default value to be used when the environment variable is not present.
-    Returns:
-      Escaped value of the environment variable or default.
-    """
-
-    if name in repository_ctx.os.environ:
-        return _split_escaped(repository_ctx.os.environ[name], ":")
-    return _split_escaped(default, ":")
-
-def _split_escaped(string, delimiter):
-    """Split string on the delimiter unless %-escaped.
-
-    Examples:
-      Basic usage:
-        split_escaped("a:b:c", ":") -> [ "a", "b", "c" ]
-
-      Delimiter that is not supposed to be splitten on has to be %-escaped:
-        split_escaped("a%:b", ":") -> [ "a:b" ]
-
-      Literal % can be represented by escaping it as %%:
-        split_escaped("a%%b", ":") -> [ "a%b" ]
-
-      Consecutive delimiters produce empty strings:
-        split_escaped("a::b", ":") -> [ "a", "", "", "b" ]
-
-    Args:
-      string: The string to be split.
-      delimiter: Non-empty string not containing %-sign to be used as a
-          delimiter.
-
-    Returns:
-      A list of substrings.
-    """
-    if delimiter == "":
-        fail("Delimiter cannot be empty")
-    if delimiter.find("%") != -1:
-        fail("Delimiter cannot contain %-sign")
-
-    i = 0
-    result = []
-    accumulator = []
-    length = len(string)
-    delimiter_length = len(delimiter)
-
-    if not string:
-        return []
-
-    # Iterate over the length of string since Starlark doesn't have while loops
-    for _ in range(length):
-        if i >= length:
-            break
-        if i + 2 <= length and string[i:i + 2] == "%%":
-            accumulator.append("%")
-            i += 2
-        elif (i + 1 + delimiter_length <= length and
-              string[i:i + 1 + delimiter_length] == "%" + delimiter):
-            accumulator.append(delimiter)
-            i += 1 + delimiter_length
-        elif i + delimiter_length <= length and string[i:i + delimiter_length] == delimiter:
-            result.append("".join(accumulator))
-            accumulator = []
-            i += delimiter_length
-        else:
-            accumulator.append(string[i])
-            i += 1
-
-    # Append the last group still in accumulator
-    result.append("".join(accumulator))
-    return result
-
-def _get_starlark_list(values):
-    if not values:
-        return ""
-    return "\"" + "\",\n    \"".join(values) + "\""
+    return ["            %s," % _quote_starlark_string(path) for path in include_dirs]
 
 def _toolchain_env_impl(repository_ctx):
+    # type: (...) -> repo_metadata | None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose metadata types.
     # All Label resolutions done at the top of the function to avoid issues
     # with starlark function restarts, see this:
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38

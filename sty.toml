@@ -1,0 +1,41 @@
+[analysis]
+strict-generic-narrowing = true
+require-valid-suppressions = true
+
+[type-interfaces]
+"crosstool/osx_cc_configure.bzl" = "crosstool/osx_cc_configure.bzli"
+"crosstool/universal_exec_tool.bzl" = "crosstool/universal_exec_tool.bzli"
+"lib/apple_support.bzl" = "lib/apple_support.bzli"
+"lib/private/providers.bzl" = "lib/private/providers.bzli"
+"lib/lipo.bzl" = "lib/lipo.bzli"
+"lib/missing_platform_fallback_users.bzl" = "lib/missing_platform_fallback_users.bzli"
+"lib/transitions.bzl" = "lib/transitions.bzli"
+"lib/xcode_support.bzl" = "lib/xcode_support.bzli"
+"rules/apple_genrule.bzl" = "rules/apple_genrule.bzli"
+"test/rules/apple_verification_test.bzl" = "test/rules/apple_verification_test.bzli"
+"tools/http_dmg/http_dmg.bzl" = "tools/http_dmg/http_dmg.bzli"
+"xcode/providers.bzl" = "xcode/providers.bzli"
+"xcode/xcode_configure.bzl" = "xcode/xcode_configure.bzli"
+
+[rules]
+missing-parameter-annotation = "error"
+missing-return-annotation = "error"
+missing-type-argument = "error"
+unsound-assignment = "error"
+unsound-return-statement = "error"
+explicit-any = "error"
+non-static-type = "error"
+blanket-ignore-comment = "error"
+possibly-unresolved-reference = "error"
+possibly-missing-attribute = "error"
+division-by-zero = "error"
+
+[[stub-packages]]
+manifest = "@bazel_skylib//:stubs.toml"
+
+[[stub-packages]]
+manifest = "@rules_cc//:stubs.toml"
+
+[[stub-packages]]
+manifest = "@sty_bazel_tools//:stubs.toml"
+allow-unversioned = true

@@ -1,0 +1,51 @@
+name: Starlark types
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sty:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: tamird/sty@1ad92391f0ddec5b067178c39e9ebb20a8fc9f56
+        with:
+          audit-loads: true
+          bazel-version: '9.3.0'
+          files: |
+            configs/platforms.bzl
+            crosstool/osx_cc_configure.bzl
+            crosstool/setup.bzl
+            crosstool/setup_internal.bzl
+            crosstool/universal_exec_tool.bzl
+            lib/private/toolchain_flags.bzl
+            lib/providers.bzl
+            rules/apple_genrule.bzl
+            rules/private/apple_genrule.bzl
+            rules/rules.doc.bzl
+            rules/toolchain_substitution.bzl
+            rules/universal_binary.bzl
+            test/apple_support_test.bzl
+            test/binary_tests.bzl
+            test/test_data/framework_includes_provider.bzl
+            test/universal_binary_test.bzl
+            toolchain/dynamic_toolchain_info.bzl
+            toolchain/toolchain_env.bzl
+            tools/http_dmg/private/tests/http_dmg_test_deps.bzl
+            tools/http_dmg/private/tests/http_dmg_test_extensions.bzl
+            xcode/available_xcodes.bzl
+            xcode/private/providers.bzl
+            xcode/xcode_sdk_variant.bzl
+            xcode/xcode_version.bzl
