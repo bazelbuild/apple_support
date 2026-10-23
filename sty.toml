@@ -35,3 +35,7 @@ manifest = "@bazel_skylib//:stubs.toml"
 
 [[stub-packages]]
 manifest = "@rules_cc//:stubs.toml"
+
+[[stub-packages]]
+manifest = "@sty_bazel_tools//:stubs.toml"
+allow-unversioned = true
