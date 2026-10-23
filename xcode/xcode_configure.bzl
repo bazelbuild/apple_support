@@ -21,6 +21,8 @@ OSX_EXECUTE_TIMEOUT = 600
 
 def _watch_xcode_version_files(repository_ctx, developer_dir):
     # type: (repository_ctx | module_ctx, str | path) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): annotate repository_ctx
+    # when supported Bazel versions expose repository and module context types.
     # Module extensions cannot watch paths outside the workspace.
     if type(repository_ctx) != "repository_ctx":
         return
@@ -33,6 +35,8 @@ def _watch_xcode_version_files(repository_ctx, developer_dir):
 
 def watch_selected_xcode(repository_ctx):
     # type: (repository_ctx | module_ctx) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose repository and module context types.
     """Watches the selected Xcode's version.plist for repository rules.
 
     Args:
@@ -91,6 +95,8 @@ def _search_sdk_output(output, sdkname):
 
 def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir, timeout):
     # type: (repository_ctx, str, str, list[str], str, int) -> str
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     """Returns a string containing an xcode_version build target."""
     build_contents = ""
     decorated_aliases = []
@@ -385,6 +391,8 @@ def xcode_configure(xcode_locator_label, remote_xcode_label = None):
 
 def _xcode_configure_extension_impl(module_ctx):
     # type: (module_ctx) -> extension_metadata
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose context and metadata types.
     xcode_configure("@bazel_tools//tools/osx:xcode_locator.m")
     return module_ctx.extension_metadata(reproducible = True)
 

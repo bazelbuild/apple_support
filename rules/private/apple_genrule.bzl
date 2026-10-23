@@ -32,6 +32,8 @@ def _compute_make_variables(
         resolved_srcs,
         files_to_build):
     # type: (root, Label, depset[File], list[File]) -> dict[str, str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32021): annotate resolved_srcs
+    # when supported Bazel versions expose element-typed depsets.
     resolved_srcs_list = resolved_srcs.to_list()
     variables = {
         "OUTS": " ".join([x.path for x in files_to_build]),

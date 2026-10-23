@@ -12,6 +12,8 @@ _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
     # type: (repository_ctx, Label) -> list[str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
         "/Applications/",
@@ -37,6 +39,8 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
 
 def _toolchain_env_impl(repository_ctx):
     # type: (...) -> repo_metadata | None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose metadata types.
     # All Label resolutions done at the top of the function to avoid issues
     # with starlark function restarts, see this:
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38

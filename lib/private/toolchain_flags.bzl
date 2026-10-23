@@ -20,6 +20,8 @@ visibility([
 
 def get_copts_env_var(repository_ctx, name, default = ""):
     # type: (repository_ctx, str, str) -> list[str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     """Get an environment variable and split it on ":" to be used as copts.
 
     Args:

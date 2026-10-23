@@ -48,6 +48,8 @@ def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 
 def _succeeds(repository_ctx, *args):
     # type: (repository_ctx, *str) -> bool
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     env = repository_ctx.os.environ
     result = repository_ctx.execute([
         "env",
@@ -62,10 +64,14 @@ def _succeeds(repository_ctx, *args):
 
 def _copy_file(repository_ctx, src, dest):
     # type: (repository_ctx, str | Label | path, str | path) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): annotate repository_ctx
+    # when supported Bazel versions expose a repository context type.
     repository_ctx.file(dest, content = repository_ctx.read(src))
 
 def configure_osx_toolchain(repository_ctx):
     # type: (repository_ctx) -> tuple[bool, str | None]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     """Configure C++ toolchain on macOS.
 
     Args:
@@ -83,7 +89,7 @@ def configure_osx_toolchain(repository_ctx):
     cc_toolchain_config = Label("@apple_support//crosstool:cc_toolchain_config.bzl")
     build_template = Label("@apple_support//crosstool:BUILD.tpl")
 
-    xcode_toolchains = []  # type: Iterable[_DeveloperDirectory]
+    xcode_toolchains = []  # type: Collection[_DeveloperDirectory]
     xcodeloc_err = ""
     allow_non_applications_xcode = "BAZEL_ALLOW_NON_APPLICATIONS_XCODE" in repository_ctx.os.environ and repository_ctx.os.environ["BAZEL_ALLOW_NON_APPLICATIONS_XCODE"] == "1"
     if allow_non_applications_xcode:

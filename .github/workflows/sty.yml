@@ -28,7 +28,7 @@ jobs:
           path: .sty-rules-cc
           persist-credentials: false
       - run: echo 'common --override_module=rules_cc=.sty-rules-cc' > user.bazelrc
-      - uses: tamird/sty@cbf686498b3bfa0ddb6db2dd5269c1e5da2349a3
+      - uses: tamird/sty@673feba20c22eaf85d9a3652f6e7a7f1b10b6554
         with:
           audit-loads: true
           bazel-version: '9.3.0'

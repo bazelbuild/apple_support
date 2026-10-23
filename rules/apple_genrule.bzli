@@ -1,6 +1,6 @@
 """Arguments for Apple genrules and their executable copy rules."""
 
-type _Labels = Iterable[Label | str] | depset[Label | str]
+type _Labels = Collection[Label | str] | depset[Label | str]
 type _Configurable[T] = T | select[T | None] | None
 
 class _Common(Protocol):

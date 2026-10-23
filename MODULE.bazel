@@ -14,7 +14,7 @@ bazel_dep(name = "rules_cc", version = "0.2.26")
 # Use shell contracts while bazelbuild/bazel-skylib#641 is in review.
 git_override(
     module_name = "bazel_skylib",
-    commit = "d090087f19d48db7a1d2026271e3860c00d7187b",
+    commit = "c0108ada4fedbdfc5164cfa657867fba4e9669dc",
     remote = "https://github.com/tamird/bazel-skylib.git",
 )
 
