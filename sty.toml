@@ -32,3 +32,6 @@ division-by-zero = "error"
 
 [[stub-packages]]
 manifest = "@bazel_skylib//:stubs.toml"
+
+[[stub-packages]]
+manifest = "@rules_cc//:stubs.toml"

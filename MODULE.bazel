@@ -18,6 +18,13 @@ git_override(
     remote = "https://github.com/tamird/bazel-skylib.git",
 )
 
+# Use version-matched C++ contracts while bazelbuild/rules_cc#940 is in review.
+git_override(
+    module_name = "rules_cc",
+    commit = "825d33543bbb9464228bb473b0db50161ad11607",
+    remote = "https://github.com/tamird/rules_cc.git",
+)
+
 apple_cc_configure = use_extension("//crosstool:setup.bzl", "apple_cc_configure_extension")
 use_repo(apple_cc_configure, "local_config_apple_cc", "local_config_apple_cc_toolchains")
 
