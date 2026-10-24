@@ -296,6 +296,9 @@ def _platform_constraint_attrs():
         "_pointer_authentication_constraint": attr.label(
             default = Label("@build_bazel_apple_support//constraints:pointer_authentication"),
         ),
+        "_checked_pointer_arithmetic_constraint": attr.label(
+            default = Label("@build_bazel_apple_support//constraints:checked_pointer_arithmetic"),
+        ),
         "_apple_device_constraint": attr.label(
             default = Label("@build_bazel_apple_support//constraints:device"),
         ),
@@ -520,9 +523,14 @@ def _target_arch_from_rule_ctx(
     pointer_authentication_constraint = (
         ctx.attr._pointer_authentication_constraint[platform_common.ConstraintValueInfo]
     )
+    checked_pointer_arithmetic_constraint = (
+        ctx.attr._checked_pointer_arithmetic_constraint[platform_common.ConstraintValueInfo]
+    )
 
     if ctx.target_platform_has_constraint(arm64_constraint):
         if ctx.target_platform_has_constraint(pointer_authentication_constraint):
+            if ctx.target_platform_has_constraint(checked_pointer_arithmetic_constraint):
+                return "arm64e.x1"
             return "arm64e"
         else:
             return "arm64"

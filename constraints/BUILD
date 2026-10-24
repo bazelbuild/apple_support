@@ -56,3 +56,17 @@ constraint_value(
     name = "pointer_authentication",
     constraint_setting = ":pointer_authentication_setting",
 )
+
+# A constraint to indicate whether the platform supports Apple's hardware-checked
+# pointer arithmetic (FEAT_CPA2 / arm64e.x1).
+constraint_setting(
+    name = "checked_pointer_arithmetic_setting",
+    visibility = ["//visibility:private"],
+)
+
+# If a platform has this constraint_value, it supports Apple's hardware-checked
+# pointer arithmetic (FEAT_CPA2 / arm64e.x1).
+constraint_value(
+    name = "checked_pointer_arithmetic",
+    constraint_setting = ":checked_pointer_arithmetic_setting",
+)
