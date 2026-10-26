@@ -14,6 +14,7 @@
 # limitations under the License.
 """Configuring the C++ toolchain on macOS."""
 
+load("//lib/private:toolchain_flags.bzl", "get_starlark_list", "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator", "watch_selected_xcode")
 
 def _get_copts_env_var(repository_ctx, name, default = ""):
@@ -91,14 +92,6 @@ def _split_escaped(string, delimiter):
     # Append the last group still in accumulator
     result.append("".join(accumulator))
     return result
-
-def _get_starlark_list(values):
-    """Convert a list of string into a string that can be passed to a rule attribute."""
-    return ",\n    ".join([_quote_starlark_string(value) for value in values])
-
-def _quote_starlark_string(value):
-    # Bazel's repr can emit \x escapes, which BUILD files do not accept.
-    return '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
 
 def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
@@ -193,7 +186,7 @@ def configure_osx_toolchain(repository_ctx):
 
     escaped_cxx_include_directories = []
     for path in _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
-        escaped_cxx_include_directories.append("            %s," % _quote_starlark_string(path))
+        escaped_cxx_include_directories.append("            %s," % quote_starlark_string(path))
     if xcodeloc_err:
         escaped_cxx_include_directories.append("            # Error: " + xcodeloc_err)
 
@@ -206,13 +199,13 @@ def configure_osx_toolchain(repository_ctx):
         "BUILD",
         build_template,
         {
-            "%{c_flags}": _get_starlark_list(c_opts),
-            "%{conly_flags}": _get_starlark_list(conly_opts),
+            "%{c_flags}": get_starlark_list(c_opts),
+            "%{conly_flags}": get_starlark_list(conly_opts),
             "%{cxx_builtin_include_directories}": "\n".join(escaped_cxx_include_directories),
-            "%{cxx_flags}": _get_starlark_list(cxx_opts),
+            "%{cxx_flags}": get_starlark_list(cxx_opts),
             "%{features}": "\n".join(['            "{}",'.format(x) for x in features]),
             "%{layering_check_modulemap}": "\"@apple_support//crosstool:exec_layering_check_modulemap\"," if enable_layering_check else "",
-            "%{link_flags}": _get_starlark_list(link_opts),
+            "%{link_flags}": get_starlark_list(link_opts),
             "%{placeholder_modulemap}": "\"@apple_support//crosstool:module.modulemap\"" if enable_layering_check else "None",
             "%{tool_paths_overrides}": ",\n            ".join(
                 ['"%s": "%s"' % (k, v) for k, v in tool_paths.items()],

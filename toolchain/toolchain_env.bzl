@@ -4,6 +4,7 @@ This does much less than in the past but is still required for a few environment
 variable reading use cases.
 """
 
+load("//lib/private:toolchain_flags.bzl", "get_starlark_list", "quote_starlark_string")
 load("//xcode:xcode_configure.bzl", "run_xcode_locator")
 
 _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
@@ -32,7 +33,7 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
     for toolchain in xcode_toolchains:
         include_dirs.append(toolchain.developer_dir)
 
-    return ["            %s," % _quote_starlark_string(path) for path in include_dirs]
+    return ["            %s," % quote_starlark_string(path) for path in include_dirs]
 
 def _get_copts_env_var(repository_ctx, name, default = ""):
     """Get an environment variable and split it on ":" to be used as copts.
@@ -109,13 +110,6 @@ def _split_escaped(string, delimiter):
     # Append the last group still in accumulator
     result.append("".join(accumulator))
     return result
-
-def _get_starlark_list(values):
-    return ",\n    ".join([_quote_starlark_string(value) for value in values])
-
-def _quote_starlark_string(value):
-    # Bazel's repr can emit \x escapes, which BUILD files do not accept.
-    return '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
 
 def _toolchain_env_impl(repository_ctx):
     # All Label resolutions done at the top of the function to avoid issues
@@ -232,12 +226,12 @@ cc_feature_set(
 )
 """.format(
             allowlist_absolute_include_directories = "\n".join(escaped_include_paths),
-            c_opts = _get_starlark_list(c_opts),
-            conly_opts = _get_starlark_list(conly_opts),
-            cxx_opts = _get_starlark_list(cxx_opts),
+            c_opts = get_starlark_list(c_opts),
+            conly_opts = get_starlark_list(conly_opts),
+            cxx_opts = get_starlark_list(cxx_opts),
             disable_toolchain = disable_toolchain,
             enable_layering_check = enable_layering_check,
-            link_opts = _get_starlark_list(link_opts),
+            link_opts = get_starlark_list(link_opts),
         ),
     )
 
