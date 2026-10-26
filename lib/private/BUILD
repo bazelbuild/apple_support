@@ -8,3 +8,8 @@ bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],
 )
+
+bzl_library(
+    name = "toolchain_flags",
+    srcs = ["toolchain_flags.bzl"],
+)
