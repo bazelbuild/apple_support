@@ -151,13 +151,5 @@ def _xcode_execution_info_impl(ctx):
 
 xcode_execution_info = rule(
     implementation = _xcode_execution_info_impl,
-    attrs = {
-        "_xcode_config": attr.label(default = configuration_field(
-            fragment = "apple",
-            name = "xcode_config_label",
-        )),
-    },
-    fragments = [
-        "apple",
-    ],
+    attrs = apple_support.action_required_attrs(),
 )
