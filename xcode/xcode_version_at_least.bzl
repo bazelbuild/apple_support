@@ -105,7 +105,13 @@ def _xcode_version_at_least_flag_impl(ctx):
     )
     xcode_config = ctx.attr._xcode_config[XcodeVersionInfo]
     xcode_version = xcode_config.xcode_version()
-    matches = bool(xcode_version and xcode_version >= minimum_xcode_version)
+
+    # The provider returns a string only for a developer directory, which has
+    # no comparable version. Assume a recent Xcode.
+    matches = bool(xcode_version) and (
+        type(xcode_version) == "string" or
+        xcode_version >= minimum_xcode_version
+    )
 
     return [
         config_common.FeatureFlagInfo(value = str(matches)),
@@ -167,7 +173,8 @@ def xcode_version_at_least(
 
     The condition compares the resolved Xcode version, including when Xcode is
     selected by default without an explicit `--xcode_version` flag. It does not
-    match if the resolved configuration has no Xcode version.
+    match if the resolved configuration has no Xcode version. A developer
+    directory is assumed to represent a recent Xcode and matches any minimum.
 
     For example, enable a definition with Xcode 26.4 or newer:
 

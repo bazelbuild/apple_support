@@ -22,7 +22,8 @@ Creates a `config_setting` target that matches when Xcode is at least `minimum_x
 
 The condition compares the resolved Xcode version, including when Xcode is
 selected by default without an explicit `--xcode_version` flag. It does not
-match if the resolved configuration has no Xcode version.
+match if the resolved configuration has no Xcode version. A developer
+directory is assumed to represent a recent Xcode and matches any minimum.
 
 For example, enable a definition with Xcode 26.4 or newer:
 
