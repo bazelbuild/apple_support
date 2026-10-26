@@ -78,6 +78,8 @@ def _dynamic_toolchain_info_impl(ctx):
     else:
         fail("Unknown OS in target platform")
 
+    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
+
     is_simulator = ctx.target_platform_has_constraint(ctx.attr._simulator[platform_common.ConstraintValueInfo])
     if is_simulator:
         triple_suffix = "-simulator"
@@ -110,14 +112,14 @@ def _dynamic_toolchain_info_impl(ctx):
     return [platform_common.TemplateVariableInfo(
         xcode_env | {
             "ARCH": triple_arch,
-            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple),
+            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_platform_info = apple_platform_info),
             "TARGET": target,
         },
     )]
 
 dynamic_toolchain_info = rule(
     implementation = _dynamic_toolchain_info_impl,
-    attrs = {
+    attrs = apple_support.platform_constraint_attrs() | {
         "_linux": attr.label(default = "@platforms//os:linux"),
         "_macos": attr.label(default = "@platforms//os:macos"),
         "_ios": attr.label(default = "@platforms//os:ios"),
