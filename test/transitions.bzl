@@ -14,7 +14,7 @@ _PLATFORM_TYPE_TO_DEFAULT_ARCH = {
     "ios": "x86_64",
     "macos": "x86_64",
     "tvos": "x86_64",
-    "visionos": "x86_64",
+    "visionos": "sim_arm64",
     "watchos": "x86_64",
 }
 

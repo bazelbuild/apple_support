@@ -294,6 +294,12 @@ void processArCreateArgs(
   flags_consumer("-D");  // NOTE: Always added for hermiticity
   flags_consumer("-o");
   flags_consumer(args[1]);
+  // libtool creates a new archive, whereas ar q appends to an existing one.
+  // Include the previous archive so batched callers such as cc-rs retain it.
+  if (args[0].find('q') != std::string::npos &&
+      std::filesystem::exists(args[1])) {
+    flags_consumer(args[1]);
+  }
 }
 
 std::vector<std::string> expandResponseFiles(

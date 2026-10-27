@@ -13,7 +13,7 @@ def _sdk_version_for_platform(xcode_config, platform_type):
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
     elif platform_type == apple_common.platform_type.tvos:
         return xcode_config.sdk_version_for_platform(apple_common.platform.tvos_device)
-    elif platform_type == getattr(apple_common.platform_type, "visionos", None):
+    elif platform_type == apple_common.platform_type.visionos:
         return xcode_config.sdk_version_for_platform(apple_common.platform.visionos_device)
     elif platform_type == apple_common.platform_type.watchos:
         return xcode_config.sdk_version_for_platform(apple_common.platform.watchos_device)
@@ -27,9 +27,9 @@ def _sdk_name(platform_type, is_simulator):
         return "iPhoneSimulator"
     elif platform_type == apple_common.platform_type.ios:
         return "iPhoneOS"
-    elif platform_type == getattr(apple_common.platform_type, "visionos", None) and is_simulator:
+    elif platform_type == apple_common.platform_type.visionos and is_simulator:
         return "XRSimulator"
-    elif platform_type == getattr(apple_common.platform_type, "visionos", None):
+    elif platform_type == apple_common.platform_type.visionos:
         return "XROS"
     elif platform_type == apple_common.platform_type.watchos and is_simulator:
         return "WatchSimulator"
@@ -81,11 +81,13 @@ def _dynamic_toolchain_info_impl(ctx):
         platform_type = apple_common.platform_type.watchos
     elif ctx.target_platform_has_constraint(ctx.attr._visionos[platform_common.ConstraintValueInfo]):
         triple_os = "xros"
-        platform_type = getattr(apple_common.platform_type, "visionos", None)
+        platform_type = apple_common.platform_type.visionos
     elif ctx.target_platform_has_constraint(ctx.attr._linux[platform_common.ConstraintValueInfo]):
         return [platform_common.TemplateVariableInfo({"ARCH": triple_arch})]
     else:
         fail("Unknown OS in target platform")
+
+    apple_platform_info = apple_support.platform_info_from_rule_ctx(ctx)
 
     is_simulator = ctx.target_platform_has_constraint(ctx.attr._simulator[platform_common.ConstraintValueInfo])
     if is_simulator:
@@ -127,14 +129,14 @@ def _dynamic_toolchain_info_impl(ctx):
     return [platform_common.TemplateVariableInfo(
         xcode_env | {
             "ARCH": triple_arch,
-            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_fragment = ctx.fragments.apple),
+            "PLATFORM_FRAMEWORKS": apple_support.path_placeholders.platform_frameworks(apple_platform_info = apple_platform_info),
             "TARGET": target,
         },
     )]
 
 dynamic_toolchain_info = rule(
     implementation = _dynamic_toolchain_info_impl,
-    attrs = {
+    attrs = apple_support.platform_constraint_attrs() | {
         "_linux": attr.label(default = "@platforms//os:linux"),
         "_macos": attr.label(default = "@platforms//os:macos"),
         "_ios": attr.label(default = "@platforms//os:ios"),
@@ -168,13 +170,5 @@ def _xcode_execution_info_impl(ctx):
 
 xcode_execution_info = rule(
     implementation = _xcode_execution_info_impl,
-    attrs = {
-        "_xcode_config": attr.label(default = configuration_field(
-            fragment = "apple",
-            name = "xcode_config_label",
-        )),
-    },
-    fragments = [
-        "apple",
-    ],
+    attrs = apple_support.action_required_attrs(),
 )
