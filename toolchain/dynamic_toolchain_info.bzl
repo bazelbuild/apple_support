@@ -44,6 +44,15 @@ def _sdk_name(platform_type, is_simulator):
     else:
         fail("Unhandled platform type: {}".format(platform_type))
 
+def _numeric_version(version):
+    """Returns the leading numeric components of a version, e.g. "1.2.foo" -> "1.2"."""
+    parts = []
+    for part in str(version).split("."):
+        if not part.isdigit():
+            break
+        parts.append(part)
+    return ".".join(parts)
+
 def _dynamic_toolchain_info_impl(ctx):
     if ctx.target_platform_has_constraint(ctx.attr._arm64[platform_common.ConstraintValueInfo]):
         triple_arch = "arm64"
@@ -87,8 +96,16 @@ def _dynamic_toolchain_info_impl(ctx):
         triple_suffix = ""
 
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
     sdk_version = _sdk_version_for_platform(xcode_config, platform_type)
+
+    # Clang cannot parse non-numeric version suffixes in a target triple and
+    # silently falls back to a very old deployment target, so only the numeric
+    # part of the version goes into the triple.
+    target_os_version = _numeric_version(xcode_config.minimum_os_for_platform_type(platform_type))
+
+    # Any suffix following the numeric part of the SDK version is carried over
+    # to the SDK platform name.
+    sdk_name = _sdk_name(platform_type, is_simulator) + str(sdk_version)[len(_numeric_version(sdk_version)):]
 
     target = "{}-apple-{}{}{}".format(
         triple_arch,
@@ -104,7 +121,7 @@ def _dynamic_toolchain_info_impl(ctx):
     }
     if xcode_config.xcode_version():
         xcode_env = {
-            "APPLE_SDK_PLATFORM": _sdk_name(platform_type, is_simulator),
+            "APPLE_SDK_PLATFORM": sdk_name,
             "APPLE_SDK_VERSION_OVERRIDE": str(sdk_version),  # TODO: Remove once we drop bazel 7.x support
             "XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version()),
         }
