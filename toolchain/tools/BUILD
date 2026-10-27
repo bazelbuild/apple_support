@@ -21,7 +21,7 @@ cc_tool_map(
         "@rules_cc//cc/toolchains/actions:llvm_cov": ":llvm_cov_tool",
         "@rules_cc//cc/toolchains/actions:gcov": ":gcov_tool",
     },
-    visibility = ["//:__subpackages__"],
+    visibility = ["//visibility:public"],
 )
 
 cc_tool(
