@@ -36,7 +36,6 @@ def _xcode_config_resolver_impl(ctx):
         fail("Failed to resolve Xcode configuration.")
 
     return [
-        resolved_target[apple_common.XcodeVersionConfig],
         resolved_target[XcodeVersionInfo],
         resolved_target[XcodeVersionPropertiesInfo],
     ]

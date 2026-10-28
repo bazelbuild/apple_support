@@ -91,25 +91,6 @@ def _xcode_config_impl(ctx):
     else:
         visionos_minimum_os = visionos_sdk_version
 
-    # TODO: b/526626434 - Remove apple_common.XcodeVersionConfig once we've migrated all clients to
-    # XcodeVersionInfo.
-    xcode_versions = apple_common.XcodeVersionConfig(
-        ios_sdk_version = str(ios_sdk_version),
-        ios_minimum_os_version = str(ios_minimum_os),
-        visionos_sdk_version = str(visionos_sdk_version),
-        visionos_minimum_os_version = str(visionos_minimum_os),
-        watchos_sdk_version = str(watchos_sdk_version),
-        watchos_minimum_os_version = str(watchos_minimum_os),
-        tvos_sdk_version = str(tvos_sdk_version),
-        tvos_minimum_os_version = str(tvos_minimum_os),
-        macos_sdk_version = str(macos_sdk_version),
-        macos_minimum_os_version = str(macos_minimum_os),
-        xcode_version = xcode_version_properties.xcode_version,
-        availability = availability,
-        xcode_version_flag = read_possibly_native_flag(ctx, "xcode_version"),
-        include_xcode_execution_info = read_possibly_native_flag(ctx, "include_xcode_exec_requirements"),
-    )
-
     xcode_version_info = XcodeVersionInfo(
         ios_sdk_version = str(ios_sdk_version),
         ios_minimum_os_version = str(ios_minimum_os),
@@ -131,7 +112,6 @@ def _xcode_config_impl(ctx):
 
     providers = [
         DefaultInfo(runfiles = ctx.runfiles()),
-        xcode_versions,
         xcode_version_info,
         xcode_version_properties,
     ]
