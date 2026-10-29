@@ -1,0 +1,10 @@
+"""Source inputs for execution-configured universal tools."""
+
+type _Labels = Collection[Label | str] | depset[Label | str]
+
+def universal_exec_tool(
+        *,
+        name: str,
+        out: Label | str,
+        srcs: _Labels | select[_Labels | None] | None,
+) -> None: ...

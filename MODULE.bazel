@@ -33,6 +33,14 @@ bazel_dep(name = "protobuf", version = "33.0", dev_dependency = True)
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
+    name = "sty_bazel_tools",
+    dev_dependency = True,
+    integrity = "sha256-FayMMyMk37REW96xvJXMY1fYcWXBban9QgFAZUB+Kr0=",
+    strip_prefix = "sty-2ab74c830937d3ca85165ca0e9a02a42400ad9e5/crates/starpls_bazel/data/bazel_tools",
+    urls = ["https://github.com/tamird/sty/archive/2ab74c830937d3ca85165ca0e9a02a42400ad9e5.tar.gz"],
+)
+
+http_archive(
     name = "swift_linux_toolchain",
     build_file = "//test/linux_toolchain:swift_toolchain.BUILD",
     dev_dependency = True,

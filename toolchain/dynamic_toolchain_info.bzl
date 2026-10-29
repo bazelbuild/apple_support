@@ -7,8 +7,10 @@ rules.
 
 load("@rules_cc//cc/toolchains:providers.bzl", "ExecutionRequirementsInfo")
 load("//lib:apple_support.bzl", "apple_support")
+load("//lib:xcode_support.bzl", "xcode_support")
 
 def _sdk_version_for_platform(xcode_config, platform_type):
+    # type: (XcodeVersionConfig, apple_platform_type) -> DottedVersion
     if platform_type == apple_common.platform_type.ios:
         return xcode_config.sdk_version_for_platform(apple_common.platform.ios_device)
     elif platform_type == apple_common.platform_type.tvos:
@@ -23,6 +25,7 @@ def _sdk_version_for_platform(xcode_config, platform_type):
         fail("Unhandled platform type: {}".format(platform_type))
 
 def _sdk_name(platform_type, is_simulator):
+    # type: (apple_platform_type, bool) -> str
     if platform_type == apple_common.platform_type.ios and is_simulator:
         return "iPhoneSimulator"
     elif platform_type == apple_common.platform_type.ios:
@@ -45,6 +48,7 @@ def _sdk_name(platform_type, is_simulator):
         fail("Unhandled platform type: {}".format(platform_type))
 
 def _dynamic_toolchain_info_impl(ctx):
+    # type: (...) -> list[TemplateVariableInfo]
     if ctx.target_platform_has_constraint(ctx.attr._arm64[platform_common.ConstraintValueInfo]):
         triple_arch = "arm64"
     elif ctx.target_platform_has_constraint(ctx.attr._arm64e[platform_common.ConstraintValueInfo]):
@@ -86,7 +90,7 @@ def _dynamic_toolchain_info_impl(ctx):
     else:
         triple_suffix = ""
 
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    xcode_config = xcode_support.get_current_xcode(ctx)
     target_os_version = xcode_config.minimum_os_for_platform_type(platform_type)
     sdk_version = _sdk_version_for_platform(xcode_config, platform_type)
 
@@ -143,7 +147,8 @@ dynamic_toolchain_info = rule(
 )
 
 def _xcode_execution_info_impl(ctx):
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    # type: (...) -> list[ExecutionRequirementsInfo]
+    xcode_config = xcode_support.get_current_xcode(ctx)
     return [
         ExecutionRequirementsInfo(
             label = ctx.label,

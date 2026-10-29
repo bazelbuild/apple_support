@@ -112,6 +112,7 @@ ZIP7_EXTRAS = {
 }
 
 def zip7_host_arch(ctx):
+    # type: (repository_ctx) -> str
     """Identify the host platform.
 
     Args:
@@ -152,6 +153,7 @@ def zip7_extract(
         archive,
         output,
         extra_args = []):
+    # type: (repository_ctx, path, path, path, list[str]) -> None
     """Extract an archive using 7-Zip.
 
     Args:

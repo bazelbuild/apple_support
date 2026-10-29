@@ -20,6 +20,9 @@
 OSX_EXECUTE_TIMEOUT = 600
 
 def _watch_xcode_version_files(repository_ctx, developer_dir):
+    # type: (repository_ctx | module_ctx, str | path) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): annotate repository_ctx
+    # when supported Bazel versions expose repository and module context types.
     # Module extensions cannot watch paths outside the workspace.
     if type(repository_ctx) != "repository_ctx":
         return
@@ -31,6 +34,9 @@ def _watch_xcode_version_files(repository_ctx, developer_dir):
     repository_ctx.watch(developer_path.dirname.get_child("version.plist"))
 
 def watch_selected_xcode(repository_ctx):
+    # type: (repository_ctx | module_ctx) -> None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose repository and module context types.
     """Watches the selected Xcode's version.plist for repository rules.
 
     Args:
@@ -60,6 +66,7 @@ def watch_selected_xcode(repository_ctx):
     _watch_xcode_version_files(repository_ctx, selected_path)
 
 def _search_string(fullstring, prefix, suffix):
+    # type: (str, str, str) -> str
     """Returns the substring between two given substrings of a larger string.
 
     Args:
@@ -82,10 +89,12 @@ def _search_string(fullstring, prefix, suffix):
     return fullstring[result_start_index:suffix_index]
 
 def _search_sdk_output(output, sdkname):
+    # type: (str, str) -> str
     """Returns the SDK version given xcodebuild stdout and an sdkname."""
     return _search_string(output, "(%s" % sdkname, ")")
 
 def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir, timeout):
+    # type: (repository_ctx, str, str, list[str], str, int) -> str
     """Returns a string containing an xcode_version build target."""
     build_contents = ""
     decorated_aliases = []
@@ -336,6 +345,7 @@ load("@apple_support//xcode:xcode_version.bzl", "xcode_version")
     return buildcontents
 
 def _impl(repository_ctx):
+    # type: (...) -> None
     """Implementation for the local_config_xcode repository rule.
 
     Generates a BUILD file containing a root xcode_config target named 'host_xcodes',
@@ -369,6 +379,7 @@ xcode_autoconf = repository_rule(
 )
 
 def xcode_configure(xcode_locator_label, remote_xcode_label = None):
+    # type: (str, str | None) -> None
     """Generates a repository containing host Xcode version information."""
     xcode_autoconf(
         name = "local_config_xcode",
@@ -377,6 +388,7 @@ def xcode_configure(xcode_locator_label, remote_xcode_label = None):
     )
 
 def _xcode_configure_extension_impl(module_ctx):
+    # type: (module_ctx) -> extension_metadata
     xcode_configure("@bazel_tools//tools/osx:xcode_locator.m")
     return module_ctx.extension_metadata(reproducible = True)
 

@@ -4,6 +4,8 @@ licenses(["notice"])
 
 package(default_visibility = ["//:__subpackages__"])
 
+exports_files(["providers.bzli"])
+
 bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],

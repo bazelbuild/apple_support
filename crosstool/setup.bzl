@@ -4,6 +4,9 @@ load("@bazel_features//:features.bzl", "bazel_features")
 load(":setup_internal.bzl", "apple_cc_autoconf", "apple_cc_autoconf_toolchains")
 
 def _apple_cc_configure_extension_impl(module_ctx):
+    # type: (module_ctx) -> extension_metadata | None
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose context and metadata types.
     apple_cc_autoconf_toolchains(name = "local_config_apple_cc_toolchains")
     apple_cc_autoconf(name = "local_config_apple_cc")
     if bazel_features.external_deps.extension_metadata_has_reproducible:
