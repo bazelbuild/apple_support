@@ -47,6 +47,7 @@ exit 0
 """
 
 def _universal_binary_test_transition(_settings, attr):
+    # type: (dict[str, object], struct[{"cpu": str}, ...]) -> dict[str, str]
     """Implementation of the universal_binary_test_transition transition."""
 
     return {
@@ -60,6 +61,7 @@ universal_binary_test_transition = transition(
 )
 
 def _universal_binary_test_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     """Implementation of the universal_binary_test rule."""
 
     target_under_test = ctx.split_attr.target_under_test.values()[0]

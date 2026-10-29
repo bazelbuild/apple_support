@@ -1,0 +1,26 @@
+"""Inputs for actions that assemble and extract universal binaries."""
+
+load("//lib:apple_support.bzli", _Actions = "RunShellActions")
+load("//lib/private:providers.bzl", "ApplePlatformInfo")
+
+def _create(
+        *,
+        actions: _Actions,
+        inputs: Sequence[File] | depset[File],
+        output: File,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        xcode_config: XcodeVersionConfig,
+) -> None: ...
+
+def _extract_or_thin(
+        *,
+        actions: _Actions,
+        apple_platform_info: ApplePlatformInfo | None = ...,
+        apple_fragment: apple | None = ...,
+        archs: Sequence[str],
+        input_shell_expression: str | None = ...,
+        input_file: File | None = ...,
+        output: File,
+        xcode_config: XcodeVersionConfig,
+) -> None: ...

@@ -20,10 +20,12 @@ visibility([
 ])
 
 def get_starlark_list(values):
+    # type: (list[str]) -> str
     """Formats string literals for a generated list attribute."""
     return ",\n    ".join([quote_starlark_string(value) for value in values])
 
 def quote_starlark_string(value):
+    # type: (str) -> str
     """Returns a string literal that a BUILD file can read."""
 
     # Bazel's repr can emit \x escapes, which BUILD files do not accept.

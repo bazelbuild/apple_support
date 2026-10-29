@@ -11,6 +11,9 @@ _DISABLE_ENV_VAR = "BAZEL_NO_APPLE_CPP_TOOLCHAIN"
 _OLD_DISABLE_ENV_VAR = "BAZEL_USE_CPP_ONLY_TOOLCHAIN"
 
 def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
+    # type: (repository_ctx, Label) -> list[str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): make this an
+    # annotation when supported Bazel versions expose a repository context type.
     # Assume that everything is managed by Xcode / toolchain installations
     include_dirs = [
         "/Applications/",
@@ -24,18 +27,18 @@ def _get_escaped_xcode_cxx_inc_directories(repository_ctx, xcode_locator):
             "/Users/{}/Library/Developer/".format(user),  # Custom Swift toolchains, user only installation of CLT
         ])
 
-    xcode_toolchains = []
     allow_non_applications_xcode = repository_ctx.os.environ.get("BAZEL_ALLOW_NON_APPLICATIONS_XCODE") == "1"
     if allow_non_applications_xcode:
-        (xcode_toolchains, _) = run_xcode_locator(repository_ctx, xcode_locator)
+        xcode_toolchains, _ = run_xcode_locator(repository_ctx, xcode_locator)
 
-    # Include extra Xcode paths in case they're installed on other volumes
-    for toolchain in xcode_toolchains:
-        include_dirs.append(toolchain.developer_dir)
+        # Include extra Xcode paths in case they're installed on other volumes
+        for toolchain in xcode_toolchains:
+            include_dirs.append(toolchain.developer_dir)
 
     return ["            %s," % quote_starlark_string(path) for path in include_dirs]
 
 def _get_copts_env_var(repository_ctx, name, default = ""):
+    # type: (repository_ctx, str, str) -> list[str]
     """Get an environment variable and split it on ":" to be used as copts.
 
     Args:
@@ -51,6 +54,7 @@ def _get_copts_env_var(repository_ctx, name, default = ""):
     return _split_escaped(default, ":")
 
 def _split_escaped(string, delimiter):
+    # type: (str, str) -> list[str]
     """Split string on the delimiter unless %-escaped.
 
     Examples:
@@ -81,7 +85,7 @@ def _split_escaped(string, delimiter):
 
     i = 0
     result = []
-    accumulator = []
+    accumulator = []  # type: list[str]
     length = len(string)
     delimiter_length = len(delimiter)
 
@@ -101,7 +105,7 @@ def _split_escaped(string, delimiter):
             i += 1 + delimiter_length
         elif i + delimiter_length <= length and string[i:i + delimiter_length] == delimiter:
             result.append("".join(accumulator))
-            accumulator = []
+            accumulator = []  # type: list[str]
             i += delimiter_length
         else:
             accumulator.append(string[i])
@@ -112,6 +116,7 @@ def _split_escaped(string, delimiter):
     return result
 
 def _toolchain_env_impl(repository_ctx):
+    # type: (...) -> repo_metadata | None
     # All Label resolutions done at the top of the function to avoid issues
     # with starlark function restarts, see this:
     # https://github.com/bazelbuild/bazel/blob/ab71a1002c9c53a8061336e40f91204a2a32c38e/tools/cpp/lib_cc_configure.bzl#L17-L38

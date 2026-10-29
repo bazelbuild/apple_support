@@ -20,45 +20,66 @@ load(
 )
 
 # buildozer: disable=function-docstring-args
-def apple_genrule(name, **kwargs):
+def apple_genrule(
+        name,
+        *,
+        outs,
+        cmd,
+        executable = False,
+        srcs = None,
+        tools = None,
+        message = None,
+        no_sandbox = None,
+        toolchains = None,
+        expect_failure = None,
+        **kwargs):
     """Genrule which provides make variables and an Apple environment on macOS."""
 
     # This split/indirection traces back to cl/128714692 and b/30413353.
-    if kwargs.get("executable", False):
-        outs = kwargs.pop("outs", [])
+    inner_kwargs = dict(kwargs)
+    if executable:
+        if type(outs) == "depset":
+            fail("apple_genrule executable outputs must be a list or tuple")
+        if expect_failure != None:
+            fail("apple_genrule executable rules do not support expect_failure")
         if len(outs) != 1:
             fail("apple_genrule, if executable, must have exactly one output")
+        output = outs[0]
+        if type(output) != "string":
+            fail("apple_genrule executable output must be a string")
+        intermediate_out = output + ".nonexecutable"
+        inner_name = name + "_nonexecutable"
+        inner_outs = [intermediate_out]
 
-        intermediate_out = outs[0] + ".nonexecutable"
+        # The intermediate rule is an implementation detail.
+        inner_kwargs["visibility"] = ["//visibility:private"]
+    else:
+        inner_name = name
+        inner_outs = outs
 
-        # Remove any visibility and make this sub rule private since it is an
-        # implementation detail.
-        sub_kwargs = dict(kwargs)
-        sub_kwargs.pop("visibility", None)
-        _apple_genrule_inner(
-            name = name + "_nonexecutable",
-            outs = [intermediate_out],
-            visibility = ["//visibility:private"],
-            **sub_kwargs
-        )
-
-        # Remove anything from kwargs that might have a meaning that isn't wanted
-        # on the genrule that does the copy. Generally, we are just trying to
-        # keep things like testonly, visibility, etc.
-        kwargs.pop("stamp", None)
-        kwargs.pop("cmd", None)
-        kwargs.pop("executable", None)
-        kwargs.pop("srcs", None)
-        kwargs.pop("message", None)
-        kwargs.pop("tools", None)
-        kwargs.pop("no_sandbox", None)
+    _apple_genrule_inner(
+        name = inner_name,
+        outs = inner_outs,
+        cmd = cmd,
+        executable = executable,
+        srcs = srcs,
+        tools = tools,
+        message = message,
+        no_sandbox = no_sandbox,
+        toolchains = toolchains,
+        expect_failure = expect_failure,
+        **inner_kwargs
+    )
+    if executable:
+        # Only common attributes belong on the executable copy.
+        if type(toolchains) == "select":
+            fail("apple_genrule executable toolchains cannot be configurable")
         native.genrule(
             name = name,
             outs = outs,
-            srcs = [intermediate_out],
+            srcs = inner_outs,
             cmd = "cp $< $@",
             executable = True,
+            toolchains = toolchains,
             **kwargs
         )
-    else:
-        _apple_genrule_inner(name = name, **kwargs)

@@ -20,6 +20,7 @@ visibility([
 ])
 
 def make_banned_init(*, preferred_public_factory = None, provider_name):
+    # type: (str | None, str) -> Callable[[], Never]
     """Generates a lambda with a fail(...) for providers to dictate preferred initializer patterns."""
     if preferred_public_factory:
         return lambda: fail("""
