@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# LINT.IfChange
 set -eu
 
 # SYNOPSIS
@@ -39,4 +38,3 @@ for ARG in "$@" ; do
 done
 
 exec "$TOOLNAME" "${ARGS[@]}"
-# LINT.ThenChange(apple_support.bzl:xcode_processor_args)

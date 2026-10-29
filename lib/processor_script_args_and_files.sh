@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# LINT.IfChange
 set -eu
 
 # SYNOPSIS
@@ -98,4 +97,3 @@ done
 # We can't use `exec` here because we need to make sure the `trap` runs
 # afterward.
 "$TOOLNAME" "${ARGS[@]}"
-# LINT.ThenChange(apple_support.bzl:xcode_processor_args_and_files)

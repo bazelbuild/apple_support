@@ -29,130 +29,6 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
-# TODO: b/564915597 - Remove _XCODE_PROCESSOR__ARGS and _XCODE_PROCESSOR__ARGS_AND_FILES
-# once all apple_support.run callers migrate from apple_common.XcodeVersionConfig to
-# XcodeVersionInfo.
-# LINT.IfChange(xcode_processor_args)
-_XCODE_PROCESSOR__ARGS = r"""#!/bin/bash
-
-set -eu
-
-# SYNOPSIS
-#   Rewrites any Bazel placeholder strings in the given argument string,
-#   echoing the result.
-#
-# USAGE
-#   rewrite_argument <argument>
-function rewrite_argument {
-  ARG="$1"
-  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
-  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
-  echo "$ARG"
-}
-
-TOOLNAME="$1"
-shift
-
-ARGS=()
-
-for ARG in "$@" ; do
-  ARGS+=("$(rewrite_argument "$ARG")")
-done
-
-exec "$TOOLNAME" "${ARGS[@]}"
-"""
-# LINT.ThenChange(processor_script_args.sh)
-
-# LINT.IfChange(xcode_processor_args_and_files)
-_XCODE_PROCESSOR__ARGS_AND_FILES = r"""#!/bin/bash
-
-set -eu
-
-# SYNOPSIS
-#   Rewrites any Bazel placeholder strings in the given argument string,
-#   echoing the result.
-#
-# USAGE
-#   rewrite_argument <argument>
-function rewrite_argument {
-  ARG="$1"
-  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
-  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
-  echo "$ARG"
-}
-
-# SYNOPSIS
-#   Rewrites any Bazel placeholder strings in the given params file, if any.
-#   If there were no substitutions to be made, the original path is echoed back
-#   out; otherwise, this function echoes the path to a temporary file
-#   containing the rewritten file.
-#
-# USAGE
-#   rewrite_params_file <path>
-function rewrite_params_file {
-  PARAMSFILE="$1"
-  if grep -qe '__BAZEL_XCODE_\(DEVELOPER_DIR\|SDKROOT\)__' < "$PARAMSFILE" ; then
-    NEWFILE="$(mktemp "${TMPDIR%/}/bazel_xcode_wrapper_params.XXXXXXXXXX")"
-    awk '
-      function replace_all(str, pat, rep,    out, i, plen) {
-        out = ""
-        plen = length(pat)
-        while ((i = index(str, pat)) > 0) {
-          out = out substr(str, 1, i - 1) rep
-          str = substr(str, i + plen)
-        }
-        return out str
-      }
-      {
-        line = $0
-        if (index(line, "__BAZEL_XCODE_") > 0) {
-          line = replace_all(line, "__BAZEL_XCODE_DEVELOPER_DIR__", ENVIRON["DEVELOPER_DIR"])
-          line = replace_all(line, "__BAZEL_XCODE_SDKROOT__", ENVIRON["SDKROOT"])
-        }
-        print line
-      }
-    ' < "$PARAMSFILE" > "$NEWFILE"
-    echo "$NEWFILE"
-  else
-    # There were no placeholders to substitute, so just return the original
-    # file.
-    echo "$PARAMSFILE"
-  fi
-}
-
-TOOLNAME="$1"
-shift
-
-ARGS=()
-
-# If any temporary files are created (like rewritten response files), clean
-# them up when the script exits.
-TEMPFILES=()
-trap '[[ ${#TEMPFILES[@]} -ne 0 ]] && rm "${TEMPFILES[@]}"' EXIT
-
-for ARG in "$@" ; do
-  case "$ARG" in
-  @*)
-    PARAMSFILE="${ARG:1}"
-    NEWFILE=$(rewrite_params_file "$PARAMSFILE")
-    if [[ "$PARAMSFILE" != "$NEWFILE" ]] ; then
-      TEMPFILES+=("$NEWFILE")
-    fi
-    ARG="@$NEWFILE"
-    ;;
-  *)
-    ARG=$(rewrite_argument "$ARG")
-    ;;
-  esac
-  ARGS+=("$ARG")
-done
-
-# We can't use `exec` here because we need to make sure the `trap` runs
-# afterward.
-"$TOOLNAME" "${ARGS[@]}"
-"""
-# LINT.ThenChange(processor_script_args_and_files.sh)
-
 def _platform_frameworks_path_placeholder(*, apple_platform_info):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
@@ -370,27 +246,10 @@ def _run(
         ))
         return
 
-    if hasattr(xcode_config, "processor_script_args"):
-        if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
-            processor_script = xcode_config.processor_script_args()
-        else:
-            processor_script = xcode_config.processor_script_args_and_files()
+    if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
+        processor_script = xcode_config.processor_script_args()
     else:
-        # TODO: b/564915597 - Remove legacy per-action declare_file fallback once all
-        # callers migrate from apple_common.XcodeVersionConfig to XcodeVersionInfo.
-        output0 = kwargs.get("outputs")[0]
-        if xcode_path_resolve_level == _XCODE_PATH_RESOLVE_LEVEL.args:
-            script = _XCODE_PROCESSOR__ARGS
-            suffix = "args"
-        else:
-            script = _XCODE_PROCESSOR__ARGS_AND_FILES
-            suffix = "args_and_files"
-        processor_script = actions.declare_file("{}_{}_processor_script_{}.sh".format(
-            output0.basename,
-            hash(output0.short_path),
-            suffix,
-        ))
-        actions.write(processor_script, script, is_executable = True)
+        processor_script = xcode_config.processor_script_args_and_files()
 
     processed_kwargs = _kwargs_for_apple_platform(
         xcode_config = xcode_config,
