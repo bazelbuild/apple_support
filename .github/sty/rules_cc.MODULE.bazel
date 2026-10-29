@@ -1,0 +1,6 @@
+# TODO(https://github.com/bazelbuild/rules_cc/pull/940): use the released C++ annotations.
+single_version_override(
+    module_name = "rules_cc",
+    patch_strip = 1,
+    patches = ["//:.github/sty/rules_cc.patch"],
+)
