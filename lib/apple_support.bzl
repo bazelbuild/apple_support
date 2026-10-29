@@ -23,7 +23,6 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
-load("@bazel_skylib//lib:types.bzl", "types")
 load(
     "//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
@@ -443,18 +442,18 @@ def _run(
 
     # We also need to include the user executable in the "tools" argument of the action, since it
     # won't be referenced by "executable" anymore.
+    all_tools = []
+    if type(original_executable) != "string":
+        all_tools.append(original_executable)
+
     original_tools = processed_kwargs.pop("tools", None)
-    if types.is_list(original_tools):
-        all_tools = [original_executable] + original_tools
-    elif types.is_depset(original_tools):
-        all_tools = depset([original_executable], transitive = [original_tools])
+    if type(original_tools) == "depset":
+        # Top-level depsets can contain providers; a nested depset must contain files.
+        all_tools.extend(original_tools.to_list())
+    elif type(original_tools) in ("list", "tuple"):
+        all_tools.extend(original_tools)
     elif original_tools:
         fail("'tools' argument must be a sequence or depset.")
-    elif not types.is_string(original_executable):
-        # Only add the user_executable to the "tools" list if it's a File, not a string.
-        all_tools = [original_executable]
-    else:
-        all_tools = []
 
     actions.run(
         executable = processor_script,
