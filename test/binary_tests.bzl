@@ -6,6 +6,7 @@ load(
 )
 
 def binary_test_suite(name):
+    # type: (str) -> None
     """Test various aspects of binary generation
 
     Args:
