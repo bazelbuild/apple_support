@@ -1,0 +1,20 @@
+diff --git a/cc/private/cc_common.bzl b/cc/private/cc_common.bzl
+index 4533f7f..2d005ec 100644
+--- a/cc/private/cc_common.bzl
++++ b/cc/private/cc_common.bzl
+@@ -253,3 +253,5 @@ def _create_compilation_context(
+         quote_includes = None,
+-        framework_includes = None,
++        # TODO(https://github.com/bazelbuild/bazel/issues/32021): make this an
++        # annotation when supported Bazel versions expose element-typed depsets.
++        framework_includes = None,  # type: depset[str] | None
+         defines = None,
+diff --git a/cc/private/cc_info.bzl b/cc/private/cc_info.bzl
+index 76eca95..7d6a599 100644
+--- a/cc/private/cc_info.bzl
++++ b/cc/private/cc_info.bzl
+@@ -322,3 +322,3 @@ def _create_cc_info(
+         *,
+-        compilation_context = None,
++        compilation_context = None,  # type: CcCompilationContextInfo | None
+         linking_context = None,
