@@ -31,6 +31,7 @@ _DMG_IGNORED_ENTRIES = [
 ]
 
 def _dmg_7z_args():
+    # type: () -> list[str]
     """Arguments passed to 7-Zip when extracting a `.dmg` archive.
 
     Returns:
@@ -55,7 +56,9 @@ def _dmg_7z_args():
 
     return args
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32020): use a source annotation once Bazel exposes these context and metadata types.
 def _move(repository_ctx, src, dst):
+    # type: (repository_ctx, path, path) -> None
     # TODO: Delete the fallback once Bazel 7.x is no longer supported.
     # `repository_ctx.rename` was added in Bazel 8.0.
     if hasattr(repository_ctx, "rename"):
@@ -92,6 +95,7 @@ def _extract_dmg(
         archive,
         strip_prefix = None,
         add_prefix = None):
+    # type: (repository_ctx, path, path, str | None, str | None) -> None
     """Extract a `.dmg` archive into the repository directory.
 
     Args:
@@ -134,10 +138,11 @@ def _extract_dmg(
     repository_ctx.delete(temp_out_dir)
 
 def _http_dmg_impl(repository_ctx):
+    # type: (...) -> dict[str, object] | repo_metadata
     if repository_ctx.attr.build_file and repository_ctx.attr.build_file_content:
         fail("Only one of build_file and build_file_content can be provided.")
 
-    source_urls = _get_source_urls(repository_ctx)
+    source_urls = _get_source_urls(repository_ctx.attr.url, repository_ctx.attr.urls)
 
     zip7_dir = "7z"
     zip7_bin = zip7_download(repository_ctx, zip7_dir)
@@ -194,17 +199,13 @@ def _http_dmg_impl(repository_ctx):
         return repository_ctx.repo_metadata(attrs_for_reproducibility = repro_attrs)
     return repro_attrs
 
-def _get_source_urls(repository_ctx):
+def _get_source_urls(url, urls):
+    # type: (str, list[str]) -> list[str]
     """Returns the urls provided via the `url` and `urls` attributes."""
-    if not repository_ctx.attr.url and not repository_ctx.attr.urls:
+    if not url and not urls:
         fail("At least one of url and urls must be provided")
 
-    source_urls = []
-    if repository_ctx.attr.urls:
-        source_urls = repository_ctx.attr.urls
-    if repository_ctx.attr.url:
-        source_urls = [repository_ctx.attr.url] + source_urls
-    return source_urls
+    return [url] + urls if url else urls
 
 _ATTRS = {
     "add_prefix": attr.string(

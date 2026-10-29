@@ -1,0 +1,24 @@
+"""Arguments for Apple genrules and their executable copy rules."""
+
+type _Labels = Collection[Label | str] | depset[Label | str]
+type _Configurable[T] = T | select[T | None] | None
+
+class _Common(Protocol):
+    def __call__(self, **kwargs: Unpack[CommonRuleAttrs]) -> None: ...
+
+type _Forwarded = KeywordArgs[_Common, "expect_failure", "toolchains"]
+
+def apple_genrule(
+        name: str,
+        *,
+        outs: Sequence[Label | str] | depset[Label | str],
+        cmd: str | select[str | None],
+        executable: _Configurable[bool | Literal[0, 1]] = ...,
+        srcs: _Configurable[_Labels] = ...,
+        tools: _Configurable[_Labels] = ...,
+        message: _Configurable[str] = ...,
+        no_sandbox: _Configurable[bool | Literal[0, 1]] = ...,
+        toolchains: _Configurable[_Labels] = ...,
+        expect_failure: _Configurable[str] = ...,
+        **kwargs: Unpack[_Forwarded],
+) -> None: ...

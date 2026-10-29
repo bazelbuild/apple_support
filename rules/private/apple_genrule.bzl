@@ -19,6 +19,7 @@ load("//lib:apple_support.bzl", "apple_support")
 _APPLE_GENRULE_TOOLCHAIN_TYPE = Label("//rules/private:apple_genrule_toolchain_type")
 
 def _apple_genrule_toolchain_impl(_ctx):
+    # type: (...) -> list[ToolchainInfo]
     return [platform_common.ToolchainInfo()]
 
 apple_genrule_toolchain = rule(
@@ -30,6 +31,9 @@ def _compute_make_variables(
         label,
         resolved_srcs,
         files_to_build):
+    # type: (root, Label, depset[File], list[File]) -> dict[str, str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32021): annotate resolved_srcs
+    # when supported Bazel versions expose element-typed depsets.
     resolved_srcs_list = resolved_srcs.to_list()
     variables = {
         "OUTS": " ".join([x.path for x in files_to_build]),
@@ -45,6 +49,7 @@ def _compute_make_variables(
     return variables
 
 def _apple_genrule_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     if not ctx.outputs.outs:
         fail("apple_genrule must have one or more outputs", attr = "outs")
     files_to_build = ctx.outputs.outs

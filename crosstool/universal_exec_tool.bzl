@@ -3,6 +3,7 @@
 load("//rules:apple_genrule.bzl", "apple_genrule")
 
 def _force_exec_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     default_into = ctx.attr.target[DefaultInfo]
 
     return [

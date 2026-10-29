@@ -24,6 +24,7 @@ load(
 visibility("public")
 
 def _available_xcodes_impl(ctx):
+    # type: (...) -> list[AvailableXcodesInfo]
     # TODO: drop when requiring Bazel 8+
     if not bazel_features.apple.xcode_config_migrated:
         fail("This rule is not available on the current Bazel version")

@@ -4,6 +4,7 @@ load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 
 def _framework_includes_lib_impl(ctx):
+    # type: (...) -> list[CcInfo]
     return [
         CcInfo(
             compilation_context = cc_common.create_compilation_context(

@@ -1,0 +1,8 @@
+"""Metadata for the pinned archive on each 7-Zip platform."""
+
+type _ZipData = struct[{"urls": list[str], "integrity": str, "bin_path": str}]
+
+def _zip7_data(*, urls: list[str], integrity: str, bin_path: str) -> _ZipData: ...
+
+type _Auth = repository_ctx[struct[{"netrc": str, "auth_patterns": dict[str, str]}, ...]]
+def zip7_download(repository_ctx: _Auth, output: str) -> path: ...

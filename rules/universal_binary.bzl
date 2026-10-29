@@ -20,6 +20,7 @@ load("//lib:transitions.bzl", "macos_universal_transition")
 _LIPO_TOOLCHAIN_TYPE = "//rules/lipo:toolchain_type"
 
 def _universal_binary_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     inputs = [
         binary[DefaultInfo].files.to_list()[0]
         for binary in ctx.split_attr.binary.values()
