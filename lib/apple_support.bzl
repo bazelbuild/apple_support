@@ -29,6 +29,138 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
+# Describes an Apple "platform type", such as iOS, macOS, tvOS, visionOS, or watchOS. This is
+# distinct from a "platform", which is the platform type combined with one or more target
+# environments or architectures.
+_PLATFORM_TYPE = struct(
+    catalyst = "catalyst",
+    ios = "ios",
+    macos = "macos",
+    tvos = "tvos",
+    visionos = "visionos",
+    watchos = "watchos",
+)
+
+def _create_platform(*, name, name_in_plist, platform_type, is_device):
+    return struct(
+        is_device = is_device,
+        name = name,
+        name_in_plist = name_in_plist,
+        platform_type = platform_type,
+    )
+
+# Corresponds to Xcode's notion of a platform as would be found in
+# `Xcode.app/Contents/Developer/Platforms`, representing an Apple platform type combined with a
+# target environment (device or simulator).
+# TODO(b/578425363): Remove `name_in_plist` from `_PLATFORM` and read it from `xcode_sdk_variant`
+# once all Xcode targets populate `xcode_sdk_variant`.
+_PLATFORM = struct(
+    catalyst = _create_platform(
+        name = "catalyst",
+        name_in_plist = "MacOSX",
+        platform_type = _PLATFORM_TYPE.catalyst,
+        is_device = True,
+    ),
+    ios_device = _create_platform(
+        name = "ios_device",
+        name_in_plist = "iPhoneOS",
+        platform_type = _PLATFORM_TYPE.ios,
+        is_device = True,
+    ),
+    ios_simulator = _create_platform(
+        name = "ios_simulator",
+        name_in_plist = "iPhoneSimulator",
+        platform_type = _PLATFORM_TYPE.ios,
+        is_device = False,
+    ),
+    macos = _create_platform(
+        name = "macos",
+        name_in_plist = "MacOSX",
+        platform_type = _PLATFORM_TYPE.macos,
+        is_device = True,
+    ),
+    tvos_device = _create_platform(
+        name = "tvos_device",
+        name_in_plist = "AppleTVOS",
+        platform_type = _PLATFORM_TYPE.tvos,
+        is_device = True,
+    ),
+    tvos_simulator = _create_platform(
+        name = "tvos_simulator",
+        name_in_plist = "AppleTVSimulator",
+        platform_type = _PLATFORM_TYPE.tvos,
+        is_device = False,
+    ),
+    visionos_device = _create_platform(
+        name = "visionos_device",
+        name_in_plist = "XROS",
+        platform_type = _PLATFORM_TYPE.visionos,
+        is_device = True,
+    ),
+    visionos_simulator = _create_platform(
+        name = "visionos_simulator",
+        name_in_plist = "XRSimulator",
+        platform_type = _PLATFORM_TYPE.visionos,
+        is_device = False,
+    ),
+    watchos_device = _create_platform(
+        name = "watchos_device",
+        name_in_plist = "WatchOS",
+        platform_type = _PLATFORM_TYPE.watchos,
+        is_device = True,
+    ),
+    watchos_simulator = _create_platform(
+        name = "watchos_simulator",
+        name_in_plist = "WatchSimulator",
+        platform_type = _PLATFORM_TYPE.watchos,
+        is_device = False,
+    ),
+)
+
+def _apple_host_system_env(xcode_config):
+    """Returns a `dict` of environment variables that are independent of the target platform for actions that build targets on Apple systems.
+
+    To use this helper, pass the `XcodeVersionInfo` provider from the `_xcode_config` attribute
+    added by `apple_support.action_required_attrs()`. Note that `apple_support.run()` and
+    `apple_support.run_shell()` already set these environment variables automatically.
+
+    Args:
+        xcode_config: The `XcodeVersionInfo` provider as found in the current rule or aspect's
+            context. Typically from `ctx.attr._xcode_config[XcodeVersionInfo]`.
+
+    Returns:
+        A `dict` of environment variables to set on Apple host actions.
+    """
+    if not xcode_config or not xcode_config.xcode_version():
+        return {}
+    return {"XCODE_VERSION_OVERRIDE": str(xcode_config.xcode_version())}
+
+def _target_apple_env(xcode_config, platform):
+    """Returns a `dict` of environment variables that should be set for actions that build targets of the given Apple platform.
+
+    To use this helper, pass the `XcodeVersionInfo` provider from the `_xcode_config` attribute
+    added by `apple_support.action_required_attrs()` and a platform struct (such as from
+    `apple_support.platform` or `apple_platform_info.platform`). Note that `apple_support.run()`
+    and `apple_support.run_shell()` already set these environment variables automatically.
+
+    Args:
+        xcode_config: The `XcodeVersionInfo` provider as found in the current rule or aspect's
+            context. Typically from `ctx.attr._xcode_config[XcodeVersionInfo]`.
+        platform: The platform struct (from `apple_support.platform` or
+            `apple_platform_info.platform`) for the target configuration.
+
+    Returns:
+        A `dict` of environment variables (`APPLE_SDK_PLATFORM` and
+        `APPLE_SDK_VERSION_OVERRIDE`) for the target Apple platform.
+    """
+    sdk_version = str(xcode_config.sdk_version_for_platform(platform))
+    if "." not in sdk_version:
+        sdk_version += ".0"
+    return {
+        "APPLE_SDK_PLATFORM": platform.name_in_plist,
+        "APPLE_SDK_VERSION_OVERRIDE": sdk_version,
+    }
+
 def _platform_frameworks_path_placeholder(*, apple_platform_info):
     """Returns the platform's frameworks directory, anchored to the Xcode path placeholder.
 
@@ -89,9 +221,9 @@ def _kwargs_for_apple_platform(
 
     # Add the environment variables required for DEVELOPER_DIR and SDKROOT last to avoid clients
     # overriding these values.
-    merged_env.update(apple_common.apple_host_system_env(xcode_config))
+    merged_env.update(_apple_host_system_env(xcode_config))
     merged_env.update(
-        apple_common.target_apple_env(xcode_config, platform),
+        _target_apple_env(xcode_config, platform),
     )
 
     merged_execution_requirements = {}
@@ -448,7 +580,7 @@ def _target_os_from_rule_ctx(
     """Returns a `String` representing the target OS based on constraints.
 
     The returned `String` will match an equivalent value from one of the platform definitions in
-    `apple_common.platform_type`, such as `ios` or `macos`.
+    `apple_support.platform_type`, such as `ios` or `macos`.
 
     In order to use `apple_support.target_os_from_rule_ctx()`, you'll need to modify your rule
     definition to add the following:
@@ -470,43 +602,43 @@ def _target_os_from_rule_ctx(
     watchos_constraint = ctx.attr._watchos_constraint[platform_common.ConstraintValueInfo]
 
     if ctx.target_platform_has_constraint(ios_constraint):
-        return str(apple_common.platform_type.ios)
+        return _PLATFORM_TYPE.ios
     elif ctx.target_platform_has_constraint(macos_constraint):
-        return str(apple_common.platform_type.macos)
+        return _PLATFORM_TYPE.macos
     elif ctx.target_platform_has_constraint(tvos_constraint):
-        return str(apple_common.platform_type.tvos)
+        return _PLATFORM_TYPE.tvos
     elif ctx.target_platform_has_constraint(visionos_constraint):
-        return str(apple_common.platform_type.visionos)
+        return _PLATFORM_TYPE.visionos
     elif ctx.target_platform_has_constraint(watchos_constraint):
-        return str(apple_common.platform_type.watchos)
+        return _PLATFORM_TYPE.watchos
     if not fail_on_missing_constraint:
         return None
     fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")
 
 def _platform_from_info(*, apple_platform_info):
-    """Returns an apple_common.platform given the contents of an ApplePlatformInfo provider"""
+    """Returns an apple_support.platform given the contents of an ApplePlatformInfo provider"""
     if apple_platform_info.target_os == "ios":
         if apple_platform_info.target_environment == "device":
-            return apple_common.platform.ios_device
+            return _PLATFORM.ios_device
         elif apple_platform_info.target_environment == "simulator":
-            return apple_common.platform.ios_simulator
+            return _PLATFORM.ios_simulator
     elif apple_platform_info.target_os == "macos":
-        return apple_common.platform.macos
+        return _PLATFORM.macos
     elif apple_platform_info.target_os == "tvos":
         if apple_platform_info.target_environment == "device":
-            return apple_common.platform.tvos_device
+            return _PLATFORM.tvos_device
         elif apple_platform_info.target_environment == "simulator":
-            return apple_common.platform.tvos_simulator
+            return _PLATFORM.tvos_simulator
     elif apple_platform_info.target_os == "visionos":
         if apple_platform_info.target_environment == "device":
-            return apple_common.platform.visionos_device
+            return _PLATFORM.visionos_device
         elif apple_platform_info.target_environment == "simulator":
-            return apple_common.platform.visionos_simulator
+            return _PLATFORM.visionos_simulator
     elif apple_platform_info.target_os == "watchos":
         if apple_platform_info.target_environment == "device":
-            return apple_common.platform.watchos_device
+            return _PLATFORM.watchos_device
         elif apple_platform_info.target_environment == "simulator":
-            return apple_common.platform.watchos_simulator
+            return _PLATFORM.watchos_simulator
     else:
         fail("Internal Error: Found unrecognized target os of " + apple_platform_info.target_os)
     fail(
@@ -582,15 +714,19 @@ through `--platforms` rather than relying on the defaults.
 
 apple_support = struct(
     action_required_attrs = _action_required_attrs,
+    apple_host_system_env = _apple_host_system_env,
     path_placeholders = struct(
         platform_frameworks = _platform_frameworks_path_placeholder,
         sdkroot = _sdkroot_path_placeholder,
         xcode = _xcode_path_placeholder,
     ),
+    platform = _PLATFORM,
     platform_constraint_attrs = _platform_constraint_attrs,
     platform_info_from_rule_ctx = _platform_info_from_rule_ctx,
+    platform_type = _PLATFORM_TYPE,
     run = _run,
     run_shell = _run_shell,
+    target_apple_env = _target_apple_env,
     target_arch_from_rule_ctx = _target_arch_from_rule_ctx,
     target_environment_from_rule_ctx = _target_environment_from_rule_ctx,
     target_os_from_rule_ctx = _target_os_from_rule_ctx,

@@ -84,7 +84,7 @@ def _apple_genrule_impl(ctx):
             target_build_config = ctx.configuration,
             target_environment = "device",
             target_os = "macos",
-            platform = apple_common.platform.macos,
+            platform = apple_support.platform.macos,
         )
 
     message = ctx.attr.message or "Executing apple_genrule"

@@ -236,8 +236,8 @@ def _apple_support_test_impl(ctx):
     apple_platform = apple_platform_info.platform
 
     test_env = {}
-    test_env.update(apple_common.apple_host_system_env(xcode_config))
-    test_env.update(apple_common.target_apple_env(xcode_config, apple_platform))
+    test_env.update(apple_support.apple_host_system_env(xcode_config))
+    test_env.update(apple_support.target_apple_env(xcode_config, apple_platform))
 
     return [
         testing.ExecutionInfo(xcode_config.execution_info()),

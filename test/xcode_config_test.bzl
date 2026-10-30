@@ -16,6 +16,10 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load(
+    "@build_bazel_apple_support//lib:apple_support.bzl",
+    "apple_support",
+)
+load(
     "@build_bazel_apple_support//xcode:available_xcodes.bzl",
     "available_xcodes",
 )
@@ -740,6 +744,109 @@ _apple_common_xcode_version_config_constructor_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
+def _apple_support_platform_and_env_parity(namer):
+    _apple_common_xcode_version_config_rule(
+        name = namer("test"),
+        tags = FIXTURE_TAGS,
+    )
+
+    _apple_support_platform_and_env_parity_test(
+        name = "apple_support_platform_and_env_parity",
+        target_under_test = namer("test"),
+    )
+    return ["apple_support_platform_and_env_parity"]
+
+def _apple_support_platform_and_env_parity_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    xcode_version_info = target_under_test[XcodeVersionInfo]
+
+    asserts.equals(
+        env,
+        dir(apple_common.platform_type),
+        dir(apple_support.platform_type),
+    )
+    for platform_type_name in dir(apple_common.platform_type):
+        expected_type = getattr(apple_common.platform_type, platform_type_name)
+        actual_type = getattr(apple_support.platform_type, platform_type_name)
+        asserts.equals(env, expected_type, actual_type)
+        asserts.equals(
+            env,
+            str(xcode_version_info.minimum_os_for_platform_type(expected_type)),
+            str(xcode_version_info.minimum_os_for_platform_type(actual_type)),
+        )
+
+    asserts.equals(
+        env,
+        dir(apple_common.platform),
+        dir(apple_support.platform),
+    )
+    for platform_name in dir(apple_common.platform):
+        expected_platform = getattr(apple_common.platform, platform_name)
+        actual_platform = getattr(apple_support.platform, platform_name)
+        asserts.equals(env, expected_platform, actual_platform)
+        asserts.equals(env, expected_platform.name, actual_platform.name)
+        asserts.equals(env, expected_platform.name_in_plist, actual_platform.name_in_plist)
+        asserts.equals(env, expected_platform.platform_type, actual_platform.platform_type)
+        asserts.equals(env, expected_platform.is_device, actual_platform.is_device)
+        asserts.equals(
+            env,
+            str(xcode_version_info.sdk_version_for_platform(expected_platform)),
+            str(xcode_version_info.sdk_version_for_platform(actual_platform)),
+        )
+        asserts.equals(
+            env,
+            apple_common.target_apple_env(xcode_version_info, expected_platform),
+            apple_support.target_apple_env(xcode_version_info, actual_platform),
+        )
+
+    asserts.equals(
+        env,
+        apple_common.apple_host_system_env(xcode_version_info),
+        apple_support.apple_host_system_env(xcode_version_info),
+    )
+    asserts.equals(
+        env,
+        {"XCODE_VERSION_OVERRIDE": "1.11"},
+        apple_support.apple_host_system_env(xcode_version_info),
+    )
+
+    no_xcode_version_info = XcodeVersionInfo(
+        ios_sdk_version = "1.1",
+        ios_minimum_os_version = "1.2",
+        watchos_sdk_version = "1.3",
+        watchos_minimum_os_version = "1.4",
+        tvos_sdk_version = "1.5",
+        tvos_minimum_os_version = "1.6",
+        macos_sdk_version = "1.7",
+        macos_minimum_os_version = "1.8",
+        visionos_sdk_version = "1.9",
+        visionos_minimum_os_version = "1.10",
+        xcode_version = None,
+        availability = "UNKNOWN",
+        xcode_version_flag = None,
+        include_xcode_execution_info = False,
+    )
+    asserts.equals(
+        env,
+        apple_common.apple_host_system_env(no_xcode_version_info),
+        apple_support.apple_host_system_env(no_xcode_version_info),
+    )
+    asserts.equals(
+        env,
+        {},
+        apple_support.apple_host_system_env(no_xcode_version_info),
+    )
+
+    return analysistest.end(env)
+
+_apple_support_platform_and_env_parity_test = analysistest.make(
+    _apple_support_platform_and_env_parity_test_impl,
+)
+
+# ------------------------------------------------------------------------------
+
 def _config_alias_config_setting(namer):
     version_retriever(
         name = namer("flag_propagator"),
@@ -1378,7 +1485,7 @@ def _default_ios_sdk_version_test_impl(ctx):
     xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
-    asserts.equals(env, "7.1", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
+    asserts.equals(env, "7.1", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.ios_simulator)))
     asserts.equals(env, "unknown", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
@@ -1443,11 +1550,24 @@ def _default_sdk_versions_test_impl(ctx):
     xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
-    asserts.equals(env, "101", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
-    asserts.equals(env, "102", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.watchos_simulator)))
-    asserts.equals(env, "103", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.tvos_simulator)))
-    asserts.equals(env, "104", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.macos)))
-    asserts.equals(env, "105", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.visionos_simulator)))
+    asserts.equals(env, "101", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.ios_simulator)))
+    asserts.equals(env, "102", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.watchos_simulator)))
+    asserts.equals(env, "103", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.tvos_simulator)))
+    asserts.equals(env, "104", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.macos)))
+    asserts.equals(env, "105", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.visionos_simulator)))
+    asserts.equals(
+        env,
+        apple_common.target_apple_env(xcode_version_info, apple_common.platform.ios_simulator),
+        apple_support.target_apple_env(xcode_version_info, apple_support.platform.ios_simulator),
+    )
+    asserts.equals(
+        env,
+        {
+            "APPLE_SDK_PLATFORM": "iPhoneSimulator",
+            "APPLE_SDK_VERSION_OVERRIDE": "101.0",
+        },
+        apple_support.target_apple_env(xcode_version_info, apple_support.platform.ios_simulator),
+    )
     asserts.equals(env, "unknown", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
@@ -1512,11 +1632,11 @@ def _default_sdk_versions_selected_xcode_test_impl(ctx):
     xcode_version_info = target_under_test[XcodeVersionInfo]
 
     asserts.equals(env, "6.4", str(xcode_version_info.xcode_version()))
-    asserts.equals(env, "43", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.ios_simulator)))
-    asserts.equals(env, "44", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.watchos_simulator)))
-    asserts.equals(env, "45", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.tvos_simulator)))
-    asserts.equals(env, "46", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.macos)))
-    asserts.equals(env, "47", str(xcode_version_info.sdk_version_for_platform(apple_common.platform.visionos_simulator)))
+    asserts.equals(env, "43", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.ios_simulator)))
+    asserts.equals(env, "44", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.watchos_simulator)))
+    asserts.equals(env, "45", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.tvos_simulator)))
+    asserts.equals(env, "46", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.macos)))
+    asserts.equals(env, "47", str(xcode_version_info.sdk_version_for_platform(apple_support.platform.visionos_simulator)))
     asserts.equals(env, "unknown", xcode_version_info.availability())
     asserts.true(env, "requires-darwin" in xcode_version_info.execution_info())
     asserts.true(env, "supports-xcode-requirements-set" in xcode_version_info.execution_info())
@@ -2297,6 +2417,7 @@ def xcode_config_test(name):
             _choose_newest_mutual_xcode,
             _invalid_xcode_from_mutual_throws,
             _apple_common_xcode_version_config_constructor,
+            _apple_support_platform_and_env_parity,
             _apple_common_xcode_version_config_constructor_fails_on_bad_input,
             _config_alias_config_setting,
             _default_version_config_setting,

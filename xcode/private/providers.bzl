@@ -14,6 +14,11 @@
 
 """Providers used internally by the Xcode rules not meant for client use."""
 
+load(
+    "@build_bazel_apple_support//lib:apple_support.bzl",
+    "apple_support",
+)
+
 visibility([
     "@build_bazel_apple_support//test/...",
     "@build_bazel_apple_support//xcode/...",
@@ -151,8 +156,8 @@ def _xcode_version_info_init(
                 label = xcode_version_flag[hyphen_index + 1:]
                 execution_requirements["requires-xcode-label:{}".format(label)] = ""
 
-    platform_struct = apple_common.platform
-    platform_type_struct = apple_common.platform_type
+    platform_struct = apple_support.platform
+    platform_type_struct = apple_support.platform_type
 
     # To preserve the original behavior (throwing an error if a version string
     # is not correctly formatted), we have to convert them to dotted versions
@@ -250,12 +255,12 @@ This will return `None` if no Xcode versions are available.
 """,
         "minimum_os_for_platform_type": """\
 A function taking a single argument that is an element of
-`apple_common.platform_type`, which returns the minimum compatible OS version
+`apple_support.platform_type`, which returns the minimum compatible OS version
 for target simulator and devices for that particular platform type.
 """,
         "sdk_version_for_platform": """\
 A function taking a single argument that is an element of
-`apple_common.platform`, which returns the version of the platform SDK that will
+`apple_support.platform`, which returns the version of the platform SDK that will
 be used to build targets for that particular platform.
 """,
         "availability": """\

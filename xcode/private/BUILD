@@ -27,6 +27,7 @@ bzl_library(
         "//test:__pkg__",
         "//xcode:__subpackages__",
     ],
+    deps = ["//lib:apple_support"],
 )
 
 bzl_library(
