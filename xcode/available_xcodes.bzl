@@ -15,44 +15,36 @@
 """Implementation of the `available_xcodes` build rule."""
 
 load(
-    "@build_bazel_apple_support//xcode/private:providers.bzl",
-    "AvailableXcodesInfo",
-    "XcodeVersionRuleInfo",
+    "@build_bazel_apple_support//xcode/private:available_xcodes.bzl",
+    _available_xcodes = "available_xcodes",
 )
 
 visibility("public")
 
-def _available_xcodes_impl(ctx):
-    available_versions = [
-        target[XcodeVersionRuleInfo]
-        for target in ctx.attr.versions
-    ]
-    default_version = ctx.attr.default[XcodeVersionRuleInfo]
+# buildozer: disable=function-docstring-args
+def available_xcodes(name, versions = None, **kwargs):
+    """Creates an `available_xcodes` target.
 
-    return [
-        AvailableXcodesInfo(
-            available_versions = available_versions,
-            default_version = default_version,
-        ),
-    ]
-
-available_xcodes = rule(
-    attrs = {
-        "default": attr.label(
-            doc = "The default Xcode version for this platform.",
-            mandatory = True,
-            providers = [[XcodeVersionRuleInfo]],
-        ),
-        "versions": attr.label_list(
-            doc = "The Xcode versions that are available on this platform.",
-            providers = [[XcodeVersionRuleInfo]],
-        ),
-    },
-    doc = """\
-Two targets of this rule can be depended on by an `xcode_config` rule instance
-to indicate the remotely and locally available Xcode versions. This allows
-selection of an official Xcode version from the collectively available Xcodes.
-        """,
-    implementation = _available_xcodes_impl,
-    provides = [AvailableXcodesInfo],
-)
+    `versions` may be either a list of `xcode_version` target labels or a
+    dictionary mapping each `xcode_version` target label to a list of alias
+    strings for that version.
+    """
+    if type(versions) == type({}):
+        version_labels = []
+        aliases_dict = {}
+        for label, label_aliases in versions.items():
+            version_labels.append(label)
+            for alias in label_aliases:
+                aliases_dict.setdefault(alias, []).append(label)
+        _available_xcodes(
+            name = name,
+            versions = version_labels,
+            aliases = aliases_dict,
+            **kwargs
+        )
+    else:
+        _available_xcodes(
+            name = name,
+            versions = versions,
+            **kwargs
+        )

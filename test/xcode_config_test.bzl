@@ -2049,6 +2049,161 @@ _xcode_config_resolver_with_fragment_removed_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
+def _explicit_xcodes_versions_dict_with_flag(namer):
+    xcode_version(
+        name = namer("version512"),
+        version = "5.1.2",
+        tags = FIXTURE_TAGS,
+    )
+    xcode_version(
+        name = namer("version64"),
+        version = "6.4",
+        tags = FIXTURE_TAGS,
+    )
+
+    xcode_config(
+        name = "explicit_xcodes_versions_dict_with_flag__foo",
+        default = namer(":version512"),
+        versions = {
+            namer(":version512"): ["5", "5.1"],
+            namer(":version64"): ["6.0", "foo", "6"],
+        },
+        tags = FIXTURE_TAGS,
+    )
+
+    _explicit_xcodes_versions_dict_with_flag_test(
+        name = "explicit_xcodes_versions_dict_with_flag",
+        target_under_test = "explicit_xcodes_versions_dict_with_flag__foo",
+    )
+    return ["explicit_xcodes_versions_dict_with_flag"]
+
+def _explicit_xcodes_versions_dict_with_flag_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    xcode_version_info = target_under_test[XcodeVersionInfo]
+
+    asserts.equals(env, "6.4", str(xcode_version_info.xcode_version()))
+
+    return analysistest.end(env)
+
+_explicit_xcodes_versions_dict_with_flag_test = analysistest.make(
+    _explicit_xcodes_versions_dict_with_flag_test_impl,
+    config_settings = {
+        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:explicit_xcodes_versions_dict_with_flag__foo",
+        "//command_line_option:xcode_version": "foo",
+    },
+)
+
+# ------------------------------------------------------------------------------
+
+def _available_xcodes_versions_dict_with_flag(namer):
+    xcode_version(
+        name = namer("version512"),
+        version = "5.1.2",
+        tags = FIXTURE_TAGS,
+    )
+    xcode_version(
+        name = namer("version84"),
+        version = "8.4",
+        tags = FIXTURE_TAGS,
+    )
+
+    available_xcodes(
+        name = namer("remote"),
+        default = namer(":version512"),
+        versions = {
+            namer(":version512"): ["5", "5.1"],
+            namer(":version84"): ["8"],
+        },
+        tags = FIXTURE_TAGS,
+    )
+    available_xcodes(
+        name = namer("local"),
+        default = namer(":version84"),
+        versions = {
+            namer(":version84"): ["8"],
+        },
+        tags = FIXTURE_TAGS,
+    )
+    xcode_config(
+        name = "available_xcodes_versions_dict_with_flag__foo",
+        local_versions = namer(":local"),
+        remote_versions = namer(":remote"),
+        tags = FIXTURE_TAGS,
+    )
+
+    _available_xcodes_versions_dict_with_flag_test(
+        name = "available_xcodes_versions_dict_with_flag",
+        target_under_test = "available_xcodes_versions_dict_with_flag__foo",
+    )
+    return ["available_xcodes_versions_dict_with_flag"]
+
+def _available_xcodes_versions_dict_with_flag_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    xcode_version_info = target_under_test[XcodeVersionInfo]
+
+    asserts.equals(env, "5.1.2", str(xcode_version_info.xcode_version()))
+
+    return analysistest.end(env)
+
+_available_xcodes_versions_dict_with_flag_test = analysistest.make(
+    _available_xcodes_versions_dict_with_flag_test_impl,
+    config_settings = {
+        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:available_xcodes_versions_dict_with_flag__foo",
+        "//command_line_option:xcode_version": "5.1",
+    },
+)
+
+# ------------------------------------------------------------------------------
+
+def _duplicate_aliases_in_versions_dict(namer):
+    xcode_version(
+        name = namer("version512"),
+        version = "5.1.2",
+        tags = FIXTURE_TAGS,
+    )
+    xcode_version(
+        name = namer("version5"),
+        version = "5.0",
+        tags = FIXTURE_TAGS,
+    )
+
+    xcode_config(
+        name = "duplicate_aliases_in_versions_dict__foo",
+        default = namer(":version512"),
+        versions = {
+            namer(":version512"): ["5"],
+            namer(":version5"): ["5"],
+        },
+        tags = FIXTURE_TAGS,
+    )
+
+    _duplicate_aliases_in_versions_dict_test(
+        name = "duplicate_aliases_in_versions_dict",
+        target_under_test = "duplicate_aliases_in_versions_dict__foo",
+    )
+    return ["duplicate_aliases_in_versions_dict"]
+
+def _duplicate_aliases_in_versions_dict_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    asserts.expect_failure(env, "'5' is registered to multiple labels")
+    asserts.expect_failure(env, "__version512")
+    asserts.expect_failure(env, "__version5")
+    return analysistest.end(env)
+
+_duplicate_aliases_in_versions_dict_test = analysistest.make(
+    _duplicate_aliases_in_versions_dict_test_impl,
+    config_settings = {
+        "//command_line_option:xcode_version_config": "@build_bazel_apple_support//test:duplicate_aliases_in_versions_dict__foo",
+    },
+    expect_failure = True,
+)
+
+# ------------------------------------------------------------------------------
+
 def _make_xcode_fixtures(
         *,
         namer,
@@ -2169,6 +2324,9 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
             _xcode_config_resolver_with_fragment_removed,
+            _explicit_xcodes_versions_dict_with_flag,
+            _available_xcodes_versions_dict_with_flag,
+            _duplicate_aliases_in_versions_dict,
         ],
     )
 

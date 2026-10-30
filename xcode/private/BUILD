@@ -11,11 +11,34 @@ package(
 )
 
 bzl_library(
+    name = "available_xcodes",
+    srcs = ["available_xcodes.bzl"],
+    visibility = [
+        "//test:__pkg__",
+        "//xcode:__subpackages__",
+    ],
+    deps = [":providers"],
+)
+
+bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],
     visibility = [
         "//test:__pkg__",
         "//xcode:__subpackages__",
+    ],
+)
+
+bzl_library(
+    name = "xcode_config",
+    srcs = ["xcode_config.bzl"],
+    visibility = [
+        "//test:__pkg__",
+        "//xcode:__subpackages__",
+    ],
+    deps = [
+        ":providers",
+        "//build_settings:build_settings_bzl",
     ],
 )
 

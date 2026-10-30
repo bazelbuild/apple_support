@@ -11,7 +11,7 @@ package(
 bzl_library(
     name = "available_xcodes",
     srcs = ["available_xcodes.bzl"],
-    deps = ["//xcode/private:providers"],
+    deps = ["//xcode/private:available_xcodes"],
 )
 
 bzl_library(
@@ -33,8 +33,7 @@ bzl_library(
     name = "xcode_config",
     srcs = ["xcode_config.bzl"],
     deps = [
-        "//build_settings:build_settings_bzl",
-        "//xcode/private:providers",
+        "//xcode/private:xcode_config",
     ],
 )
 

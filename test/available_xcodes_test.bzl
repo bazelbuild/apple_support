@@ -14,7 +14,7 @@
 
 """Tests for the `available_xcodes` rule."""
 
-load("@bazel_skylib//lib:unittest.bzl", "analysistest")
+load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load(
     "@build_bazel_apple_support//xcode:available_xcodes.bzl",
     "available_xcodes",
@@ -23,6 +23,10 @@ load(
     "@build_bazel_apple_support//xcode:xcode_version.bzl",
     "xcode_version",
 )
+load(
+    "@build_bazel_apple_support//xcode/private:providers.bzl",
+    "AvailableXcodesInfo",
+)  # buildifier: disable=bzl-visibility
 load(":test_helpers.bzl", "FIXTURE_TAGS", "make_all_tests")
 
 visibility("private")
@@ -81,10 +85,60 @@ _read_version_from_providers_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
+def _versions_dict_merges_aliases(namer):
+    available_xcodes(
+        name = namer("my_xcodes"),
+        default = namer(":xcode_8"),
+        versions = {
+            namer(":xcode_8"): ["8.0", "oldest"],
+            namer(":xcode_9"): ["9.0", "latest"],
+        },
+        tags = FIXTURE_TAGS,
+    )
+
+    xcode_version(
+        name = namer("xcode_8"),
+        aliases = ["eight"],
+        version = "8.0.0.8A1",
+        tags = FIXTURE_TAGS,
+    )
+
+    xcode_version(
+        name = namer("xcode_9"),
+        version = "9.0.0.9A1",
+        tags = FIXTURE_TAGS,
+    )
+
+    _versions_dict_merges_aliases_test(
+        name = "versions_dict_merges_aliases",
+        target_under_test = namer("my_xcodes"),
+    )
+    return ["versions_dict_merges_aliases"]
+
+def _versions_dict_merges_aliases_test_impl(ctx):
+    env = analysistest.begin(ctx)
+
+    target_under_test = analysistest.target_under_test(env)
+    info = target_under_test[AvailableXcodesInfo]
+
+    asserts.equals(env, ["eight", "8.0", "oldest"], info.default_version.aliases)
+    asserts.equals(env, 2, len(info.available_versions))
+    asserts.equals(env, ["eight", "8.0", "oldest"], info.available_versions[0].aliases)
+    asserts.equals(env, ["9.0", "latest"], info.available_versions[1].aliases)
+
+    return analysistest.end(env)
+
+_versions_dict_merges_aliases_test = analysistest.make(
+    _versions_dict_merges_aliases_test_impl,
+)
+
+# ------------------------------------------------------------------------------
+
 def available_xcodes_test(name):
     make_all_tests(
         name = name,
         tests = [
             _read_version_from_providers,
+            _versions_dict_merges_aliases,
         ],
     )
