@@ -229,12 +229,33 @@ def _apple_support_test_impl(ctx):
         exec_group = "mac_exec_group",
     )
 
+    # A string executable names a host tool; only the declared tools are inputs.
+    string_executable_outputs = []
+    for kind, tools in [
+        ("list", [test_tool]),
+        ("tuple", (test_tool,)),
+        ("depset", depset([test_tool])),
+    ]:
+        output = ctx.actions.declare_file("{}_string_executable_{}".format(ctx.label.name, kind))
+        apple_support.run(
+            actions = ctx.actions,
+            xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+            apple_platform_info = apple_platform_info,
+            outputs = [output],
+            executable = "/bin/bash",
+            tools = tools,
+            arguments = [test_tool.path, output.path],
+            xcode_path_resolve_level = apple_support.xcode_path_resolve_level.args,
+            exec_group = "mac_exec_group",
+        )
+        string_executable_outputs.append(output)
+
     test_files = [
         run_output,
         run_output_xcode_path_in_args,
         run_output_xcode_path_in_file,
         run_shell_output,
-    ]
+    ] + string_executable_outputs
 
     test_script = ctx.actions.declare_file("{}_test_script".format(ctx.label.name))
     ctx.actions.write(test_script, _TEST_SCRIPT_CONTENTS.format(

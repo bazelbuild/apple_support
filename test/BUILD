@@ -13,6 +13,7 @@ load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
 load(":coverage_tests.bzl", "coverage_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
+load(":lipo_test.bzl", "create_from_depset_test")
 load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":toolchains_test.bzl", "toolchain_config_test_suite")
@@ -44,6 +45,8 @@ toolchain_config_test_suite(name = "toolchain_config")
 xcode_config_test(name = "xcode_config_test")
 
 xcode_support_test(name = "xcode_support_test")
+
+create_from_depset_test(name = "lipo_create_from_depset_test")
 
 xcode_version_at_least_test(name = "xcode_version_at_least_test")
 
@@ -82,6 +85,7 @@ bzl_library(
     srcs = glob(["*.bzl"]),
     deps = [
         "//lib:apple_support",
+        "//lib:lipo",
         "//lib:xcode_support",
         "//rules:apple_genrule",
         "//xcode:available_xcodes",

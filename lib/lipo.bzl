@@ -47,6 +47,8 @@ def _create(
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to
             configure the action environment.
     """
+    if type(inputs) == "depset":
+        inputs = inputs.to_list()
     if not inputs:
         fail("lipo.create requires at least one input file.")
 
