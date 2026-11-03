@@ -13,13 +13,13 @@ load(":cc_toolchain_forwarder.bzl", "cc_toolchain_forwarder")
 load(":compiling_tests.bzl", "compiling_test_suite")
 load(":coverage_tests.bzl", "coverage_test_suite")
 load(":linking_tests.bzl", "linking_test_suite")
-load(":lipo_test.bzl", "create_from_depset_test")
+load(":lipo_test.bzl", "create_from_depset_test", "extract_or_thin_test")
 load(":sanitizer_tests.bzl", "sanitizer_test_suite")
 load(":starlark_apple_binary.bzl", "starlark_apple_binary")
 load(":toolchains_test.bzl", "toolchain_config_test_suite")
 load(":universal_binary_test.bzl", "universal_binary_test")
 load(":xcode_config_test.bzl", "xcode_config_test")
-load(":xcode_support_test.bzl", "xcode_support_test")
+load(":xcode_support_test.bzl", "missing_xcode_version_test", "xcode_support_test")
 load(":xcode_version_at_least_test.bzl", "xcode_version_at_least_test")
 load(":xcode_version_test.bzl", "xcode_version_test")
 
@@ -47,6 +47,10 @@ xcode_config_test(name = "xcode_config_test")
 xcode_support_test(name = "xcode_support_test")
 
 create_from_depset_test(name = "lipo_create_from_depset_test")
+
+missing_xcode_version_test(name = "missing_xcode_version_test")
+
+extract_or_thin_test(name = "lipo_extract_or_thin_test")
 
 xcode_version_at_least_test(name = "xcode_version_at_least_test")
 
@@ -93,6 +97,7 @@ bzl_library(
         "//xcode:xcode_version",
         "//xcode:xcode_version_at_least",
         "//xcode/private:providers",
+        "@bazel_features//:features",
         "@bazel_skylib//lib:unittest",
     ],
 )

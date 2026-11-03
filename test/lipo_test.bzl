@@ -44,3 +44,40 @@ create_from_depset_test = unittest.make(
     _create_from_depset_test_impl,
     attrs = apple_support.action_required_attrs(),
 )
+
+def _extract_or_thin_test_impl(ctx):
+    env = unittest.begin(ctx)
+    input_file = ctx.actions.declare_file("input binary")
+    output = ctx.actions.declare_file("extracted binary")
+    for file in [input_file, output]:
+        ctx.actions.write(file, "")
+    calls = []
+    actions = struct(run_shell = lambda **kwargs: calls.append(kwargs))
+    for archs in [["arm64"], ["arm64", "x86_64"]]:
+        for use_file in [True, False]:
+            expression = "'" + input_file.path + "'" if use_file else '"$SDKROOT/input binary"'
+            lipo.extract_or_thin(
+                actions = actions,
+                archs = archs,
+                input_file = input_file if use_file else None,
+                input_shell_expression = None if use_file else expression,
+                output = output,
+                apple_platform_info = struct(platform = apple_common.platform.macos),
+                xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig],
+            )
+            call = calls[-1]
+            flags = "-thin arm64" if len(archs) == 1 else "-extract arm64 -extract x86_64"
+            asserts.equals(env, "mkdir -p '{}' && /usr/bin/lipo {} {} -output '{}'".format(
+                output.dirname,
+                expression,
+                flags,
+                output.path,
+            ), call["command"])
+            asserts.equals(env, [input_file] if use_file else [], call.get("inputs", []))
+    asserts.equals(env, 4, len(calls))
+    return unittest.end(env)
+
+extract_or_thin_test = unittest.make(
+    _extract_or_thin_test_impl,
+    attrs = apple_support.action_required_attrs(),
+)

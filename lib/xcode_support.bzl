@@ -31,7 +31,12 @@ load(
 
 visibility("public")
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32369): Use Ctx when Bazel checks the rule’s
+# _xcode_config attribute on the context passed to these helpers.
+# type _Context = ctx[object, struct[{"_xcode_config": Target | None}, ...]]
+
 def _get_current_sdk(ctx):
+    # type: (_Context) -> XcodeSdkVariantInfo
     """Returns the `XcodeSdkVariantInfo` provider for the current configuration.
 
     Callers of this function must define the `_xcode_config` attribute in their
@@ -52,6 +57,7 @@ def _get_current_sdk(ctx):
     return xcode_config[XcodeSdkVariantInfo]
 
 def _get_current_xcode(ctx):
+    # type: (_Context) -> XcodeVersionConfig
     """Returns the `XcodeVersionConfig` provider for the current configuration.
 
     Callers of this function must define the `_xcode_config` attribute in their
@@ -72,6 +78,7 @@ def _get_current_xcode(ctx):
     return xcode_config[apple_common.XcodeVersionConfig]
 
 def _is_xcode_at_least_version(xcode_config, version):
+    # type: (XcodeVersionConfig, str) -> bool
     """Returns True if Xcode version is at least a given version.
 
     This method takes as input an `XcodeVersionConfig` provider, which can be obtained from the
@@ -89,7 +96,8 @@ def _is_xcode_at_least_version(xcode_config, version):
     """
     current_version = xcode_config.xcode_version()
 
-    if str(current_version).startswith("/"):
+    # XcodeVersionConfig returns strings only for absolute developer directory paths.
+    if type(current_version) == "string":
         return True
 
     if not current_version:

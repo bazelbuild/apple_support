@@ -1,0 +1,7 @@
+# TODO(https://github.com/bazelbuild/rules_cc/pull/940): Remove this override once
+# the selected rules_cc release annotates framework_includes and compilation_context.
+single_version_override(
+    module_name = "rules_cc",
+    patch_strip = 1,
+    patches = ["//:.github/sty/rules_cc.patch"],
+)

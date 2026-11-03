@@ -1,0 +1,16 @@
+# TODO(https://github.com/bazelbuild/bazel/pull/30373): Move ordinary signatures
+# into function declarations once the minimum Bazel version supports annotation
+# syntax. Bazel 7.4 must still be able to load these files.
+[analysis]
+strict-generic-narrowing = true
+require-valid-suppressions = true
+
+[rules]
+strict = "error"
+
+[[stub-packages]]
+manifest = "@sty_bazel_tools//:stubs.toml"
+allow-unversioned = true
+
+[[stub-packages]]
+manifest = "stubs/bazel_skylib/stubs.toml"

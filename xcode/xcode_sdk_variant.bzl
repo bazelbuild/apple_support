@@ -22,7 +22,9 @@ load(
 visibility("public")
 
 def _xcode_sdk_variant_impl(ctx):
+    # type: (...) -> list[XcodeSdkVariantInfo]
     def dotted_version_or_none(str):
+        # type: (str) -> DottedVersion | None
         if not str:
             return None
         return apple_common.dotted_version(str)
