@@ -14,6 +14,9 @@
 
 """The platform information assembled from Bazel constraints."""
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32207): Move the result fields to ApplePlatformInfo
+# when Bazel can type provider fields independently of its banned public initializer.
+
 def ApplePlatformInfo() -> record[{
     "target_arch": str | None,
     "target_build_config": configuration,

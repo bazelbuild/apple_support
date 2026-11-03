@@ -12,7 +12,6 @@ package(
 exports_files([
     "providers.bzli",
     "xcode_configure.bzl",
-    "xcode_configure.bzli",
     "xcode_version_at_least.bzl",
 ])
 

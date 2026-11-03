@@ -47,6 +47,7 @@ jobs:
             lib/missing_platform_fallback_users.bzl
             lib/private/toolchain_flags.bzl
             lib/providers.bzl
+            lib/xcode_support.bzl
             rules/apple_genrule.bzl
             rules/private/apple_genrule.bzl
             rules/rules.doc.bzl
@@ -62,7 +63,9 @@ jobs:
             tools/http_dmg/http_dmg.bzl
             tools/http_dmg/private/tests/http_dmg_test_deps.bzl
             tools/http_dmg/private/tests/http_dmg_test_extensions.bzl
+            tools/http_dmg/private/zip7.bzl
             xcode/available_xcodes.bzl
             xcode/private/providers.bzl
+            xcode/xcode_configure.bzl
             xcode/xcode_sdk_variant.bzl
             xcode/xcode_version.bzl

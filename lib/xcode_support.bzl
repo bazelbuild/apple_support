@@ -31,7 +31,12 @@ load(
 
 visibility("public")
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32369): Use Ctx when Bazel checks the rule’s
+# _xcode_config attribute on the context passed to these helpers.
+# type _Context = ctx[object, struct[{"_xcode_config": Target | None}, ...]]
+
 def _get_current_sdk(ctx):
+    # type: (_Context) -> XcodeSdkVariantInfo
     """Returns the `XcodeSdkVariantInfo` provider for the current configuration.
 
     Callers of this function must define the `_xcode_config` attribute in their
@@ -52,6 +57,7 @@ def _get_current_sdk(ctx):
     return xcode_config[XcodeSdkVariantInfo]
 
 def _get_current_xcode(ctx):
+    # type: (_Context) -> XcodeVersionConfig
     """Returns the `XcodeVersionConfig` provider for the current configuration.
 
     Callers of this function must define the `_xcode_config` attribute in their

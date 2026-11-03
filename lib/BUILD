@@ -13,7 +13,6 @@ exports_files([
     "apple_support.bzli",
     "lipo.bzli",
     "transitions.bzli",
-    "xcode_support.bzli",
 ])
 
 # This target is mainly for use by rules_apple and rules_swift.
