@@ -95,7 +95,14 @@ def _split_escaped(string, delimiter):
     result.append("".join(accumulator))
     return result
 
+# TODO(https://github.com/bazelbuild/bazel/pull/30373): Use a native alias when
+# Bazel 8.8 is the minimum supported version.
+# type _DeveloperDirectory = struct[{"developer_dir": str}, ...]
+
 def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
+    # type: (repository_ctx, Collection[_DeveloperDirectory]) -> list[str]
+    # TODO(https://github.com/bazelbuild/bazel/issues/32020): Use a native
+    # signature when supported Bazel versions expose repository_ctx.
     """Compute the list of default C++ include paths on Xcode-enabled darwin.
 
     Args:

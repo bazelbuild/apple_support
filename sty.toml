@@ -2,19 +2,6 @@
 strict-generic-narrowing = true
 require-valid-suppressions = true
 
-[type-interfaces]
-"crosstool/osx_cc_configure.bzl" = "crosstool/osx_cc_configure.bzli"
-"crosstool/universal_exec_tool.bzl" = "crosstool/universal_exec_tool.bzli"
-"lib/apple_support.bzl" = "lib/apple_support.bzli"
-"lib/private/providers.bzl" = "lib/private/providers.bzli"
-"lib/lipo.bzl" = "lib/lipo.bzli"
-"lib/transitions.bzl" = "lib/transitions.bzli"
-"lib/xcode_support.bzl" = "lib/xcode_support.bzli"
-"rules/apple_genrule.bzl" = "rules/apple_genrule.bzli"
-"tools/http_dmg/private/zip7.bzl" = "tools/http_dmg/private/zip7.bzli"
-"xcode/providers.bzl" = "xcode/providers.bzli"
-"xcode/xcode_configure.bzl" = "xcode/xcode_configure.bzli"
-
 [rules]
 missing-parameter-annotation = "error"
 missing-return-annotation = "error"

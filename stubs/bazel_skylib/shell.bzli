@@ -1,4 +1,5 @@
-# TODO(https://github.com/bazelbuild/bazel-skylib/pull/641): use the released shell annotation.
+# TODO(https://github.com/bazelbuild/bazel-skylib/pull/641): Remove this external
+# interface when the selected Skylib release supplies both shell helper contracts.
 def _array_literal(iterable: Collection[object]) -> str: ...
 
 def _quote(s: str) -> str: ...
