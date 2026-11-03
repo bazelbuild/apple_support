@@ -29,6 +29,9 @@ force_exec = rule(
 # once supported Bazel versions expose depset element types.
 # type _Labels = Collection[Label | str] | depset[Label | str]
 
+# TODO(https://github.com/tamird/sty/blob/sty-action-v0.2.0/docs/type-interfaces.md#selectors):
+# Use a native parameter annotation when Bazel can describe configurable srcs
+# whose selected value can be a list, a depset, or None.
 def universal_exec_tool(*, name, out, srcs):
     # type: (str, Label | str, _Labels | select[_Labels | None] | None) -> None
     apple_genrule(
