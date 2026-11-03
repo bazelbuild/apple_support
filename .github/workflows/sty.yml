@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Prepare advisory inputs
+      - name: Prepare C++ annotations
         env:
           USE_BAZEL_VERSION: '9.3.0'
         shell: bash
@@ -32,11 +32,10 @@ jobs:
             exit 1
           fi
           cat .github/sty/rules_cc.MODULE.bazel >> MODULE.bazel
-          git -c core.quotePath=false ls-files -- '*.bzl' > "$RUNNER_TEMP/sty-root-files"
-      - uses: tamird/sty@ae287c79b273dcd955d29de379c7dc53922c7b48
+      - uses: tamird/sty@d400a00807b3c7f7b2ac82bf1e1e6a16db0290e3
         with:
           audit-loads: true
-          advisory-files-from: ${{ runner.temp }}/sty-root-files
+          advisory-pathspecs: '*.bzl'
           bazel-version: '9.3.0'
           files: |
             @bazel_skylib//lib:shell.bzl

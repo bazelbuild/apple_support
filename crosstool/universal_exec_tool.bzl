@@ -25,7 +25,12 @@ force_exec = rule(
     exec_compatible_with = ["@platforms//os:macos"],
 )
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32021): Use native annotations
+# once supported Bazel versions expose depset element types.
+# type _Labels = Collection[Label | str] | depset[Label | str]
+
 def universal_exec_tool(*, name, out, srcs):
+    # type: (str, Label | str, _Labels | select[_Labels | None] | None) -> None
     apple_genrule(
         name = name + ".target_config",
         srcs = srcs,
