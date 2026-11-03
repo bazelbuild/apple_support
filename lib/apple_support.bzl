@@ -23,6 +23,7 @@ load("@apple_support//lib:apple_support.bzl", "apple_support")
 ```
 """
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "//lib:missing_platform_fallback_users.bzl",
     "ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK",
@@ -40,6 +41,8 @@ _XCODE_PATH_RESOLVE_LEVEL = struct(
     args_and_files = "args_and_files",
 )
 
+# Bazel 7 Xcode providers require native platform and platform type values.
+# TODO: Remove these fallbacks when we no longer support Bazel 7.
 # Describes an Apple "platform type", such as iOS, macOS, tvOS, visionOS, or watchOS. This is
 # distinct from a "platform", which is the platform type combined with one or more target
 # environments or architectures.
@@ -50,7 +53,7 @@ _PLATFORM_TYPE = struct(
     tvos = "tvos",
     visionos = "visionos",
     watchos = "watchos",
-)
+) if bazel_features.apple.xcode_config_migrated else apple_common.platform_type  # TODO: Remove the native fallback after dropping Bazel 7.x support.
 
 def _create_platform(*, name, name_in_plist, platform_type, is_device):
     return struct(
@@ -126,7 +129,7 @@ _PLATFORM = struct(
         platform_type = _PLATFORM_TYPE.watchos,
         is_device = False,
     ),
-)
+) if bazel_features.apple.xcode_config_migrated else apple_common.platform  # TODO: Remove the native fallback after dropping Bazel 7.x support.
 
 def _apple_host_system_env(xcode_config):
     """Returns a `dict` of environment variables that are independent of the target platform for actions that build targets on Apple systems.
@@ -747,16 +750,17 @@ def _target_os_from_rule_ctx(
     visionos_constraint = ctx.attr._visionos_constraint[platform_common.ConstraintValueInfo]
     watchos_constraint = ctx.attr._watchos_constraint[platform_common.ConstraintValueInfo]
 
+    # TODO: Remove the str() conversions below after dropping Bazel 7.x support.
     if ctx.target_platform_has_constraint(ios_constraint):
-        return _PLATFORM_TYPE.ios
+        return str(_PLATFORM_TYPE.ios)
     elif ctx.target_platform_has_constraint(macos_constraint):
-        return _PLATFORM_TYPE.macos
+        return str(_PLATFORM_TYPE.macos)
     elif ctx.target_platform_has_constraint(tvos_constraint):
-        return _PLATFORM_TYPE.tvos
+        return str(_PLATFORM_TYPE.tvos)
     elif ctx.target_platform_has_constraint(visionos_constraint):
-        return _PLATFORM_TYPE.visionos
+        return str(_PLATFORM_TYPE.visionos)
     elif ctx.target_platform_has_constraint(watchos_constraint):
-        return _PLATFORM_TYPE.watchos
+        return str(_PLATFORM_TYPE.watchos)
     if not fail_on_missing_constraint:
         return None
     fail("ERROR: A valid Apple platform constraint could not be found from the resolved toolchain.")

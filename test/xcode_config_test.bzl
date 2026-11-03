@@ -766,13 +766,34 @@ _apple_common_xcode_version_config_constructor_test = analysistest.make(
 # ------------------------------------------------------------------------------
 
 def _apple_support_platform_and_env_parity(namer):
-    _apple_common_xcode_version_config_rule(
+    # TODO: Use xcode_config and xcode_version directly after dropping Bazel 7.x support.
+    config_rule = xcode_config if bazel_features.apple.xcode_config_migrated else native.xcode_config
+    version_rule = xcode_version if bazel_features.apple.xcode_config_migrated else native.xcode_version
+    version_rule(
+        name = namer("version"),
+        version = "1.11",
+        default_ios_sdk_version = "101",
+        default_watchos_sdk_version = "1.3",
+        default_tvos_sdk_version = "1.5",
+        default_macos_sdk_version = "1.7",
+        default_visionos_sdk_version = "1.9",
+        tags = FIXTURE_TAGS,
+    )
+    config_rule(
         name = namer("test"),
+        default = namer("version"),
+        versions = [namer("version")],
+        tags = FIXTURE_TAGS,
+    )
+    config_rule(
+        name = namer("no_xcode"),
+        versions = [],
         tags = FIXTURE_TAGS,
     )
 
     _apple_support_platform_and_env_parity_test(
         name = "apple_support_platform_and_env_parity",
+        no_xcode_config = namer("no_xcode"),
         target_under_test = namer("test"),
     )
     return ["apple_support_platform_and_env_parity"]
@@ -789,6 +810,9 @@ def _apple_support_platform_and_env_parity_test_impl(ctx):
         dir(apple_support.platform_type),
     )
     for platform_type_name in dir(apple_common.platform_type):
+        # TODO: Remove this method filter after dropping Bazel 7.x support.
+        if platform_type_name in ("to_json", "to_proto"):
+            continue
         expected_type = getattr(apple_common.platform_type, platform_type_name)
         actual_type = getattr(apple_support.platform_type, platform_type_name)
         asserts.equals(env, expected_type, actual_type)
@@ -804,10 +828,16 @@ def _apple_support_platform_and_env_parity_test_impl(ctx):
         dir(apple_support.platform),
     )
     for platform_name in dir(apple_common.platform):
+        # TODO: Remove this method filter after dropping Bazel 7.x support.
+        if platform_name in ("to_json", "to_proto"):
+            continue
         expected_platform = getattr(apple_common.platform, platform_name)
         actual_platform = getattr(apple_support.platform, platform_name)
         asserts.equals(env, expected_platform, actual_platform)
-        asserts.equals(env, expected_platform.name, actual_platform.name)
+
+        # TODO: Make this assertion unconditional after dropping Bazel 7.x support.
+        if bazel_features.apple.xcode_config_migrated:
+            asserts.equals(env, expected_platform.name, actual_platform.name)
         asserts.equals(env, expected_platform.name_in_plist, actual_platform.name_in_plist)
         asserts.equals(env, expected_platform.platform_type, actual_platform.platform_type)
         asserts.equals(env, expected_platform.is_device, actual_platform.is_device)
@@ -833,22 +863,16 @@ def _apple_support_platform_and_env_parity_test_impl(ctx):
         apple_support.apple_host_system_env(xcode_version_info),
     )
 
-    no_xcode_version_info = XcodeVersionInfo(
-        ios_sdk_version = "1.1",
-        ios_minimum_os_version = "1.2",
-        watchos_sdk_version = "1.3",
-        watchos_minimum_os_version = "1.4",
-        tvos_sdk_version = "1.5",
-        tvos_minimum_os_version = "1.6",
-        macos_sdk_version = "1.7",
-        macos_minimum_os_version = "1.8",
-        visionos_sdk_version = "1.9",
-        visionos_minimum_os_version = "1.10",
-        xcode_version = None,
-        availability = "UNKNOWN",
-        xcode_version_flag = None,
-        include_xcode_execution_info = False,
+    asserts.equals(
+        env,
+        {
+            "APPLE_SDK_PLATFORM": "iPhoneSimulator",
+            "APPLE_SDK_VERSION_OVERRIDE": "101.0",
+        },
+        apple_support.target_apple_env(xcode_version_info, apple_support.platform.ios_simulator),
     )
+
+    no_xcode_version_info = ctx.attr.no_xcode_config[XcodeVersionInfo]
     asserts.equals(
         env,
         apple_common.apple_host_system_env(no_xcode_version_info),
@@ -864,6 +888,7 @@ def _apple_support_platform_and_env_parity_test_impl(ctx):
 
 _apple_support_platform_and_env_parity_test = analysistest.make(
     _apple_support_platform_and_env_parity_test_impl,
+    attrs = {"no_xcode_config": attr.label(providers = [XcodeVersionInfo])},
 )
 
 # ------------------------------------------------------------------------------
@@ -2545,7 +2570,7 @@ def _make_xcode_fixtures(
 def xcode_config_test(name):
     make_all_tests(
         name = name,
-        tests = ([
+        tests = [_apple_support_platform_and_env_parity] + (([
             _mutual_and_explicit_xcodes_fails,
             _mutual_and_default_xcodes_fails,
             _no_local_xcodes_fails,
@@ -2558,7 +2583,6 @@ def xcode_config_test(name):
             _choose_newest_mutual_xcode,
             _invalid_xcode_from_mutual_throws,
             _apple_common_xcode_version_config_constructor,
-            _apple_support_platform_and_env_parity,
             _apple_common_xcode_version_config_constructor_fails_on_bad_input,
             _config_alias_config_setting,
             _default_version_config_setting,
@@ -2591,7 +2615,7 @@ def xcode_config_test(name):
         ] if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else []) + ([
             # TODO: Remove once we no longer support Bazel 8.
             _native_xcode_properties,
-        ] if getattr(apple_common, "XcodeProperties", None) else [])) if bazel_features.apple.xcode_config_migrated else [],
+        ] if getattr(apple_common, "XcodeProperties", None) else [])) if bazel_features.apple.xcode_config_migrated else []),
     )
 
     # TODO: b/311385128 - The following tests from `XcodeConfigTest.java`
