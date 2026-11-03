@@ -10,11 +10,17 @@ load(
     "get_auth",
 )
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32020): Use a source annotation for the
+# repository context when supported Bazel versions expose its attributes.
+# type _ZipData = struct[{"urls": list[str], "integrity": str, "bin_path": str}]
+# type _Auth = repository_ctx[struct[{"netrc": str, "auth_patterns": dict[str, str]}, ...]]
+
 def _zip7_data(
         *,
         urls,
         integrity,
         bin_path):
+    # type: (list[str], str, str) -> _ZipData
     return struct(
         urls = urls,
         integrity = integrity,
@@ -187,6 +193,7 @@ _BAZEL_ARCHIVE_SUFFIXES = (
 )
 
 def zip7_download(repository_ctx, output):
+    # type: (_Auth, str) -> path
     """Download a pinned 7-Zip binary for the host platform.
 
     Args:

@@ -1,5 +1,9 @@
 """Arguments for Apple genrules and their executable copy rules."""
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32343): Move the wrapper signature into its source
+# when Bazel can refer to the common rule keywords left after the wrapper consumes
+# expect_failure and toolchains. A comment cannot declare the callable protocol.
+
 type _Labels = Collection[Label | str] | depset[Label | str]
 type _Configurable[T] = T | select[T | None] | None
 
