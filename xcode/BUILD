@@ -68,6 +68,7 @@ string_flag(
 label_flag(
     name = "starlark_version_config",
     build_setting_default = "@bazel_tools//tools/cpp:host_xcodes",
+    scope = "universal",
 )
 
 # The source of truth for Xcode configuration resolution.
@@ -80,6 +81,7 @@ xcode_config_resolver(
 bool_flag(
     name = "experimental_prefer_mutual_xcode",
     build_setting_default = True,
+    scope = "universal",
 )
 
 bool_flag(
