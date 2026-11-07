@@ -14,23 +14,21 @@
 
 """Implementation of the `xcode_config_resolver` build rule."""
 
-load(
-    "//build_settings:build_settings.bzl",
-    "read_possibly_native_flag",
-)
+load("@bazel_features//private:util.bzl", "ge")
 load(
     "//xcode:providers.bzl",
     "XcodeVersionPropertiesInfo",
 )
 
-visibility("public")
+visibility("private")
 
-def _xcode_config_resolver_impl(ctx):
-    """Gates between the native default and the Starlark flag."""
+def _native_xcode_config_resolver_impl(ctx):
+    return _xcode_config_providers(ctx.attr._xcode_version_config_native)
 
-    # Resolution logic is centralized in read_possibly_native_flag.
-    resolved_target = read_possibly_native_flag(ctx, "xcode_version_config")
+def _starlark_xcode_config_resolver_impl(ctx):
+    return _xcode_config_providers(ctx.attr._xcode_version_config)
 
+def _xcode_config_providers(resolved_target):
     if not resolved_target:
         fail("Failed to resolve Xcode configuration.")
 
@@ -89,17 +87,14 @@ def _properties_from_legacy_xcode_config(xcode_version_config):
 # to read the resolved Xcode configuration.
 #
 # IMPORTANT: The resolved value should always be controlled using the
-# --xcode_version_config flag. The selection between the native configuration
-# field and the Starlark flag is handled automatically by the implementation of
-# this rule. When the native fragment is removed, it is assumed that an alias
+# --xcode_version_config flag. The macro selects the native configuration field
+# or the Starlark flag before analysis so the unused configuration is not
+# evaluated. When the native fragment is removed, it is assumed that an alias
 # will be in place to propagate the --xcode_version_config value to the Starlark
 # @apple_support//xcode:starlark_version_config flag.
-xcode_config_resolver = rule(
-    implementation = _xcode_config_resolver_impl,
+_native_xcode_config_resolver = rule(
+    implementation = _native_xcode_config_resolver_impl,
     attrs = {
-        "_xcode_version_config": attr.label(
-            default = "@apple_support//xcode:starlark_version_config",
-        ),
         "_xcode_version_config_native": attr.label(
             default = configuration_field(
                 name = "xcode_config_label",
@@ -109,3 +104,45 @@ xcode_config_resolver = rule(
     },
     fragments = ["apple"],
 )
+
+_starlark_xcode_config_resolver = rule(
+    implementation = _starlark_xcode_config_resolver_impl,
+    attrs = {
+        "_xcode_version_config": attr.label(
+            default = "@apple_support//xcode:starlark_version_config",
+        ),
+    },
+)
+
+def xcode_config_resolver(name):
+    """Selects the native or Starlark dependency before analyzing the resolver.
+
+    Args:
+      name: The name of the target.
+    """
+    if not ge("10.0.0-pre.20260112.1"):
+        _native_xcode_config_resolver(name = name)
+        return
+
+    native.config_setting(
+        name = name + "_use_starlark",
+        values = {"incompatible_remove_ctx_apple_fragment": "true"},
+        visibility = ["//visibility:private"],
+    )
+    _native_xcode_config_resolver(
+        name = name + "_native",
+        tags = ["manual"],
+        visibility = ["//visibility:private"],
+    )
+    _starlark_xcode_config_resolver(
+        name = name + "_starlark",
+        tags = ["manual"],
+        visibility = ["//visibility:private"],
+    )
+    native.alias(
+        name = name,
+        actual = select({
+            ":" + name + "_use_starlark": ":" + name + "_starlark",
+            "//conditions:default": ":" + name + "_native",
+        }),
+    )

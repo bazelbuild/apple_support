@@ -2304,6 +2304,60 @@ _available_xcodes_mode_with_flag_test = analysistest.make(
 
 # ------------------------------------------------------------------------------
 
+def _xcode_config_resolver_remote_only(namer):
+    _make_xcode_fixtures(
+        namer = namer,
+        xcode_config_name = "xcode_config_resolver_remote_only__xcodes",
+        remote_versions = [
+            struct(name = "remote_version", version = "26.5.0.17F42", aliases = ["17F42"], is_default = True),
+        ],
+        local_versions = [
+            struct(name = "local_version", version = "27.2.0.27B52", is_default = True),
+        ],
+    )
+
+    # Model the generated local configuration: it cannot resolve the requested
+    # remote build and must not be analyzed through the unused Starlark flag.
+    xcode_config(
+        name = "xcode_config_resolver_remote_only__local_xcodes",
+        default = namer(":local_version"),
+        versions = [namer(":local_version")],
+        tags = FIXTURE_TAGS,
+    )
+    _xcode_config_resolver_remote_only_test(
+        name = "xcode_config_resolver_remote_only",
+        target_under_test = "//xcode:version_config",
+    )
+    return ["xcode_config_resolver_remote_only"]
+
+def _xcode_config_resolver_remote_only_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    target = analysistest.target_under_test(env)
+    xcode_version_info = target[apple_common.XcodeVersionConfig]
+    asserts.equals(env, "26.5.0.17F42", str(xcode_version_info.xcode_version()))
+    asserts.equals(env, "26.5.0.17F42", target[XcodeVersionPropertiesInfo].xcode_version)
+    asserts.equals(env, "remote", xcode_version_info.availability())
+    asserts.true(env, "no-local" in xcode_version_info.execution_info())
+    asserts.false(env, "no-remote" in xcode_version_info.execution_info())
+    return analysistest.end(env)
+
+_xcode_config_resolver_remote_only_test = analysistest.make(
+    _xcode_config_resolver_remote_only_test_impl,
+    config_settings = {
+        "//command_line_option:xcode_version": "17F42",
+        "//command_line_option:xcode_version_config": str(Label(
+            "//test:xcode_config_resolver_remote_only__xcodes",
+        )),
+        str(Label("//xcode:starlark_version_config")): str(Label(
+            "//test:xcode_config_resolver_remote_only__local_xcodes",
+        )),
+    } | ({
+        "//command_line_option:incompatible_remove_ctx_apple_fragment": "false",
+    } if ge("10.0.0-pre.20260112.1") else {}),
+)
+
+# ------------------------------------------------------------------------------
+
 def _xcode_config_resolver_with_fragment_removed(namer):
     _make_xcode_fixtures(
         namer = namer,
@@ -2467,6 +2521,7 @@ def xcode_config_test(name):
             _available_xcodes_mode_different_alias,
             _available_xcodes_mode_different_alias_fully_specified,
             _available_xcodes_mode_with_flag,
+            _xcode_config_resolver_remote_only,
         ] + ([
             _xcode_config_resolver_with_fragment_removed,
         ] if _SUPPORTS_INCOMPATIBLE_REMOVE_CTX_APPLE_FRAGMENT else []) + ([

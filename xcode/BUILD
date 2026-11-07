@@ -34,7 +34,7 @@ bzl_library(
     srcs = ["xcode_config_resolver.bzl"],
     deps = [
         ":providers",
-        "//build_settings",
+        "@bazel_features//:features",
     ],
 )
 
