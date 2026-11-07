@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
+load("//build_settings:build_settings.bzl", "universal_label_flag")
 load("//xcode:xcode_config_resolver.bzl", "xcode_config_resolver")
 
 licenses(["notice"])
@@ -65,10 +66,9 @@ string_flag(
 )
 
 # TODO (b/469732626) - Rename to version_config once the migration is complete.
-label_flag(
+universal_label_flag(
     name = "starlark_version_config",
     build_setting_default = "@bazel_tools//tools/cpp:host_xcodes",
-    scope = "universal",
 )
 
 # The source of truth for Xcode configuration resolution.

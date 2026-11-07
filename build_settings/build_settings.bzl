@@ -14,6 +14,7 @@
 
 """List of Bazel's apple_support build settings."""
 
+load("@bazel_features//private:util.bzl", "ge")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 
 visibility("public")
@@ -42,6 +43,19 @@ _DOTTED_VERSION_FLAGS = {
 _LABEL_FLAGS = {
     "xcode_version_config": True,
 }
+
+# TODO: Remove this once we drop 8.x support
+def universal_label_flag(name, **kwargs):
+    """Defines a label flag that propagates into execution configurations.
+
+    Args:
+      name: The name of the flag.
+      **kwargs: Arguments forwarded to native.label_flag.
+    """
+
+    if ge("9.0.0-pre.20250106.2"):
+        kwargs["scope"] = "universal"
+    native.label_flag(name = name, **kwargs)
 
 def _should_use_native_def(ctx, _flag_name, mode):
     """Returns True if the native definition should be used."""
