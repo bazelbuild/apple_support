@@ -335,7 +335,7 @@ apple_support.target_os_from_rule_ctx(<a href="#apple_support.target_os_from_rul
 Returns a `String` representing the target OS based on constraints.
 
 The returned `String` will match an equivalent value from one of the platform definitions in
-`apple_common.platform_type`, such as `ios` or `macos`.
+`apple_support.platform_type`, such as `ios` or `macos`.
 
 In order to use `apple_support.target_os_from_rule_ctx()`, you'll need to modify your rule
 definition to add the following:
