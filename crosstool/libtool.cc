@@ -466,6 +466,16 @@ int main(int argc, const char* argv[]) {
 
   invocation_args.push_back("@" + response_file.u8string());
 
+  // libtool can write uninitialized heap memory into the padding of the
+  // archive's symbol table, so identical inputs can produce different
+  // archives. MallocScribble fills every allocation with 0xaa (`man malloc`),
+  // which makes that padding the same on every run.
+  if (setenv("MallocScribble", "1", 1) != 0) {
+    std::cerr << "error: failed to set MallocScribble for libtool: "
+              << strerror(errno) << "\n";
+    return EXIT_FAILURE;
+  }
+
   if (!runSubProcess(invocation_args)) {
     return EXIT_FAILURE;
   }

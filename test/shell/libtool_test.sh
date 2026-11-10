@@ -221,4 +221,42 @@ function test_ar_append_preserves_previous_batches() (
   done
 )
 
+function test_archive_is_reproducible() (
+  unset __LIBTOOL_LOG_ONLY
+  export DEVELOPER_DIR="$(/usr/bin/xcode-select -p)"
+  export SDKROOT="$(/usr/bin/xcrun --show-sdk-path)"
+
+  # libtool can write uninitialized heap memory into the padding of the
+  # archive's symbol table, so identical inputs can produce different
+  # archives. Two objects defining the same varied-length names hit it in
+  # roughly one run in eight here (Xcode 27, macOS 26); how often depends on
+  # the host's allocator, so this test may not fail everywhere without the fix.
+  local first="${TEST_TMPDIR}/first.o"
+  local second="${TEST_TMPDIR}/second.o"
+  generate_functions() {
+    local i
+    for ((i = 0; i < $1; i++)); do
+      printf 'int sym_%d_%s(void) { return %d; }\n' \
+          "${i}" "$(printf '%*s' $((i % 7)) '' | tr ' ' x)" "${i}"
+    done
+  }
+  generate_functions 64 | /usr/bin/xcrun clang -x c -c - -o "${first}" ||
+      fail "compile first"
+  generate_functions 69 | /usr/bin/xcrun clang -x c -c - -o "${second}" ||
+      fail "compile second"
+
+  local expected="${TEST_TMPDIR}/expected.a"
+  local actual="${TEST_TMPDIR}/actual.a"
+  "${LIBTOOL}" -D -static -o "${expected}" "${first}" "${second}" ||
+      fail "create archive"
+  local run
+  for ((run = 0; run < 60; run++)); do
+    rm -f "${actual}"
+    "${LIBTOOL}" -D -static -o "${actual}" "${first}" "${second}" ||
+        fail "create archive (run ${run})"
+    cmp -s "${expected}" "${actual}" ||
+        fail "archive differs from the first run (run ${run})"
+  done
+)
+
 run_suite "libtool tests"
