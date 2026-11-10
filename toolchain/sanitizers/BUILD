@@ -10,6 +10,8 @@ _LIMITED_COMPILE_ACTIONS = [
     "@rules_cc//cc/toolchains/actions:cpp_compile",
     "@rules_cc//cc/toolchains/actions:objc_compile",
     "@rules_cc//cc/toolchains/actions:objcpp_compile",
+    "@rules_cc//cc/toolchains/actions:cpp20_module_compile",
+    "@rules_cc//cc/toolchains/actions:cpp20_module_codegen",
 ]
 
 enableable_feature(
@@ -25,7 +27,10 @@ cc_feature_constraint(
 
 cc_args(
     name = "no_asan_compile_flags",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = ["-D_FORTIFY_SOURCE=1"],
     requires_any_of = [":not_asan"],
 )

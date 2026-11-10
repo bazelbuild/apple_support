@@ -154,7 +154,10 @@ cc_feature(
 
 cc_args(
     name = "copts",
-    actions = ["@rules_cc//cc/toolchains/actions:compile_actions"],
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
+    ],
     args = [{c_opts}],
 )
 
@@ -178,6 +181,7 @@ cc_args(
         "@rules_cc//cc/toolchains/actions:cpp_compile",
         "@rules_cc//cc/toolchains/actions:cpp_module_compile",
         "@rules_cc//cc/toolchains/actions:linkstamp_compile",
+        "@rules_cc//cc/toolchains/actions:cpp20_module_actions",
     ],
     args = [{cxx_opts}],
 )
