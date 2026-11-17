@@ -27,7 +27,8 @@ def _create(
         output,
         apple_platform_info = None,
         apple_fragment = None,
-        xcode_config):
+        xcode_config = None,
+        toolchain = None):
     """Creates a universal binary by combining other binaries.
 
     Args:
@@ -42,39 +43,66 @@ def _create(
         apple_platform_info: The ApplePlatformInfo provider used to configure
             the action environment.
         apple_fragment: The `apple` configuration fragment used to configure
-            the action environment.
+            the action environment. Required when `toolchain` and
+            `apple_platform_info` are not provided.
             Deprecated: Use apple_platform_info instead.
         xcode_config: The `apple_common.XcodeVersionConfig` provider used to
-            configure the action environment.
+            configure the action environment. Required when `toolchain` is not
+            provided.
+        toolchain: An optional `LipoInfo` provider. When provided, the
+            action is registered via `ctx.actions.run` using the tool,
+            env, and execution requirements from the toolchain.
     """
     if type(inputs) == "depset":
         inputs = inputs.to_list()
     if not inputs:
         fail("lipo.create requires at least one input file.")
 
-    # Explicitly create the containing directory to avoid an occasional error
-    # from lipo; "can't create temporary output file [...] (Permission denied)"
-    command = [
-        "mkdir -p {} &&".format(shell.quote(output.dirname)),
-        "/usr/bin/lipo",
-        "-create",
-    ]
-    command.extend([
-        shell.quote(input_file.path)
-        for input_file in inputs
-    ])
-    command.extend(["-output", shell.quote(output.path)])
+    if toolchain:
+        args = actions.args()
+        args.add("-create")
+        args.add_all(inputs)
+        args.add("-output")
+        args.add(output)
+        actions.run(
+            executable = toolchain.tool,
+            arguments = [args],
+            mnemonic = "AppleLipo",
+            inputs = inputs,
+            outputs = [output],
+            env = toolchain.env,
+            execution_requirements = toolchain.execution_requirements,
+            use_default_shell_env = True,
+        )
+    elif (apple_platform_info or apple_fragment) and xcode_config:
+        # Explicitly create the containing directory to avoid an occasional error
+        # from lipo; "can't create temporary output file [...] (Permission denied)"
+        command = [
+            "mkdir -p {} &&".format(shell.quote(output.dirname)),
+            "/usr/bin/lipo",
+            "-create",
+        ]
+        command.extend([
+            shell.quote(input_file.path)
+            for input_file in inputs
+        ])
+        command.extend(["-output", shell.quote(output.path)])
 
-    apple_support.run_shell(
-        actions = actions,
-        command = " ".join(command),
-        mnemonic = "AppleLipo",
-        inputs = inputs,
-        outputs = [output],
-        apple_platform_info = apple_platform_info,
-        apple_fragment = apple_fragment,
-        xcode_config = xcode_config,
-    )
+        apple_support.run_shell(
+            actions = actions,
+            command = " ".join(command),
+            mnemonic = "AppleLipo",
+            inputs = inputs,
+            outputs = [output],
+            apple_platform_info = apple_platform_info,
+            apple_fragment = apple_fragment,
+            xcode_config = xcode_config,
+            use_default_shell_env = True,
+        )
+    else:
+        fail("""\
+lipo.create requires either a `toolchain` or `xcode_config` with `apple_platform_info` or `apple_fragment` to be provided.
+""")
 
 def _extract_or_thin(
         *,
