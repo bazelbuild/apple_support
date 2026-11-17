@@ -27,23 +27,23 @@ toolchain(
     toolchain_type = ":toolchain_type",
 )
 
-bzl_library(
-    name = "toolchain_bzl",
-    srcs = ["toolchain.bzl"],
-)
-
-bzl_library(
-    name = "xcode_toolchain_bzl",
-    srcs = ["xcode_toolchain.bzl"],
-    deps = [
-        ":toolchain_bzl",
-        "//lib:apple_support",
-    ],
-)
-
 filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = glob(["**"]),
     visibility = ["//:__subpackages__"],
+)
+
+bzl_library(
+    name = "xcode_toolchain",
+    srcs = ["xcode_toolchain.bzl"],
+    deps = [
+        ":toolchain",
+        "//lib:apple_support",
+    ],
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
 )
