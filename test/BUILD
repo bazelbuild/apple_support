@@ -130,7 +130,7 @@ sh_test(
     name = "install_name_tool_test",
     size = "small",
     srcs = ["install_name_tool_test.sh"],
-    args = ["$(location :patched_dylib)"],
+    args = ["$(rootpath :patched_dylib)"],
     data = [":patched_dylib"],
 )
 
@@ -145,7 +145,7 @@ sh_test(
     name = "install_name_tool_rpath_test",
     size = "small",
     srcs = ["install_name_tool_rpath_test.sh"],
-    args = ["$(location :patched_dylib_changed_rpath)"],
+    args = ["$(rootpath :patched_dylib_changed_rpath)"],
     data = [":patched_dylib_changed_rpath"],
 )
 

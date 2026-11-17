@@ -9,14 +9,14 @@ package(default_visibility = ["//visibility:public"])
 toolchain_type(name = "toolchain_type")
 
 sh_binary(
-    name = "install_name_tool",
+    name = "install_name_tool_wrapper",
     srcs = ["install_name_tool_wrapper.sh"],
     visibility = ["//visibility:private"],
 )
 
 xcode_install_name_tool_toolchain(
     name = "install_name_tool_toolchain",
-    tool = ":install_name_tool",
+    tool = ":install_name_tool_wrapper",
 )
 
 toolchain(
@@ -26,28 +26,28 @@ toolchain(
     toolchain_type = ":toolchain_type",
 )
 
-bzl_library(
-    name = "install_name_tool_bzl",
-    srcs = ["install_name_tool.bzl"],
-)
-
-bzl_library(
-    name = "toolchain_bzl",
-    srcs = ["toolchain.bzl"],
-)
-
-bzl_library(
-    name = "xcode_toolchain_bzl",
-    srcs = ["xcode_toolchain.bzl"],
-    deps = [
-        ":toolchain_bzl",
-        "//lib:apple_support",
-    ],
-)
-
 filegroup(
     name = "for_bazel_tests",
     testonly = 1,
     srcs = glob(["**"]),
     visibility = ["//:__pkg__"],
+)
+
+bzl_library(
+    name = "xcode_toolchain",
+    srcs = ["xcode_toolchain.bzl"],
+    deps = [
+        ":toolchain",
+        "//lib:apple_support",
+    ],
+)
+
+bzl_library(
+    name = "install_name_tool",
+    srcs = ["install_name_tool.bzl"],
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
 )
