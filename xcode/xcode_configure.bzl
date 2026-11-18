@@ -94,7 +94,7 @@ def _xcode_version_output(repository_ctx, name, version, aliases, developer_dir,
         decorated_aliases.append("'%s'" % alias)
     repository_ctx.report_progress("Fetching SDK information for Xcode %s" % version)
     xcodebuild_result = repository_ctx.execute(
-        ["xcrun", "xcodebuild", "-version", "-sdk"],
+        ["/usr/bin/xcrun", "xcodebuild", "-version", "-sdk"],
         timeout,
         {"DEVELOPER_DIR": developer_dir},
     )
@@ -176,10 +176,10 @@ def run_xcode_locator(repository_ctx, xcode_locator_src_label):
         timeout = OSX_EXECUTE_TIMEOUT
 
     xcrun_result = repository_ctx.execute([
-        "env",
+        "/usr/bin/env",
         "-i",
         "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
-        "xcrun",
+        "/usr/bin/xcrun",
         "--sdk",
         "macosx",
         "clang",
@@ -253,10 +253,10 @@ def _darwin_build_file(repository_ctx):
         timeout = OSX_EXECUTE_TIMEOUT
 
     xcodebuild_result = repository_ctx.execute([
-        "env",
+        "/usr/bin/env",
         "-i",
         "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
-        "xcrun",
+        "/usr/bin/xcrun",
         "xcodebuild",
         "-version",
     ], timeout)

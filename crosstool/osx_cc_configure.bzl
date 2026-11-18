@@ -125,10 +125,10 @@ def _get_xcode_cxx_inc_directories(repository_ctx, xcode_toolchains):
 def _succeeds(repository_ctx, *args):
     env = repository_ctx.os.environ
     result = repository_ctx.execute([
-        "env",
+        "/usr/bin/env",
         "-i",
         "DEVELOPER_DIR={}".format(env.get("DEVELOPER_DIR", default = "")),
-        "xcrun",
+        "/usr/bin/xcrun",
         "--sdk",
         "macosx",
     ] + list(args))
