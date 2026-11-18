@@ -781,7 +781,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}")],
+                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}", expand_if_available = "gcov_gcno_file")],
             ),
         ],
         flag_sets = [

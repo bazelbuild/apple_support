@@ -59,6 +59,7 @@ cc_args(
     env = {"GCOV_GCNO_FILE": "{gcov_gcno_file}"},
     format = {"gcov_gcno_file": "@rules_cc//cc/toolchains/variables:gcov_gcno_file"},
     requires_any_of = _COVERAGE_COMPILE_FEATURES,
+    requires_not_none = "@rules_cc//cc/toolchains/variables:gcov_gcno_file",
 )
 
 cc_args(

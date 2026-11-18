@@ -3312,7 +3312,7 @@
           ],
           "env_entries": [
             {
-              "expand_if_available": null,
+              "expand_if_available": "gcov_gcno_file",
               "key": "GCOV_GCNO_FILE",
               "type_name": "env_entry",
               "value": "%{gcov_gcno_file}"
