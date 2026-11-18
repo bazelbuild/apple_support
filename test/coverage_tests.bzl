@@ -2,6 +2,9 @@
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
+load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES")
+load("@rules_cc//cc:find_cc_toolchain.bzl", "find_cc_toolchain", "use_cc_toolchain")
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 
 _COMPILE_FLAGS = {
     "gcc": ["-fprofile-arcs", "-ftest-coverage"],
@@ -58,6 +61,57 @@ def _make_coverage_test(coverage_format, mode):
         },
     )
 
+_CompileEnvInfo = provider(
+    doc = "The environment of a compile action configured outside of a C++ rule.",
+    fields = ["env"],
+)
+
+def _compile_env_impl(ctx):
+    cc_toolchain = find_cc_toolchain(ctx)
+    feature_configuration = cc_common.configure_features(
+        ctx = ctx,
+        cc_toolchain = cc_toolchain,
+        requested_features = ctx.features,
+        unsupported_features = ctx.disabled_features,
+    )
+
+    # Rules that only need the compiler environment (e.g. rules_rust's
+    # cargo_build_script) build compile variables without a source file, so
+    # gcov_gcno_file is never set.
+    variables = cc_common.create_compile_variables(
+        feature_configuration = feature_configuration,
+        cc_toolchain = cc_toolchain,
+    )
+    return [_CompileEnvInfo(env = cc_common.get_environment_variables(
+        feature_configuration = feature_configuration,
+        action_name = ACTION_NAMES.c_compile,
+        variables = variables,
+    ))]
+
+_compile_env = rule(
+    implementation = _compile_env_impl,
+    fragments = ["cpp"],
+    toolchains = use_cc_toolchain(),
+)
+
+def _compile_env_without_gcno_file_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    compile_env = analysistest.target_under_test(env)[_CompileEnvInfo].env
+    asserts.false(env, "GCOV_GCNO_FILE" in compile_env, "GCOV_GCNO_FILE set without a gcno file")
+    return analysistest.end(env)
+
+_compile_env_without_gcno_file_test = analysistest.make(
+    _compile_env_without_gcno_file_test_impl,
+    config_settings = {
+        "//command_line_option:collect_code_coverage": True,
+        "//command_line_option:instrumentation_filter": "//test",
+        "//command_line_option:features": [
+            "gcc_coverage_map_format",
+            "-llvm_coverage_map_format",
+        ],
+    },
+)
+
 _gcc_legacy_test = _make_coverage_test("gcc", "legacy")
 _gcc_instrumented_test = _make_coverage_test("gcc", "instrumented")
 _gcc_uninstrumented_test = _make_coverage_test("gcc", "uninstrumented")
@@ -94,5 +148,16 @@ def coverage_test_suite(name):
                 tags = [name, "requires_rules_based_toolchain"],
             )
             tests.append(test_name)
+
+    _compile_env(
+        name = name + "_compile_env",
+        tags = ["manual"],
+    )
+    _compile_env_without_gcno_file_test(
+        name = name + "_compile_env_without_gcno_file_test",
+        target_under_test = name + "_compile_env",
+        tags = [name],
+    )
+    tests.append(name + "_compile_env_without_gcno_file_test")
 
     native.test_suite(name = name, tests = tests)

@@ -19,7 +19,6 @@ load(
     "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
     "action_config",
     "artifact_name_pattern",
-    "env_entry",
     "env_set",
     "feature",
     "feature_set",
@@ -32,6 +31,7 @@ load(
     "with_feature_set",
 )
 load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
+load("@rules_cc//cc:cc_toolchain_config_lib.bzl", "env_entry")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
 
@@ -781,7 +781,7 @@ please file an issue at https://github.com/bazelbuild/apple_support/issues/new
                     ACTION_NAMES.objc_compile,
                     ACTION_NAMES.objcpp_compile,
                 ],
-                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}")],
+                env_entries = [env_entry(key = "GCOV_GCNO_FILE", value = "%{gcov_gcno_file}", expand_if_available = "gcov_gcno_file")],
             ),
         ],
         flag_sets = [
