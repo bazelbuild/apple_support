@@ -31,8 +31,6 @@ load(
     "with_feature_set",
 )
 load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES", "ACTION_NAME_GROUPS")
-
-# The @bazel_tools copy of env_entry has no expand_if_available on Bazel 7.
 load("@rules_cc//cc:cc_toolchain_config_lib.bzl", "env_entry")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
