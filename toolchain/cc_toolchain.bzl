@@ -29,14 +29,11 @@ def cc_toolchain(
         module_map: Module map artifact for modular builds.
         supports_header_parsing: Whether header parsing actions are supported.
         sysroot_feature: The enabled feature that supplies the toolchain's sysroot.
-        tool_map: The `cc_tool_map` that supplies the toolchain's tools. On
-            Apple platforms some of the toolchain's args are not compiler flags
-            but part of `wrapped_clang`'s protocol -- the `__BAZEL_*` path
-            placeholders, and the sentinel args `STRIP_DEBUG_SYMBOLS`,
-            `LINKED_BINARY=...` and `DSYM_HINT_DSYM_PATH=...` that stand for
-            work the tool does around the compiler. A `tool_map` that does not
-            drive `wrapped_clang` itself has to supply a tool that resolves the
-            placeholders and acts on the sentinels the same way.
+        tool_map: The `cc_tool_map` that supplies the toolchain's tools. Tools
+            that replace `wrapped_clang` on Apple platforms must resolve the
+            `__BAZEL_*` path placeholders and handle the `LINKED_BINARY=...`
+            argument and the `STRIP_DEBUG_SYMBOLS` and `DSYM_HINT_DSYM_PATH`
+            environment variables.
         flags_from_env: Whether to append the flags read from `BAZEL_COPTS`,
             `BAZEL_CONLYOPTS`, `BAZEL_CXXOPTS` and `BAZEL_LINKOPTS`. Defaults to
             True. Note that `BAZEL_CXXOPTS` defaults to `-std=c++17`, so a

@@ -143,9 +143,11 @@ def linking_test_suite(name):
         ],
         not_expected_argv = [
             "-g",
-            "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
             "-framework UIKit",
+        ],
+        not_expected_env_keys = [
+            "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
@@ -163,9 +165,11 @@ def linking_test_suite(name):
         ],
         not_expected_argv = [
             "-g",
-            "DSYM_HINT_DSYM_PATH",
             "-dead_strip",
             "-framework Cocoa",
+        ],
+        not_expected_env_keys = [
+            "DSYM_HINT_DSYM_PATH",
         ],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:ios_binary",
@@ -332,9 +336,10 @@ def linking_test_suite(name):
         tags = [name],
         expected_argv = [
             "-g",
-            "DSYM_HINT_DSYM_PATH",
             "LINKED_BINARY",
         ],
+        expected_env_keys = ["DSYM_HINT_DSYM_PATH"],
+        not_expected_argv = ["DSYM_HINT_DSYM_PATH"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
@@ -343,10 +348,11 @@ def linking_test_suite(name):
         name = "{}_generate_cpp_dsym_test".format(name),
         tags = [name],
         expected_argv = [
-            "DSYM_HINT_DSYM_PATH",
             "LINKED_BINARY",
             "-Wl,-v",
         ],
+        expected_env_keys = ["DSYM_HINT_DSYM_PATH"],
+        not_expected_argv = ["DSYM_HINT_DSYM_PATH"],
         mnemonic = "CppLink",
         target_under_test = "//test/test_data:cc_test_binary",
     )
@@ -422,9 +428,8 @@ def linking_test_suite(name):
     strip_test(
         name = "{}_strip_objc_test".format(name),
         tags = [name],
-        expected_argv = [
-            "STRIP_DEBUG_SYMBOLS",
-        ],
+        expected_env_keys = ["STRIP_DEBUG_SYMBOLS"],
+        not_expected_argv = ["STRIP_DEBUG_SYMBOLS"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
@@ -432,9 +437,8 @@ def linking_test_suite(name):
     strip_test(
         name = "{}_strip_cc_test".format(name),
         tags = [name],
-        expected_argv = [
-            "STRIP_DEBUG_SYMBOLS",
-        ],
+        expected_env_keys = ["STRIP_DEBUG_SYMBOLS"],
+        not_expected_argv = ["STRIP_DEBUG_SYMBOLS"],
         mnemonic = "CppLink",
         target_under_test = "//test/test_data:cc_test_binary",
     )
@@ -442,9 +446,8 @@ def linking_test_suite(name):
     strip_test(
         name = "{}_strip_shared_library_test".format(name),
         tags = [name],
-        expected_argv = [
-            "STRIP_DEBUG_SYMBOLS",
-        ],
+        expected_env_keys = ["STRIP_DEBUG_SYMBOLS"],
+        not_expected_argv = ["STRIP_DEBUG_SYMBOLS"],
         mnemonic = "CppLink",
         target_under_test = "//test:loadable_library_so",
     )
@@ -452,9 +455,8 @@ def linking_test_suite(name):
     disable_strip_test(
         name = "{}_disable_strip_objc_test".format(name),
         tags = [name],
-        not_expected_argv = [
-            "STRIP_DEBUG_SYMBOLS",
-        ],
+        not_expected_argv = ["STRIP_DEBUG_SYMBOLS"],
+        not_expected_env_keys = ["STRIP_DEBUG_SYMBOLS"],
         mnemonic = "ObjcLink",
         target_under_test = "//test/test_data:macos_binary",
     )
