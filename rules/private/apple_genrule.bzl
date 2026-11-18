@@ -194,7 +194,7 @@ apple_genrule(
 ```
 
 This rule also does location expansion, much like the native genrule.
-For example, `$(location hi)` may be used to refer to the output in the
+For example, `$(execpath hi)` may be used to refer to the output in the
 above example.
 
 The set of make variables that are supported for this rule:
