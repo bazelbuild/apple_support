@@ -179,26 +179,15 @@ _XCODE_PROCESSOR__ARGS = r"""#!/bin/bash
 
 set -eu
 
-# SYNOPSIS
-#   Rewrites any Bazel placeholder strings in the given argument string,
-#   echoing the result.
-#
-# USAGE
-#   rewrite_argument <argument>
-function rewrite_argument {
-  ARG="$1"
-  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
-  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
-  echo "$ARG"
-}
-
 TOOLNAME="$1"
 shift
 
 ARGS=()
 
 for ARG in "$@" ; do
-  ARGS+=("$(rewrite_argument "$ARG")")
+  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
+  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
+  ARGS+=("$ARG")
 done
 
 exec "$TOOLNAME" "${ARGS[@]}"
@@ -207,19 +196,6 @@ exec "$TOOLNAME" "${ARGS[@]}"
 _XCODE_PROCESSOR__ARGS_AND_FILES = r"""#!/bin/bash
 
 set -eu
-
-# SYNOPSIS
-#   Rewrites any Bazel placeholder strings in the given argument string,
-#   echoing the result.
-#
-# USAGE
-#   rewrite_argument <argument>
-function rewrite_argument {
-  ARG="$1"
-  ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
-  ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
-  echo "$ARG"
-}
 
 # SYNOPSIS
 #   Rewrites any Bazel placeholder strings in the given params file, if any.
@@ -281,7 +257,8 @@ for ARG in "$@" ; do
     ARG="@$NEWFILE"
     ;;
   *)
-    ARG=$(rewrite_argument "$ARG")
+    ARG="${ARG//__BAZEL_XCODE_DEVELOPER_DIR__/$DEVELOPER_DIR}"
+    ARG="${ARG//__BAZEL_XCODE_SDKROOT__/$SDKROOT}"
     ;;
   esac
   ARGS+=("$ARG")
