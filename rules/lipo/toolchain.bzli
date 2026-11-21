@@ -1,0 +1,21 @@
+"""The tool and action environment supplied by a lipo toolchain."""
+
+def LipoInfo(
+        *,
+        tool: FilesToRunProvider,
+        env: dict[str, str],
+        execution_requirements: dict[str, str],
+) -> record[{
+    "tool": FilesToRunProvider,
+    "env": dict[str, str],
+    "execution_requirements": dict[str, str],
+}]: ...
+
+
+class _LipoToolchainFields(Protocol):
+    @property
+    def lipo_info(self) -> LipoInfo: ...
+
+def _lipo_toolchain_impl(
+        ctx,
+) -> list[Intersection[ToolchainInfo, _LipoToolchainFields]]: ...

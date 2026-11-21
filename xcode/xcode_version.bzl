@@ -28,6 +28,7 @@ load(
 visibility("public")
 
 def _xcode_version_impl(ctx):
+    # type: (...) -> list[XcodeVersionPropertiesInfo | XcodeVersionRuleInfo | DefaultInfo]
     # TODO: remove when we test with Bazel 8+
     if not bazel_features.apple.xcode_config_migrated:
         fail("This rule is not available on the current Bazel version")

@@ -18,4 +18,4 @@ visibility("public")
 
 # Allowlist of targets that are allowed to analyze Apple rules without active platform constraints.
 # For OSS, this list is empty by default. Populate it with your own targets if needed.
-ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK = []
+ALLOWED_USERS_OF_MISSING_PLATFORM_FALLBACK = []  # type: list[str]

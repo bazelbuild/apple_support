@@ -4,6 +4,7 @@ target's attributes. Useful for passing custom tools to a compile or link
 """
 
 def _toolchain_substitution(ctx):
+    # type: (...) -> list[DefaultInfo | TemplateVariableInfo]
     return [
         DefaultInfo(
             files = depset([ctx.file.src]),

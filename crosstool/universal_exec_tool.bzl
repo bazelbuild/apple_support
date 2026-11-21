@@ -3,6 +3,7 @@
 load("//rules:apple_genrule.bzl", "apple_genrule")
 
 def _force_exec_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     default_into = ctx.attr.target[DefaultInfo]
 
     return [
@@ -24,7 +25,15 @@ force_exec = rule(
     exec_compatible_with = ["@platforms//os:macos"],
 )
 
+# TODO(https://github.com/bazelbuild/bazel/issues/32021): Use native annotations
+# once supported Bazel versions expose depset element types.
+# type _Labels = Collection[Label | str] | depset[Label | str]
+
+# TODO(https://github.com/tamird/sty/blob/sty-action-v0.2.0/docs/type-interfaces.md#selectors):
+# Use a native parameter annotation when Bazel can describe configurable srcs
+# whose selected value can be a list, a depset, or None.
 def universal_exec_tool(*, name, out, srcs):
+    # type: (str, Label | str, _Labels | select[_Labels | None] | None) -> None
     apple_genrule(
         name = name + ".target_config",
         srcs = srcs,
