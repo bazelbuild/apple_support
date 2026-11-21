@@ -132,6 +132,7 @@ _PLATFORM = struct(
 ) if bazel_features.apple.xcode_config_migrated else apple_common.platform  # TODO: Remove the native fallback after dropping Bazel 7.x support.
 
 def _apple_host_system_env(xcode_config):
+    # type: (XcodeVersionConfig | None) -> dict[str, str]
     """Returns a `dict` of environment variables that are independent of the target platform for actions that build targets on Apple systems.
 
     To use this helper, pass the `XcodeVersionInfo` provider from the `_xcode_config` attribute

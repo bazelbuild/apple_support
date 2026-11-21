@@ -6,6 +6,8 @@ licenses(["notice"])
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["toolchain.bzli"])
+
 toolchain_type(name = "toolchain_type")
 
 sh_binary(

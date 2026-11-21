@@ -32,7 +32,7 @@ jobs:
             exit 1
           fi
           cat .github/sty/rules_cc.MODULE.bazel >> MODULE.bazel
-      - uses: tamird/sty@sty-action-v0.2.0
+      - uses: tamird/sty@ce96423cb6707c17953ac67ef32348af0f87fc53
         with:
           audit-loads: true
           advisory-pathspecs: '*.bzl'

@@ -14,6 +14,7 @@
 """Apple platform constraints, attributes and action helpers."""
 
 load("//lib/private:providers.bzl", "ApplePlatformInfo")
+load("//lib/private:providers.bzli", "ApplePlatform")
 
 # Installed by platform_constraint_attrs() for the context helpers below.
 type _PlatformAttrs = struct[{
@@ -61,7 +62,17 @@ def _platform_frameworks_path_placeholder(
         apple_fragment: apple | None = ...,
 ) -> str: ...
 
-def _platform_from_info(*, apple_platform_info: _PlatformSelection) -> apple_platform: ...
+def _create_platform(
+        *,
+        name: str,
+        name_in_plist: str,
+        platform_type: str | apple_platform_type,
+        is_device: bool,
+) -> ApplePlatform: ...
+
+def _target_apple_env(xcode_config: XcodeVersionConfig, platform: ApplePlatform) -> dict[str, str]: ...
+
+def _platform_from_info(*, apple_platform_info: _PlatformSelection) -> ApplePlatform: ...
 
 # Forwarded keywords of Bazel 9.3 actions.run and actions.run_shell APIs.
 # Keep these closed so misspelled action keywords are rejected at the wrapper.
@@ -130,7 +141,7 @@ class _RunAction(Protocol):
 class _RunShellAction(Protocol):
     def __call__[K: str = str, N: float = float](self, **kwargs: Unpack[_RunShellArgs[K, N]]) -> None: ...
 
-class _RunActions(Protocol):
+class RunActions(Protocol):
     @property
     def args(self) -> Callable[[], Args]: ...
     @property
@@ -146,7 +157,7 @@ class RunShellActions(Protocol):
 
 def _run[K: str = str, N: float = float](
         *,
-        actions: _RunActions,
+        actions: RunActions,
         xcode_config: XcodeVersionConfig,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,

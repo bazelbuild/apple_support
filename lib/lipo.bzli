@@ -4,22 +4,27 @@
 # action interface can describe the run_shell keywords in source. A type comment
 # cannot import RunShellActions from apple_support.bzli.
 
-load("//lib:apple_support.bzli", _Actions = "RunShellActions")
+load("//lib:apple_support.bzli", "RunActions", "RunShellActions")
 load("//lib/private:providers.bzl", "ApplePlatformInfo")
+load("//rules/lipo:toolchain.bzl", "LipoInfo")
+
+class _CreateActions(RunActions, RunShellActions, Protocol):
+    pass
 
 def _create(
         *,
-        actions: _Actions,
+        actions: _CreateActions,
         inputs: Sequence[File] | depset[File],
         output: File,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,
-        xcode_config: XcodeVersionConfig,
+        xcode_config: XcodeVersionConfig | None = ...,
+        toolchain: LipoInfo | None = ...,
 ) -> None: ...
 
 def _extract_or_thin(
         *,
-        actions: _Actions,
+        actions: RunShellActions,
         apple_platform_info: ApplePlatformInfo | None = ...,
         apple_fragment: apple | None = ...,
         archs: Sequence[str],

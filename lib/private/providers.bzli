@@ -17,10 +17,18 @@
 # TODO(https://github.com/bazelbuild/bazel/issues/32207): Move the result fields to ApplePlatformInfo
 # when Bazel can type provider fields independently of its banned public initializer.
 
+# Bazel 7 uses its native platform; newer versions use the compatibility struct.
+type ApplePlatform = apple_platform | struct[{
+    "name": str,
+    "name_in_plist": str,
+    "platform_type": str | apple_platform_type,
+    "is_device": bool,
+}]
+
 def ApplePlatformInfo() -> record[{
     "target_arch": str | None,
     "target_build_config": configuration,
     "target_environment": str | None,
     "target_os": str,
-    "platform": apple_platform,
+    "platform": ApplePlatform,
 }]: ...
